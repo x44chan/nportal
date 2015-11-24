@@ -40,7 +40,7 @@
 		</div> <br><br>
 		<div class="btn-group btn-group" role="group">
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-			<a style = "width: 250px;" role = "button"class = "btn btn-success" href = "?ac=penob"> Official Business Request Status</a>			
+			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>	
@@ -48,7 +48,31 @@
 	</div>
 </div>
 
-<div id = "dash" class = "resp" style = "margin-top: -30px;">	
+<div id = "dash" class = "resp" style = "margin-top: -30px;">
+<?php
+	if(isset($_GET['validate'])){
+		$petida = mysql_escape_string($_GET['validate']);
+		$sql = "SELECT * FROM `petty_liqdate` where petty_id = '$petida' and liqstate = 'EmpVal' group by petty_id";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			echo '<div align = "center" style = "margin-top: 50px;"><i><h3> Validate Code for Completion</h3></i></div>';
+			echo '<form action = "petty-exec.php" method = "post"><table class = "table" style="width: 50%;" align = "center">';
+			while ($row = $result->fetch_assoc()) {
+				echo '<tr><td><label>Enter Code</td><td><input required type = "text" class = "form-control" name = "valcode" placeholder="Enter Code"/></td></tr>';
+				echo '<tr><td colspan = "2" align = "center"><button class = "btn btn-primary" type = "submit" name = "valcodesub">Complete Liquidate</button> <a href = "?ac=penpty" class = "btn btn-danger">Back</a></td></tr>';
+				echo '<input type = "hidden" name = "petyid" value = "' . $row['petty_id'] . '"/>';
+			}	
+			echo '</table></form>';
+	}else{
+		echo '<script type="text/javascript">window.location.replace("?ac=penpty"); </script>';
+	}
+}
+?>	
+<?php 
+	if(isset($_GET['lqdate'])){
+		include 'aliquidate.php';	
+	}
+?>
 <?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
 		include("conf.php");
@@ -80,6 +104,7 @@
 				$originalDate = date($row['date']);
 				$newDate = date("F j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
+				$petid = $row['petty_id'];
 				echo 
 					'<tr>
 						<td>'.$row['petty_id'].'</td>
@@ -98,12 +123,22 @@
 								echo 'Disapproved request';
 							}elseif($row['state'] == 'AAPettyReceived'){
 								echo '<font color = "green"><b>Received ';
+								echo '</font></br>Code: ' . $row['rcve_code'];
 							}elseif($row['state'] == 'AAPetty'){
 								echo '<font color = "green"><b>Pending to Accounting</font>';
 							}elseif($row['state'] == 'AAPettyRep'){
-								echo '<font color = "green"><b>Received ';
-								if($row['source'] == 'Accounting'){echo ' from Accounting</font>';}
-								if($row['source'] == 'Eli/Sha'){echo ' from Sir Eli/Maam Sha</font>';}
+								$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+								$data = $conn->query($sql)->fetch_assoc();
+								if($data['petty_id'] == null){
+									echo '<a class = "btn btn-danger" href = "?lqdate=' . $row['petty_id'] . '"/> To Liquidate </a>';
+								}elseif($data['liqstate'] == 'EmpVal'){
+									echo '<font color = "green"><b>Liquidated</font><br>';
+									echo '<a href = "?validate=' . $petid . '" class = "btn btn-success">Validate Code</a>';
+								}elseif($data['liqstate'] == 'CompleteLiqdate'){
+									echo '<font color = "green"><b>Completed</font>';
+								}elseif($data['liqstate'] == 'LIQDATE'){
+									echo '<b>Pending Completion</b>';
+								}
 							}
 				echo '</td></tr>';
 

@@ -108,6 +108,7 @@
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
+				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
 				</ul>
 			</div>			

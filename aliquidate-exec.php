@@ -9,7 +9,7 @@
 			$stmt->bind_param("iisssss", $_POST['pet_id'], $_SESSION['acc_id'], date("Y-m-d"), $_POST['type'.$i], $_POST['amount'.$i], $_POST['trans'.$i], $liqstate);
 			if($_POST['type'.$i]!= null){
 				if($stmt->execute()){
-					
+					echo '<script type = "text/javascript">window.location.replace("employee.php?ac=penpty");</script>';
 				}else{
 					$conn->error();
 				}

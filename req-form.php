@@ -417,6 +417,10 @@ $(document).ready(function(){
             	 <label for="usrname"> Amount <font color = "red">*</font></label>
             	<input type = "text" pattern = "[0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
+          	<div class="form-group">
+            	 <label for="usrname"> Reason <font color = "red">*</font></label>
+            	<input type = "text" id = "petamount" required name = "petreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+          	</div>
               <button type="submit" name = "submitpet" class="btn btn-success btn-block">Submit</button>
           </form>
         </div>
@@ -434,8 +438,8 @@ $(document).ready(function(){
 		$state = 'UAPetty';
 		$datefile = date("Y-m-d");
 
-		$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("issss",$accid, $datefile, $particularpet, $amountpet, $state);
+		$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("isssss",$accid, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
 		$stmt->execute();		
 		if($_SESSION['level'] == 'EMP'){
     		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
