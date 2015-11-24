@@ -1,0 +1,36 @@
+body{
+	margin: 0px;
+	padding: 0px;
+	font-size: 16px;
+}
+
+body th{
+	font-size: 15px;
+}
+table td{
+	font-size: 13.5px;
+	
+	text-align: center;
+}
+table th{
+	font-size: 15px;
+	text-align: center;
+}
+.2daysred{
+	color:red;
+}
+h2{
+	font-style: italic;
+}
+#pops tr td{
+	display: none;
+
+}
+ td{
+	padding: 2px;
+}
+.dropdown-menu > li > a:hover {
+	background-color: #337ab7;
+	color: white;
+	background-image: none;
+}
