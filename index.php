@@ -70,6 +70,11 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				$_SESSION['post'] = $row['position'];
 				$_SESSION['dept'] = $row['department'];
 				$_SESSION['datehired'] = $row['edatehired'];
+				if($row['hrchange'] == 1){
+					$_SESSION['category'] = $row['oldpost'];
+				}else{
+					$_SESSION['category'] = $row['empcatergory'];
+				}
 				?>
 			<?php
 				if($_SESSION['level'] == 'Admin'){

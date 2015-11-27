@@ -4,6 +4,13 @@
 	include("conf.php");
 	date_default_timezone_set('Asia/Manila');
 	$accid = $_SESSION['acc_id'];
+	if(date("D") == 'Mon'){
+		$forque1 = date('Y-m-d', strtotime("-3 days"));
+		$endque1 = date('Y-m-d');
+	}else{
+		$forque1 = date('Y-m-d', strtotime("-1 days"));
+		$endque1 = date('Y-m-d');
+	}
 ?>
 <?php if($_SESSION['level'] != 'TECH'){ ?>		
 	<script type="text/javascript">	window.location.replace("index.php");</script>		
@@ -23,6 +30,15 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <?php
+				  	if($_SESSION['category'] == "Regular"){
+				  ?>
+				  	<li class="divider"></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  <?php
+				  	}
+				  ?>
 				</ul>
 			</div>
 			<a type = "button" class = "btn btn-primary"  href = "techsupervisor-app.php" id = "showapproveda">My Approved Request</a>
@@ -35,10 +51,178 @@
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
 			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>	
+			<?php
+				if($_SESSION['category'] == "Regular"){
+					echo '
+						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
+						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
+				}
+			?>
 		</div>
 	</div>
 </div>
-<div id = "needaproval" style = "margin-top: -30px;">	
+<div id = "needaproval" style = "margin-top: -30px;">
+<?php
+if(isset($_GET['upovertime'])){	
+		$id = mysqli_real_escape_string($conn, $_GET['upovertime']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and overtime_id = '$id' and state = 'UATech'";
+		$result = $conn->query($sql);		
+		if($result->num_rows > 0){
+			echo '<form action = "update-exec.php" method = "post" class = "form-group">
+					<table class = "table table-hover" style = "width: 720px; border: none;" align = "center">
+						<thead>
+							<tr>
+								<th colspan  = 3><h3> Update Time  </h3></th>
+							</tr>
+						</thead>';
+			while($row = $result->fetch_assoc()){
+				?>	
+				<tr>
+					<td><b>Date File: </b></td>
+					<td><?php echo date("F j, Y", strtotime($row['datefile']));?></td>
+				</tr>
+				<tr>
+					<td><b>Name of Employee: </b></td>
+					<td><?php echo $row['nameofemp']?></td>
+				</tr>
+				<tr>
+					<td><b>Position: </b></td>
+					<td><?php echo $row['position'];?></td>
+				</tr>
+				<tr>
+					<td><b>Department: </b></td>
+					<td><?php echo $row['department'];?></td>
+				</tr>
+				<tr>
+					<td><b>Date Of Overtime: </b></td>
+					<td><?php echo date("F j, Y", strtotime($row['dateofot']));?></td>
+				</tr>				
+				<tr>
+					<td><b>Reason (Work to be done): </b></td>
+					<td><?php echo $row['reason'];?></td>	
+				</tr>
+			<div class = "ui-widget-content" style = "border: none;">
+				<tr>
+					<td><b>Start of OT: </b></td>
+					<td><?php echo $row['startofot'];?></td>
+				</tr>				
+				<tr>
+					<td><b>End of OT: </b></td>
+					<td><?php echo $row['endofot'];?></td>
+				</tr>
+				<?php
+					if($row['otbreak'] != null){
+				?>
+				<tr>
+					<td><b>OT Break: </b></td>
+					<td><input type = "text" class="form-control" readonly name = "otbreak" value = "<?php echo substr($row['otbreak'], 1);?>"/></td>					
+				</tr>
+				<?php } ?>
+				<?php 
+					$count = strlen($row['officialworksched']);
+					if($count < 8){
+						$ex1 = "";
+						$ex2 = "";
+					}else{
+						$explode = explode(" - ", $row['officialworksched']);
+						$ex1 = $explode[0];
+						$ex2 = $explode[1];
+					}					
+				?>	
+				<tr id = "rday" class = "form-inline" >
+					<td><b>Official Work Sched: </b></td>
+					<td>
+					<?php if($row['officialworksched'] != "Restday"){ echo'
+					
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "'.$ex1.'"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "'. $ex2.'"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
+					';
+					}else{
+						echo 'RESTDAY';
+					}
+					?>	
+					</td>			
+				</tr>
+				<tr>
+					<td><b>New Start of OT: </b></td>
+					<td>
+						<input id = "timein" onkeydown="return false;" value = "<?php echo $row['startofot'];?>" required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
+					</td>
+				</tr>				
+				<tr>
+					<td><b>New End of OT: </b></td>
+					<td><input  value = "<?php echo $row['endofot'];?>" onkeydown="return false;"required class = "form-control" name = "hruptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
+				</tr>
+				<tr id = "warning" style="display: none;">
+					<td></td>
+					<td>
+						<div class="alert alert-danger fade in">
+						  <strong>Warning!</strong> Fill out <b>Time In</b> or <b>Time Out</b>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td align = "right"><label for = "dareason"> Based On </label></td>
+					<td>
+						<select class = "form-control" required name = "dareason" id = "dareason">
+							<option value = "">-------</option>
+							<option value = "Biometrics">Biometrics</option>
+							<option value="C.S.R">C.S.R.</option>	
+						</select>
+					</td>
+				</tr>
+				<tr style="display:none;">
+					<td>
+						<input value = "<?php echo $row['startofot'];?>" type = "hidden" name = "oldotstrt"/>
+						<input value = "<?php echo $row['endofot'];?>" type = "hidden" name = "oldotend"/>
+						<input value = "<?php echo $row['account_id'];?>" type = "hidden" name = "accid"/>
+					</td>
+				</tr>		
+				<script type="text/javascript">
+					$(document).ready(function(){	
+						$('#obtimein').click(function() {
+							$("#warning").hide();
+						});
+						$("#submits").click(function(){						
+							if($("#obtimein").val() == "" && $("#obtimeout").val() == "" ){
+								$("#warning").show();
+								return false;
+							}else{
+								$("#warning").hide();
+							}
+						});
+					});
+				</script>
+				<script type="text/javascript">
+					$(document).ready(function(){
+						$('input[name="hruptimein"]').ptTimeSelect();
+						$('input[name="hruptimeout"]').ptTimeSelect();
+						
+					});
+				</script>
+		</div>
+	<?php
+			}
+			echo '<tr>
+					<td colspan = 2>
+						<button onclick = "return confirm(\'Are you sure? (Edit Time)\');" type = "submit" class = "btn btn-primary" name = "hrupdatetime" value = "Submit Edit"><span class="glyphicon glyphicon-ok-sign"></span> Submit</button>
+						<a href = "?ac=penot" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a>
+					</td>
+				</tr>
+			  	</tr>
+			  	<tr>
+					<td><input type = "hidden" name = "overtime" value = "'.$id.'"/></td>
+					<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+					<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+			  	</tr>
+			</table>
+		</form>';
+		}
+		
+			
+	}
+?>
 <?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
 		include("conf.php");
@@ -522,8 +706,8 @@
 			$dated = date("m", strtotime("previous month"));
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state like 'UATech' and DAY(datefile) >= $forque and DAY(datefile) < $endque and MONTH(datefile) = $dated and YEAR(datefile) = $datey ORDER BY datefile ASC";
-		$result = $conn->query($sql);
+			$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UATech' and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
+	$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
 
@@ -554,8 +738,9 @@
 						echo '<td><strong>Pending to Admin<strong></td></tr>';
 				}else{
 					echo '<td width = "200">
-							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=UA&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
+							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&upovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>
 						</td>
 					</tr>';
 				}

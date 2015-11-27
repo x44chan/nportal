@@ -162,6 +162,15 @@
 
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <?php
+				  	if($_SESSION['category'] == "Regular"){
+				  ?>
+				  	<li class="divider"></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  <?php
+				  	}
+				  ?>
 				</ul>
 
 			</div>

@@ -62,30 +62,62 @@
 <div id = "needaproval" style="min-height: 300px; text-transform: capitalize;">
 <?php 
 	if(!isset($_GET['view'])){?>
-	<div id = "report"><h2 align = "center">Employee List</h2>
+	<div id = "report"><h2 align = "center"><?php if(isset($_GET['active']) && $_GET['active'] == '0'){echo '<i>In-Active</>';}?> Employee List </h2>
+  <?php 
+    if(isset($_GET['active']) && $_GET['active'] == '0'){
+      echo '<a href ="admin-emprof.php" class = "btn btn-success pull-right" style = "margin-bottom: 20px;  margin-right: 10px;"><span class="glyphicon glyphicon-user"></span>  View Active Employee </a>';
+    }else{
+      echo '<a href ="admin-emprof.php?active=0" class = "btn btn-danger pull-right" style = "margin-bottom: 20px; margin-right: 10px;"><span class="glyphicon glyphicon-eye-close"></span>  View In-Active Employee </a>';
+    }
+  ?>
 		<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">
 		<thead>
 				<tr>
 					<th>Account ID</th>
-					<th>Name</th>
-					<th>Position</th>
-					<th>Department</th>
-					<th>Action</th>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Department</th>
+          <th>Category</th>
+          <th>Date Hired</th>
+          <th>Action</th>
 				</tr>
 			  </thead>
 			  <tbody>
 <?php 
 		include("conf.php");
-		$sql = "SELECT * from `login` where level != 'Admin' order by lname ASC";
+    if(isset($_GET['active']) && $_GET['active'] == '0'){
+      $sql = "SELECT * from `login` where level != 'Admin' and fname is not null and active = '0' order by lname ASC";
+    }else{
+      $sql = "SELECT * from `login` where level != 'Admin' and fname is not null and (active = '1' or active IS NULL) order by lname ASC";
+    }
+		
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
-				echo '<tr>';
-				echo '<td>' . $row['account_id'] . '</td>';
-				echo '<td>' . $row['fname'] . ' ' . $row['mname']. ' ' . $row['lname'] . '</td>';				
-				echo '<td>' . $row['position'] . '</td>';
-				echo '<td>' . $row['department'] . '</td>';
-				echo '<td><a href = "?view=' . $row['account_id']. '" class = "btn btn-primary" target = "_blank">View Profile</a></td>'; 
+       if($row['empcatergory'] == 'Probationary'){
+          $edate = $row['probidate'];
+          $tonull = $row['probidate'];
+        }elseif($row['empcatergory'] == 'Contractual'){
+          $edate = $row['edatehired'];
+          $tonull = $row['edatehired'];
+        }else{
+          $edate = "";
+          $tonull = 'asd';
+        }
+        if($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+5 months", strtotime($edate)))){
+          echo '<tr style = "color: red; font-weight: bold;">';
+        }elseif($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+4 months", strtotime($edate))) ){
+         echo '<tr style = "color: green; font-weight: bold;">';
+        }else{
+          echo '<tr>';
+        }   
+        echo '<td>' . $row['account_id'] . '</td>';
+        echo '<td>' . $row['fname'] . ' ' . $row['mname']. ' ' . $row['lname'] . '</td>';       
+        echo '<td>' . $row['position'] . '</td>';
+        echo '<td>' . $row['department'] . '</td>';
+        echo '<td>' . $row['empcatergory'] . '</td>';
+        echo '<td>' . date("M j, Y", strtotime($row['edatehired'])) . '</td>';
+				echo '<td><a href = "?view=' . $row['account_id']. '" class = "btn btn-primary" target = "_blank"><span class="glyphicon glyphicon-search"></span> View Profile</a></td>'; 
 				echo '</tr>';
 			}
 		}
@@ -417,54 +449,42 @@ $(document).ready(function(){
 
 </div>
 <div id = "newuser" class = "form-group" style = "display: none;">
-	<form role = "form" action = "newuser-exec.php" method = "post">
-		<table align = "center" width = "450">
-			<tr>
-				<td colspan = 5 align = "center"><h2>New Account</h2></td>
-			</tr>
-			<tr>
-				<td>Username: </td>
-				<td><input pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
-			</tr>
-			<tr>
-				<td>Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
-			</tr>
-			<tr>
-				<td>Confirm Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
-			</tr>
-			<tr>
-				<td>First Name: </td>
-				<td><input required pattern="[a-zA-Z0-9\s]+"class ="form-control"type = "text" name = "regfname"/></td>
-			</tr>
-			<tr>
-				<td>Last Name:</td>
-				<td> <input required pattern="[a-zA-Z0-9\s]+" class ="form-control"type = "text" name = "reglname"/></td>
-			</tr>
-			<tr>
-				<td>Postion:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regpos"/></td>
-			</tr>
-			<tr>
-				<td>Department:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regdep"/></td>
-			</tr>
-			<tr>
-				<td>Account Level:</td>
-				<td>
-					<select name = "level" class ="form-control">
-						<option value = "EMP">Employee
-						<option value = "HR">HR
-						<option value = "ACC">Accounting
-						<option value = "Admin">Admin
-					</select>
-				</td>
-			</tr>			
-			<tr>
-				<td colspan = 2 align = center><input class = "btn btn-default" type = "submit" name = "regsubmit" value = "Submit"/></td>
-			</tr>
-		</table>
-	</form>
+  <form role = "form" action = "newuser-exec.php" method = "post">
+    <table align = "center" width = "450">
+      <tr>
+        <td colspan = 5 align = "center"><h2>New Account</h2></td>
+      </tr>
+      <tr>
+        <td colspan = 5><h3><font color = "red">Do not use your personal password</font></h3></td>
+      </tr>
+      <tr>
+        <td>Username: </td>
+        <td><input placeholder = "Enter Username" pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
+      </tr>
+      <tr>
+        <td>Password:</td>
+        <td><input placeholder = "Enter Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
+      </tr>
+      <tr>
+        <td>Confirm Password:</td>
+        <td><input placeholder = "Enter Confirm Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
+      </tr>
+      <tr>
+        <td>Account Level:</td>
+        <td>
+          <select name = "level" class ="form-control">
+            <option value = "">------------
+            <option value = "HR">HR
+            <option value = "ACC">Accounting
+            <option value = "TECH">Technician Supervisor
+            <option value = "Admin">Admin
+          </select>
+        </td>
+      </tr>     
+      <tr>
+        <td colspan = 2 align = center><input class = "btn btn-default" type = "submit" name = "regsubmit" value = "Submit"/></td>
+      </tr>
+    </table>
+  </form>
 </div>
 <?php include('footer.php');?>

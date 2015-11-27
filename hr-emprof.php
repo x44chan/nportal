@@ -14,11 +14,13 @@
 ?>
 <script type="text/javascript">		
     $(document).ready( function () {
-    	$('#myTable').DataTable({
+    	$('[data-toggle="tooltip"]').tooltip();
+      $('#myTable').DataTable({
         "aaSorting": []
     } );
 	});
 </script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
 <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
 <div align = "center">
@@ -36,6 +38,15 @@
           <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>         
           <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
           <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+          <?php
+            if($_SESSION['category'] == "Regular"){
+          ?>
+            <li class="divider"></li>
+            <li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+            <li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+          <?php
+            }
+          ?>
         </ul>
       </div>
       <div class="btn-group btn-group-lg">
@@ -48,13 +59,6 @@
       <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
       <a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
-    </div><br><br>
-    <div class="btn-group btn-group" role="group">
-      <a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-      <a style = "width: 250px;" role = "button"class = "btn btn-success" href = "?ac=penob"> Official Business Request Status</a>      
-      <a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>    
-      <a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
-      <a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>  
     </div>
   </div>
 </div>
@@ -75,8 +79,15 @@
 ?>
 <div id = "needaproval" style="min-height: 300px; text-transform: capitalize;">
 <?php 
-	if(!isset($_GET['view'])){?>
-	<div id = "report"><h2 align = "center">Employee List</h2>
+	if(!isset($_GET['view']) && !isset($_GET['modify'])){?>
+	<div id = "report"><h2 align = "center"><?php if(isset($_GET['active']) && $_GET['active'] == '0'){echo '<i>In-Active</>';}?> Employee List</h2>
+    <?php 
+    if(isset($_GET['active']) && $_GET['active'] == '0'){
+      echo '<a href ="hr-emprof.php" class = "btn btn-success pull-right" style = "margin-bottom: 20px;  margin-right: 10px;"><span class="glyphicon glyphicon-user"></span>  View Active Employee </a>';
+    }else{
+      echo '<a href ="hr-emprof.php?active=0" class = "btn btn-danger pull-right" style = "margin-bottom: 20px; margin-right: 10px;"><span class="glyphicon glyphicon-eye-close"></span>  View In-Active Employee </a>';
+    }
+  ?>
 		<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">
 		<thead>
 				<tr>
@@ -84,27 +95,156 @@
 					<th>Name</th>
 					<th>Position</th>
 					<th>Department</th>
+          <th>Category</th>
+          <th>Date Hired</th>
 					<th>Action</th>
 				</tr>
 			  </thead>
 			  <tbody>
 <?php 
 		include("conf.php");
-		$sql = "SELECT * from `login` where level != 'Admin' order by lname ASC";
+		if(isset($_GET['active']) && $_GET['active'] == '0'){
+      $sql = "SELECT * from `login` where level != 'Admin' and active = '0' order by lname ASC";
+    }else{
+      $sql = "SELECT * from `login` where level != 'Admin' and (active = '1' or active IS NULL) order by lname ASC";
+    }
+   
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
-				echo '<tr>';
+        if($row['empcatergory'] == 'Probationary'){
+          $edate = $row['probidate'];
+          $tonull = $row['probidate'];
+        }elseif($row['empcatergory'] == 'Contractual'){
+          $edate = $row['edatehired'];
+          $tonull = $row['edatehired'];
+        }else{
+          $edate = "";
+          $tonull = 'asd';
+        }
+        if($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+5 months", strtotime($edate)))){
+          echo '<tr style = "color: red; font-weight: bold;">';
+        }elseif($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+4 months", strtotime($edate))) ){
+         echo '<tr style = "color: green; font-weight: bold;">';
+        }else{
+          echo '<tr>';
+        }    		
 				echo '<td>' . $row['account_id'] . '</td>';
 				echo '<td>' . $row['fname'] . ' ' . $row['mname']. ' ' . $row['lname'] . '</td>';				
 				echo '<td>' . $row['position'] . '</td>';
 				echo '<td>' . $row['department'] . '</td>';
-				echo '<td><a href = "?view=' . $row['account_id']. '" class = "btn btn-primary" target = "_blank">View Profile</a></td>'; 
+        echo '<td>' . $row['empcatergory'] . '</td>';
+        echo '<td>' . date("M j, Y", strtotime($row['edatehired'])) . '</td>';
+        if(isset($_GET['active'])){
+          //$btn = '<a onclick = "return confirm(\'Are you sure?.\');"  href = "?reactive=' . $row['account_id']. '" class = "btn btn-success"><span class="glyphicon glyphicon-check"></span> Re-Activate</a>';
+          $btn = "";
+          $edit = "";
+        }else{
+          $edit = '<a href = "?modify=' . $row['account_id']. '" class = "btn btn-warning" data-toggle="tooltip" title = "Modify Account"><span class="glyphicon glyphicon-edit"></span></a> ';
+          $btn = '<a onclick = "return confirm(\'Are you sure?.\');"  href = "?inactive=' . $row['account_id']. '" class = "btn btn-danger" data-toggle="tooltip" title = "Mark as In-Active"><span class="glyphicon glyphicon-remove"></span></a>';
+        }
+				echo '<td><a href = "?view=' . $row['account_id']. '" class = "btn btn-primary" target = "_blank" data-toggle="tooltip" title = "View Profile"><span class="glyphicon glyphicon-search"></span></a> '.$edit.$btn.' </td>' ; 
 				echo '</tr>';
 			}
 		}
 	echo '</tbody></table></div>';
-	}else{
+	}elseif(isset($_GET['modify'])){
+    include("conf.php");
+    $accid = mysql_escape_string($_GET['modify']);
+    $sql = "SELECT * from `login` where account_id = '$accid' and level != 'Admin'";
+    $result = $conn->query($sql);
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+?>
+<form action = "" method="post">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Employee Details</i></u></h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">
+        <label>Name</label>
+        <p><i><?php echo $row['fname'] . ' ' . $row['mname'] . ' ' . $row['lname'];?></i></p>
+      </div>
+      <div class="col-xs-3">
+        <label>Date Hired</label>
+        <p><i><?php echo date("M j, Y", strtotime($row['edatehired']));?></i></p>
+      </div>
+      <div class="col-xs-3">
+        <label>Position</label>
+        <p><i><?php echo $row['position'];?></i></p>
+      </div>
+      <div class="col-xs-3">
+        <label>Department</label>
+        <p><i><?php echo $row['department'];?></i></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <hr>
+        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Account</i></u></h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4">
+        <label>Edit Category <font color = "red"> * </font></label>
+        <select class="form-control" required name = "empcatergory">
+          <option value="">----------------</option>
+          <option <?php if($row['empcatergory'] == "Contractual"){ echo ' selected '; } ?> value="Contractual">Contractual</option>
+          <option <?php if($row['empcatergory'] == "Probationary"){ echo ' selected '; } ?> value="Probationary">Probitionary</option>
+          <option <?php if($row['empcatergory'] == "Regular"){ echo ' selected '; } ?> value="Regular">Regular</option>
+        </select>
+      </div>
+      <div class="col-xs-4">
+        <label>Sick Leave <font color = "red"> * <i>(Enter 0 if none)</i></font></label>
+        <input <?php if($row['sickleave'] >= 0){echo ' value = "' . $row['sickleave'] . '" ';}?> type="text" required name = "sickleave" pattern = "[0-9]" class="form-control" placeholder = "Enter Sick Leave #">
+      </div>
+      <div class="col-xs-4">
+        <label>Vacation Leave <font color = "red"> * <i>(Enter 0 if none)</i></font></label>
+        <input <?php if($row['sickleave'] >= 0){echo ' value = "' . $row['vacleave'] . '" ';}?>type="text" required name = "vacleave" pattern = "[0-9]" class="form-control" placeholder = "Enter Sick Leave #">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12" align="center">
+        <button class="btn btn-primary" name = "upsub"> Update Account </button>
+      </div>
+    </div>
+    <input type = "hidden" value = "<php echo  $accid;?>" name = "accid"/>
+  </div>
+</form>
+<?php
+if(isset($_POST['upsub'])){
+  $empcatergory = mysql_escape_string($_POST['empcatergory']);
+  $sickleave = mysql_escape_string($_POST['sickleave']);
+  $vacleave = mysql_escape_string($_POST['vacleave']);
+  $modify = mysql_escape_string($_GET['modify']);
+  if($empcatergory  == 'Probationary'){
+    $oldpost = 'Contractual';
+    $probidate = date("Y-m-d");
+    $hrchange = '1';
+  }elseif($empcatergory  == 'Contractual'){
+    $oldpost = 'Contractual';
+    $probidate = "";
+    $hrchange = '1';
+  }else{
+    $oldpost  = "Probationary";
+    $probidate = "";
+    $hrchange = '1';
+  }
+  $stmt = "UPDATE `login` 
+          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', probidate = '$probidate', hrchange = '$hrchange', oldpost = '$oldpost'
+          where account_id = '$modify'";
+  if($conn->query($stmt) == TRUE){
+    echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
+  }        
+}
+?>
+<?php
+      }
+    }
+  }else{
 		include("conf.php");
 		$sql = "SELECT * from `login` where account_id = '$_GET[view]' and level != 'Admin'";
 		$result = $conn->query($sql);
@@ -117,11 +257,6 @@
 	}
 
 </style>
-<script>
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
-});
-</script>
 <div class="modal fade" id="myModal2" role="dialog">
   <div class="modal-dialog modal-lg" >    
     <!-- Modal content-->
@@ -447,3 +582,21 @@ $(document).ready(function(){
 <?php } include("req-form.php");?>
 <?php include("footer.php");?>
 
+<?php
+  if(isset($_GET['inactive'])){
+    $active = mysql_escape_string($_GET['inactive']);
+    $sql = "UPDATE `login` set active = '0' where account_id = '$active'";
+    if ($conn->query($sql) === TRUE) {
+      echo '<script type="text/javascript">window.location.replace("hr-emprof.php"); </script>';
+    }
+  }
+?>
+<?php
+  if(isset($_GET['reactive'])){
+    $active = mysql_escape_string($_GET['reactive']);
+    $sql = "UPDATE `login` set active = '1' where account_id = '$active'";
+    if ($conn->query($sql) === TRUE) {
+      echo '<script type="text/javascript">window.location.replace("hr-emprof.php"); </script>';
+    }
+  }
+?>

@@ -1,5 +1,4 @@
-<?php
-	
+<?php	
 	date_default_timezone_set('Asia/Manila');
 	session_start();
 	include("conf.php");
@@ -49,16 +48,50 @@
 			}
 		}
 		else{
-			$sql = "UPDATE overtime set state = '$state' where overtime_id = $id and state  = 'AHR'";
-			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
+				$states = "(state  = 'AHR' or state like 'UA%')";
+				$link = "?bypass";
 			}else{
-			die("Connection error:". $conn->connect_error);
-		}		
-	}	
+				$states = "state  = 'AHR'";
+				$link = "";
+			}
+			$sql = "UPDATE overtime set state = '$state' where overtime_id = $id and $states";
+			if($conn->query($sql) == TRUE){
+				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
+			}else{
+				die("Connection error:". $conn->connect_error);
+			}		
+		}	
 	}
 ?>
+<?php
+	if(isset($_POST['leaveapp'])){
+		$leapay = mysql_escape_string($_POST['payment']);
+		if(isset($_POST['fitowork'])){
+			$ftowork = mysql_escape_string($_POST['fitowork']);
+		}else{
+			$ftowork = "";
+		}
+		if($_SESSION['level'] == 'HR'){
+			$upstate = 'AHR';
+			$state = 'UA';
+		}elseif($_SESSION['level'] == "TECH"){
+			$upstate = 'UA';
+			$state = 'UATech';
+		}
+		$oid = mysql_escape_string($_POST['leave_id']);
+		$date = date('Y-m-d h:i A');
+		$sql = "UPDATE nleave set 
+					state = 'AHR', leapay = '$leapay', ftowork = '$ftowork', datehr = '$date'
+				where leave_id = '$oid' and state = 'UA'";
+		if($conn->query($sql) == TRUE){
+			echo '<script type="text/javascript">window.location.replace("hr.php?ac=penlea"); </script>';
+		}else{
+			die("Connection error:". $conn->connect_error);
+		}	
+	}
 
+?>
 <?php
 	include('conf.php');
 	if(isset($_GET['officialbusiness_id'])){
@@ -94,9 +127,16 @@
 				die("Connection error:". $conn->connect_error);
 			}
 		}else{
-			$sql = "UPDATE officialbusiness set state = '$state' where officialbusiness_id = $id and state  = 'AHR'";
+			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
+				$states = "(state  = 'AHR' or state like 'UA%')";
+				$link = "?bypass";
+			}else{
+				$states = "state  = 'AHR'";
+				$link = "";
+			}
+			$sql = "UPDATE officialbusiness set state = '$state' where officialbusiness_id = $id and $states";
 			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
 			die("Connection error:". $conn->connect_error);
 		}		
@@ -115,7 +155,6 @@
 		}else{
 			$dareason = "";
 		}
-		echo $id.''.$state;
 		if($_SESSION['level'] == 'ACC'){
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE undertime set state = '$state',dateacc = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'AHR'";			
@@ -141,9 +180,16 @@
 				die("Connection error:". $conn->connect_error);
 			}
 		}else{
-			$sql = "UPDATE undertime set state = '$state' where undertime_id = $id and state  = 'AHR'";
+			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
+				$states = "(state  = 'AHR' or state like 'UA%')";
+				$link = "?bypass";
+			}else{
+				$states = "state  = 'AHR'";
+				$link = "";
+			}
+			$sql = "UPDATE undertime set state = '$state' where undertime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
 			die("Connection error:". $conn->connect_error);
 		}		
@@ -187,9 +233,16 @@
 				die("Connection error:". $conn->connect_error);
 			}
 		}else{
-			$sql = "UPDATE nleave set state = '$state' where leave_id = $id and state  = 'AHR'";
+			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
+				$states = "(state  = 'AHR' or state like 'UA%')";
+				$link = "?bypass";
+			}else{
+				$states = "state  = 'AHR'";
+				$link = "";
+			}
+			$sql = "UPDATE nleave set state = '$state' where leave_id = $id and $states";
 			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
 			die("Connection error:". $conn->connect_error);
 		}		

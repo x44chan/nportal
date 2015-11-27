@@ -330,7 +330,6 @@
 	?>
 </div>
 
-
 <div id = "newuser" class = "form-group" style = "display: none;">
 	<form role = "form" action = "newuser-exec.php" method = "post">
 		<table align = "center" width = "450">
@@ -338,40 +337,28 @@
 				<td colspan = 5 align = "center"><h2>New Account</h2></td>
 			</tr>
 			<tr>
+				<td colspan = 5><h3><font color = "red">Do not use your personal password</font></h3></td>
+			</tr>
+			<tr>
 				<td>Username: </td>
-				<td><input pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
+				<td><input placeholder = "Enter Username" pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
 			</tr>
 			<tr>
 				<td>Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
+				<td><input placeholder = "Enter Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
 			</tr>
 			<tr>
 				<td>Confirm Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
-			</tr>
-			<tr>
-				<td>First Name: </td>
-				<td><input required pattern="[a-zA-Z0-9\s]+"class ="form-control"type = "text" name = "regfname"/></td>
-			</tr>
-			<tr>
-				<td>Last Name:</td>
-				<td> <input required pattern="[a-zA-Z0-9\s]+" class ="form-control"type = "text" name = "reglname"/></td>
-			</tr>
-			<tr>
-				<td>Postion:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regpos"/></td>
-			</tr>
-			<tr>
-				<td>Department:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regdep"/></td>
+				<td><input placeholder = "Enter Confirm Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
 			</tr>
 			<tr>
 				<td>Account Level:</td>
 				<td>
 					<select name = "level" class ="form-control">
-						<option value = "EMP">Employee
+						<option value = "">------------
 						<option value = "HR">HR
 						<option value = "ACC">Accounting
+						<option value = "TECH">Technician Supervisor
 						<option value = "Admin">Admin
 					</select>
 				</td>

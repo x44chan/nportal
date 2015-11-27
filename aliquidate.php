@@ -46,9 +46,9 @@
 	</div>
 	<div id="tab_logic"> 
 		<div class="row" id = "addr0">
-			<div class="col-xs-4" id = "typediv">
+			<div class="col-xs-3" id = "typediv">
 				<label>Type</label>
-				<select required class="form-control" id = "type0" name = "type0">
+				<select required class="form-control input-md" id = "type0" name = "type0">
 					<option value=""> - - - - - </option>
 				<?php
 					$sqls = "SELECT * FROM `petty_type` ORDER BY type_id";
@@ -61,16 +61,26 @@
 				?>	
 				</select>
 			</div>
-			<div class="col-xs-4">
-				<label>Amount</label>
-				<input required  autocomplete = 'off' class = "form-control" type = "text" id = "amount0" name = "amount0" placeholder = "Enter Amount"/>
+			<div class="col-xs-3">
+				<label>Others</label>
+				<input type = "text" class="form-control input-md" id = "others0" name = "others0" placeholder = "Others" disabled="">
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-3">
+				<label>Amount</label>
+				<input required  autocomplete = 'off' class = "form-control input-md" type = "text" id = "amount0" name = "amount0" placeholder = "Enter Amount"/>
+			</div>
+			<div class="col-xs-3">
 				<label>Transaction</label>
-				<input required  autocomplete = 'off' class="form-control" name = "trans0" placeholder = "Transaction Info"/>
+				<input required  autocomplete = 'off' class="form-control input-md" name = "trans0" placeholder = "Transaction Info"/>
 			</div>			
 		</div>
+		<div class="row" id = "rcpt0">
+			<div class="col-xs-4">
+				<label><input type = "checkbox" name = "wthrcpt0" id = "wthrcpt0"/> Check if With Receipt</label>
+			</div>
+		</div>
 		<div class="row" id = "addr1"></div>
+		<div class="row" id = "rcpt1"></div>
 	</div>
 	<div id = "anewtype" class="row" style="display: none;">
 		
@@ -123,25 +133,60 @@
 $(document).ready(function(){
 	var i=1;
 	$("#add_row").click(function(){
-		$('#addr'+i).html("<div class='col-xs-4'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-4'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"'/></div><div class='col-xs-4'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
+		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"'/></div><div class='col-xs-3'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
+		$('#rcpt'+i).html('<div class="col-xs-4"><label><input type = "checkbox" name = "wthrcpt'+i+'" id = "wthrcpt'+i+'"/> Check if With Receipt</label></div>');
 
 <?php
 
 	}
 ?>
 		$('#tab_logic').append('<div class="row" id = "addr'+(i+1)+'"></div>');
+		$('#tab_logic').append('<div class="row" id = "rcpt'+(i+1)+'"></div>');
   		i++;
   		$('#counter').val(i);
+		$(function () {
+	    	for(b = 1; b < i; b++) {
+	    	    (function (b) {
+	    	    	$('select[id$="type' + b + '"]').change(function() {
+					    var selected = $(this).val();	
+						if(selected == 'Others'){
+							$("#others"+b).attr("disabled", false);
+							$("#others"+b).attr("required", true);
+						}else{
+							$("#others"+b).attr("disabled", true);
+							$("#others"+b).attr("required", false);
+						}
+					});
+	     		})(b);
+	   	 	}
+		});
 	});
 	$("#delete_row").click(function(){
     	if(i>1){
     		$("#addr"+(i-1)).html('');
+    		$('#rcpt'+(i-1)).html('');
 			i--;
 			$('#counter').val(i);
 		}
 	});
-/*
-	var change = 0;
+
+		$(function () {
+	    	for(b = 0; b < 1; b++) {
+	    	    (function (b) {
+	    	    	$('select[id$="type' + b + '"]').change(function() {
+					    var selected = $(this).val();	
+						if(selected == 'Others'){
+							$("#others"+b).attr("disabled", false);
+							$("#others"+b).attr("required", true);
+						}else{
+							$("#others"+b).attr("disabled", true);
+							$("#others"+b).attr("required", false);
+						}
+					});
+	     		})(b);
+	   	 	}
+		});
+/*	var change = 0;
 	b = 0;
 	while(b <= $('#counter').val()){
 		var addr = 'amount' + b;

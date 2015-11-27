@@ -250,12 +250,20 @@
 			}else{
 				$otbreak = null;
 			}
-
+		if($_SESSION['level'] == 'HR'){
+			$upstate = 'AHR';
+			$state = 'UA';
+			$redirec = 'hr.php?ac='.$ac;
+		}elseif($_SESSION['level'] == 'TECH'){
+			$upstate = 'UA';
+			$state = 'UATech';
+			$redirec = 'techsupervisor.php?ac='.$ac;
+		}
 		$stmt = "UPDATE `overtime` set 
-			startofot = '$hruptimein', endofot = '$hruptimeout', dareason = '$dareason', datehr = '$date', oldot = '$oldot', state = 'AHR', approvedothrs = '$newappot'
-			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
+			startofot = '$hruptimein', endofot = '$hruptimeout', dareason = '$dareason', datehr = '$date', oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
+			where account_id = '$accid' and state = '$state' and overtime_id = '$overtime'";
 		if ($conn->query($stmt) === TRUE) {
-	    	echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$ac.'"); </script>';
+	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
 			
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;

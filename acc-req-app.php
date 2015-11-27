@@ -102,6 +102,15 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <?php
+				  	if($_SESSION['category'] == "Regular"){
+				  ?>
+				  	<li class="divider"></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  <?php
+				  	}
+				  ?>
 				</ul>
 			</div>
 			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>
@@ -111,6 +120,7 @@
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+				  
 				</ul>
 			</div>			
 			<a  type = "button"class = "btn btn-primary  active"  href = "acc-req-app.php"> Approved Request</a>		

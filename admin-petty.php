@@ -125,7 +125,7 @@
 <?php
 	if(isset($_GET['liqdate']) && $_GET['liqdate'] == ""){
 		include 'conf.php';
-		$sql = "SELECT * FROM `petty` where source = 'Eli/Sha'";
+		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon')";
 		$result = $conn->query($sql);
 			echo '<div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';
@@ -289,7 +289,7 @@
 		}
 	
 	}
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and source = 'Eli/Sha'";
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and (source = 'Eliseo' or source = 'Sharon')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -330,7 +330,7 @@
 				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
 				if($row['particular'] == "Transfer"){ echo '<tr><td>Transfer ID: </td><td><input placeholder = "Enter transaction code" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
 				if($row['particular'] == "Check"){ echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
-				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eli/Sha">Eli/Sha</option><option value = "Accounting">Accounting</option></select></td></tr>';
+				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option><option value = "Accounting">Accounting</option></select></td></tr>';
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "admin-petty.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 
 			}
@@ -419,40 +419,28 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 				<td colspan = 5 align = "center"><h2>New Account</h2></td>
 			</tr>
 			<tr>
+				<td colspan = 5><h3><font color = "red">Do not use your personal password</font></h3></td>
+			</tr>
+			<tr>
 				<td>Username: </td>
-				<td><input pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
+				<td><input placeholder = "Enter Username" pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
 			</tr>
 			<tr>
 				<td>Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
+				<td><input placeholder = "Enter Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
 			</tr>
 			<tr>
 				<td>Confirm Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
-			</tr>
-			<tr>
-				<td>First Name: </td>
-				<td><input required pattern="[a-zA-Z0-9\s]+"class ="form-control"type = "text" name = "regfname"/></td>
-			</tr>
-			<tr>
-				<td>Last Name:</td>
-				<td> <input required pattern="[a-zA-Z0-9\s]+" class ="form-control"type = "text" name = "reglname"/></td>
-			</tr>
-			<tr>
-				<td>Postion:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regpos"/></td>
-			</tr>
-			<tr>
-				<td>Department:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regdep"/></td>
+				<td><input placeholder = "Enter Confirm Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
 			</tr>
 			<tr>
 				<td>Account Level:</td>
 				<td>
 					<select name = "level" class ="form-control">
-						<option value = "EMP">Employee
+						<option value = "">------------
 						<option value = "HR">HR
 						<option value = "ACC">Accounting
+						<option value = "TECH">Technician Supervisor
 						<option value = "Admin">Admin
 					</select>
 				</td>

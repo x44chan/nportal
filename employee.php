@@ -32,6 +32,15 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <?php
+				  	if($_SESSION['category'] == "Regular"){
+				  ?>
+				  	<li class="divider"></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  <?php
+				  	}
+				  ?>
 				</ul>
 			</div>		
 			<a  type = "button"class = "btn btn-primary" href = "req-app.php" id = "myapproveh">My Approved Request</a>		
@@ -39,16 +48,33 @@
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div> <br><br>
 		<div class="btn-group btn-group" role="group">
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>	
+			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
+			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
+			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
+			<?php
+				if($_SESSION['category'] == "Regular"){
+					echo '
+						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
+						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
+				}
+			?>	
 		</div>
 	</div>
 </div>
 
 <div id = "dash" class = "resp" style = "margin-top: -30px;">
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penca'){
+		include("caloan/cashadv.php");
+		}
+?>
+<?php 
+	if(isset($_GET['loan']) && $_GET['loan'] > 0){
+		include("caloan/loan.php");
+		}
+?>
 <?php
 	if(isset($_GET['validate'])){
 		$petida = mysql_escape_string($_GET['validate']);
@@ -74,7 +100,62 @@
 	}
 ?>
 <?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penloan'){
+		include("conf.php");
+		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid order by state ASC";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 8 align = center><h2> Loan Request Status </h2></td>
+					</tr>
+					<tr>
+						<th>Loan #</th>
+						<th>Date File</th>
+						<th>Amount</th>
+						<th>Amount Paid</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+			while($row = $result->fetch_assoc()){
+				$loan_id = $row['loan_id'];
+				echo	'<tr>';
+					echo	'<td>' . $row['loan_id'].'</td>';
+					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
+					$stmts = "SELECT sum(cutamount) as cutamount FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'CutOffPaid' and CURDATE() >= cutoffdate";
+					$data = $conn->query($stmts)->fetch_assoc();
+					if($data['cutamount'] > 0){
+						$paid = '&#8369; ' . $data['cutamount'] ;
+					}else{
+						$paid = "&#8369; 0";
+					}
+					echo	'<td>'.$paid.'</td>';
+					echo	'<td>';
+								if($row['state'] == 'UALoan'){
+									echo '<b>Pending to Admin</b>';
+								}elseif($row['state'] == 'DALoan'){
+									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
+								}elseif($row['state'] == 'ALoan' && $row['loanamount'] > $data['cutamount']){
+									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Request for Cutoff</a>';
+								}elseif($row['state'] == 'ALoan' && $row['loanamount'] <= $data['cutamount']){
+									echo '<font color = "green">Completed</font>';
+								}
+					echo	'</td>';
+				echo '</tr>';
+			}
+		}
+		echo '</tbody></table>';
+	}
+?>
+<?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
+
 		include("conf.php");
 		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid order by state ASC, source asc";
 		$result = $conn->query($sql);
@@ -560,7 +641,7 @@
 		$endque = 31;
 	}else{
 		$forque = 1;
-		$endque = 15;
+		$endque = 16;
 	}
 	if(date("d") < 2){
 		$date17 = 16;
@@ -605,7 +686,7 @@
 				}else{
 					echo '<tr>';
 				}
-				if($row['oldot'] != null && $row['state'] == 'AHR'){
+				if($row['oldot'] != null && ($row['state'] == 'AHR' || $row['state'] == 'UA')){
 					$oldot = '</b><br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
 					$hrot = '<b>App. OT: <i><font color = "green">';
 					$hrclose = "</font></i>";
@@ -745,7 +826,7 @@
 			$endque = 31;
 		}else{
 			$forque = 1;
-			$endque = 15;
+			$endque = 16;
 		}
 		if(date("d") < 2){
 			$date17 = 16;

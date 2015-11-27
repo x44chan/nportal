@@ -455,6 +455,116 @@ $(document).ready(function(){
 
 	}
 ?>
+<?php 
+	if($_SESSION['category'] == "Regular"){?>
+  <!-- caModal -->
+  <div class="modal fade" id="cashadv" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Cash Advance Form</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Name</label>
+              <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
+            </div>
+            <div class="form-group">
+            	 <label for="usrname"> Amount <font color = "red">*</font></label>
+            	<input type = "text" pattern = "[0-9,]*" required name = "amountca" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+          	</div>
+          	<div class="form-group">
+            	 <label for="usrname"> Reason <font color = "red">*</font></label>
+            	<input type = "text" required name = "careason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+          	</div>
+              <button type="submit" name = "submitca" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div> 
+<?php
+	if(isset($_POST['submitca'])){
+		$datefile = date("Y-m-d");
+		$state = 'UACA';
+		$stmt = $conn->prepare("INSERT INTO cashadv (`account_id`,`cadate`, `caamount`, `careason`, state) VALUES (?, ?, ?, ?, ?)");
+		$stmt->bind_param("issss", $_SESSION['acc_id'], $datefile, $_POST['amountca'], $_POST['careason'], $state);
+		$stmt->execute();		
+		if($_SESSION['level'] == 'EMP'){
+    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
+    	}elseif ($_SESSION['level'] == 'ACC') {
+    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penca"); </script>';
+    	}elseif ($_SESSION['level'] == 'TECH') {
+    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penca"); </script>';
+    	}elseif ($_SESSION['level'] == 'HR') {
+    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penca"); </script>';
+    	}
+		$conn->close();
+
+
+	}
+?>
+<?php
+	if(isset($_POST['loanpet'])){
+		$state = "UALoan";
+		$date = date("Y-m-d"); 
+
+		$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate) VALUES (?, ?, ?, ?, ?)");
+		$sql->bind_param("issss", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $date);
+		if($sql->execute()){
+			if($_SESSION['level'] == 'EMP'){
+    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+		}
+
+	}
+
+?>
+   <!-- loanModal -->
+  <div class="modal fade" id="loan" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Loan Form</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Name</label>
+              <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
+            </div>
+            <div class="form-group">
+            	 <label for="usrname"> Amount <font color = "red">*</font></label>
+            	<input type = "text" pattern = "[0-9,]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+          	</div>
+          	<div class="form-group">
+            	 <label for="usrname"> Reason <font color = "red">*</font></label>
+            	<input type = "text" id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+          	</div>
+              <button type="submit" name = "loanpet" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div> 
+ <?php } ?>
 <script type="text/javascript">
 $(document).ready(function(){
     $('#restday').change(function(){
@@ -516,9 +626,9 @@ $(document).ready(function(){
             	<label for="usrname"> Account Level <font color = "red">*</font></label><br>
             	<select name = "level" class ="form-control">
 						<option value = "EMP">Employee
-						<option value = "HR">HR
-						<option value = "ACC">Accounting
 						<?php if($_SESSION['level'] == 'Admin'){ ?>
+							<option value = "HR">HR
+							<option value = "ACC">Accounting						
 							<option value = "Admin">Admin
 						<?php } ?>
 				</select>

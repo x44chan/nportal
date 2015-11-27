@@ -2,6 +2,7 @@ body{
 	margin: 0px;
 	padding: 0px;
 	font-size: 16px;
+	margin-bottom: 120px;
 }
 
 body th{
@@ -33,4 +34,22 @@ h2{
 	background-color: #337ab7;
 	color: white;
 	background-image: none;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 50px;
+  background-color: #f5f5f5;
+}
+.container .text-muted {
+  margin: 20px 0;
 }

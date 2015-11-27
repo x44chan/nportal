@@ -15,7 +15,9 @@
 ?>
 <script type="text/javascript">		
     $(document).ready( function () {
-    	$('#myTable').DataTable();
+    	$('#myTable').DataTable({
+		    "iDisplayLength": 50    	
+		});
 	});
 </script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
@@ -40,7 +42,6 @@
 			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
-		
 	</div>
 </div>
 <?php	
@@ -56,6 +57,14 @@
 			echo '<div id = "regerror" class="alert alert-warning" align = "center"><strong>Warning!</strong> Password does not match.</div>';
 			echo '<script type = "text/javascript">$(document).ready(function(){ $("#newuser").show(); $("#needaproval").hide(); });</script>';
 		}
+	}
+?>
+<?php
+	if(isset($_GET['cashac']) && $_GET['cashac'] == 'a'){
+		include 'caloan/cashac-admin.php';
+	}
+	if(isset($_GET['loanac']) && $_GET['loanac'] == 'a'){
+		include 'caloan/loanac-admin.php';
 	}
 ?>
 <?php
@@ -76,7 +85,7 @@
 				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
 				if($row['particular'] == "Transfer"){ echo '<tr><td>Transfer ID: </td><td><input placeholder = "Enter transaction code" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
 				if($row['particular'] == "Check"){ echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
-				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eli/Sha">Eli/Sha</option><option value = "Accounting">Accounting</option></select></td></tr>';
+				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option><option value = "Accounting">Accounting</option></select></td></tr>';
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "admin.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 
 			}
@@ -175,10 +184,49 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	}
 ?>
-<?php if(isset($_GET['pettyac']) || isset($_GET['release'])){ echo '<div style = "display: none !important;">';} ?>
+<?php
+	if(isset($_GET['cashacre']) && $_GET['cashacre'] == 'a'){
+		include("conf.php");
+		$petid = $_GET['cashadv_id'];
+		$sql = "SELECT * from `cashadv`,`login` where login.account_id = cashadv.account_id and cashadv_id = '$petid' and state = 'ARcvCash'";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			if(isset($_SESSION['err'])){
+				$err = $_SESSION['err'];
+				unset($_SESSION['err']);
+			}else{
+				$err = "";
+			}
+			echo '<div id = "report" align = "center"><h2 align = "center">Validate Code</h2>'.$err.'<hr>';
+			echo '<form action = "petty-exec.php" method = "post"><table id = "myTable" align = "center" class = "table table-hover tbl" style="font-size: 14px; border: 0 !important; width: 50%;">
+				  <tbody>';
+			while($row = $result->fetch_assoc()){
+				echo '<tr><td><label>Petty #</label></td><td>' . $row['cashadv_id'] . '</td></tr>';
+				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y", strtotime($row['cadate'])). '</td></tr>';
+				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';				
+				
+								
+				echo '<tr><td><label>Amount</label></td><td>₱ ';
+				if(!is_numeric($row['caamount'])){ echo $row['caamount']; }else{ echo number_format($row['caamount']); } ;
+				echo '</td></tr>';
+				
+				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
+				echo '<input type = "hidden" value = "' . $row['cashadv_id'] . '" name = "pet_id"/>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "cashadvre">Release Cash Advance</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+			}
+			echo "</tbody></table></form></div>";
+			
+		}
+	}
+?>
+<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['cashac']) || isset($_GET['loanac'])){ echo '<div style = "display: none !important;">';} ?>
 <div id = "needaproval" >
 	
-	<h2 align = "center"><i> Admin Dashboard </i></h2>
+	<h2 align = "center"><i> Admin Dashboard <br><?php if(isset($_GET['bypass'])){ echo ' (System Bypass) ';}?></i></h2>
+	<?php 
+		if(!isset($_GET['bypass'])) {$otbypass = '';echo '<a href="?bypass" class="btn btn-primary pull-right" style="margin-right: 10px; margin-bottom: 10px;"><span class = "glyphicon glyphicon-lock"></span> Bypass Approval </a>';}else{$otbypass = '&bypass=1';echo '<a href="admin.php" class="btn btn-primary pull-right" style="margin-right: 10px; margin-bottom: 10px;"><span class = "glyphicon glyphicon-ban-circle"></span> Un-Bypass Approval </a>';}
+
+	?>
 	<form role = "form">
 		<table id="myTable" style = "width: 100%;"class = "table table-hover " align = "center">
 			<thead>
@@ -212,8 +260,112 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	
+	}	$sql = "SELECT * from `cashadv`,`login` where login.account_id = cashadv.account_id and (state = 'UACA' or state = 'ARcvCash')";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+					<td><?php echo date("M j, Y", strtotime($row['cadate']));?></td>			
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b>Cash Advance<br>₱ <?php echo $row['caamount'];?></td>
+					<td><?php echo $row['careason'];?></td>
+					<td> - </td>
+					<td>
+						<?php 
+							if($row['state'] == 'UACA'){
+								echo '<a class = "btn btn-primary" href = "?cashac=a&cashadv_id='.$row['cashadv_id'].'">Approve</a> ';
+								echo '<a class = "btn btn-primary" href = "loan-exec.php?cashadvact=d&cashadv_id='.$row['cashadv_id'].'"">Disapprove</a>';
+							}elseif($row['state'] == 'ARcvCash'){
+								echo '<a class = "btn btn-success" href = "?cashacre=a&cashadv_id='.$row['cashadv_id'].'">Release</a> ';
+							}
+						?>
+					</td>
+				</tr>
+	<?php
+		}
 	}
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and source = 'Eli/Sha'";
+
+	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and state = 'UALoan'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b>Loan<br>₱ <?php echo $row['loanamount'];?></td>
+					<td><?php echo $row['loanreason'];?></td>
+					<td> - </td>
+					<td>
+						<?php 
+							if($row['state'] == 'UALoan'){
+								echo '<a class = "btn btn-primary" href = "?loanac=a&loan_id='.$row['loan_id'].'">Approve</a> ';
+								echo '<a class = "btn btn-primary" href = "loan-exec.php?loadact=d&loan_id='.$row['loan_id'].'"">Disapprove</a>';
+							}
+						?>
+					</td>
+				</tr>
+	<?php
+		}
+	}
+	$sql = "SELECT * from `login` where hrchange = '1'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			if($row['probidate'] != null){
+				$edate = date("M j, Y", strtotime($row['probidate']));
+			}else{
+				$edate = "";
+			}
+	?>
+				<tr>
+					<td><?php echo $edate;?></td>			
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b>Promotion<br></td>
+					<td><b><i><font color = "red"><?php echo $row['oldpost'] . '</font><br>To<br><font color = "green">' . $row['empcatergory'] . '</font>';?></b></td>
+					<td><b> HR Department </b></td>
+					<td>
+						<?php 
+							if($row['hrchange'] == '1'){
+								echo '<a class = "btn btn-primary" href = "newuser-exec.php?promotion=a&account_id='.$row['account_id'].'">Approve</a> ';
+								echo '<a class = "btn btn-primary" href = "newuser-exec.php?promotion=d&account_id='.$row['account_id'].'"">Disapprove</a>';
+							}
+						?>
+					</td>
+				</tr>
+	<?php
+		}
+	}
+	$sql = "SELECT *,loan_cutoff.state as loanstate from `loan_cutoff`,`login`,`loan` where loan.loan_id = loan_cutoff.loan_id and login.account_id = loan_cutoff.account_id and loan_cutoff.state = 'UALoanCut'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+					<td><?php echo date("M j, Y", strtotime($row['cutoffdate']));?><br><i><b>Cut-Off Date</b></i></td>			
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b>Loan Payment<br>₱ <?php echo $row['cutamount'];?></td>
+					<td><?php echo $row['loanreason'];?></td>
+					<td> - </td>
+					<td>
+						<?php 
+							if($row['loanstate'] == 'UALoanCut'){
+								echo '<a class = "btn btn-primary" href = "loan-exec.php?loan_cutoff=a&loan_id='.$row['loan_id'].'&cutoff_id='.$row['cutoff_id'].'">Approve</a> ';
+								echo '<a class = "btn btn-primary" href = "loan-exec.php?loan_cutoff=d&loan_id='.$row['loan_id'].'&cutoff_id='.$row['cutoff_id'].'"">Disapprove</a>';
+							}
+						?>
+					</td>
+				</tr>
+	<?php
+		}
+	
+	}
+	//if(isset($_GET['bypass'])){
+	//	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and (source = 'Eli/Sha' or source = 'Accounting')";
+	//}else{
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and (source = 'Eliseo' or source = 'Sharon')";
+	//}
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -253,7 +405,13 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$endque = 32;
 				$dated = date("m", strtotime("previous month"));
 			}
-			$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and state = 'AHR' and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";
+			if(isset($_GET['bypass'])){
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";
+				
+			}else{
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and state = 'AHR' and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
+				
+			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
 				
@@ -291,15 +449,19 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$otbreak = "";
 							}
 						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
-						echo '<td style = "text-align:left;"><b>HR: '.$datehr. '</b><br>'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
+						echo '<td style = "text-align:left;"><b>HR/Tech.: '.$datehr. '</b><br>'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					echo '<td >
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
 							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
-			$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and state = 'AHR' and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY datefile ASC";
+			if(isset($_GET['bypass'])){
+				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY datefile ASC";
+			}else{
+				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and state = 'AHR' and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY datefile ASC";		
+			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
@@ -325,12 +487,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
 							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
-			$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'AHR' and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";
+			if(isset($_GET['bypass'])){
+				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'AHR' or state like 'UA%') and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";
+			}else{
+				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'AHR' and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";		
+			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
@@ -356,12 +522,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
 							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
-			$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and state = 'AHR' and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
+			if(isset($_GET['bypass'])){
+				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state like 'UA%') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
+			}else{
+				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and state = 'AHR' and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";	
+			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
@@ -376,9 +546,12 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						echo '<tr>';
 					}
+					if($row['typeoflea'] == "Sick Leave"){
+						$ftowork = $row['ftowork'];
+					}
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
-					echo '<td>'.$row['typeoflea']. ' ' .$row['othersl']. '</td>';
+					echo '<td>'.$row['typeoflea']. '<br> ' .$row['othersl']. '<i style = "color: green;"> '.$row['ftowork']. ' </i></td>';
 					echo '<td>'.$row['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
@@ -388,7 +561,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
 							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
 						</td></tr>';
 				}
@@ -398,7 +571,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		</table>
 	</form>
 </div>
-<?php if(isset($_GET['pettyac']) || isset($_GET['release'])){ echo '</div>">';} ?>
+<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre'])){ echo '</div>">';} ?>
 <div id = "newuser" class = "form-group" style = "display: none;">
 	<form role = "form" action = "newuser-exec.php" method = "post">
 		<table align = "center" width = "450">
@@ -410,37 +583,21 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			</tr>
 			<tr>
 				<td>Username: </td>
-				<td><input pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
+				<td><input placeholder = "Enter Username" pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
 			</tr>
 			<tr>
 				<td>Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
+				<td><input placeholder = "Enter Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
 			</tr>
 			<tr>
 				<td>Confirm Password:</td>
-				<td><input required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
-			</tr>
-			<tr>
-				<td>First Name: </td>
-				<td><input required pattern="[a-zA-ZñÑ\s]+"class ="form-control"type = "text" name = "regfname"/></td>
-			</tr>
-			<tr>
-				<td>Last Name:</td>
-				<td> <input required pattern="[a-zA-ZñÑ\s]+" class ="form-control"type = "text" name = "reglname"/></td>
-			</tr>
-			<tr>
-				<td>Postion:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regpos"/></td>
-			</tr>
-			<tr>
-				<td>Department:</td>
-				<td> <input required pattern="[a-zA-Z\s]+" class ="form-control"type = "text" name = "regdep"/></td>
+				<td><input placeholder = "Enter Confirm Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
 			</tr>
 			<tr>
 				<td>Account Level:</td>
 				<td>
 					<select name = "level" class ="form-control">
-						<option value = "EMP">Employee
+						<option value = "">------------
 						<option value = "HR">HR
 						<option value = "ACC">Accounting
 						<option value = "TECH">Technician Supervisor

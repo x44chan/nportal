@@ -1,13 +1,33 @@
 <?php
+	if(isset($_GET['promotion'])){
+		include 'conf.php';
+		$accid = mysql_escape_string($_GET['account_id']);
+		if($_GET['promotion'] == 'a'){
+			$sql = "UPDATE login set hrchange = '0' where account_id = '$accid' and hrchange = '1'";
+			if ($conn->query($sql) === TRUE) {
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}
+		}elseif($_GET['promotion'] == 'd'){
+			$stmts = "SELECT * FROM `login` where account_id = '$accid' and hrchange = '1'";
+			$data = $conn->query($stmts)->fetch_assoc();
+			$emcatergory = $data['oldpost'];
+			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' where account_id = '$accid'";
+			if ($conn->query($stmts) === TRUE) {	 		
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		  	}
+		}
+	}
+
+
+?>
+
+
+<?php
 if(isset($_POST['regsubmit'])){
 		include('conf.php');
 		$uname = mysqli_real_escape_string($conn,$_POST['reguname']);
 		$pw = $_POST['regpword'];
 		$cpw = $_POST['regcppword'];
-		$regfname = $_POST['regfname'];
-		$reglname = $_POST['reglname'];
-		$regpos = $_POST['regpos'];
-		$regdep = $_POST['regdep'];
 		$level = $_POST['level'];
 		$sql = "SELECT * FROM `login` where `uname` = '$uname'";
 		$result = $conn->query($sql);

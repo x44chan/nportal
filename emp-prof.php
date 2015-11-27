@@ -483,6 +483,10 @@ if(isset($_POST['submitprof'])){
   if ($conn->query($sql) === TRUE) {
     $_SESSION['pass'] = null;
     $_SESSION['201date'] = date("Y-m-d");
+    $_SESSION['name'] = $efname . ' ' . $esname;  
+    $_SESSION['post'] = $epost;
+    $_SESSION['dept'] = $edept;
+    $_SESSION['datehired'] = $edatehired;
     echo '<script type = "text/javascript">alert("update successful")</script>';
     echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
   }else {

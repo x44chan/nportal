@@ -11,7 +11,7 @@
     	$('#myTable').DataTable();
     	$('#myTableliq').DataTable({
     		"paging":   false,
-        	"order": [[ 1, "desc" ],[ 5, "desc" ]]
+        	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
 
     	} );
 	});
@@ -93,6 +93,15 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <?php
+				  	if($_SESSION['category'] == "Regular"){
+				  ?>
+				  	<li class="divider"></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  <?php
+				  	}
+				  ?>
 				</ul>
 			</div>
 			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>							
@@ -168,12 +177,18 @@
 					$tots = '<td> - </td>'; 
 					$change =  " - ";
 				}
-				if($data['liqdate'] == ""){
+				$date1 = date("Y-m-d");
+				$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+				if($date1 >= $date2){
+					$red = '<tr style = "color: red;">';
+				}else{
+					$red = '<tr>';
+				}
+				
+				if($data['liqstate'] != 'CompleteLiqdate'){
+					echo $red;
+				}elseif($data['liqdate'] == ""){
 					echo '<tr style = "display: none;">';
-				}elseif($row['source'] != 'Eli/Sha'){
-					echo '<tr id = "backs">';
-				}elseif($data['accval'] != null){
-					echo '<tr id = "backs">';
 				}elseif($change == " - "){
 					echo '<tr id = "backs">';
 				}else{
@@ -550,7 +565,7 @@
 				echo '<tr><td><label>Admin Status</label></td><td><i><u><b>Change Received by Admin</td></tr>';
 				echo '<tr><td><label>Validate Code</label></td><td><input type = "text" name = "avalcode" class = "form-control" placeholder = "Enter Validation Code"/></td></tr>';
 				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
-				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "excesssubmit">Complete Transaction</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "excesssubmit">Complete Transaction</button> <a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
 			}	
 			echo "</tbody></table></form></div>";
 			

@@ -42,21 +42,28 @@ echo '<table class = "table" id = "myTableliq">';
 				}
 				if($data['liqdate'] == ""){
 					echo '<tr style = "display: none;">';
-				}elseif($row['source'] != 'Eli/Sha'){
+				}elseif($row['source'] == 'Accounting'){
 					echo '<tr id = "backs">';
 				}elseif($data['accval'] != null){
+					echo '<tr id = "backs">';
+				}elseif($data['liqcode'] == null){
 					echo '<tr id = "backs">';
 				}elseif($change == " - "){
 					echo '<tr id = "backs">';
 				}else{
 					echo '<tr>';
-				}				
+				}
+				if(is_numeric($change)){
+					$change = number_format($change);
+				}else{
+					$change = $change;
+				}		
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
 				echo '<td>₱ ' . $row['amount'] . '</td>';
 				echo $tots;
-				echo '<td>₱ ' .  number_format($change) . '</td>';
+				echo '<td>₱ ' . $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
 					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}else{

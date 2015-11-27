@@ -22,7 +22,7 @@
 		}
 		if($_SESSION['level'] == 'Admin'){
 			$source = $_POST['source'];
-			if($source == 'Eli/Sha'){
+			if($source == 'Eliseo' || $source=='Sharon'){
 				$state = 'AAAPettyReceive';
 			}else{
 				$state = 'AAPetty';
@@ -35,7 +35,7 @@
 	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans'
 	    where petty_id = '$petty_id'"; 
 	 	if ($conn->query($sql) === TRUE) {	 		
-	    	if($_SESSION['level'] == 'Admin'){echo '<script type="text/javascript">window.location.replace("admin-petty.php"); </script>';}
+	    	if($_SESSION['level'] == 'Admin'){echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';}
 	    	else if($_SESSION['level'] == 'ACC'){echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
@@ -48,7 +48,7 @@
 	    where petty_id = '$petty_id'"; 
 	 	if ($conn->query($sql) === TRUE) {
 	 		if($_SESSION['level'] == 'Admin'){
-	    		echo '<script type="text/javascript">window.location.replace("admin-petty.php"); </script>';
+	    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 	 		}else if($_SESSION['level'] == 'ACC'){
 	 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
 	 		}
@@ -58,7 +58,62 @@
 	}
 	
 ?>
+<?php 
+	//cash advance
+	if(isset($_POST['caapp'])){
+		$o = mysql_escape_string($_POST['cashadvid']);
+		$accid = mysql_escape_string($_POST['accid']);
+		$sql ="UPDATE cashadv set 
+	   		state = 'ACash'
+	    where cashadv_id = '$o' and account_id = '$accid' and state = 'UACA'"; 
 
+	 	if ($conn->query($sql) === TRUE) {	 		
+			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	} 
+	}
+	if(isset($_GET['cashadv'])){
+		$o = mysql_escape_string($_GET['cashadv']);
+		$rcve_code = random_string(4);
+		$accid = $_SESSION['acc_id'];
+		$sql ="UPDATE cashadv set 
+	   		state = 'ARcvCash', rcve_code = '$rcve_code'
+	    where cashadv_id = '$o' and account_id = '$accid' and state = 'ACash'";  
+	    if ($conn->query($sql) === TRUE) {	 		
+			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+	}
+	if(isset($_POST['cashadvre'])){
+		$pet_id = $_POST['pet_id'];
+		$rcve_code = $_POST['rcve_code'];
+		$query = "SELECT * FROM `cashadv` where cashadv_id = '$pet_id' and rcve_code = '$rcve_code'";
+		$result = $conn->query($query);
+		if($result->num_rows > 0){
+			$sql ="UPDATE cashadv set 
+		   		state = 'ACashReleased'
+		    where cashadv_id = '$pet_id' and state = 'ARcvCash' and rcve_code = '$rcve_code'"; 
+		 	if ($conn->query($sql) === TRUE) {	 		
+		    	if($_SESSION['level'] == 'Admin'){
+		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		 		}else if($_SESSION['level'] == 'ACC'){
+		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
+		 		}
+		  	}else {
+		    	echo "Error updating record: " . $conn->error;
+		  	}  
+		}else{
+			$_SESSION['err'] = 'Incorrect Code';
+			if($_SESSION['level'] == 'Admin'){
+				echo '<script type="text/javascript">window.location.replace("admin.php?release=1&petty_id='.$pet_id.'"); </script>';
+			}else if($_SESSION['level'] == 'ACC'){
+				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
+			}
+		}
+	}
+?>
 <?php
 	//employee receive
 	if(isset($_GET['o']) && isset($_GET['acc'])){
@@ -242,9 +297,9 @@
 		}else{
 			$_SESSION['err'] = 'Incorrect Code';
 			if($_SESSION['level'] == 'Admin'){
-				echo '<script type="text/javascript">window.location.replace("admin-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
+				echo '<script type="text/javascript">window.location.replace("admin-petty.php?validate=1&petty_id='.$pet_id.'"); </script>';
 			}else if($_SESSION['level'] == 'ACC'){
-				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
+				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?validate=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
 
