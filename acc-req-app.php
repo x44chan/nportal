@@ -120,7 +120,6 @@
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
-				  
 				</ul>
 			</div>			
 			<a  type = "button"class = "btn btn-primary  active"  href = "acc-req-app.php"> Approved Request</a>		

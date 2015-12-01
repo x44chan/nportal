@@ -11,7 +11,7 @@
 				echo '<tr><td style = "width: 30%;"><b>Date: </td><td style = "width: 50%;">' . date("F j, Y", strtotime($row['cadate'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Name: </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Reason: </td><td style = "width: 50%;">' . $row['careason'] .'</td></tr>';
-				echo '<tr><td style = "width: 30%;"><b>Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" value = "' . $row['caamount'] .'" name = "caamount"/></td></tr>';
+				echo '<tr><td style = "width: 30%;"><b>Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" value = "' . $row['caamount'] .'" name = "caamount" pattern = "[0-9]*"/></td></tr>';
 				echo '<input type = "hidden" name = "cashadvid" value = '.$pettyid.'/>';
 				echo '<input type = "hidden" name = "accid" value = '.$row['account_id'].'/>';
 				echo '<tr><td colspan = "2"><button class = "btn btn-primary" name = "caapp">Approve Cash Advance</button> <a href = "admin.php" class = "btn btn-danger"> Back </a></td></tr>';

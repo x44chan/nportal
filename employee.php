@@ -75,6 +75,30 @@
 		include("caloan/loan.php");
 		}
 ?>
+<?php 
+	if(isset($_GET['uploan'])){
+		echo '<form action = "loan-exec.php" method = "post">';
+		echo '<table align = "center" class = "table table-hover" style = "width: 65%; ">';
+		echo '<thead><th colspan = 2><h2>Update Loan Amount</h2></th></thead>';
+		include("conf.php");
+		$pettyid = $_GET['uploan'];
+		$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and loan_id = '$pettyid' and state = 'ALoan' and loanamount != appamount";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				echo '<tr><td style = "width: 30%;"><b>Date: </td><td style = "width: 50%;">' . date("F j, Y", strtotime($row['loandate'])).'</td></tr>';
+				echo '<tr><td style = "width: 30%;"><b>Name: </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
+				echo '<tr><td style = "width: 30%;"><b>Reason: </td><td style = "width: 50%;">' . $row['loanreason'] .'</td></tr>';
+				echo '<tr><td style = "width: 30%;"><b>Approve Amount: </td><td style = "width: 50%;">₱ ' . number_format($row['appamount']) .'</td></tr>';
+				echo '<tr><td style = "width: 30%;"><b>Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" value = "' . $row['loanamount'] .'" name = "uploan" pattern = "[0-9]*"/></td></tr>';
+				echo '<input type = "hidden" name = "cashadvid" value = '.$pettyid.'/>';
+				echo '<input type = "hidden" name = "accid" value = '.$row['account_id'].'/>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" name = "updteloan">Approve Cash Advance</button> <a href = "employee.php?ac='.$_GET['acc'].'" class = "btn btn-danger"> Back </a></td></tr>';
+			}
+		}
+		echo "</table></form>";
+	}
+?>
 <?php
 	if(isset($_GET['validate'])){
 		$petida = mysql_escape_string($_GET['validate']);
@@ -104,7 +128,7 @@
 		include("conf.php");
 		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid order by state ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>	
 		<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
@@ -116,35 +140,43 @@
 						<th>Loan #</th>
 						<th>Date File</th>
 						<th>Amount</th>
-						<th>Amount Paid</th>
+						<th>Start Date</th>
+						<th>Approved Amount</th>
 						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				$loan_id = $row['loan_id'];
+				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id' and CURDATE() <= enddate";
+				$data = $conn->query($stmts)->fetch_assoc();
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
-					$stmts = "SELECT sum(cutamount) as cutamount FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'CutOffPaid' and CURDATE() >= cutoffdate";
-					$data = $conn->query($stmts)->fetch_assoc();
-					if($data['cutamount'] > 0){
-						$paid = '&#8369; ' . $data['cutamount'] ;
-					}else{
-						$paid = "&#8369; 0";
-					}
-					echo	'<td>'.$paid.'</td>';
-					echo	'<td>';
+					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
+					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
+					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
 									echo '<b>Pending to Admin</b>';
 								}elseif($row['state'] == 'DALoan'){
 									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
-								}elseif($row['state'] == 'ALoan' && $row['loanamount'] > $data['cutamount']){
-									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Request for Cutoff</a>';
-								}elseif($row['state'] == 'ALoan' && $row['loanamount'] <= $data['cutamount']){
+								}elseif($row['state'] == 'DECLoan'){
+									echo '<b><font color = "red">Declined</font></b>';
+								}elseif($row['appamount'] != null && $row['appamount'] != $row['loanamount']){
+									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
+								}elseif($row['state'] == 'ARcvLoan'){
+									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
+									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+								}elseif($row['state'] == 'ARcvCashCode'){
+									echo '<font color = "green"><b>Received ';
+									echo '</font></br>Code: ' . $row['rcve_code'];
+								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
 									echo '<font color = "green">Completed</font>';
+								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
+									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">View Request</a>';
 								}
 					echo	'</td>';
 				echo '</tr>';
@@ -159,7 +191,7 @@
 		include("conf.php");
 		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid order by state ASC, source asc";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>	
 		<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
@@ -180,6 +212,7 @@
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
@@ -224,10 +257,8 @@
 				echo '</td></tr>';
 
 		}
-		echo '</tbody></table></form>';
-	}else{
-		echo '<div align = "center" style = "margin-top: 15px;"><h2> No Record </h2></div>';
-	}$conn->close();
+		
+	}echo '</tbody></table></form>';$conn->close();
 }
 ?> 
 <?php
@@ -287,6 +318,16 @@
 					<td>End of OT: </td>
 					<td><input  value = "<?php echo $row['endofot'];?>" onkeydown="return false;"required class = "form-control" name = "uptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
 				</tr>
+				<tr>
+					<td>OT Break ( if applicable ):  </td>
+					<td>
+						<select class = "form-control" name = "otbreak" id = "otbreak">
+							<option value ="">--------</option>
+							<option <?php if($row['otbreak'] == "-30 Minutes"){ echo ' selected ';}?> value = "30 Mins">30 Mins</option>
+							<option <?php if($row['otbreak'] == "-1 Hour"){ echo ' selected ';}?> value = "1 Hour">1 Hour</option>
+						</select>
+					</td>					
+				</tr>
 				<?php 
 					$count = strlen($row['officialworksched']);
 					if($count < 8){
@@ -306,8 +347,8 @@
 				<tr id = "rday" class = "form-inline" <?php if($row['officialworksched'] == "Restday"){ echo "style = 'display: none;'";}?>>
 					<td>Official Work Sched: </td>
 					<td>
-						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
-						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
 					</td>					
 				</tr>
 				<tr>
@@ -385,7 +426,7 @@
 						<td>
 							<label for = "fr"> From: </label><input value = "<?php echo $row['undertimefr'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
 							<label for = "to"> To:  </label><input value = "<?php echo $row['undertimeto'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
-							<label for = "numhrs">Num. of Hrs/Mins </label><input required placeholder = "_hrs : __mins" id = "numhrs" class = "form-control" style = "width: 200px" name = "unumofhrs"/>
+							<label for = "numhrs">Num. of Hrs/Mins </label><input required placeholder = "_hrs : __mins" value = "<?php echo $row['numofhrs'];?>" id = "numhrs" class = "form-control" style = "width: 200px" name = "unumofhrs"/>
 						</td>	
 					</tr>			
 					<script type="text/javascript">
@@ -637,23 +678,21 @@
 	$dated = date("m");
 	$datey = date("Y");
 	if($date17 >= 17){
-		$forque = 16;
-		$endque = 31;
+		$forque = date('Y-m-16');
+		$endque = date('Y-m-31');
 	}else{
-		$forque = 1;
-		$endque = 16;
+		$forque = date('Y-m-1');
+		$endque = date('Y-m-15');
 	}
 	if(date("d") < 2){
-		$date17 = 16;
-		$forque = 16;
-		$endque = 32;
-		$dated = date("m", strtotime("previous month"));
+		$forque = date('Y-m-16', strtotime("previous month"));
+		$endque = date('Y-m-d');
 	}
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penot'){
 
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY state ASC,datefile ASC";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>
 	
 		<form role = "form" action = "approval.php"    method = "get">
@@ -675,6 +714,7 @@
 				<tbody>
 	<?php
 			//'F j, Y - hA'
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				$datetoday = date("Y-m-d");
 				$originalDate = date($row['datefile']);
@@ -738,8 +778,8 @@
 						}
 						echo '<td></tr>';
 			}
-			echo '</tbody></table></form>';
-		}
+			
+		}echo '</tbody></table></form>';
 }
 ?>
 
@@ -747,9 +787,9 @@
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penundr'){
 		
 		include("conf.php");
-		$sql = "SELECT * FROM undertime,login where undertime.account_id = $accid and login.account_id = $accid and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY state ASC,datefile ASC";
+		$sql = "SELECT * FROM undertime,login where undertime.account_id = $accid and login.account_id = $accid and dateofundrtime BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>
 	<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
@@ -769,6 +809,7 @@
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
 				$newDate = date("M j, Y", strtotime($originalDate));
@@ -812,32 +853,27 @@
 						}
 					echo '<td></tr>';
 			}
-			echo '</tbody></table></form>';
-		}
+			
+		}echo '</tbody></table></form>';
 	}
 ?>
 <?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penob'){
-		$date17 = date("d");
-	$dated = date("m");
-		$datey = date("Y");
 		if($date17 >= 17){
-			$forque = 16;
-			$endque = 31;
+			$forque = date('Y-m-16');
+			$endque = date('Y-m-31');
 		}else{
-			$forque = 1;
-			$endque = 16;
+			$forque = date('Y-m-1');
+			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
-			$date17 = 16;
-			$forque = 16;
-			$endque = 32;
-			$dated = date("m", strtotime("previous month"));
+			$forque = date('Y-m-16', strtotime("previous month"));
+			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY state ASC,obdate ASC";
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and obdatereq BETWEEN '$forque' and '$endque' ORDER BY state ASC,obdate ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>	
 		<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
@@ -859,6 +895,7 @@
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['obdate']);
@@ -904,10 +941,8 @@
 						}
 						echo '<td></tr>';
 		}
-		echo '</tbody></table></form>';
-	}else{
-		echo '<div style = "margin-top: 30px;" align = "center"><h2>No Record</h2></div>';
-	}$conn->close();
+		
+	}echo '</tbody></table></form>';$conn->close();
 }
 ?>
 
@@ -916,7 +951,7 @@
 		include("conf.php");
 		$sql = "SELECT * FROM nleave,login where login.account_id = $accid and nleave.account_id = $accid and YEAR(dateofleavfr) = $datey ORDER BY state ASC,datefile ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>	
 	<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover " align = "center">
@@ -939,6 +974,7 @@
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['datefile']);
@@ -986,8 +1022,9 @@
 						}
 						echo '<td></tr>';
 		}
-		echo '</tbody></table></form>';
-	}$conn->close();
+		
+	}echo '</tbody></table></form>';
+	$conn->close();
 }
 ?>
 </div>

@@ -185,6 +185,38 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	}
 ?>
 <?php
+	if(isset($_GET['loanrelease']) && $_GET['loanrelease'] == 1){
+		include("conf.php");
+		$petid = $_GET['petty_id'];
+		$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and loan_id = '$petid' and state = 'ARcvCashCode'";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			if(isset($_SESSION['err'])){
+				$err = $_SESSION['err'];
+				unset($_SESSION['err']);
+			}else{
+				$err = "";
+			}
+			echo '<div id = "report" align = "center"><h2 align = "center">Validate Code</h2>'.$err.'<hr>';
+			echo '<form action = "petty-exec.php" method = "post"><table id = "myTable" align = "center" class = "table table-hover tbl" style="font-size: 14px; border: 0 !important; width: 50%;">
+				  <tbody>';
+			while($row = $result->fetch_assoc()){
+				echo '<tr><td><label>Loan ID #</label></td><td>' . $row['loan_id'] . '</td></tr>';
+				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y", strtotime($row['loandate'])). '</td></tr>';
+				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';				
+				echo '<tr><td><label>Amount</label></td><td>₱ ';
+				if(!is_numeric($row['loanamount'])){ echo $row['amount']; }else{ echo number_format($row['loanamount']); } ;
+				echo '</td></tr>';
+				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
+				echo '<input type = "hidden" value = "' . $row['loan_id'] . '" name = "pet_id"/>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codelon">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+			}
+			echo "</tbody></table></form></div>";
+			
+		}
+	}
+?>
+<?php
 	if(isset($_GET['cashacre']) && $_GET['cashacre'] == 'a'){
 		include("conf.php");
 		$petid = $_GET['cashadv_id'];
@@ -219,7 +251,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	}
 ?>
-<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['cashac']) || isset($_GET['loanac'])){ echo '<div style = "display: none !important;">';} ?>
+<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['cashac']) || isset($_GET['loanac']) || isset($_GET['loanrelease'])){ echo '<div style = "display: none !important;">';} ?>
 <div id = "needaproval" >
 	
 	<h2 align = "center"><i> Admin Dashboard <br><?php if(isset($_GET['bypass'])){ echo ' (System Bypass) ';}?></i></h2>
@@ -286,7 +318,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	}
 
-	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and state = 'UALoan'";
+	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and (state = 'UALoan' or state = 'ARcvCashCode')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -294,7 +326,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Loan<br>₱ <?php echo $row['loanamount'];?></td>
+					<td><b>Loan<br>₱ <?php echo number_format($row['loanamount']);?></td>
 					<td><?php echo $row['loanreason'];?></td>
 					<td> - </td>
 					<td>
@@ -302,6 +334,8 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							if($row['state'] == 'UALoan'){
 								echo '<a class = "btn btn-primary" href = "?loanac=a&loan_id='.$row['loan_id'].'">Approve</a> ';
 								echo '<a class = "btn btn-primary" href = "loan-exec.php?loadact=d&loan_id='.$row['loan_id'].'"">Disapprove</a>';
+							}elseif($row['state'] == 'ARcvCashCode'){
+								echo '<a class = "btn btn-success" style = "width: 100px" href = "?loanrelease=1&petty_id='.$row['loan_id'].'">Release</a>';
 							}
 						?>
 					</td>
@@ -337,15 +371,15 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	}
-	$sql = "SELECT *,loan_cutoff.state as loanstate from `loan_cutoff`,`login`,`loan` where loan.loan_id = loan_cutoff.loan_id and login.account_id = loan_cutoff.account_id and loan_cutoff.state = 'UALoanCut'";
+	/*$sql = "SELECT *,loan_cutoff.state as loanstate from `loan_cutoff`,`login`,`loan` where loan.loan_id = loan_cutoff.loan_id and login.account_id = loan_cutoff.account_id and loan_cutoff.state = 'UALoanCut'";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-					<td><?php echo date("M j, Y", strtotime($row['cutoffdate']));?><br><i><b>Cut-Off Date</b></i></td>			
+					<td><?php echo date("M j, Y", strtotime($row['cutoffdate']));?><br><i><b>Start of Payment</b></i><br><?php echo date("M j, Y", strtotime($row['enddate']));?><br><i><b>End of Payment</b></i></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Loan Payment<br>₱ <?php echo $row['cutamount'];?></td>
+					<td><b>Loan Payment<br>₱ <?php echo number_format($row['cutamount']);?> / Cut-Off</td>
 					<td><?php echo $row['loanreason'];?></td>
 					<td> - </td>
 					<td>
@@ -360,7 +394,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	
-	}
+	}*/
 	//if(isset($_GET['bypass'])){
 	//	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and (source = 'Eli/Sha' or source = 'Accounting')";
 	//}else{
@@ -571,7 +605,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		</table>
 	</form>
 </div>
-<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre'])){ echo '</div>">';} ?>
+<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['loanrelease'])){ echo '</div>">';} ?>
 <div id = "newuser" class = "form-group" style = "display: none;">
 	<form role = "form" action = "newuser-exec.php" method = "post">
 		<table align = "center" width = "450">

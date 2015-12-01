@@ -44,10 +44,23 @@
 		}
 		
 		$accid = $_SESSION['acc_id'];		
-		$start = $_POST['uptimein'];
-		$end = $_POST['uptimeout'];
+		$start = mysql_escape_string($_POST['uptimein']);
+		$end = mysql_escape_string($_POST['uptimeout']);
 		$post = strtolower($_SESSION['post']);
 		$reason = $_POST['reason'];
+		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
+			if($_POST['otbreak'] == '30 Mins'){
+				$approvedothrs = date("G:i", strtotime("-30 min", strtotime($approvedothrs)));
+				$otbreak = '-30 Minutes';
+			}elseif ($_POST['otbreak'] == '1 Hour') {
+				$approvedothrs = date("G:i", strtotime("-1 Hour", strtotime($approvedothrs)));
+				$otbreak = '-1 Hour';
+			}else{
+				$otbreak = null;
+			}					
+		}else{
+			$otbreak = null;
+		}
 		if(isset($_POST['updateofot'])){
 			$date = $_POST['updateofot'];
 		}
@@ -67,7 +80,7 @@
 			$state = 'AHR';
 		}	
 		$stmt = "UPDATE `overtime` set 
-			approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
+			otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
 			where account_id = '$accid' and state like '$state' and overtime_id = '$_SESSION[otid]'";
 		if ($conn->query($stmt) === TRUE) {
 			if($_SESSION['level'] == 'EMP'){

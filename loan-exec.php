@@ -1,15 +1,75 @@
-<?php 
-	//loan
+<?php
 	include 'conf.php';
+	session_start();
+	if(isset($_POST['updteloan'])){
+		$o = mysql_escape_string($_POST['cashadvid']);
+		$accid = mysql_escape_string($_POST['accid']);
+		$appamount = mysql_escape_string($_POST['uploan']);
+		$sql ="UPDATE loan set 
+	   		loanamount = '$appamount'
+	    where loan_id = '$o' and account_id = '$accid' and state = 'ALoan' and loanamount != appamount"; 
+
+	 	if ($conn->query($sql) === TRUE) {	 		
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	} 
+	}
+
+?>
+<?php
+	if(isset($_GET['loanss'])){
+		$o = mysql_escape_string($_GET['loanss']);
+		$accid = $_SESSION['acc_id'];
+		$sql ="UPDATE loan set 
+	   		state = 'DECLoan'
+	    where loan_id = '$o' and account_id = '$accid'"; 
+
+	 	if ($conn->query($sql) === TRUE) {	 		
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	} 
+
+	}
+?>
+<?php 
+	//loan	
 	if(isset($_POST['caapp'])){
 		$o = mysql_escape_string($_POST['loanid']);
 		$accid = mysql_escape_string($_POST['accid']);
+		$appamount = mysql_escape_string($_POST['loanamount']);
 		$sql ="UPDATE loan set 
-	   		state = 'ALoan'
+	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount'
 	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
-
-	 	if ($conn->query($sql) === TRUE) {	 		
-			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+	    $cutoffdate = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
+	    $cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
+	    $duration = $_POST['upduration'] . ' Months';
+	    $enddate = date("Y-m-d", strtotime($duration, strtotime($cutoffdate)));
+	    
+	 	if ($conn->query($sql) === TRUE) {	 
+	 		$sql2 ="UPDATE loan_cutoff set 
+	   		state = 'CutOffPaid', cutamount = '$cutamount', cutoffdate = '$cutoffdate', enddate = '$enddate', duration = '$duration'
+			    where loan_id = '$o' and account_id = '$accid' and state = 'UALoanCut'"; 
+			if($conn->query($sql2) === TRUE){
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	} 
@@ -96,8 +156,13 @@
 		$sql = "UPDATE `loan` set
 					state = 'DALoan'
 			where loan_id = '$id'";
+		$sql2 = "UPDATE `loan_cutoff` set
+					state = 'DALoan'
+			where loan_id = '$id'";
 		if ($conn->query($sql) === TRUE) {
-			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			if ($conn->query($sql2) === TRUE) {
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}
 		}
 	}
 

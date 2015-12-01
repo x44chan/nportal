@@ -61,7 +61,8 @@
           </div>
           <div class="col-md-4">
             <label for="efname"> Duration <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['eduration']; ?>"name = "eduration" id = "efname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter duration">
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory']?></p></i>
+            <input type="hidden" value = "<?php echo $row['eduration']; ?>"name = "eduration" id = "efname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter duration">
           </div>
          <div class="col-md-4">
             <label for="usrname"> Tel. #</label>

@@ -168,7 +168,7 @@ $(document).ready(function(){
 				<tr>
 					<td>OT Break ( if applicable ):  </td>
 					<td>
-						<select class = "form-control" name = "otbreak">
+						<select class = "form-control" name = "otbreak" id = "otbreak">
 							<option value ="">--------</option>
 							<option value = "30 Mins">30 Mins</option>
 							<option value = "1 Hour">1 Hour</option>
@@ -328,8 +328,8 @@ $(document).ready(function(){
 							<option value = ""> ---- </option>							
 							<option value = "Sick Leave">Sick Leave</option>
 							<option value = "Vacation Leave">Vacation Leave</option>
-							<?php if($patternity > 0 && $egender == "Male"){ echo '<option value = "Paternity Leave">Paternity Leave </option>'; }?>
-							<?php if($wedding  > 0 && $cstatus != 'Married' && $egender == "Female"){ echo '<option value = "Wedding Leave">Wedding Leave </option>'; echo $cstatus;}?>
+							<?php //if($patternity > 0 && $egender == "Male"){ echo '<option value = "Paternity Leave">Paternity Leave </option>'; }?>
+							<?php //if($wedding  > 0 && $cstatus != 'Married' && $egender == "Female"){ echo '<option value = "Wedding Leave">Wedding Leave </option>'; echo $cstatus;}?>
 							<option value = "Others">Others(Pls. Specify)</option>
 						</select>						
 						<input disabled type = "text" name = "othersl" class = "form-control" id = "othersl" style = "width: 40%;"/>
@@ -474,7 +474,7 @@ $(document).ready(function(){
             </div>
             <div class="form-group">
             	 <label for="usrname"> Amount <font color = "red">*</font></label>
-            	<input type = "text" pattern = "[0-9,]*" required name = "amountca" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+            	<input type = "text" pattern = "[0-9]*" required name = "amountca" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
             	 <label for="usrname"> Reason <font color = "red">*</font></label>
@@ -510,24 +510,54 @@ $(document).ready(function(){
 
 	}
 ?>
+
 <?php
 	if(isset($_POST['loanpet'])){
 		$state = "UALoan";
-		$date = date("Y-m-d"); 
-
-		$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate) VALUES (?, ?, ?, ?, ?)");
-		$sql->bind_param("issss", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $date);
-		if($sql->execute()){
-			if($_SESSION['level'] == 'EMP'){
-    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
-	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
-	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
-	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
-	    	}
-		}
+		$loandate = date("Y-m-d"); 
+		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
+		//$query = "SELECT count(loan_cutoff.loan_id) FROM loan,loan_cutoff where loan.loan_id = loan_cutoff.loan_id and '$date' BETWEEN loan_cutoff.cutoffdate and loan_cutoff.enddate and loan_cutoff.state = 'CutOffPaid'";
+		//$resquery = $conn->query($query);
+		//if($resquery->num_rows > 0){
+		//	if($_SESSION['level'] == 'EMP'){
+    	//		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("employee.php?ac=penloan"); </script>';
+	 	//  	}elseif ($_SESSION['level'] == 'ACC') {
+	    // 		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
+	    //	}elseif ($_SESSION['level'] == 'TECH') {
+	    //		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    //	}elseif ($_SESSION['level'] == 'HR') {
+	    //		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("hr.php?ac=penloan"); </script>';
+	    //	}
+		//}else{
+			$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate) VALUES (?, ?, ?, ?, ?)");
+			$sql->bind_param("issss", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $loandate);
+			if($sql->execute()){
+				$loan_id = $conn->insert_id;
+				if(isset($_POST['loanothers'])){
+				$duration = $_POST['loanothers'] . ' Months';
+				$dur = $_POST['loanothers'];
+				}else{
+					$duration = $_POST['loanduration'] .' Months';
+					$dur = $_POST['loanduration'];
+				}
+				$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
+				$enddate = date("Y-m-d", strtotime($duration, strtotime($date)));
+				$cutamount = $_POST['loanamount'] / ($dur * 2);
+				$state = 'UALoanCut';
+				$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				$stmt->bind_param("iisssss", $loan_id, $accid, $cutamount, $date, $state, $duration, $enddate);
+				$stmt->execute();
+				if($_SESSION['level'] == 'EMP'){
+	    			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+		    	}
+			}
+		//}
 
 	}
 
@@ -549,12 +579,60 @@ $(document).ready(function(){
             </div>
             <div class="form-group">
             	 <label for="usrname"> Amount <font color = "red">*</font></label>
-            	<input type = "text" pattern = "[0-9,]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+            	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
             	 <label for="usrname"> Reason <font color = "red">*</font></label>
             	<input type = "text" id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
           	</div>
+          	<div class="form-group">
+            	<label for="usrname"> Duration <font color = "red">*</font></label>
+            	<select name = "loanduration" class="form-control" id = "loanduration" required>
+					<option value = ""> ----------- </option>
+					<option value = "1"> 1 Month </option>
+					<option value = "2"> 2 Months </option>
+					<option value = "3"> 3 Months </option>
+					<option value = "Others"> Others </option>
+				</select>
+            </div>
+            <div class="form-group">
+            	<label>Others</label>
+				<input type =  "text" maxlength="2" class="form-control" name = "loanothers" disabled=""/>
+            </div>
+            <div class="form-group">
+				<label>Payment Start (Month)</label>
+				<select class="form-control" name = "cutoffmonth" required >
+					<option value="">-----------</option>
+					<option value="01">Jan</option>
+					<option value="02">Feb</option>
+					<option value="03">Mar</option>
+					<option value="04">Apr</option>
+					<option value="05">May</option>
+					<option value="06">Jun</option>
+					<option value="07">Jul</option>
+					<option value="08">Aug</option>
+					<option value="09">Sep</option>
+					<option value="10">Oct</option>
+					<option value="11">Nov</option>
+					<option value="12">Dec</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label>Payment Start (Day)</label>
+				<select class="form-control" name = "cutoffday">
+					<option value=""> - - - - - - - </option>
+					<option value="01">01</option>
+					<option value="16">16</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label>Payment Start (Year)</label>
+				<select class="form-control" required name = "cutofyr">
+					<option value=""> - - - - - - - </option>
+					<option value="<?php echo date("Y");?>"><?php echo date("Y");?></option>
+					<option value="<?php echo date("Y", strtotime("+1 year"));?>"><?php echo date("Y", strtotime("+1 year"));?></option>
+				</select>
+			</div>
               <button type="submit" name = "loanpet" class="btn btn-success btn-block">Submit</button>
           </form>
         </div>
@@ -564,6 +642,20 @@ $(document).ready(function(){
       </div>      
     </div>
   </div> 
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#loanduration').change(function() {
+		    var selected = $(this).val();			
+			if(selected == 'Others'){
+				$('input[ name = "loanothers" ]').attr('disabled',false);
+				$('input[ name = "loanothers" ]').attr("placeholder", "# of Months");
+			}else{
+				$('input[ name = "loanothers" ]').attr('disabled',true);
+				$('input[ name = "loanothers" ]').attr("placeholder", "");
+			}
+		});
+	});
+</script>
  <?php } ?>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -572,9 +664,13 @@ $(document).ready(function(){
 	    	$("#rday").hide();
 	    	$("#toasd").attr('required',false);
 	    	$("#frasd").attr('required',false);
+	    	$("#upoffr").attr('required',false);
+	    	$("#upoffto").attr('required',false);
 	    }else{
 	    	$("#toasd").attr('required',true);
 	    	$("#frasd").attr('required',true);
+	    	$("#upoffto").attr('required',true);
+	    	$("#upoffr").attr('required',true);
 	        $("#rday").show();
 	    }
 	});

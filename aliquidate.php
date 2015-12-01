@@ -67,7 +67,7 @@
 			</div>
 			<div class="col-xs-3">
 				<label>Amount</label>
-				<input required  autocomplete = 'off' class = "form-control input-md" type = "text" id = "amount0" name = "amount0" placeholder = "Enter Amount"/>
+				<input required  autocomplete = 'off' pattern = "[0-9]*" class = "form-control input-md" type = "text" id = "amount0" name = "amount0" placeholder = "Enter Amount"/>
 			</div>
 			<div class="col-xs-3">
 				<label>Transaction</label>

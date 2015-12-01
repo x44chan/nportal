@@ -33,41 +33,45 @@
 				  ?>
 				</ul>
 			</div>
-			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproevda">Cutoff Summary</a>
+			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
-
- 				</ul>
+				</ul>
 			</div>
 			<a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
 			<a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a type = "button" class = "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-			<a style = "width: 250px;" role = "button"class = "btn btn-success" href = "?ac=penob"> Official Business Request Status</a>			
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
-			<a style = "width: 250px;" role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>	
+			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
+			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
+			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
 			<?php
 				if($_SESSION['category'] == "Regular"){
 					echo '
 						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
 						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
 				}
-			?>
+			?>	
 		</div>
 	</div>
 </div>
 <div id = "needaproval" style = "margin-top: -30px;">
 <?php 
-	if(isset($_GET['lqdate'])){
-		include 'aliquidate.php';	
-	}
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penca'){
+		include("caloan/cashadv.php");
+		}
+?>
+<?php 
+	if(isset($_GET['loan']) && $_GET['loan'] > 0){
+		include("caloan/loan.php");
+		}
 ?>
 <?php
 	if(isset($_GET['validate'])){
@@ -89,11 +93,79 @@
 }
 ?>	
 <?php 
-	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
+	if(isset($_GET['lqdate'])){
+		include 'aliquidate.php';	
+	}
+?>
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penloan'){
+		include("conf.php");
+		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid order by state ASC";
+		$result = $conn->query($sql);
 		
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 8 align = center><h2> Loan Request Status </h2></td>
+					</tr>
+					<tr>
+						<th>Loan #</th>
+						<th>Date File</th>
+						<th>Amount</th>
+						<th>Start Date</th>
+						<th>Approved Amount</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				$loan_id = $row['loan_id'];
+				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id' and CURDATE() <= enddate";
+				$data = $conn->query($stmts)->fetch_assoc();
+				echo	'<tr>';
+					echo	'<td>' . $row['loan_id'].'</td>';
+					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
+					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
+					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
+					echo	'<td style = "width: 300px;">';
+								if($row['state'] == 'UALoan'){
+									echo '<b>Pending to Admin</b>';
+								}elseif($row['state'] == 'DALoan'){
+									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
+								}elseif($row['state'] == 'DECLoan'){
+									echo '<b><font color = "red">Declined</font></b>';
+								}elseif($row['appamount'] != null && $row['appamount'] != $row['loanamount']){
+									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
+								}elseif($row['state'] == 'ARcvLoan'){
+									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
+									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+								}elseif($row['state'] == 'ARcvCashCode'){
+									echo '<font color = "green"><b>Received ';
+									echo '</font></br>Code: ' . $row['rcve_code'];
+								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
+									echo '<font color = "green">Completed</font>';
+								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
+									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">View Request</a>';
+								}
+					echo	'</td>';
+				echo '</tr>';
+			}
+		}
+		echo '</tbody></table>';
+	}
+?>
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
+
+		include("conf.php");
 		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid order by state ASC, source asc";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
+		
 	?>	
 		<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
@@ -114,6 +186,7 @@
 				</thead>
 				<tbody>
 	<?php
+		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
@@ -158,10 +231,8 @@
 				echo '</td></tr>';
 
 		}
-		echo '</tbody></table></form>';
-	}else{
-		echo '<div align = "center" style = "margin-top: 15px;"><h2> No Record </h2></div>';
-	}$conn->close();
+		
+	}echo '</tbody></table></form>';$conn->close();
 }
 ?> 
 <?php
@@ -204,7 +275,8 @@
 				</tr>
 				<tr>
 					<td>Date Of Overtime: </td>
-				<td><input value = "<?php echo $row['dateofot'];?>" required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "YYYY-MM-DD" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' name = "updateofot"/></td></tr>				
+					<td><input value = "<?php echo $row['dateofot'];?>" required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "YYYY-MM-DD" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' name = "updateofot"/></td>
+				</tr>				
 				<tr>
 					<td>Reason (Work to be done): </td>
 					<td><textarea required name = "reason"class = "form-control"><?php echo $row['reason'];?></textarea></td>	
@@ -220,6 +292,16 @@
 					<td>End of OT: </td>
 					<td><input  value = "<?php echo $row['endofot'];?>" onkeydown="return false;"required class = "form-control" name = "uptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
 				</tr>
+				<tr>
+					<td>OT Break ( if applicable ):  </td>
+					<td>
+						<select class = "form-control" name = "otbreak" id = "otbreak">
+							<option value ="">--------</option>
+							<option <?php if($row['otbreak'] == "-30 Minutes"){ echo ' selected ';}?> value = "30 Mins">30 Mins</option>
+							<option <?php if($row['otbreak'] == "-1 Hour"){ echo ' selected ';}?> value = "1 Hour">1 Hour</option>
+						</select>
+					</td>					
+				</tr>
 				<?php 
 					$count = strlen($row['officialworksched']);
 					if($count < 8){
@@ -232,15 +314,15 @@
 					}					
 				?>
 				<tr>
-					<td colspan = 2 >
+					<td colspan = 2 style="float: center;">
 						<label for="restday" style="font-size: 15px; width: 500px; margin-left: -200px;"><input type="checkbox" <?php if($row['officialworksched'] == "Restday"){ echo "checked";}?> value = "restday" name="uprestday" id="restday"/> Rest Day</label>
 					</td>
 				</tr>	
 				<tr id = "rday" class = "form-inline" <?php if($row['officialworksched'] == "Restday"){ echo "style = 'display: none;'";}?>>
 					<td>Official Work Sched: </td>
 					<td>
-						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
-						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
 					</td>					
 				</tr>
 				<tr>
@@ -565,17 +647,197 @@
 	}
 	
 ?>	
-	<?php 
+<?php 
+	$date17 = date("d");
+	$dated = date("m");
+	$datey = date("Y");
+	if($date17 >= 17){
+		$forque = date('Y-m-16');
+		$endque = date('Y-m-31');
+	}else{
+		$forque = date('Y-m-1');
+		$endque = date('Y-m-15');
+	}
+	if(date("d") < 2){
+		$forque = date('Y-m-16', strtotime("previous month"));
+		$endque = date('Y-m-d');
+	}
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penot'){
+
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
+		$result = $conn->query($sql);
 		
-		if(isset($_GET['ac']) && $_GET['ac'] == 'penot'){
-		$date17 = date("d");
-		$dated = date("m");
-		$datey = date("Y");
+	?>
+	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>				
+					<tr>
+						<td colspan = 7 align = center><h2> Overtime Application Status </h2></td>
+					</tr>
+					<tr>
+						<th>Date File</th>						
+						<th>Name of Employee</th>
+						<th>Date of Overtime</th>
+						<th>From - To (Overtime)</th>
+						<th>Reason</th>
+						<th>Offical Work Schedule</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+			//'F j, Y - hA'
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				$datetoday = date("Y-m-d");
+				$originalDate = date($row['datefile']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate2 = date("M j, Y", strtotime($row['dateofot']));
+					
+				if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}
+				if($row['oldot'] != null && ($row['state'] == 'AHR' || $row['state'] == 'UA')){
+					$oldot = '</b><br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
+					$hrot = '<b>App. OT: <i><font color = "green">';
+					$hrclose = "</font></i>";
+				}else if($row['oldot'] != null && $row['state'] == 'AAdmin'){
+					$oldot = '<br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
+					$hrot = '<b>App. OT: <i><font color = "green">';//( '.$row['approvedothrs'] . ' ) ';
+					$hrclose = "</font></i>";
+				}else{
+					$oldot = "";
+					$hrot = '';
+					$hrclose ='';
+				}
+				if($row['otbreak'] != null){
+					$otbreak = '<br><b><i>Break: <font color = "red">'. substr($row['otbreak'], 1) . '</font>	<i><b>';
+				}else{
+					$otbreak = "";
+				}
+				echo 
+					'
+						<td>'.$newDate .'</td>						
+						<td>'.$row["nameofemp"].'</td>
+						<td>'.$newDate2.'</td>
+						<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td width = 300 height = 70>'.$row["reason"].'</td>
+						<td>'.$row["officialworksched"].'</td>				
+						<td><b>';
+							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo 'Pending to HR<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to HR<br>';
+							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to Tech Supervisor<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Approved by HR</font></p> ';
+							}else if($row['state'] == 'AACC'){
+								echo '<p><font color = "green">Approved by Accounting</font></p> ';
+							}else if($row['state'] == 'AAdmin'){
+								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'DAHR'){
+								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAACC'){
+								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAAdmin'){
+								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DATECH'){
+							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+						}
+						echo '<td></tr>';
+			}
+			
+		}echo '</tbody></table></form>';
+}
+?>
+
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penundr'){
+		
+		include("conf.php");
+		$sql = "SELECT * FROM undertime,login where undertime.account_id = $accid and login.account_id = $accid and dateofundrtime BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
+		$result = $conn->query($sql);
+		
+	?>
+	<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>				
+					<tr>
+						<td colspan = 7 align = center><h2> Undertime Application Status </h2></td>
+					</tr>
+					<tr >
+						<th>Date File</th>
+						<th>Date of Undertime</th>
+						<th>Name of Employee</th>
+						<th>Reason</th>
+						<th>From - To (Overtime)</th>
+						<th>Number of Hrs/Minutes</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){				
+				$originalDate = date($row['datefile']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}	
+				echo 
+					'<td width = 180>'.$newDate.'</td>
+					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
+					<td>'.$row["name"].'</td>
+					<td width = 250 height = 70>'.$row["reason"].'</td>
+					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
+					<td>'.$row["numofhrs"].'</td>
+					<td><b>';
+						if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo 'Pending to HR<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['undertime_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to HR<br>';
+							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to Tech Supervisor<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['undertime_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Approved by HR</font></p> ';
+							}else if($row['state'] == 'AACC'){
+								echo '<p><font color = "green">Approved by Accounting</font></p> ';
+							}else if($row['state'] == 'AAdmin'){
+								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'DAHR'){
+								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAACC'){
+								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAAdmin'){
+								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DATECH'){
+							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+						}
+					echo '<td></tr>';
+			}
+			
+		}echo '</tbody></table></form>';
+	}
+?>
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penob'){
 		if($date17 >= 17){
 			$forque = date('Y-m-16');
 			$endque = date('Y-m-31');
 		}else{
-			$forque = date('Y-m-01');
+			$forque = date('Y-m-1');
 			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
@@ -583,290 +845,168 @@
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = '$accid' and overtime.account_id = '$accid' and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and obdatereq BETWEEN '$forque' and '$endque' ORDER BY state ASC,obdate ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
-	?>
-	<form role = "form" action = "approval.php"    method = "get">
-		<table class = "table table-hover" align = "center">
-			<thead>				
-				<tr>
-					<td colspan = 7 align = center><h2> Pending Overtime Request </h2></td>
-				</tr>
-				<tr >
-					<th>Date File</th>
-					<th>Date of Overtime</th>
-					<th>Name of Employee</th>
-					<th>Reason</th>
-					<th>From - To (Overtime)</th>
-					<th>Offical Work Schedule</th>
-				</tr>
-			</thead>
-			<tbody>
+		
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 9 align = center><h2> Official Business Status </h2></td>
+					</tr>
+					<tr>
+						<th>Date File</th>
+						<th>Name of Employee</th>
+						<th>Position</th>
+						<th>Department</th>
+						<th>Date of Request</th>
+						<th>Time In - Time Out</th>
+						<th>Offical Work Schedule</th>
+						<th>Reason</th>
+						<th>State</th>
+					</tr>
+				</thead>
+				<tbody>
 	<?php
-		while($row = $result->fetch_assoc()){				
-			$originalDate = date($row['datefile']);
-			$newDate = date("F j, Y", strtotime($originalDate));
-			$datetoday = date("Y-m-d");
-			if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
-				echo '<tr style = "color: red">';
-			}else{
-				echo '<tr>';
-			}
-			echo '
-				<td width = 180>'.$newDate.'</td>
-				<td>'.date("F j, Y", strtotime($row["dateofot"])).'</td>
-				<td>'.$row["nameofemp"].'</td>
-				<td width = 250 height = 70>'.$row["reason"].'</td>
-				<td>'.$row["startofot"] . ' - ' . $row['endofot'].'</td>
-				<td>'.$row["officialworksched"].'</td>';
-				echo '<td><b>';
-					if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
-						echo 'Pending to HR<br>';
-						echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
-					}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
-						echo 'Pending to HR<br>';
-					}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
-						echo 'Pending to Tech Supervisor<br>';
-						echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
-					}else if($row['state'] == 'AHR'){
-						echo '<p><font color = "green">Approved by HR</font></p> ';
-					}else if($row['state'] == 'AAdmin'){
-						echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
-					}else if($row['state'] == 'DAHR'){
-						echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
-					}else if($row['state'] == 'DAAdmin'){
-						echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
-					}else if($row['state'] == 'DATECH'){
-					echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-				}
-				echo '</b></td></tr>';
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				
+				$originalDate = date($row['obdate']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}		
+				echo 
+					'	<td>'.$newDate.'</td>
+						<td>'.$row["obename"].'</td>
+						<td>'.$row["obpost"].'</td>
+						<td >'.$row["obdept"].'</td>
+						<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
+						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+						<td>'.$row["officialworksched"].'</td>				
+						<td >'.$row["obreason"].'</td>	
+					<td><b>';
+							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo 'Pending to HR<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to HR<br>';
+							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to Tech Supervisor<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Approved by HR</font></p> ';
+							}else if($row['state'] == 'AACC'){
+								echo '<p><font color = "green">Approved by Accounting</font></p> ';
+							}else if($row['state'] == 'AAdmin'){
+								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'DAHR'){
+								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAACC'){
+								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAAdmin'){
+								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DATECH'){
+							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+						}
+						echo '<td></tr>';
 		}
-			echo '</tbody></table></form>';
-		}else{
-			echo '<h2 align = "center" style = "margin-top: 30px;"> No Overtime Request </h2>';
-		}$conn->close();
-	}
+		
+	}echo '</tbody></table></form>';$conn->close();
+}
 ?>
 
 <?php 
-		if(isset($_GET['ac']) && $_GET['ac'] == 'penlea'){
-		$date17 = date("d");
-		$dated = date("m");
-		$datey = date("Y");
-		if($date17 > 16){
-			$forque = 16;
-			$endque = 31;
-		}else{
-			$forque = 1;
-			$endque = 16;
-		}
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penlea'){
 		include("conf.php");
-		$sql = "SELECT * FROM nleave,login where login.account_id = '$accid' and nleave.account_id = '$accid' and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
+		$sql = "SELECT * FROM nleave,login where login.account_id = $accid and nleave.account_id = $accid and YEAR(dateofleavfr) = $datey ORDER BY state ASC,datefile ASC";
 		$result = $conn->query($sql);
-		if($result->num_rows > 0){
-	?>
+		
+	?>	
 	<form role = "form" action = "approval.php"    method = "get">
-		<table width = "100%"class = "table table-hover" align = "center">
-			<thead>				
-				<tr>
-					<td colspan = 10 align = center><h2> Leave Application Status </h2></td>
-				</tr>
-				<tr>
-					<th width = "150">Date File</th>
-					<th width = "170">Name of Employee</th>
-					<th width = "170">Date Hired</th>
-					<th>Department</th>
-					<th>Position</th>
-					<th width = "210">Date of Leave</th>
-					<th width = "100"># of Day/s</th>
-					<th width = "170">Type of Leave</th>
-					<th width = "180">Reason</th>
-				</tr>
-			</thead>
-			<tbody>
+			<table class = "table table-hover " align = "center">
+				<thead>
+					<tr>
+						<td colspan = 10 align = center><h2> Leave Application Status </h2></td>
+					</tr>
+					<tr>
+						<th width = "170">Date File</th>
+						<th width = "170">Name of Employee</th>
+						<th width = "170">Date Hired</th>
+						<th>Department</th>
+						<th>Position</th>
+						<th width = "250">Date of Leave (Fr - To)</th>
+						<th width = "100"># of Day/s</th>
+						<th width = "170">Type of Leave</th>
+						<th width = "160">Reason</th>
+						<th>State</th>
+					</tr>
+				</thead>
+				<tbody>
 	<?php
-		while($row = $result->fetch_assoc()){				
-			$originalDate = date($row['datefile']);
-			$newDate = date("F j, Y", strtotime($originalDate));
-			$datetoday = date("Y-m-d");
-			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA'){
-				echo '<tr style = "color: red">';
-			}else{
-				echo '<tr>';
-			}
-			echo '
-					<td>'.$newDate.'</td>
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				
+				$originalDate = date($row['datefile']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate2 = date("M j, Y", strtotime($row["edatehired"]));
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}		
+				echo 
+					'<td>'.$newDate.'</td>
 					<td>'.$row["nameofemployee"].'</td>
-					<td>'.date("F d, Y", strtotime($row["datehired"])).'</td>
+					<td>'.$newDate2.'</td>
 					<td >'.$row["deprt"].'</td>
 					<td>'.$row['posttile'].'</td>					
-					<td> From: '.date("F d, Y", strtotime($row["dateofleavfr"])) .'<br>To: '.date("F d, Y", strtotime($row["dateofleavto"])).'</td>
+					<td width = "300">Fr: '.date("M j, Y", strtotime($row["dateofleavfr"])) .' <br>To: '.date("M j, Y", strtotime($row["dateofleavto"])).'</td>
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
-					<td >'.$row["reason"].'</td>';
-					 if($row['state'] == 'UAACCAdmin' || $row['state'] == 'AACC'){
-						echo '<td><strong>Pending to Admin<strong></td>';
-				}else{
-				/*echo'
-					<td width = "200">
-						<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-						<a href = "?approve=DA'.$_SESSION['level'].'&dleave='.$row['leave_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
-					</td>
-				</tr>';*/
-			}
+					<td >'.$row["reason"].'</td>	
+					<td width = "200"><b>';
+							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo 'Pending to HR<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to HR<br>';
+							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo 'Pending to Tech Supervisor<br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Approved by HR</font></p> ';
+							}else if($row['state'] == 'AACC'){
+								echo '<p><font color = "green">Approved by Accounting</font></p> ';
+							}else if($row['state'] == 'AAdmin'){
+								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'DAHR'){
+								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAACC'){
+								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAAdmin'){
+								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DATECH'){
+							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+						}
+						echo '<td></tr>';
 		}
-			echo '</tbody></table></form>';
-		}else{
-			echo '<h2 align = "center" style = "margin-top: 30px;"> No Leave Request </h2>';
-		}
-	}
-?>
-<?php 
-		if(isset($_GET['ac']) && $_GET['ac'] == 'penundr'){
-		$date17 = date("d");
-		$dated = date("m");
-		$datey = date("Y");
-		if($date17 > 16){
-			$forque = 16;
-			$endque = 31;
-		}else{
-			$forque = 1;
-			$endque = 16;
-		}
-		include("conf.php");
-		$sql = "SELECT * FROM undertime,login where login.account_id = '$accid' and undertime.account_id = '$accid'   and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(datefile) = $datey ORDER BY datefile ASC";
-		$result = $conn->query($sql);
-		if($result->num_rows > 0){
-	?>
-	<form role = "form" action = "approval.php"    method = "get">
-		<table class = "table table-hover" align = "center">
-			<thead>				
-				<tr>
-					<td colspan = 7 align = center><h2> Undertime Application Status </h2></td>
-				</tr>
-				<tr >
-					<th>Date File</th>
-					<th>Date of Overtime</th>
-					<th>Name of Employee</th>
-					<th>Reason</th>
-					<th>From - To (Overtime)</th>
-					<th>Number of Hrs/Minutes</th>
-				</tr>
-			</thead>
-			<tbody>
-	<?php
-		while($row = $result->fetch_assoc()){				
-			$originalDate = date($row['datefile']);
-			$newDate = date("F j, Y", strtotime($originalDate));
-			
-			$datetoday = date("Y-m-d");
-			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
-				echo '<tr style = "color: red">';
-			}else{
-				echo '<tr>';
-			}		
-			echo 
-					'<td width = 180>'.$newDate.'</td>
-					<td>'.date('F j, Y', strtotime($row["dateofundrtime"])).'</td>
-					<td>'.$row["name"].'</td>
-					<td width = 250 height = 70>'.$row["reason"].'</td>
-					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
-					<td>'.$row["numofhrs"].'</td>';
-					 if($row['state'] == 'UAACCAdmin' || $row['state'] == 'AACC'){
-						echo '<td><strong>Pending to Admin<strong></td>';
-				}else{
-				/*echo'				
-					<td width = "200">
-						<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-						<a href = "?approve=DA'.$_SESSION['level'].'&dundertime='.$row['undertime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
-					</td>
-				</tr>';*/
-			}
-		}
-			echo '</tbody></table></form>';
-		}else{
-			echo '<h2 align = "center" style = "margin-top: 30px;"> No Undertime Request </h2>';
-		}$conn->close();
-	}
-?>
-<?php
-	if(isset($_GET['ac']) && $_GET['ac'] == 'penob'){
-		$date17 = date("d");
-		$dated = date("m");
-		$datey = date("Y");
-		if($date17 > 16){
-			$forque = 16;
-			$endque = 31;
-		}else{
-			$forque = 1;
-			$endque = 16;
-		}
-		include("conf.php");
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = '$accid' and officialbusiness.account_id = '$accid'  and DAY(obdate) >= $forque and DAY(obdate) <= $endque and MONTH(obdate) = $dated and YEAR(obdate) = $datey ORDER BY obdate ASC";
-		$result = $conn->query($sql);
-		if($result->num_rows > 0){
-?>
-	<form role = "form" action = "approval.php"    method = "get">
-		<table class = "table table-hover" align = "center">
-			<thead>
-				<tr>
-					<td colspan = 9 align = center><h2> Official Business Application Status </h2></td>
-				</tr>
-				<tr>
-					<th>Date File</th>
-					<th>Name of Employee</th>
-					<th>Position</th>
-					<th>Department</th>
-					<th>Date of Request</th>
-					<th>Time In - Time Out</th>
-					<th>Offical Work Schedule</th>
-					<th>Reason</th>
-				</tr>
-			</thead>
-			<tbody>
-<?php
-		while($row = $result->fetch_assoc()){			
-			$originalDate = date($row['obdate']);
-			$newDate = date("F j, Y", strtotime($originalDate));
-			$datetoday = date("Y-m-d");
-			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA'){
-				echo '<tr style = "color: red">';
-			}else{
-				echo '<tr>';
-			}		
-			echo 
-					'<td>'.$newDate.'</td>
-					<td>'.$row["obename"].'</td>
-					<td>'.$row["obpost"].'</td>
-					<td >'.$row["obdept"].'</td>
-					<td>'.date("F d, Y", strtotime($row['obdatereq'])).'</td>					
-					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
-					<td>'.$row["officialworksched"].'</td>				
-					<td >'.$row["obreason"].'</td>';
-					 if($row['state'] == 'UAACCAdmin' || $row['state'] == 'AACC'){
-						echo '<td><strong>Pending to Admin<strong></td>';
-				}else{
-				/*echo'
-					<td width = "200">
-						<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-						<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button" id = "DAHR">Disapprove</a>
-					</td>
-				</tr>';*/
-		}
-	}
-		echo '</tbody></table></form>';
-	}else{
-		echo '<h2 align = "center" style = "margin-top: 30px;"> No Official Request </h2>';
-	}$conn->close();
+		
+	}echo '</tbody></table></form>';
+	$conn->close();
 }
 ?>
 </div>
 <?php include('emp-prof.php') ?>
 <?php 
-	if($_SESSION['pass'] == 'defaultpass'){
+	if($_SESSION['pass'] == 'default'){
 		include('up-pass.php');
-	}else if($_SESSION['201date'] == null){
+	}else if($_SESSION['201date'] == null || $_SESSION['201date'] == '0000-00-00'){
 	?>
 <script type="text/javascript">
 $(document).ready(function(){	      
@@ -876,5 +1016,5 @@ $(document).ready(function(){
   });
 });
 </script>
-<?php } include("req-form.php");?>
+<?php }include('req-form.php');?>
 <?php include("footer.php");?>

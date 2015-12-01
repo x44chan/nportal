@@ -11,6 +11,28 @@
 
 		    return $key;
 		}
+	if(isset($_GET['loan'])){
+		$o = mysql_escape_string($_GET['loan']);
+		$rcve_code = random_string(4);
+		$accid = $_SESSION['acc_id'];
+		$rcve_code = random_string(4);
+		$sql ="UPDATE loan set 
+	   		state = 'ARcvCashCode', rcve_code = '$rcve_code'
+	    where loan_id = '$o' and account_id = '$accid'";  
+	    if ($conn->query($sql) === TRUE) {	 		
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+	}
 	if(isset($_POST['submitpetty'])){		
 		$pettyamount = $_POST['pettyamount'];
 		$petty_id = $_POST['petty_id'];
@@ -81,7 +103,15 @@
 	   		state = 'ARcvCash', rcve_code = '$rcve_code'
 	    where cashadv_id = '$o' and account_id = '$accid' and state = 'ACash'";  
 	    if ($conn->query($sql) === TRUE) {	 		
-			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penca"); </script>';
+	    	}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}
@@ -119,7 +149,6 @@
 	if(isset($_GET['o']) && isset($_GET['acc'])){
 		
 		$rcve_code = random_string(4);
-		echo $rcve_code;
 		$o = mysql_escape_string($_GET['o']);
 		$accid = $_SESSION['acc_id'];
 		$sql ="UPDATE petty set 
@@ -203,6 +232,40 @@
 
 <?php
 	//release with code
+	if(isset($_POST['codelon'])){
+		$accid = $_SESSION['acc_id'];
+		$pet_id = $_POST['pet_id'];
+		$rcve_code = $_POST['rcve_code'];
+		$query = "SELECT * FROM `loan` where loan_id = '$pet_id' and rcve_code = '$rcve_code'";
+		$result = $conn->query($query);
+		if($result->num_rows > 0){
+			$sql ="UPDATE loan set 
+		   		state = 'ALoan'
+		    where loan_id = '$pet_id' and state = 'ARcvCashCode' and rcve_code = '$rcve_code'"; 
+		 	if ($conn->query($sql) === TRUE) {	 		
+		    	if($_SESSION['level'] == 'Admin'){
+		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		 		}else if($_SESSION['level'] == 'ACC'){
+		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
+		 		}
+		  	}else {
+		    	echo "Error updating record: " . $conn->error;
+		  	}  
+		}else{
+			$_SESSION['err'] = 'Incorrect Code';
+			if($_SESSION['level'] == 'Admin'){
+				echo '<script type="text/javascript">window.location.replace("admin.php?loanrelease=1&petty_id='.$pet_id.'"); </script>';
+			}else if($_SESSION['level'] == 'ACC'){
+				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
+			}
+		}
+
+	}
+
+?>
+
+<?php
+	//release with code
 	if(isset($_POST['liqsubmit'])){
 		$accid = $_SESSION['acc_id'];
 		$pet_id = $_POST['pet_id'];
@@ -254,9 +317,15 @@
 		 		}else if($_SESSION['level'] == 'ACC'){
 		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
 		 		}
-		 		else if($_SESSION['level'] == 'EMP'){
-		 			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
-		 		}
+		 		elseif($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+		    	}
 		  	}else {
 		    	echo "Error updating record: " . $conn->error;
 		  	}  

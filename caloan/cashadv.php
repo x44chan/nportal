@@ -3,13 +3,17 @@
 	$sql = "SELECT * FROM cashadv,login where login.account_id = $accid and cashadv.account_id = $accid order by cadate desc";
 	$result = $conn->query($sql);
 ?>
-	<div align="center" style="margin-top: 40px;"><h3><i><u>Cash Advance Status</u></i></h3></div>
 	<table class="table">
 		<thead>
-			<th width="20%">Date File</th>
-			<th width="20%">Amount</th>
-			<th width="40%">Reason</th>
-			<th width="20%">State</th>
+			<tr>
+				<td colspan = 8 align = center><h2> Cash Advance Request Status </h2></td>
+			</tr>
+			<tr>
+				<th width="20%">Date File</th>
+				<th width="20%">Amount</th>
+				<th width="40%">Reason</th>
+				<th width="20%">State</th>
+			</tr>
 		</thead>
 		<tbody>
 <?php
