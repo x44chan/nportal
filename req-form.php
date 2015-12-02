@@ -69,14 +69,18 @@ $(document).ready(function(){
 					<td>Time Out: </td>
 					<td><input class = "form-control" name = "obtimeout" id = "obtimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
 				</tr>				
-				<tr class = "form-inline">
-					<td>Official Work Sched: </td>
-					<td>
-						<label for = "fr">From:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  name = "obofficialworkschedfr"/>
-						<label for = "to">To:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  name = "obofficialworkschedto"/>
+				<tr>					
+					<td style="float: right;">
+						<label for="restday2" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday2"/> Rest Day</label>
 					</td>
-					
-				</tr>
+				</tr>	
+				<tr id = "rday2" class = "form-inline" >
+					<td>Official Work Sched: <font color = "red">*</font></td>
+					<td style="float:left;">
+						<label for = "fr">From:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "reqto"class = "form-control"  name = "obofficialworkschedfr"/>
+						<label for = "to">To:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "reqfr"  name = "obofficialworkschedto"/>
+					</td>					
+				</tr>	
 				<tr id = "warning" style="display: none;">
 					<td></td>
 					<td>
@@ -147,7 +151,11 @@ $(document).ready(function(){
 				<tr>
 					<td>Date Of Overtime : <font color = "red">*</font></td>
 					<td><input style="width: 100%;" required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "YYYY-MM-DD" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' name = "dateofot"/></td>
-				</tr>				
+				</tr>	
+				<tr>
+					<td>CSR #: </td>
+					<td><input class = "form-control" type = "text" placeholder = "Enter CSR Number" name = "csrnum"/></td>
+				</tr>			
 				<tr>
 					<td>Reason (Work to be done): <font color = "red">*</font></td>
 					<td><textarea required placeholder = "Enter your work to be done" name = "reason"class = "form-control"></textarea></td>
@@ -163,10 +171,9 @@ $(document).ready(function(){
 				<tr>
 					<td>End (Time of OT): <font color = "red">*</font></td>
 					<td><input required onkeydown="return false;" class = "form-control" name = "endofot" placeholder = "Click to Set time" autocomplete ="off" /></td>
-					
 				</tr>	
 				<tr>
-					<td>OT Break ( if applicable ):  </td>
+					<td>OT Break ( if applicable <font color = "red" style="font-size: 12px;"><i>*for less than 8 hrs *</i></font>):<br> <font color = "red" style="font-size: 12px;"><i>Automatic <b>1 Hr</b> Deduction for more than 8 OT Hrs.</i></font>  </td>
 					<td>
 						<select class = "form-control" name = "otbreak" id = "otbreak">
 							<option value ="">--------</option>
@@ -175,8 +182,7 @@ $(document).ready(function(){
 						</select>
 					</td>					
 				</tr>
-				<tr>
-					
+				<tr>					
 					<td style="float: right;">
 						<label for="restday" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day</label>
 					</td>
@@ -437,21 +443,26 @@ $(document).ready(function(){
 		$amountpet = mysql_escape_string($_POST['amountpet']);
 		$state = 'UAPetty';
 		$datefile = date("Y-m-d");
+		//$query = "SELECT * FROM petty_liqdate,petty where petty_liqdate.account_id = '$accid' and petty.account_id = '$accid' and petty_liqdate.loan_id = petty.loan_id and (petty_liqdate.state != 'DALoan' and petty_liqdate.state != 'CompleteLiqdate')";
+		//$resquery2 = $conn->query($query2);
+		//if($resquery->num_rows > 0){
 
-		$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssss",$accid, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
-		$stmt->execute();		
-		if($_SESSION['level'] == 'EMP'){
-    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
-    	}elseif ($_SESSION['level'] == 'ACC') {
-    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
-    	}elseif ($_SESSION['level'] == 'TECH') {
-    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
-    	}elseif ($_SESSION['level'] == 'HR') {
-    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
-    	}
-		$conn->close();
 
+		//}else{
+			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("isssss",$accid, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
+			$stmt->execute();		
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+	    	}
+			$conn->close();
+		//}
 
 	}
 ?>
@@ -489,46 +500,108 @@ $(document).ready(function(){
       </div>      
     </div>
   </div> 
+ <script type="text/javascript">
+  $("button[name='submitca']").click(function(){
+     if($("input[name='amountca'").val() > 3000){
+               alert("You can't request more than ₱ 3,000.");
+               return false;
+     }
+});
+ </script>
 <?php
 	if(isset($_POST['submitca'])){
-		$datefile = date("Y-m-d");
-		$state = 'UACA';
-		$stmt = $conn->prepare("INSERT INTO cashadv (`account_id`,`cadate`, `caamount`, `careason`, state) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("issss", $_SESSION['acc_id'], $datefile, $_POST['amountca'], $_POST['careason'], $state);
-		$stmt->execute();		
-		if($_SESSION['level'] == 'EMP'){
-    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
-    	}elseif ($_SESSION['level'] == 'ACC') {
-    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penca"); </script>';
-    	}elseif ($_SESSION['level'] == 'TECH') {
-    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penca"); </script>';
-    	}elseif ($_SESSION['level'] == 'HR') {
-    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penca"); </script>';
-    	}
-		$conn->close();
-
-
+		$date = date("Y-m-d");
+		if($date > date('Y-m-16')){
+			$date = date("Y-m-01", strtotime("next month"));
+			$date2 = date("Y-m-16");
+		}else{
+			$date = date("Y-m-16");
+			$date2 = date("Y-m-01");
+		}
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and CURDATE() <= enddate and (loan_cutoff.state != 'DALoan' and loan.state != 'DECLoan')";
+		$resquery = $conn->query($query);
+		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate <= '$date' and cadate >= '$date2'";
+		$resquery2 = $conn->query($query2);
+		if($resquery2->num_rows > 0){
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance");window.location.replace("employee.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance");window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance");window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance");window.location.replace("hr.php?ac=penca"); </script>';
+	    	}
+		}elseif($resquery->num_rows > 0){
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("You still have Loan Balance.");window.location.replace("employee.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("You still have Loan Balance.");window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have Loan Balance.");window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have Loan Balance.");window.location.replace("hr.php?ac=penca"); </script>';
+	    	}
+		}else{
+			$datefile = date("Y-m-d");
+			$state = 'UACA';
+			$stmt = $conn->prepare("INSERT INTO cashadv (`account_id`,`cadate`, `caamount`, `careason`, state) VALUES (?, ?, ?, ?, ?)");
+			$stmt->bind_param("issss", $_SESSION['acc_id'], $datefile, $_POST['amountca'], $_POST['careason'], $state);
+			$stmt->execute();		
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penca"); </script>';
+	    	}
+			$conn->close();
+		}
 	}
+
 ?>
 
 <?php
 	if(isset($_POST['loanpet'])){
+		$accid = $_SESSION['acc_id'];
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		//$query = "SELECT count(loan_cutoff.loan_id) FROM loan,loan_cutoff where loan.loan_id = loan_cutoff.loan_id and '$date' BETWEEN loan_cutoff.cutoffdate and loan_cutoff.enddate and loan_cutoff.state = 'CutOffPaid'";
-		//$resquery = $conn->query($query);
-		//if($resquery->num_rows > 0){
-		//	if($_SESSION['level'] == 'EMP'){
-    	//		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("employee.php?ac=penloan"); </script>';
-	 	//  	}elseif ($_SESSION['level'] == 'ACC') {
-	    // 		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
-	    //	}elseif ($_SESSION['level'] == 'TECH') {
-	    //		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
-	    //	}elseif ($_SESSION['level'] == 'HR') {
-	    //		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("hr.php?ac=penloan"); </script>';
-	    //	}
-		//}else{
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and CURDATE() <= enddate and (loan_cutoff.state != 'DALoan' and loan.state != 'DECLoan')";
+		$resquery = $conn->query($query);
+		$date = date("Y-m-d");
+		if($date > date('Y-m-16')){
+			$date = date("Y-m-01", strtotime("next month"));
+			$date2 = date("Y-m-16");
+		}else{
+			$date = date("Y-m-16");
+			$date2 = date("Y-m-01");
+		}
+		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
+		$resquery2 = $conn->query($query2);
+		if($resquery->num_rows > 0){
+			if($_SESSION['level'] == 'EMP'){
+    			echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("employee.php?ac=penca"); </script>';
+	 	  	}elseif ($_SESSION['level'] == 'ACC') {
+	     		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("hr.php?ac=penca"); </script>';
+	    	}
+		}elseif($resquery2->num_rows > 0){
+			if($_SESSION['level'] == 'EMP'){
+    			echo '<script type="text/javascript">alert("You still have Cash.");window.location.replace("employee.php?ac=penloan"); </script>';
+	 	  	}elseif ($_SESSION['level'] == 'ACC') {
+	     		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+		}else{
 			$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate) VALUES (?, ?, ?, ?, ?)");
 			$sql->bind_param("issss", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $loandate);
 			if($sql->execute()){
@@ -557,7 +630,7 @@ $(document).ready(function(){
 		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
 		    	}
 			}
-		//}
+		}
 
 	}
 
@@ -672,6 +745,19 @@ $(document).ready(function(){
 	    	$("#upoffto").attr('required',true);
 	    	$("#upoffr").attr('required',true);
 	        $("#rday").show();
+	    }
+	});
+});
+$(document).ready(function(){
+	    $('#restday2').change(function(){
+	    if($('#restday2').is(":checked")){ 	        
+	    	$("#rday2").hide();
+	    	$("#reqto").attr('required',false);
+	    	$("#reqfr").attr('required',false);
+	    }else{
+	    	$("#to").attr('required',true);
+	    	$("#fr").attr('required',true);
+	        $("#rday2").show();
 	    }
 	});
 });

@@ -28,6 +28,9 @@
 		$time2 = date('H:i', strtotime($_POST['uptimeout']));
 		$approvedothrs = gettimediff($time1,$time2);
 		//end of computation		
+		if(substr($approvedothrs,0,2) > 8){
+			$approvedothrs = date("G:i", strtotime("-1 hour", strtotime($approvedothrs)));
+		}	
 		//ot break on ot exec
 		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
 			if($_POST['otbreak'] == '30 Mins'){
@@ -108,7 +111,11 @@
 		if(isset($_POST['updateofob'])){
 			$date = $_POST['updateofob'];
 		}
-		$officialworksched = $_POST['obofficialworkschedfr'] . ' - ' . $_POST['obofficialworkschedto'];
+		if(isset($_POST['uprestday']) && $_POST['uprestday'] == 'restday'){
+			$officialworksched = "Restday";
+		}else{
+			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+		}
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else if($post == "service technician"){
@@ -248,6 +255,9 @@
 			$time2 = date('H:i', strtotime($hruptimeout));
 			$newappot = gettimediff($time1,$time2);
 			$oldot = $oldotstrt . ' - ' . $oldotend;
+			if(substr($newappot,0,2) > 8){
+				$newappot = date("G:i", strtotime("-1 hour", strtotime($newappot)));
+			}	
 			$date = date('Y-m-d h:i A');
 			//ot break on update app
 			if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){

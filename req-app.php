@@ -12,78 +12,6 @@
 	date_default_timezone_set('Asia/Manila');
 	include("header.php");	
 ?>
-<script type = "text/javascript">
-		$(function(){
-			$("#appot").hide();
-			$("#forappot").on("click", function(){
-				$("#appot").show();
-				$("#appundr").hide();
-				$("#appob").hide();
-				$("#undertime").hide();
-				$("#offb").hide();
-				$("#formhidden").hide();
-				$("#appleave").hide();
-			});
-			
-			$("#appundr").hide();
-			$("#forappundr").on("click", function(){
-				$("#appundr").show();
-				$("#appob").hide();
-				$("#appleave").hide();
-				$("#appot").hide();
-				$("#undertime").hide();
-				$("#offb").hide();
-				$("#formhidden").hide();
-			});
-			
-			$("#appob").hide();
-			$("#forappob").on("click", function(){
-				$("#appob").show();
-				$("#appleave").hide();
-				$("#appundr").hide();
-				$("#appot").hide();
-				$("#undertime").hide();
-				$("#offb").hide();
-				$("#formhidden").hide();
-			});
-			
-			$("#appleave").hide();
-			$("#forappleave").on("click", function(){
-				$("#appleave").show();
-				$("#appob").hide();
-				$("#appundr").hide();
-				$("#appot").hide();
-				$("#undertime").hide();
-				$("#offb").hide();
-				$("#formhidden").hide();
-			});
-			
-			$("#newovertime").on("click", function(){
-				$("#appot").hide();
-				$("#appundr").hide();
-				$("#appob").hide();
-				$("#undertime").hide();
-				$("#offb").hide();
-				$("#appleave").hide();
-			});
-			$("#newundertime").on("click", function(){
-				$("#appot").hide();
-				$("#appleave").hide();
-				$("#appundr").hide();
-				$("#appob").hide();
-				$("#formhidden").hide();
-				$("#offb").hide();
-			});
-			$("#newoffb").on("click", function(){
-				$("#appot").hide();
-				$("#appob").hide();
-				$("#undertime").hide();
-				$("#formhidden").hide();
-				$("#appleave").hide();
-			});
-			
-	});
-</script>
 <div align = "center" style = "margin-bottom: 30px;">
 	<div class="alert alert-success">
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
@@ -116,16 +44,255 @@
 		</div>
 		<br><br>
 		<div class = "btn-group btn-group">
-			<button  type = "button"class = "btn btn-success" id = "forappot"> Approved Overtime Request </button>
-			<button  type = "button"class = "btn btn-success" id = "forappob"> Approved Official Business Request </button>
-			<button  type = "button"class = "btn btn-success" id = "forappleave"> Approved Leave Request </button>			
-			<button  type = "button"class = "btn btn-success" id = "forappundr"> Approved Undertime Request </button>	
+			<a  type = "button"class = "btn btn-success" href = "?appot"> Approved Overtime </a>
+			<a  type = "button"class = "btn btn-success" href = "?appob"> Approved Official Business </a>
+			<a  type = "button"class = "btn btn-success" href = "?applea"> Approved Leave  </a>			
+			<a  type = "button"class = "btn btn-success" href = "?appundr"> Approved Undertime  </a>	
+			<a  type = "button"class = "btn btn-success" href = "?apppety"> Approved Petty  </a>
+			<?php if($_SESSION['category'] == "Regular"){?>
+			<a  type = "button"class = "btn btn-success" href = "?appca"> Approved Cash Advance  </a>	
+			<a  type = "button"class = "btn btn-success" href = "?apploan"> Approved Loan </a>
+			<?php } ?>
 		</div>
 	</div>
 </div>
+<?php 
+	if(isset($_GET['loan']) && $_GET['loan'] > 0){
+		include("caloan/loan.php");
+		}
+?>
+<?php 
+	if(isset($_GET['apploan']) && !isset($_GET['loan'])){
+		include("conf.php");
+		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid and state = 'ALoan' order by state ASC";
+		$result = $conn->query($sql);		
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 8 align = center><h2> Loan Request Status </h2></td>
+					</tr>
+					<tr>
+						<th>Loan #</th>
+						<th>Date File</th>
+						<th>Amount</th>
+						<th>Start Date</th>
+						<th>Approved Amount</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				$loan_id = $row['loan_id'];
+				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id'";
+				$data = $conn->query($stmts)->fetch_assoc();
+				if(date("Y-m-d") > $data['enddate']){
+					$comp = '<b><font color = "green">Completed</font></b>';
+				}if($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
 
-<div id = "appot" style = "display: none; margin-top: -30px;">
+				}else{
+					continue;
+				}
+				echo	'<tr>';
+					echo	'<td>' . $row['loan_id'].'</td>';
+					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
+					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
+					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
+					echo	'<td style = "width: 300px;">';
+								if($row['state'] == 'UALoan'){
+									echo '<b>Pending to Admin</b>';
+								}elseif($row['state'] == 'DALoan'){
+									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
+								}elseif($row['state'] == 'DECLoan'){
+									echo '<b><font color = "red">Declined</font></b>';
+								}elseif($row['appamount'] != null && $row['appamount'] != $row['loanamount']){
+									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
+								}elseif($row['state'] == 'ARcvLoan'){
+									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
+									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+								}elseif($row['state'] == 'ARcvCashCode'){
+									echo '<font color = "green"><b>Received ';
+									echo '</font></br>Code: ' . $row['rcve_code'];
+								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
+									echo '<b><font color = "green">Completed</font></b>';
+								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
+									echo '<a href = "?loan='.$row['loan_id'].'&apploan" class = "btn btn-success">View Request</a>';
+								}
+					echo	'</td>';
+				echo '</tr>';
+			}
+		}
+		echo '</tbody></table>';
+	}
+?>
+<?php 
+	if(isset($_GET['appca'])){
+
+	include 'conf.php';
+	$sql = "SELECT * FROM cashadv,login where login.account_id = $accid and cashadv.account_id = $accid and cashadv.state = 'ACashReleased' order by cadate desc";
+	$result = $conn->query($sql);
+?>
+	<table class="table">
+		<thead>
+			<tr>
+				<td colspan = 8 align = center><h2> Cash Advance Request Status </h2></td>
+			</tr>
+			<tr>
+				<th width="20%">Date File</th>
+				<th width="20%">Amount</th>
+				<th width="40%">Reason</th>
+				<th width="20%">State</th>
+			</tr>
+		</thead>
+		<tbody>
+<?php
+	if($result->num_rows > 0){
+		while ($row = $result->fetch_assoc()) {
+			echo '<tr><td>' . date("M j, Y", strtotime($row['cadate'])) . '</td>';
+			echo '<td>₱ ' . number_format($row['caamount']) . '</td>';
+			echo '<td>' . $row['careason'] . '</td>';
+			echo '<td><b>';
+				if($row['state'] == 'UACA'){
+					echo 'Pending to Admin';
+				}elseif($row['state'] == 'DACA'){
+					echo '<font color = "red">Disapproved by the Admin</font>';
+				}elseif($row['state'] == 'ACash'){
+					echo '<a href = "petty-exec.php?cashadv='.$row['cashadv_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Cash Advance</a>';
+				}elseif($row['state'] == 'ARcvCash'){
+					echo '<font color = "green">Received</font><br>Code: '.$row['rcve_code'];
+				}elseif($row['state'] == 'ACashReleased'){
+					echo '<font color = "green">Completed</font>';
+				}
+			echo '</b></td>';
+			echo '</tr>';
+		}
+	}
+?>
+		</tbody>
+	</table>
+
+<?php
+	} 
+	if(isset($_GET['apppety'])){
+
+		include("conf.php");
+		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and state = 'AAPettyRep' order by state ASC, source asc";
+		$result = $conn->query($sql);
+		
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 8 align = center><h2> Pending Petty Request </h2></td>
+					</tr>
+					<tr>
+						<th>Petty #</th>
+						<th>Date File</th>
+						<th>Name</th>
+						<th>Particular</th>
+						<th>Source</th>
+						<th>Transfer Code</th>
+						<th>Amount</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				
+				$originalDate = date($row['date']);
+				$newDate = date("F j, Y", strtotime($originalDate));
+				$datetoday = date("Y-m-d");
+				$petid = $row['petty_id'];
+				if($row['state'] == 'AAPettyRep'){
+					$transcode = $row['transfer_id'];
+				}else{
+					$transcode = "";
+				}
+				echo 
+					'<tr>
+						<td>'.$row['petty_id'].'</td>
+						<td>'.$newDate.'</td>
+						<td>'.$row['fname'] . ' '. $row['lname'].'</td>
+						<td>'.$row['particular'].'</td>
+						<td>'.$row['source'].'</td>
+						<td>'.$transcode.'</td>
+						<td>&#8369; '.$row['amount'].'</td>
+						<td>';
+							if($row['state'] == "UAPetty"){
+								echo '<b>Pending to Admin';
+							}elseif($row['state'] == 'AAAPettyReceive'){
+								echo '<a href = "petty-exec.php?o='.$row['petty_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Petty</a>';
+							}elseif($row['state'] == 'DAPetty'){
+								echo 'Disapproved request';
+							}elseif($row['state'] == 'AAPettyReceived'){
+								echo '<font color = "green"><b>Received ';
+								echo '</font></br>Code: ' . $row['rcve_code'];
+							}elseif($row['state'] == 'AAPetty'){
+								echo '<font color = "green"><b>Pending to Accounting</font>';
+							}elseif($row['state'] == 'AAPettyRep'){
+								$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+								$data = $conn->query($sql)->fetch_assoc();
+								if($data['petty_id'] == null){
+									echo '<a class = "btn btn-danger" href = "?lqdate=' . $row['petty_id'] . '"/> To Liquidate </a>';
+								}elseif($data['liqstate'] == 'EmpVal'){
+									echo '<font color = "green"><b>Liquidated</font><br>';
+									echo '<a href = "?validate=' . $petid . '" class = "btn btn-success">Validate Code</a>';
+								}elseif($data['liqstate'] == 'CompleteLiqdate'){
+									echo '<font color = "green"><b>Completed</font>';
+								}elseif($data['liqstate'] == 'LIQDATE'){
+									echo '<b>Pending Completion</b>';
+								}
+							}
+				echo '</td></tr>';
+
+		}
+		
+	}echo '</tbody></table></form>';$conn->close();
+}
+?> 
 	<?php 
+	if(isset($_GET['appot'])){
+		if(isset($_GET['prev'])){
+			echo '<a href = "?appot" class="pull-left btn btn-primary" style="margin-left: 10px; margin-top: -20px;"> Current Cutoff </a>';
+		}else{
+			echo '<a href = "?appot&prev" class="pull-left btn btn-primary" style="margin-left: 10px; margin-top: -20px;"> Previos Cutoff </a>';
+		}
+		if(isset($_GET['prev'])){
+			$date17 = date("d");
+			if($date17 >= 17){
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
+			}else{
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31');
+			}
+		}
+	?>
+		<form role = "form" action = "approval.php" style="margin-top: -60px;" method = "get">
+		<table class = "table table-hover" align = "center">
+			<thead>
+				<tr>
+					<td colspan = 7 align = center><h2> My Approved Overtime Request <?php if(isset($_GET['prev'])){ echo '(<font color = "red"><i>Previos Cut-Off</i></font>)'; } ?></h2></td>
+				</tr>
+				<tr>
+					<th>Date File</th>
+					<th>Date of Overtime</th>
+					<th>Name of Employee</th>
+					<th>Reason</th>
+					<th>From - To (Overtime)</th>
+					<th>Offical Work Schedule</th>
+					<th>State</th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
 		include("conf.php");
 		$cutoffdate = date("Y-m-d");
 		$date17 = date("d");
@@ -144,27 +311,22 @@
 			$endque = 32;
 			$dated = date("m", strtotime("previous month"));
 		}
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
+		if(isset($_GET['prev'])){
+			$date17 = date("d");
+			if($date17 >= 17){
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
+			}else{
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31');
+			}
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
+		}else{
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
+		}
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
-	<form role = "form" action = "approval.php"    method = "get">
-		<table class = "table table-hover" align = "center">
-			<thead>
-				<tr>
-					<td colspan = 7 align = center><h2> My Approved Overtime Request </h2></td>
-				</tr>
-				<tr>
-					<th>Date File</th>
-					<th>Date of Overtime</th>
-					<th>Name of Employee</th>
-					<th>Reason</th>
-					<th>From - To (Overtime)</th>
-					<th>Offical Work Schedule</th>
-					<th>State</th>
-				</tr>
-			</thead>
-			<tbody>
 	<?php
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
@@ -200,13 +362,13 @@
 						}
 				echo '<td></tr>';
 		}
-		?>
-	
-			</tbody>
+
+	}$conn->close();
+
+?>
+</tbody>
 		</table>
 		</form>
-<?php	}$conn->close();
-	?>
 <?php
 	include("conf.php");
 	$date17 = date("d");
@@ -227,8 +389,19 @@
 		$endque = 32;
 		$dated = date("m", strtotime("previous month"));
 	}
-	$sql = "SELECT * FROM overtime where overtime.account_id = $accid and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ";
-	$result = $conn->query($sql);
+	if(isset($_GET['prev'])){
+		$date17 = date("d");
+		if($date17 >= 17){
+			$forque = date('Y-m-01');
+			$endque = date('Y-m-15');
+		}else{
+			$forque = date('Y-m-16');
+			$endque = date('Y-m-31');
+		}
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
+	}else{
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
+	}$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		$cutofftime2 = 0;	
 		$hours12 = 0;
@@ -297,17 +470,18 @@
 		}
 		echo '<div align = "center">Total OT: <strong>'. ($hours12 + substr($totalothrs,0,2)) .$point5. ' Hour/s </strong>for '.$datade. ' ' . $cutoffdate . ', ' . date("Y").'</strong></div>';
 	}
+}
 ?>
-</div>
-<div id = "appob" style = "display: none;margin-top: -30px;">
+
 	<?php 
+	if(isset($_GET['appob'])){
 		include("conf.php");
 		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and state =  'AAdmin'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			
 	?>
-	<form role = "form" action = "approval.php"    method = "get">
+	<form role = "form" action = "approval.php" style="margin-top: -50px;" method = "get">
 		<table class = "table table-hover" align = "center">
 			<thead>
 				<tr>
@@ -352,10 +526,9 @@
 		}
 		echo '</tbody></table></form>';
 	}$conn->close();
-	?>
-</div>
-<div id = "appundr" style = "display: none;margin-top: -30px;">
+}?>
 	<?php 
+	if(isset($_GET['appundr'])){
 		$date17 = date("d");
 		$dated = date("m");
 		$datey = date("Y");
@@ -371,7 +544,7 @@
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
-	<form role = "form" action = "approval.php"    method = "get">
+	<form role = "form" action = "approval.php" style="margin-top: -50px;" method = "get">
 		<table class = "table table-hover" align = "center">
 			<thead>				
 				<tr>
@@ -414,16 +587,16 @@
 					}
 			echo '</tbody></table></form>';
 		}
+	}
 	?>
-</div>
-<div id = "appleave" style = "display: none; margin-top: -30px;">
-	<?php 
+	<?php 		
+	if(isset($_GET['applea'])){
 	include("conf.php");
 	$sql = "SELECT * FROM nleave,login where login.account_id = $accid and nleave.account_id = $accid and state =  'AAdmin' ORDER BY datefile DESC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 	?>	
-	<form role = "form" action = "approval.php"    method = "get">
+	<form role = "form" action = "approval.php" style="margin-top: -50px;" method = "get">
 			<table class = "table table-hover" align = "center">
 				<thead>
 					<tr>
@@ -476,8 +649,8 @@
 		}
 		echo '</tbody></table></form>';
 	}$conn->close();
-	?>
-</div>
+	}?>
+
 
 <?php include('emp-prof.php') ?>
 <?php 

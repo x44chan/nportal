@@ -150,7 +150,7 @@
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				$loan_id = $row['loan_id'];
-				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id' and CURDATE() <= enddate";
+				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id'";
 				$data = $conn->query($stmts)->fetch_assoc();
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
@@ -174,7 +174,7 @@
 									echo '<font color = "green"><b>Received ';
 									echo '</font></br>Code: ' . $row['rcve_code'];
 								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
-									echo '<font color = "green">Completed</font>';
+									echo '<b><font color = "green">Completed</font></b>';
 								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
 									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">View Request</a>';
 								}
@@ -219,6 +219,14 @@
 				$newDate = date("F j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				$petid = $row['petty_id'];
+				if($row['state'] == 'AAPettyRep'){
+					$transcode = $row['transfer_id'];
+				}else{
+					$transcode = "";
+				}
+				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid' and petty_liqdate.liqstate = 'CompleteLiqdate'";
+				$data = $conn->query($sql)->fetch_assoc();	
+				
 				echo 
 					'<tr>
 						<td>'.$row['petty_id'].'</td>
@@ -226,7 +234,7 @@
 						<td>'.$row['fname'] . ' '. $row['lname'].'</td>
 						<td>'.$row['particular'].'</td>
 						<td>'.$row['source'].'</td>
-						<td>'.$row['transfer_id'].'</td>
+						<td>'.$transcode.'</td>
 						<td>&#8369; '.$row['amount'].'</td>
 						<td>';
 							if($row['state'] == "UAPetty"){
@@ -302,7 +310,11 @@
 				<tr>
 					<td>Date Of Overtime: </td>
 					<td><input value = "<?php echo $row['dateofot'];?>" required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "YYYY-MM-DD" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' name = "updateofot"/></td>
-				</tr>				
+				</tr>	
+				<tr>
+					<td>CSR #: </td>
+					<td><input class = "form-control" type = "text" value = "<?php echo $row['csrnum'];?>" placeholder = "Enter CSR Number" name = "csrnum"/></td>
+				</tr>			
 				<tr>
 					<td>Reason (Work to be done): </td>
 					<td><textarea required name = "reason"class = "form-control"><?php echo $row['reason'];?></textarea></td>	
@@ -616,12 +628,17 @@
 						$ex2 = $explode[1];
 					}					
 				?>
-				<tr class = "form-inline">
+				<tr>
+					<td colspan = 2 style="float: center;">
+						<label for="restday" style="font-size: 15px; width: 500px; margin-left: -200px;"><input type="checkbox" <?php if($row['officialworksched'] == "Restday"){ echo "checked";}?> value = "restday" name="uprestday" id="restday"/> Rest Day</label>
+					</td>
+				</tr>	
+				<tr id = "rday" class = "form-inline" <?php if($row['officialworksched'] == "Restday"){ echo "style = 'display: none;'";}?>>
 					<td>Official Work Sched: </td>
 					<td>
-						<label for = "fr">From:</label><input value = "<?php echo $ex1;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  name = "obofficialworkschedfr"/>
-						<label for = "to">To:</label><input value = "<?php echo $ex2;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  name = "obofficialworkschedto"/>
-					</td>
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
+					</td>					
 				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>
@@ -649,8 +666,8 @@
 				<script type="text/javascript">
 					$(document).ready(function(){
 						$('input[name="obtimein"]').ptTimeSelect();
-						$('input[name="obofficialworkschedto"]').ptTimeSelect();
-						$('input[name="obofficialworkschedfr"]').ptTimeSelect();							
+						$('input[name="upoffr"]').ptTimeSelect();
+						$('input[name="upoffto"]').ptTimeSelect();							
 						$('input[name="obtimeout"]').ptTimeSelect();
 					});
 				</script>
@@ -744,12 +761,15 @@
 				}else{
 					$otbreak = "";
 				}
+				if($row['csrnum'] != ""){
+					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+				}
 				echo 
 					'
 						<td>'.$newDate .'</td>						
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
-						<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td width = 300 height = 70>'.$row["reason"].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';

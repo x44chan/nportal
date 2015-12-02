@@ -14,7 +14,21 @@
         	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
 
     	} );
+    $('select[name="source"]').change(function() {
+	    var selected = $(this).val();
+		
+		if(selected == 'All'){
+			$('#othersl').attr('disabled',false);
+			$("#othersl").attr('required',true);
+			$('#othersl').attr("placeholder", "Enter Type of Leave");
+		}else{
+			$('#othersl').val("");
+			$('#othersl').attr('disabled',true);
+			$('#othersl').attr("placeholder", " ");
+			$("#othersl").attr('required',false);
+		}
 	});
+});
 </script>
 <style type="text/css">
 	#bords tr, #bords td{border-top: 1px black solid !important;}	
@@ -166,6 +180,7 @@
 				$data1 = $conn->query($query1)->fetch_assoc();				
 				$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$petid'";
 				$data2 = $conn->query($query2)->fetch_assoc();
+				
 				if($data2['totalliq'] != ""){
 					$tots = '<td>' . $data2['totalliq'] . '</td>';
     				$a = str_replace(',', '', $row['amount']);
@@ -185,10 +200,10 @@
 					$red = '<tr>';
 				}
 				
-				if($data['liqstate'] != 'CompleteLiqdate'){
-					echo $red;
-				}elseif($data['liqdate'] == ""){
+				if($data['liqdate'] == ""){
 					echo '<tr style = "display: none;">';
+				}elseif($data['liqstate'] != 'CompleteLiqdate'){
+					echo $red;
 				}elseif($change == " - "){
 					echo '<tr id = "backs">';
 				}else{
@@ -201,6 +216,8 @@
 				echo $tots;
 				echo '<td>' .  $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
+					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
+				}elseif($data['liqstate'] == 'EmpVal'){
 					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}else{
 					echo '<td><b> Pending Liquidate</td>';
@@ -406,6 +423,13 @@
 	}
 	if(isset($_GET['report']) && $_GET['report'] == '1'){
 		echo '<div id = "report"><h2 align = "center">Petty Report</h2>';
+		echo '<div class = "pull-right" style = "margin-bottom: 10px;"><label>Select Source</label>';
+		//echo '<select name = "source" class = "form-control">';
+		//	echo '<option value = "All"> All </option>';
+		//	echo '<option value = "Eliseo"> Eliseo </option>';
+		//	echo '<option value = "Sharon"> Sharon </option>';
+		//	echo '<option value = "Accounting"> Accounting </option>';
+		//echo '</select></div><br>';
 		echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		echo '<thead>
 				<tr>
@@ -471,7 +495,7 @@
 				if($row['transfer_id'] != null){echo '<tr><td><label>Check #</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
 				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
-				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codesub">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codesub">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
 			}
 			echo "</tbody></table></form></div>";
 			

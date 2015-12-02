@@ -155,7 +155,8 @@
 		<div class="row">
 			<div class="col-xs-12" align="center">
 				<button class="btn btn-primary" name = "loancutoff" id = "submitss">Submit Request</button>
-				<a href = "employee.php?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger">Back</a>
+				<?php if(isset($_GET['apploan'])){ echo '<a href = "?apploan" class = "btn btn-danger">Back</a>';}else{?>
+				<a href = "?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger">Back</a><?php }?>
 			</div>
 		</div>		
 	</div>
@@ -326,7 +327,8 @@ $(document).ready(function(){
 			<div class="row">
 				<div class="col-xs-12" align="center">
 					<hr>
-					<a href = "?ac=<?php echo $_GET['acc'];?>" class = "btn btn-danger"> Back </a>
+					<?php if(isset($_GET['apploan'])){ echo '<a href = "?apploan" class = "btn btn-danger">Back</a>';}else{?>
+					<a href = "?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger">Back</a><?php }?>
 				</div>
 			</div>
 		</div>

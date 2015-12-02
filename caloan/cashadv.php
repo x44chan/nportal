@@ -25,6 +25,8 @@
 			echo '<td><b>';
 				if($row['state'] == 'UACA'){
 					echo 'Pending to Admin';
+				}elseif($row['state'] == 'DACA'){
+					echo '<font color = "red">Disapproved by the Admin</font>';
 				}elseif($row['state'] == 'ACash'){
 					echo '<a href = "petty-exec.php?cashadv='.$row['cashadv_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Cash Advance</a>';
 				}elseif($row['state'] == 'ARcvCash'){

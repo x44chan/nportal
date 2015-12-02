@@ -583,11 +583,12 @@
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and officialbusiness_id = '$oid' and state = 'AHR'";
+		$state = 'AHR';
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and officialbusiness_id = '$oid' and state = '$state'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<div ><form role = "form"  align = "center"action = "update-exec.php" method = "post">
-			<table class = "table" style = "width: 50%;" align = "center">';
+			<table class = "table table-hover" style = "width: 50%;" align = "center">';
 			while($row = $result->fetch_assoc()){
 			?>
 			<tr>
@@ -646,12 +647,17 @@
 						$ex2 = $explode[1];
 					}					
 				?>
-				<tr class = "form-inline">
+				<tr>
+					<td colspan = 2 style="float: center;">
+						<label for="restday" style="font-size: 15px; width: 500px; margin-left: -200px;"><input type="checkbox" <?php if($row['officialworksched'] == "Restday"){ echo "checked";}?> value = "restday" name="uprestday" id="restday"/> Rest Day</label>
+					</td>
+				</tr>	
+				<tr id = "rday" class = "form-inline" <?php if($row['officialworksched'] == "Restday"){ echo "style = 'display: none;'";}?>>
 					<td>Official Work Sched: </td>
 					<td>
-						<label for = "fr">From:</label><input value = "<?php echo $ex1;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  name = "obofficialworkschedfr"/>
-						<label for = "to">To:</label><input value = "<?php echo $ex2;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  name = "obofficialworkschedto"/>
-					</td>
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
+					</td>					
 				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>
@@ -679,8 +685,8 @@
 				<script type="text/javascript">
 					$(document).ready(function(){
 						$('input[name="obtimein"]').ptTimeSelect();
-						$('input[name="obofficialworkschedto"]').ptTimeSelect();
-						$('input[name="obofficialworkschedfr"]').ptTimeSelect();							
+						$('input[name="upoffr"]').ptTimeSelect();
+						$('input[name="upoffto"]').ptTimeSelect();							
 						$('input[name="obtimeout"]').ptTimeSelect();
 					});
 				</script>
@@ -775,12 +781,15 @@
 				}else{
 					$otbreak = "";
 				}
+				if($row['csrnum'] != ""){
+					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+				}
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("F j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
 						<td width = 250 height = 70>'.$row["reason"]. '</td>
-						<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
@@ -828,13 +837,16 @@
 				}else{
 					$otbreak = "";
 				}
+				if($row['csrnum'] != ""){
+					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+				}
 				echo 
 					'
 						<td>'.$newDate .'</td>	
 						<td>'.$newDate2 . '</td>					
 						<td>'.$row["nameofemp"].'</td>	
 						<td width = 300 height = 70>'.$row["reason"].'</td>					
-						<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>						
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>						
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'AHR'){
@@ -1323,6 +1335,10 @@ echo '</tbody></table></form>';
 					}
 					?>	
 					</td>			
+				</tr>
+				<tr>
+					<td><b>CSR #</b></td>
+					<td><?php echo $row['csrnum'] ?>
 				</tr>
 				<tr>
 					<td><b>New Start of OT: </b></td>

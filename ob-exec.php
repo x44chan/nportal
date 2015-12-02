@@ -14,7 +14,6 @@
 		$obreason = $_POST['obreason'];
 		$obtimein = $_POST['obtimein'];
 		$obtimeout = $_POST['obtimeout'];
-		$officialworksched = $_POST['obofficialworkschedfr'] . ' - ' . $_POST['obofficialworkschedto'];
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else if($post == "service technician"){
@@ -22,7 +21,11 @@
 		}else{
 			$state = 'UA';	
 		}
-
+		if(isset($_POST['restday']) && $_POST['restday'] == 'restday'){
+			$officialworksched = "Restday";
+		}else{
+			$officialworksched = $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
+		}
 		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, obtimein, obtimeout, officialworksched, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $obtimein, $obtimeout, $officialworksched, $state);
 		$stmt->execute();

@@ -28,7 +28,11 @@
 		}
 		$time1 = date('H:i', strtotime($_POST['startofot']));
 		$time2 = date('H:i', strtotime($_POST['endofot']));
-		$approvedothrs = gettimediff($time1,$time2);				
+		$approvedothrs = gettimediff($time1,$time2);	
+	
+		if(substr($approvedothrs,0,2) > 8){
+			$approvedothrs = date("G:i", strtotime("-1 hour", strtotime($approvedothrs)));
+		}			
 		//ot break on ot exec
 		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
 			if($_POST['otbreak'] == '30 Mins'){
@@ -65,8 +69,8 @@
 		}else{
 			$state = 'UA';	
 		}		
-		$stmt = $conn->prepare("INSERT into `overtime` (account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssssssssss",$accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak);	
+		$stmt = $conn->prepare("INSERT into `overtime` (account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("issssssssssss",$accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		$stmt->execute();
 		if($_SESSION['level'] == 'EMP'){
     		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penot"); </script>';

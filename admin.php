@@ -500,7 +500,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						echo '<tr>';
 					}
-
+					if($row['csrnum'] != ""){
+						$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+					}
 					$originalDate = date($row['datefile']);
 					$newDate = date("F d, Y", strtotime($originalDate));					
 						
@@ -527,7 +529,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$otbreak = "";
 							}
 						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
-						echo '<td style = "text-align:left;"><b>HR/Tech.: '.$datehr. '</b><br>'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
+						echo '<td style = "text-align:left;"><b>HR/Tech.: '.$datehr. '</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					echo '<td >
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
