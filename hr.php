@@ -714,7 +714,7 @@
 			$forque = date('Y-m-16');
 			$endque = date('Y-m-31');
 		}else{
-			$forque = date('Y-m-1');
+			$forque = date('Y-m-01');
 			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
@@ -983,7 +983,7 @@ echo '</tbody></table></form>';
 			$forque = date('Y-m-16');
 			$endque = date('Y-m-31');
 		}else{
-			$forque = date('Y-m-1');
+			$forque = date('Y-m-01');
 			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
@@ -1097,7 +1097,7 @@ echo '</tbody></table></form>';
 			$forque = date('Y-m-16');
 			$endque = date('Y-m-31');
 		}else{
-			$forque = date('Y-m-1');
+			$forque = date('Y-m-01');
 			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
@@ -1105,7 +1105,7 @@ echo '</tbody></table></form>';
 			$endque = date('Y-m-d');
 		}
 	include("conf.php");
-	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state like 'UA' and DAY(obdatereq) >= $forque and DAY(obdatereq) < $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state like 'UA' and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
 	$result = $conn->query($sql);	
 ?>
 

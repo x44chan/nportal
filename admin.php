@@ -18,6 +18,31 @@
     	$('#myTable').DataTable({
 		    "iDisplayLength": 50    	
 		});
+		$('input[name = "transct"]').hide();
+		$('select[name = "source"]').change(function() {
+		    var selected = $(this).val();			
+			if(selected == 'Accounting' || $('select[name = "appart"]').val() == 'Cash'){
+				$('input[name = "transct"]').attr('required',false);
+				$('input[name = "transct"]').hide();
+			}else{
+				$('input[name = "transct"]').attr('required',true);
+				$('input[name = "transct"]').show();
+			}
+		});
+		$('select[name = "appart"]').change(function() {
+		    var selected = $(this).val();
+
+			$('option:selected', this).attr('selected',true).siblings().removeAttr('selected');
+			if(selected != 'Cash'){
+				$('input[name = "transct"]').attr('required',true);
+				$('input[name = "transct"]').show();
+				$('select[name = "source"]').val("");			
+			}else{
+				$('input[name = "transct"]').attr('required',false);
+				$('input[name = "transct"]').hide();
+
+			}
+		});
 	});
 </script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
@@ -81,11 +106,30 @@
 				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("F j, Y", strtotime($row['date'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
-				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">' . $row['particular'].'</td></tr>';	
-				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
-				if($row['particular'] == "Transfer"){ echo '<tr><td>Transfer ID: </td><td><input placeholder = "Enter transaction code" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
-				if($row['particular'] == "Check"){ echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
+				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
+				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">
+					<select name = "appart" class = "form-control">';
+				if($row['particular'] == "Cash"){
+					$cash = ' selected ';
+					$check = "";
+					$trans = "";
+				}elseif($row['particular'] == "Check"){
+					$check = " selected ";
+					$trans = "";
+					$cash = "";
+				}else{
+					$trans = " selected ";
+					$cash = "";
+					$check = "";
+				}
+					echo '<option value = "">----------</option>
+              			<option value = "Cash" '.$cash.'>Cash</option>
+              			<option value = "Check" '.$check.'>Check</option>
+              			<option value = "Transfer" '.$trans.'>Transfer</option>';				
+				echo '</select></td></tr>';	
 				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option><option value = "Accounting">Accounting</option></select></td></tr>';
+				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; 
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "admin.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 
 			}
@@ -174,7 +218,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				echo '<tr><td><label>Amount</label></td><td>₱ ';
 				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); } ;
 				echo '</td></tr>';
-				if($row['transfer_id'] != null){echo '<tr><td>';echo $row['transfer_id'];echo '</td></tr>';}
+				if($row['transfer_id'] != null){echo '<tr><td><b>Reference #: </td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
 				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
 				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codesub">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
@@ -605,7 +649,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		</table>
 	</form>
 </div>
-<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['loanrelease'])){ echo '</div>">';} ?>
+<?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['loanrelease'])){ echo '</div>';} ?>
 <div id = "newuser" class = "form-group" style = "display: none;">
 	<form role = "form" action = "newuser-exec.php" method = "post">
 		<table align = "center" width = "450">

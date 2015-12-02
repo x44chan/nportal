@@ -397,13 +397,12 @@
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">' . $row['particular'].'</td></tr>';	
 				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="'; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
-				if($row['particular'] == "Transfer"){ echo '<tr><td>Transfer ID: <td><input placeholder = "Enter transaction code" required value ="' . $row['transfer_id'].'"class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
+				if($row['particular'] == "Check"){ echo '<tr><td>Check #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "accounting-petty.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
-
 			}
 		}
 		echo "</table></form>";
-}
+	}
 	if(isset($_GET['report']) && $_GET['report'] == '1'){
 		echo '<div id = "report"><h2 align = "center">Petty Report</h2>';
 		echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
@@ -468,7 +467,7 @@
 				echo '<tr><td><label>Amount</label></td><td>₱ ';
 				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); } ;
 				echo '</td></tr>';
-				if($row['transfer_id'] != null){echo '<tr><td><label>Transfer Code</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
+				if($row['transfer_id'] != null){echo '<tr><td><label>Check #</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
 				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
 				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codesub">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';

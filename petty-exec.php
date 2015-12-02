@@ -36,7 +36,11 @@
 	if(isset($_POST['submitpetty'])){		
 		$pettyamount = $_POST['pettyamount'];
 		$petty_id = $_POST['petty_id'];
-		
+		if(isset($_POST['appart']) && $_POST['appart'] != ''){
+			$particular = $_POST['appart'];
+		}else{
+			$particular = "";
+		}
 		if(isset($_POST['transct'])){
 			$trans = $_POST['transct'];
 		}else{
@@ -54,11 +58,12 @@
 			$source = 'Accounting';
 		}
 		$sql ="UPDATE petty set 
-	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans'
+	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans', particular = '$particular'
 	    where petty_id = '$petty_id'"; 
 	 	if ($conn->query($sql) === TRUE) {	 		
-	    	if($_SESSION['level'] == 'Admin'){echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';}
-	    	else if($_SESSION['level'] == 'ACC'){echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';}
+	    	if($_SESSION['level'] == 'Admin'){echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+	    }
+	    	elseif($_SESSION['level'] == 'ACC'){echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}  

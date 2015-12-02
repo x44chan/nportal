@@ -40,7 +40,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
+			$sql = "UPDATE overtime set state = 'UA',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{
@@ -120,7 +120,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UATech'";			
+			$sql = "UPDATE officialbusiness set state = 'UA',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){				
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
@@ -173,7 +173,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UATech'";			
+			$sql = "UPDATE undertime set state = 'UA',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
@@ -226,7 +226,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE nleave set state = '$state',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UATech'";			
+			$sql = "UPDATE nleave set state = 'UA',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{

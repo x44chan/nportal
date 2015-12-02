@@ -655,7 +655,7 @@
 		$forque = date('Y-m-16');
 		$endque = date('Y-m-31');
 	}else{
-		$forque = date('Y-m-1');
+		$forque = date('Y-m-01');
 		$endque = date('Y-m-15');
 	}
 	if(date("d") < 2){
@@ -837,7 +837,7 @@
 			$forque = date('Y-m-16');
 			$endque = date('Y-m-31');
 		}else{
-			$forque = date('Y-m-1');
+			$forque = date('Y-m-01');
 			$endque = date('Y-m-15');
 		}
 		if(date("d") < 2){
