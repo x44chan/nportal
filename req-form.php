@@ -443,12 +443,31 @@ $(document).ready(function(){
 		$amountpet = mysql_escape_string($_POST['amountpet']);
 		$state = 'UAPetty';
 		$datefile = date("Y-m-d");
-		//$query = "SELECT * FROM petty_liqdate,petty where petty_liqdate.account_id = '$accid' and petty.account_id = '$accid' and petty_liqdate.loan_id = petty.loan_id and (petty_liqdate.state != 'DALoan' and petty_liqdate.state != 'CompleteLiqdate')";
-		//$resquery2 = $conn->query($query2);
-		//if($resquery->num_rows > 0){
-
-
-		//}else{
+		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and petty.state = 'AAPettyRep' order by state ASC, source asc";
+		$result = $conn->query($sql);
+		
+		if($result->num_rows > 0){
+			$count = 0;
+			while($row = $result->fetch_assoc()){
+			$petid = $row['petty_id'];
+			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+			$data = $conn->query($sql)->fetch_assoc();
+				if($data['petty_id'] == null){
+					$count += 1;
+				}
+		   }
+		}
+		if($count > 0){
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("employee.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("accounting.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
+	    	}
+		}else{
 			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
 			$stmt->bind_param("isssss",$accid, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
 			$stmt->execute();		
@@ -462,7 +481,7 @@ $(document).ready(function(){
 	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 			$conn->close();
-		//}
+		}
 
 	}
 ?>
