@@ -38,8 +38,6 @@
 		$petty_id = $_POST['petty_id'];
 		if(isset($_POST['appart']) && $_POST['appart'] != ''){
 			$particular = $_POST['appart'];
-		}else{
-			$particular = "";
 		}
 		if(isset($_POST['transct'])){
 			$trans = $_POST['transct'];
