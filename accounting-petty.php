@@ -279,8 +279,11 @@
 			$a = str_replace(',', '', $amount['amount']);
 			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: </b></td><td>₱ '.number_format($totalliq).'<br><br>₱ '.number_format($a - $totalliq).'</td><td></td><td></td></tr>';
 			echo '</tbody></table>';
-			echo '<div align="center"><a class = "btn btn-danger" href = "?liqdate">Back</a>';
-
+			if(!isset($_GET['complete'])){
+				echo '<div align="center"><a class = "btn btn-danger" href = "?liqdate">Back</a>';
+			}else{
+				echo '<div align="center"><a href="javascript:window.open(\'\',\'_parent\',\'\');window.close();" class = "btn btn-danger">Back</a>';
+			}
 		}
 	}
 ?>
@@ -424,12 +427,12 @@
 	if(isset($_GET['report']) && $_GET['report'] == '1'){
 		echo '<div id = "report"><h2 align = "center">Petty Report</h2>';
 		echo '<div class = "pull-right" style = "margin-bottom: 10px;"><label>Select Source</label>';
-		//echo '<select name = "source" class = "form-control">';
-		//	echo '<option value = "All"> All </option>';
-		//	echo '<option value = "Eliseo"> Eliseo </option>';
-		//	echo '<option value = "Sharon"> Sharon </option>';
-		//	echo '<option value = "Accounting"> Accounting </option>';
-		//echo '</select></div><br>';
+		echo '<select name = "source" class = "form-control">';
+			echo '<option value = "All"> All </option>';
+			echo '<option value = "Eliseo"> Eliseo </option>';
+			echo '<option value = "Sharon"> Sharon </option>';
+			echo '<option value = "Accounting"> Accounting </option>';
+		echo '</select></div><br>';
 		echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		echo '<thead>
 				<tr>
@@ -532,6 +535,8 @@
 				$a = str_replace(',', '', $row['amount']);
 				echo '<tr><td><label>Total Used Petty</label></td><td>₱ '.number_format($data2['totalliq']).'</td></tr>';
 				echo '<tr><td><label>Change</label></td><td>₱ '. ($a - $data2['totalliq']).'</td></tr>';
+				echo '<tr><td><label>Liquidation:</label></td><td><a target = "_blank" href = "?liqdate='.$row['petty_id'].'&acc='.$row['account_id'].'&complete" class = "btn btn-primary">View Liquidate</a></td></tr>';
+				
 				if($row['transfer_id'] != null){echo '<tr><td><label>Transfer Code</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				function random_string($length) {
 				    $key = '';

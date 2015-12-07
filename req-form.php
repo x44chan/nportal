@@ -421,7 +421,7 @@ $(document).ready(function(){
             </div>
             <div class="form-group">
             	 <label for="usrname"> Amount <font color = "red">*</font></label>
-            	<input type = "text" pattern = "[0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+            	<input type = "text" pattern = "[.0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
             	 <label for="usrname"> Reason <font color = "red">*</font></label>

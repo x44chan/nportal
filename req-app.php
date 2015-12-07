@@ -318,9 +318,9 @@
 				$endque = date('Y-m-15');
 			}else{
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31');
+				$endque = date('Y-m-31', strtotime("previous month"));
 			}
-			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and state = 'AAdmin'";
 		}else{
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
 		}
@@ -396,9 +396,9 @@
 			$endque = date('Y-m-15');
 		}else{
 			$forque = date('Y-m-16');
-			$endque = date('Y-m-31');
+			$endque = date('Y-m-31', strtotime("previous month"));
 		}
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'  and state = 'AAdmin'";
 	}else{
 		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
 	}$result = $conn->query($sql);

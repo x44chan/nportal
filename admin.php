@@ -627,11 +627,18 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<tr>';
 					}
 					if($row['typeoflea'] == "Sick Leave"){
-						$ftowork = $row['ftowork'];
+						$ftowork = $row['ftowork'] . '<br>';
+					}else{
+						$ftowork = "";
+					}
+					if($row['othersl'] != null){
+						$othersl = $row['othersl'] . '<br>';
+					}else{
+						$othersl = "";
 					}
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
-					echo '<td>'.$row['typeoflea']. '<br> ' .$row['othersl']. '<i style = "color: green;"> '.$row['ftowork']. ' </i></td>';
+					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num Days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$row['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
