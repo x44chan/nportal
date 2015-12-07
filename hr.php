@@ -247,7 +247,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				$petid = $row['petty_id'];
 				echo 
@@ -330,7 +330,7 @@
 				</tr>
 				<tr>
 					<td>Date File: </td>
-					<td><?php echo date("F j, Y", strtotime($row['datefile']));?></td>
+					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>
 				</tr>
 				<tr>
 					<td>Name of Employee: </td>
@@ -440,7 +440,7 @@
 				</tr>
 				<tr>
 					<td>Date File: </td>
-					<td><?php echo date("F j, Y", strtotime($row['datefile']));?></td>
+					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>
 				</tr>
 				<tr>
 					<td>Name of Employee: </td>
@@ -728,7 +728,7 @@
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UA' and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and (state = 'UA' or state = 'UATech') and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 			
 	?>
@@ -754,7 +754,7 @@
 			if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['2daysred'] ){
@@ -786,13 +786,15 @@
 				}
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
-						<td>'.date("F j, Y", strtotime($row["dateofot"])).'</td>
+						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
 						<td width = 250 height = 70>'.$row["reason"]. '</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
+				}elseif($row['state'] == 'UATech'){
+						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 				}else{
 					echo '<td width = "250">
 							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
@@ -1029,7 +1031,7 @@ echo '</tbody></table></form>';
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 				
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
@@ -1039,7 +1041,7 @@ echo '</tbody></table></form>';
 				}		
 				echo 
 					'<td width = 180>'.$newDate.'</td>
-					<td>'. date("F j, Y", strtotime($row["dateofundrtime"])).'</td>
+					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
 					<td width = 250 height = 70>'.$row["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
@@ -1064,7 +1066,7 @@ echo '</tbody></table></form>';
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 				
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
@@ -1074,7 +1076,7 @@ echo '</tbody></table></form>';
 				}	
 				echo 
 					'<td width = 180>'.$newDate.'</td>
-					<td>'. date("F j, Y", strtotime($row["dateofundrtime"])).'</td>
+					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
 					<td width = 250 height = 70>'.$row["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
@@ -1117,7 +1119,7 @@ echo '</tbody></table></form>';
 			$endque = date('Y-m-d');
 		}
 	include("conf.php");
-	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state like 'UA' and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'UA' or state = 'UATech') and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
 	$result = $conn->query($sql);	
 ?>
 
@@ -1146,7 +1148,7 @@ echo '</tbody></table></form>';
 		while($row = $result->fetch_assoc()){
 			
 			$originalDate = date($row['obdate']);
-			$newDate = date("F j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y", strtotime($originalDate));
 			$datetoday = date("Y-m-d");
 			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 				echo '<tr style = "color: red">';
@@ -1158,12 +1160,14 @@ echo '</tbody></table></form>';
 					<td>'.$row["obename"].'</td>
 					<td>'.$row["obpost"].'</td>
 					<td >'.$row["obdept"].'</td>
-					<td>'.date("F d, Y", strtotime($row['obdatereq'])).'</td>					
+					<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
 					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
 					<td>'.$row["officialworksched"].'</td>				
 					<td >'.$row["obreason"].'</td>	';
 					if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
+					}elseif($row['state'] == 'UATech'){
+						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 					}else{
 					echo'
 						<td width = "200">
@@ -1181,7 +1185,7 @@ echo '</tbody></table></form>';
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			$originalDate = date($row['obdate']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 					echo '<tr style = "color: red">';
@@ -1198,7 +1202,7 @@ echo '</tbody></table></form>';
 						<td>'.$row["obename"].'</td>
 						<td>'.$row["obpost"].'</td>
 						<td >'.$row["obdept"].'</td>
-						<td>'.date("F j, Y", strtotime($row['obdatereq'])).'</td>					
+						<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
 						<td>'.$row["obtimein"] . $split . $row['obtimeout'].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td >'.$row["obreason"].'</td>	
@@ -1272,7 +1276,7 @@ echo '</tbody></table></form>';
 				?>	
 				<tr>
 					<td><b>Date File: </b></td>
-					<td><?php echo date("F j, Y", strtotime($row['datefile']));?></td>
+					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>
 				</tr>
 				<tr>
 					<td><b>Name of Employee: </b></td>
@@ -1288,7 +1292,7 @@ echo '</tbody></table></form>';
 				</tr>
 				<tr>
 					<td><b>Date Of Overtime: </b></td>
-					<td><?php echo date("F j, Y", strtotime($row['dateofot']));?></td>
+					<td><?php echo date("M j, Y", strtotime($row['dateofot']));?></td>
 				</tr>				
 				<tr>
 					<td><b>Reason (Work to be done): </b></td>
