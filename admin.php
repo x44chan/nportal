@@ -103,7 +103,7 @@
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
-				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("F j, Y", strtotime($row['date'])).'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y", strtotime($row['date'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
@@ -308,11 +308,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			<thead>
 				<tr>
 					<th width = "12%" ><i>Date File</i></th>					
-					<th width = "15%" ><i>Name of Employee</i></th>
-					<th width = "10%" ><i>Type</i></th>
-					<th width = "23%" ><i>Reason</i></th>
-					<th width = "20%" ><i>Checked By.</i></th>
-					<th width = "20%" ><i>Action</i></th>
+					<th width = "17%" ><i>Name of Employee</i></th>
+					<th width = "13%" ><i>Type</i></th>
+					<th width = "24%" ><i>Reason</i></th>
+					<th width = "19%" ><i>Checked By.</i></th>
+					<th width = "15%" ><i>Action</i></th>
 				</tr>
 			</thead>
 			<tbody id="people">
@@ -326,9 +326,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b><?php echo $row['particular'];?><br>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></td>
+				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></font></i></td>
 				<td><?php echo $row['petreason'];?></td>
-				<td></td>
+				<td> - </td>
 				<td><?php echo '<a class = "btn btn-primary" href = "?pettyac=a&petty_id='.$row['petty_id'].'">Approve</a> ';
 						echo '<a class = "btn btn-primary" href = "petty-exec.php?pettyac=d&petty_id='.$row['petty_id'].'"">Disapprove</a>';?></td>
 				</tr>
@@ -344,7 +344,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['cadate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Cash Advance<br>₱ <?php echo $row['caamount'];?></td>
+					<td><b>Cash Advance<br><b>Amount: <i><font color = "green">₱ <?php echo $row['caamount'];?></font></td>
 					<td><?php echo $row['careason'];?></td>
 					<td> - </td>
 					<td>
@@ -370,7 +370,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Loan<br>₱ <?php echo number_format($row['loanamount']);?></td>
+					<td><b>Loan<br><b>Amount: <i><font color = "green">₱ <?php echo $row['loanamount'];?></td>
 					<td><?php echo $row['loanreason'];?></td>
 					<td> - </td>
 					<td>
@@ -451,7 +451,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b><?php echo $row['particular'];?><br>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></td>
+				<td><b><?php echo $row['particular'];?><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></font></i></td>
 				<td><?php echo $row['petreason'];?></td>
 				<td></td>
 				<td>
@@ -504,11 +504,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 					}
 					$originalDate = date($row['datefile']);
-					$newDate = date("F d, Y", strtotime($originalDate));					
-						
+					$newDate = date("M j, Y", strtotime($originalDate));					
+					$explo = (explode(":",$row['approvedothrs']));
+					if($explo[1] > 0){
+						$explo[1] = '.5';
+					}else{
+						$explo[1] = '.0';
+					}	
 					echo '<td>'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td>OT</td>';
+					echo '<td><b>Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$explo[0].$explo[1].'</font></td>';
 					echo '<td>'.$row['reason'].'</td>';	
 						if($row['datehr'] == ""){
 							$datehr = '<b><i>HR REQUEST</i></b>';
@@ -528,12 +533,12 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							}else{
 								$otbreak = "";
 							}
-						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td style = "text-align:left;"><b>HR/Tech.: '.$datehr. '</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					echo '<td >
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
@@ -546,29 +551,29 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("F d, Y", strtotime($originalDate));
+					$newDate = date("M j, Y", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
 					}else{
 						echo '<tr>';
 					}
-					$datehr = date("F d, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("F d, Y h:i A", strtotime($row['dateacc']));
+					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td>Undertime</td>';
+					echo '<td><b>Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font></td>';
 					echo '<td>'.$row['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						echo '<td>HR: '.$datehr. '</td>';
 					}else{
-						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
@@ -581,29 +586,29 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['obdate']);
-					$newDate = date("F d, Y", strtotime($originalDate));
+					$newDate = date("M j, Y", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
 					}else{
 						echo '<tr>';
 					}
-					$datehr = date("F d, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("F d, Y h:i A", strtotime($row['dateacc']));
+					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
 					echo '<td>'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td>Official Business</td>';
+					echo '<td><b>Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font></td>';
 					echo '<td>'.$row['obreason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						echo '<td>HR: '.$datehr. '</td>';
 					}else{
-						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
@@ -616,10 +621,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("F d, Y", strtotime($originalDate));
+					$newDate = date("M j, Y", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
-					$datehr = date("F d, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("F d, Y h:i A", strtotime($row['dateacc']));
+					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
 	
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -638,18 +643,18 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
-					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num Days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
+					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>NuM jays: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$row['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						echo '<td>HR: '.$datehr. '</td>';
 					}else{
-						$datehr = date("M d, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-info" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-info" role="button">Disapprove</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}

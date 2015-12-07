@@ -26,6 +26,9 @@ $(document).ready(function(){
 	$("#petamount").keyup(function(e){
         $(this).val(format($(this).val()));
     });
+    $("#uppet").keyup(function(e){
+        $(this).val(format($(this).val()));
+    });
 	//auto add comma in amount
 	var format = function(num){
 	    var str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;

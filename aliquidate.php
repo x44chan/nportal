@@ -39,8 +39,7 @@
 	<form action = "aliquidate-exec.php" method="post">
 	<input type = "hidden" name = "pet_id" value = "<?php echo $data['petty_id'];?>"/>
 		<div class="row">
-		<div class = "col-xs-12">
-			
+		<div class = "col-xs-12">			
 			<hr>
 		</div>
 	</div>

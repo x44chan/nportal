@@ -8,7 +8,7 @@
 			header("location: index.php");
 		}
 	}else{
-				header("location: index.php");
+			header("location: index.php");
 	
 	}
 	
@@ -30,7 +30,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else if($_SESSION['level'] == 'HR'){
+		}else if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
@@ -38,7 +38,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else if($_SESSION['level'] == 'TECH'){
+		}else if($_SESSION['level'] == 'TECH' && ($state == 'UA' || $state == 'DATECH')){
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
@@ -46,8 +46,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}
-		else{
+		}elseif($_SESSION['level'] == 'Admin' && ($state == 'AAdmin' || $state == 'DAAdmin')){
 			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
 				$states = "(state  = 'AHR' or state like 'UA%')";
 				$link = "?bypass";
@@ -61,7 +60,15 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}		
-		}	
+		}else{
+			if($_SESSION['level'] == 'Admin'){
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}elseif ($_SESSION['level'] == 'TECH') {
+				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
+			}elseif ($_SESSION['level'] == 'HR') {
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
+			}
+		}
 	}
 ?>
 <?php

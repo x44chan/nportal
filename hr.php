@@ -7,9 +7,13 @@
 	if(date("D") == 'Mon'){
 		$forque1 = date('Y-m-d', strtotime("-3 days"));
 		$endque1 = date('Y-m-d');
+		$tforque1 = date('Y-m-d', strtotime("-3 days"));
+		$tendque1 = date('Y-m-d');
 	}else{
 		$forque1 = date('Y-m-d', strtotime("-1 days"));
 		$endque1 = date('Y-m-d');
+		$tforque1 = date('Y-m-d', strtotime("-2 days"));
+		$tendque1 = date('Y-m-d');
 	}
 ?>
 <?php if($_SESSION['level'] != 'HR'){
@@ -89,14 +93,15 @@
 </div>
 <div id = "needaproval" style = "margin-top: -30px;">	
 <?php 
+	include 'caloan/petty.php';
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penca'){
 		include("caloan/cashadv.php");
-		}
+	}
 ?>
 <?php 
 	if(isset($_GET['loan']) && $_GET['loan'] > 0){
 		include("caloan/loan.php");
-		}
+	}
 ?>
 <?php 
 	if(isset($_GET['lqdate'])){
@@ -216,82 +221,7 @@
 	
 	}
 ?>
-<?php 
-	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
 
-		include("conf.php");
-		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid order by state ASC, source asc";
-		$result = $conn->query($sql);
-		
-	?>	
-		<form role = "form" action = "approval.php"    method = "get">
-			<table class = "table table-hover" align = "center">
-				<thead>
-					<tr>
-						<td colspan = 8 align = center><h2> Pending Petty Request </h2></td>
-					</tr>
-					<tr>
-						<th>Petty #</th>
-						<th>Date File</th>
-						<th>Name</th>
-						<th>Particular</th>
-						<th>Source</th>
-						<th>Transfer Code</th>
-						<th>Amount</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-	<?php
-		if($result->num_rows > 0){
-			while($row = $result->fetch_assoc()){
-				
-				$originalDate = date($row['date']);
-				$newDate = date("M j, Y", strtotime($originalDate));
-				$datetoday = date("Y-m-d");
-				$petid = $row['petty_id'];
-				echo 
-					'<tr>
-						<td>'.$row['petty_id'].'</td>
-						<td>'.$newDate.'</td>
-						<td>'.$row['fname'] . ' '. $row['lname'].'</td>
-						<td>'.$row['particular'].'</td>
-						<td>'.$row['source'].'</td>
-						<td>'.$row['transfer_id'].'</td>
-						<td>&#8369; '.$row['amount'].'</td>
-						<td>';
-							if($row['state'] == "UAPetty"){
-								echo '<b>Pending to Admin';
-							}elseif($row['state'] == 'AAAPettyReceive'){
-								echo '<a href = "petty-exec.php?o='.$row['petty_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Petty</a>';
-							}elseif($row['state'] == 'DAPetty'){
-								echo 'Disapproved request';
-							}elseif($row['state'] == 'AAPettyReceived'){
-								echo '<font color = "green"><b>Received ';
-								echo '</font></br>Code: ' . $row['rcve_code'];
-							}elseif($row['state'] == 'AAPetty'){
-								echo '<font color = "green"><b>Pending to Accounting</font>';
-							}elseif($row['state'] == 'AAPettyRep'){
-								$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
-								$data = $conn->query($sql)->fetch_assoc();
-								if($data['petty_id'] == null){
-									echo '<a class = "btn btn-danger" href = "?lqdate=' . $row['petty_id'] . '"/> To Liquidate </a>';
-								}elseif($data['liqstate'] == 'EmpVal'){
-									echo '<font color = "green"><b>Liquidated</font><br>';
-									echo '<a href = "?validate=' . $petid . '" class = "btn btn-success">Validate Code</a>';
-								}elseif($data['liqstate'] == 'CompleteLiqdate'){
-									echo '<font color = "green"><b>Completed</font>';
-								}elseif($data['liqstate'] == 'LIQDATE'){
-									echo '<b>Pending Completion</b>';
-								}
-							}
-				echo '</td></tr>';
-
-		}
-		
-	}echo '</tbody></table></form>';$conn->close();
-}
-?> 
 <?php
 	if(isset($_GET['validate'])){
 		$petida = mysql_escape_string($_GET['validate']);
@@ -728,7 +658,7 @@
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and (state = 'UA' or state = 'UATech') and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UA' and position != 'service technician' and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 			
 	?>
@@ -804,8 +734,63 @@
 					</tr>';
 				}
 			}
-		}else{
-			$error += 1;
+		}
+
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and (state = 'UA' or state = 'UATech') and position = 'service technician ' and datefile BETWEEN '$tforque1' and '$tendque1' ORDER BY datefile ASC";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){				
+				$originalDate = date($row['datefile']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['2daysred'] ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}
+
+				if($row['oldot'] != null && ($row['state'] == 'AHR' || $row['state'] == 'UA')){
+					$oldot = '</b><br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
+					$hrot = '<b>App. OT: <i><font color = "green">';
+					$hrclose = "</font></i>";
+				}else if($row['oldot'] != null && $row['state'] == 'AAdmin'){
+					$oldot = '<br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
+					$hrot = '<b>App. OT: <i><font color = "green">';//( '.$row['approvedothrs'] . ' ) ';
+					$hrclose = "</font></i>";
+				}else{
+					$oldot = "";
+					$hrot = '';
+					$hrclose ='';
+				}
+				if($row['otbreak'] != null){
+					$otbreak = '<br><b><i>Break: <font color = "red">'. substr($row['otbreak'], 1) . '</font>	<i><b>';
+				}else{
+					$otbreak = "";
+				}
+				if($row['csrnum'] != ""){
+					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+				}
+				echo 
+					'	<td width = 180>'.$newDate.'</td>
+						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
+						<td>'.$row["nameofemp"].'</td>
+						<td width = 250 height = 70>'.$row["reason"]. '</td>
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td>'.$row["officialworksched"].'</td>';
+				if($row['state'] == 'UAACCAdmin'){
+						echo '<td><strong>Pending to Admin<strong></td>';
+				}elseif($row['state'] == 'UATech'){
+						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
+				}else{
+					echo '<td width = "250">
+							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&upovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>
+						</td>
+					</tr>';
+				}
+			}
 		}
 
 		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
@@ -1119,7 +1104,7 @@ echo '</tbody></table></form>';
 			$endque = date('Y-m-d');
 		}
 	include("conf.php");
-	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'UA' or state = 'UATech') and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and position != 'service technician' and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
 	$result = $conn->query($sql);	
 ?>
 
@@ -1177,9 +1162,44 @@ echo '</tbody></table></form>';
 					</tr>';
 					}
 		}
-	}else{
-		$error += 1;
 	}
+
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'UA' or state = 'UATech') and position = 'service technician' and obdate BETWEEN '$tforque1' and '$tendque1' ORDER BY obdate ASC";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				
+				$originalDate = date($row['obdate']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}		
+				echo 
+						'<td>'.$newDate.'</td>
+						<td>'.$row["obename"].'</td>
+						<td>'.$row["obpost"].'</td>
+						<td >'.$row["obdept"].'</td>
+						<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
+						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+						<td>'.$row["officialworksched"].'</td>				
+						<td >'.$row["obreason"].'</td>	';
+						if($row['state'] == 'UAACCAdmin'){
+							echo '<td><strong>Pending to Admin<strong></td>';
+						}elseif($row['state'] == 'UATech'){
+							echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
+						}else{
+						echo'
+							<td width = "200">
+								<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>
+								<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button" id = "DAHR">Disapprove</a>
+							</td>
+						</tr>';
+						}
+			}
+		}
 	$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and obdate BETWEEN '$forque' and '$endque' ORDER BY state ASC,obdate ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){

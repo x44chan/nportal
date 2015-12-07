@@ -14,32 +14,23 @@
         	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
 
     	} );
-    $('select[name="source"]').change(function() {
-	    var selected = $(this).val();
-		
-		if(selected == 'All'){
-			$('#othersl').attr('disabled',false);
-			$("#othersl").attr('required',true);
-			$('#othersl').attr("placeholder", "Enter Type of Leave");
-		}else{
-			$('#othersl').val("");
-			$('#othersl').attr('disabled',true);
-			$('#othersl').attr("placeholder", " ");
-			$("#othersl").attr('required',false);
-		}
 	});
-});
 </script>
 <style type="text/css">
-	#bords tr, #bords td{border-top: 1px black solid !important;}	
+	#bords tr, #bords td{border-top: 1px black solid !important;}
+	<?php
+		if(isset($_GET['print'])){
+			echo 'body *{ visibility: hidden; }';
+		}
+	?>
 	@media print {		
 		body * {
 	    	visibility: hidden;
 	    
 	  	}
 	  	@page{
-	  		margin-left: 5mm;
-	  		margin-right: 5mm;
+	  		margin-left: 2mm;
+	  		margin-right: 2mm;
 	  	}
 	  	#datepr{
 	  		margin-top: 25px;
@@ -182,9 +173,10 @@
 				$data2 = $conn->query($query2)->fetch_assoc();
 				
 				if($data2['totalliq'] != ""){
-					$tots = '<td>' . $data2['totalliq'] . '</td>';
+					$tots = '<td>₱ ' . number_format($data2['totalliq']) . '</td>';
     				$a = str_replace(',', '', $row['amount']);
 					$change =  $a - $data2['totalliq'];
+					$change = number_format($change);
 					if($change == 0){
 						$change =  " - ";
 					}
@@ -212,13 +204,17 @@
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
-				echo '<td>P ' . $row['amount'] . '</td>';
+				echo '<td>₱ ' . $row['amount'] . '</td>';
 				echo $tots;
-				echo '<td>' .  $change . '</td>';
+				echo '<td>₱ ' .  $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
-					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
+					echo '<td id = "backs" ><b><font color = "green">Completed</font></b><br>';
+					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'EmpVal'){
-					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
+					echo '<td id = "backs" ><b><font color = "red">For Employee Validation</font></b><br>';
+					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
+				}elseif($data['liqstate'] == 'LIQDATE'){
+					echo '<td><b> Pending Completion</b><br><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}else{
 					echo '<td><b> Pending Liquidate</td>';
 				}
@@ -251,11 +247,12 @@
 			echo '<table class = "table" id = "myTableliq">';
 			echo '<thead>';
 				echo '<tr>';
-				echo '<th>Date</th>';
-				echo '<th>Type</th>';
-				echo '<th>Amount</th>';
-				echo '<th>Info</th>';
-				echo '<th>Code</th>';
+				echo '<th width="12%">Date</th>';
+				echo '<th width="12%">Type</th>';
+				echo '<th width="12%">Amount</th>';
+				echo '<th width="12%">Receipt</th>';
+				echo '<th width="40%">Info</th>';
+				echo '<th width="12%">Code</th>';
 				echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
@@ -267,22 +264,29 @@
 				$data = $conn->query($query)->fetch_assoc();
 				$query1 = "SELECT * FROM `login` where account_id = '$accid'";
 				$data1 = $conn->query($query1)->fetch_assoc();
+				if($data['rcpt'] != null){
+					$rcpt = "<b><font color = 'green'>w/ </font></b> Receipt";
+				}else{
+					$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
+				}
 				echo '<tr>';
 				echo '<td>'. date("M j, Y", strtotime($data['liqdate'])).'</td>';
 				echo '<td>'. $data['liqtype'].'</td>';
 				echo '<td>₱ '. number_format($data['liqamount']).'</td>';
+				echo '<td>' . $rcpt . '</td>';
 				echo '<td>'. $data['liqinfo'].'</td>';
 				echo '<td>'. $data['liqcode'].'</td>';
 				echo '</tr>';	
 				$totalliq += $data['liqamount'];
 			}
 			$a = str_replace(',', '', $amount['amount']);
-			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: </b></td><td>₱ '.number_format($totalliq).'<br><br>₱ '.number_format($a - $totalliq).'</td><td></td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: </b></td><td>₱ '.number_format($totalliq).'<br><br>₱ '.number_format($a - $totalliq).'</td><td></td><td></td><td></td></tr>';
 			echo '</tbody></table>';
+			echo '<hr>';
 			if(!isset($_GET['complete'])){
 				echo '<div align="center"><a class = "btn btn-danger" href = "?liqdate">Back</a>';
 			}else{
-				echo '<div align="center"><a href="javascript:window.open(\'\',\'_parent\',\'\');window.close();" class = "btn btn-danger">Back</a>';
+				echo '<div align="center"><a href = "?complete=1&petty_id='.$_GET['liqdate'].'" class = "btn btn-danger">Back</a>';
 			}
 		}
 	}
@@ -416,24 +420,114 @@
 				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">' . $row['particular'].'</td></tr>';	
-				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="'; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;">₱ '; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'</td></tr>';
 				if($row['particular'] == "Check"){ echo '<tr><td>Check #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
 				echo '<input name = "appart" value = "' . $row['particular'] . '" type="hidden"/>';
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "accounting-petty.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 			}
 		}
+		echo '<input class = "form-control" type = "hidden" name = "pettyamount" value ="'; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
 		echo "</table></form>";
 	}
 	if(isset($_GET['report']) && $_GET['report'] == '1'){
-		echo '<div id = "report"><h2 align = "center">Petty Report</h2>';
-		echo '<div class = "pull-right" style = "margin-bottom: 10px;"><label>Select Source</label>';
-		echo '<select name = "source" class = "form-control">';
-			echo '<option value = "All"> All </option>';
-			echo '<option value = "Eliseo"> Eliseo </option>';
-			echo '<option value = "Sharon"> Sharon </option>';
-			echo '<option value = "Accounting"> Accounting </option>';
-		echo '</select></div><br>';
-		echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
+		if(isset($_SESSION['dates'])){
+			$date1 = $_SESSION['dates'];
+			$date2 = $_SESSION['dates0'];
+			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));			
+		}else{
+			$date1 = date("Y-m-01");
+			$date2 = date("Y-m-t");
+			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
+		}
+		if(isset($_POST['repfilter'])){
+			$_SESSION['dates'] = $_POST['repfr'];
+			$_SESSION['dates0'] = $_POST['repto'];
+			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?report=1&'.$_POST['reptype'].'");</script>';
+		}
+		if(isset($_POST['represet'])){
+			unset($_SESSION['dates']);
+			unset($_SESSION['dates0']);
+			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?report=1");</script>';
+		}
+?>
+<form action = "" method="post">
+	<div class="container" id = "reports" style="margin-top: -20px;">
+		<div class="row">
+			<div class="col-xs-12">
+				<h4 style="margin-left: -20px;"><u><i>Petty Report Filtering </i></u></h4>
+			</div>
+		</div>
+		<div class="row" >
+			<div class="col-xs-3 col-xs-offset-1" align="center">
+				<label>Select Source</label>
+				<select class="form-control input-sm" name ="reptype">
+					<option <?php if(isset($_GET['all'])){ echo ' selected '; } ?> value="all">All</option>				
+					<option <?php if(isset($_GET['Eliseo'])){ echo ' selected '; } ?> value="Eliseo">Eliseo</option>					
+					<option <?php if(isset($_GET['Sharon'])){ echo ' selected '; } ?> value="Sharon">Sharon</option>
+					<option <?php if(isset($_GET['Accounting'])){ echo ' selected '; } ?> value="Accounting">Accounting</option>
+				</select>
+			</div>
+			<div class="col-xs-2" align="center">
+				<label>Date From</label>
+				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
+			</div>
+			<div class="col-xs-2" align="center">
+				<label>Date To</label>
+				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
+			</div>
+			<div class="col-xs-4">
+				<label style="margin-left: 50px;">Action</label>
+				<div class="form-group" align="left">
+					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
+					<button type="submit" class="btn btn-danger btn-sm" name ="represet"><span class="glyphicon glyphicon-refresh"></span> Reset</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<div class="container-fluid" style="margin-top: -10px;">
+	<div class="row">
+		<div class="col-xs-12">
+			<hr>
+		</div>
+	</div>
+</div>
+<?php
+	
+?>
+<div id = "report">
+	<div class="row" >
+		<div class="col-xs-12" align="center" <?php if(!isset($_GET['print'])){ echo 'style="margin-top: -40px;"'; } ?>>
+			<i><h3>Petty Report</h3></i>
+			<b><i>
+				<?php echo date("M j, Y", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2)); ?>
+				<?php if(isset($_GET['Eliseo'])){ echo '<br> Source: '; echo ' Eliseo ';}elseif(isset($_GET['Sharon'])){ echo '<br> Source: '; echo ' Sharon '; }elseif(isset($_GET['Accounting'])){ echo '<br> Source: '; echo ' Accounting '; } ?>
+			</i></b>
+		</div>
+		<div class="col-xs-12" align="right">
+			<i><b>Total Amount: <span class = "badge" id = "total" style = "font-size: 14px;"></span><br>
+			Total Used Petty: <span class = "badge" id = "used" style = "font-size: 14px;"></span></b></i>
+		</div>
+	</div>
+<?php
+		if(isset($_GET['Eliseo'])){
+			$link = "&Eliseo";
+		}elseif(isset($_GET['Sharon'])){
+			$link = "&Sharon";
+		}elseif(isset($_GET['Accounting'])){
+			$link = "&Accounting";
+		}elseif(isset($_GET['all'])){
+			$link = "&all";
+		}else{
+			$link = "";
+		}
+		if(isset($_GET['print'])){
+			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.'";});</script>';
+		}else{
+			echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
+		}
+		
 		echo '<thead>
 				<tr>
 					<th>Petty#</th>
@@ -441,16 +535,34 @@
 					<th>Name</th>
 					<th>Particular</th>
 					<th>Source</th>
-					<th>Transfer Code</th>
+					<th>Reference #</th>
 					<th>Amount</th>
+					<th>Used Petty</th>
+					<th>Liquidation Status</th>
 				</tr>
 			  </thead>
 			  <tbody>';
 		include("conf.php");
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AApettyRep'";
+		if(isset($_GET['Sharon'])){
+			$filt = "and source = 'Sharon' ";
+		}elseif(isset($_GET['Eliseo'])){
+			$filt = "and source = 'Eliseo' ";
+		}elseif(isset($_GET['all'])){
+			$filt = "";
+		}elseif(isset($_GET['Accounting'])){
+			$filt = "and source = 'Accounting'";
+		}else{
+			$filt = "";
+		}
+
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AApettyRep' $filt";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
+			$total = 0;
+			$change = 0;
+			$used = 0;
 			while($row = $result->fetch_assoc()){
+				$petid = $row['petty_id'];
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
@@ -458,16 +570,43 @@
 				echo '<td>' . $row['particular'] . '</td>';
 				echo '<td>' . $row['source'] . '</td>';
 				echo '<td>';
-				if($row['transfer_id'] == null){echo 'N/A';}else{echo $row['transfer_id'];} 
+				if($row['transfer_id'] == null){echo ' - ';}else{echo $row['transfer_id'];} 
 				echo '</td>';
 				echo '<td>₱ ';
 				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); } ;
 				echo '</td>';
+				echo '<td>₱ ';
+				$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
+				$data2 = $conn->query($query2)->fetch_assoc();
+				$a = str_replace(',', '', $row['amount']);
+				echo number_format($data2['totalliq']) . '</td>';
+				$used += $data2['totalliq'];
+				
+				echo '<td>';
+				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+				$data = $conn->query($sql)->fetch_assoc();
+				if($data['petty_id'] == null){
+					echo '<b>Pending Liquidation</b>';
+				}elseif($data['liqstate'] == 'EmpVal'){
+					echo '<font color = "green"><b>Liquidated</font><br>';
+				}elseif($data['liqstate'] == 'CompleteLiqdate'){
+					echo '<font color = "green"><b>Completed</font>';
+				}elseif($data['liqstate'] == 'LIQDATE'){
+					echo '<b>Pending Completion</b><br>';
+				}
+				echo '</td>';
 				echo '</tr>';
+				$total += $a;
+				$change += $a - $data2['totalliq'];
 			}
 		}
-		echo "</tbody></table></div>";
-		echo '<div align = "center"><br><button id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" onclick = "window.print();"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</button><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
+		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($total).'");  $("#used").text("₱ '.number_format($used).'"); });</script>';
+		if(isset($_GET['print'])){
+			echo '<tr><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total).'</td><td>₱ '.number_format($used).'</td><td></td></tr>';
+			echo '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change).'</td><td></td></tr>';
+		}		
+		echo "</tbody></table></div>";	
+		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
 }
 ?>
 <?php
@@ -511,6 +650,11 @@
 		$petid = $_GET['petty_id'];
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyRep'";
 		$result = $conn->query($sql);
+		$sql2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and liqstate != 'LIQDATE'";
+		$result2 = $conn->query($sql2);
+		if($result2->num_rows > 0){
+			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
+		}
 		if($result->num_rows > 0){
 			if(isset($_SESSION['err'])){
 				$err = $_SESSION['err'];
@@ -535,7 +679,7 @@
 				$a = str_replace(',', '', $row['amount']);
 				echo '<tr><td><label>Total Used Petty</label></td><td>₱ '.number_format($data2['totalliq']).'</td></tr>';
 				echo '<tr><td><label>Change</label></td><td>₱ '. ($a - $data2['totalliq']).'</td></tr>';
-				echo '<tr><td><label>Liquidation:</label></td><td><a target = "_blank" href = "?liqdate='.$row['petty_id'].'&acc='.$row['account_id'].'&complete" class = "btn btn-primary">View Liquidate</a></td></tr>';
+				echo '<tr><td><label>Liquidation:</label></td><td><a href = "?liqdate='.$row['petty_id'].'&acc='.$row['account_id'].'&complete" class = "btn btn-primary">View Liquidate</a></td></tr>';
 				
 				if($row['transfer_id'] != null){echo '<tr><td><label>Transfer Code</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				function random_string($length) {
@@ -553,7 +697,7 @@
 				echo '<tr><td><label>Code</td><td><b><i>' . $str . '</td></tr>';
 				echo '<input type = "hidden" value = "' . $str2 . '" name = "liqcode"/>'; 
 				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
-				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "liqsubmit">Complete Liquidate</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "liqsubmit">Complete Liquidate</button> <a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
 			}	
 			echo "</tbody></table></form></div>";
 			
