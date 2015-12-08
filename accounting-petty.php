@@ -151,7 +151,7 @@
 			echo '<thead>';
 				echo '<tr>';
 				echo '<th>Petty ID</th>';
-				echo '<th>Date</th>';
+				echo '<th>Liquidation Date</th>';
 				echo '<th>Name</th>';				
 				echo '<th>Source</th>';
 				echo '<th>Amount</th>';
@@ -192,11 +192,11 @@
 				}else{
 					$red = '<tr>';
 				}
-				
+				$liqdatess = date("M j, Y", strtotime($data['liqdate']));
 				if($row['state'] == 'UAPetty'){
 					continue;
 				}elseif($data['liqdate'] == ""){
-					$data['liqdate'] = $row['date'];
+					$liqdatess = ' Pending ';
 					$data['liqstate'] = "";
 					echo '<tr>';
 				}elseif($data['liqstate'] != 'CompleteLiqdate'){
@@ -207,7 +207,7 @@
 					echo '<tr>';
 				}				
 				echo '<td>'.$row['petty_id'].'</td>';
-				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
+				echo '<td>'. $liqdatess .'</td>';
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
 				echo '<td>' . $row['source'] . '</td>';
 				echo '<td>₱ ' . $row['amount'] . '</td>';
