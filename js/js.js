@@ -5,7 +5,11 @@ $(function(){
     });
 });
 $(document).ready(function(){
-	
+	$('#tbloginLog').DataTable({
+            "iDisplayLength": 50,
+            "order": [[ 1, "desc" ]],
+            "info":     false
+		});
     $("#regerr").click(function(){
         $("#regerr").attr("href", "admin.php?");
     });
