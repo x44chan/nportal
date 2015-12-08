@@ -198,7 +198,8 @@ if(isset($_GET['upovertime'])){
 				</tr>				
 				<tr>
 					<td><b>Reason (Work to be done): </b></td>
-					<td><?php echo $row['reason'];?></td>	
+					<td><?php $query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -366,7 +367,8 @@ if(isset($_GET['upovertime'])){
 				</tr>				
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php echo $row['reason'];?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php $query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -586,7 +588,8 @@ if(isset($_GET['upovertime'])){
 
 				<tr>
 					<td>Reason: </td>
-					<td><textarea class = "form-control" name = "leareason"required><?php echo $row['reason'];?></textarea></td>
+					<td><textarea class = "form-control" name = "leareason"required><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></textarea></td>
 				</tr>
 				<tr>
 					<td style = "padding: 3px;"colspan = "2" align = center>
@@ -796,11 +799,13 @@ if(isset($_GET['upovertime'])){
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("F j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
-						<td width = 250 height = 70>'.$row["reason"].'</td>
+						<td width = 250 height = 70>'.$data1["reason"].'</td>
 						<td>'.$row['csrnum'].$row["startofot"] . ' - ' . $row['endofot']. $otbreak.'</td>
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
@@ -850,14 +855,16 @@ if(isset($_GET['upovertime'])){
 				}
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
-				}
+				}$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
 						<td>'.$newDate .'</td>						
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
+						<td width = 300 height = 70>'.$data1["reason"].'</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$row["reason"].'</td>
+						
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
@@ -949,6 +956,8 @@ if(isset($_GET['upovertime'])){
 				$date2=date_create($row['dateofleavto']);
 				$diff=date_diff($date1,$date2);
 				echo $diff->format("%a");*/
+				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td>'.$newDate.'</td>
 					 <td>'.$row["nameofemployee"].'</td>
@@ -958,7 +967,7 @@ if(isset($_GET['upovertime'])){
 					 <td> Fr: '.date("F d, Y", strtotime($row["dateofleavfr"])) .'<br>To: '.date("F d, Y", strtotime($row["dateofleavto"])).'</td>
 					 <td>'.$row["numdays"]. '</td>					
 					 <td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
-					 <td >'.$row["reason"].'</td>
+					 <td >'.$data1["reason"].'</td>
 						<td width = "200"><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';
@@ -1000,7 +1009,8 @@ if(isset($_GET['upovertime'])){
 					echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
-				}
+				}$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td>'.$newDate.'</td>
 					 <td>'.$row["nameofemployee"].'</td>
@@ -1010,7 +1020,7 @@ if(isset($_GET['upovertime'])){
 					 <td> Fr: '.date("F d, Y", strtotime($row["dateofleavfr"])) .'<br>To: '.date("F d, Y", strtotime($row["dateofleavto"])).'</td>
 					 <td>'.$row["numdays"].'</td>					
 					 <td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
-					 <td >'.$row["reason"].'</td>';
+					 <td >'.$data1["reason"].'</td>';
 					 if($row['state'] == 'UA'){
 						echo '<td><strong>Pending to HR<strong></td>';
 				}else{
@@ -1061,7 +1071,7 @@ if(isset($_GET['upovertime'])){
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state like 'UATech' and datefile BETWEEN '$forque1' and '$endque1' = $datey ORDER BY datefile ASC";
+		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state = 'UATech' and datefile BETWEEN '$forque' and '$endque1' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -1077,11 +1087,13 @@ if(isset($_GET['upovertime'])){
 				}else{
 					echo '<tr>';
 				}		
+				$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td width = 180>'.$newDate.'</td>
 					<td>'. date("F j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
-					<td width = 250 height = 70>'.$row["reason"].'</td>
+					<td width = 250 height = 70>'.$data1["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
 					<td>'.$row["numofhrs"].'</td>	';
 					 if($row['state'] == 'UAACCAdmin'){
@@ -1109,12 +1121,13 @@ if(isset($_GET['upovertime'])){
 					echo '<tr style = "color: red">';
 					}else{
 						echo '<tr>';
-					}		
+					}		$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 					echo 
 						'<td width = 180>'.$newDate.'</td>
 						<td>'. date("F j, Y", strtotime($row["dateofundrtime"])).'</td>
 						<td>'.$row["name"].'</td>
-						<td width = 250 height = 70>'.$row["reason"].'</td>
+						<td width = 250 height = 70>'.$data1["reason"].'</td>
 						<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
 						<td>'.$row["numofhrs"].'</td>
 						<td width = "200"><b>';

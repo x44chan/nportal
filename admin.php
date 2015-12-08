@@ -511,10 +511,12 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$explo[1] = '.0';
 					}	
+					$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();
 					echo '<td>'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$explo[0].$explo[1].'</font></td>';
-					echo '<td>'.$row['reason'].'</td>';	
+					echo '<td>'.$data1['reason'].'</td>';	
 						if($row['datehr'] == ""){
 							$datehr = '<b><i>HR REQUEST</i></b>';
 							echo '<td > '.$datehr. '</td>';
@@ -558,12 +560,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						echo '<tr>';
 					}
+					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();	
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font></td>';
-					echo '<td>'.$row['reason'].'</td>';
+					echo '<td>'.$data1['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						echo '<td>HR: '.$datehr. '</td>';
@@ -641,10 +645,12 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$othersl = "";
 					}
+					$query1 = "SELECT * FROM `nleave` where leave_d = '$row[leave_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();	
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
 					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>NuM jays: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
-					echo '<td>'.$row['reason'].'</td>';
+					echo '<td>'.$data1['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						echo '<td>HR: '.$datehr. '</td>';

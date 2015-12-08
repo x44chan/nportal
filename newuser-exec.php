@@ -3,17 +3,17 @@
 		include 'conf.php';
 		$accid = mysql_escape_string($_GET['account_id']);
 		if($_GET['promotion'] == 'a'){
-			$sql = "UPDATE login set hrchange = '0' where account_id = '$accid' and hrchange = '1'";
+			$sql = "UPDATE login set hrchange = '0' where account_id = '$accid' and hrchange != '0'";
 			if ($conn->query($sql) === TRUE) {
 				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 			}
 		}elseif($_GET['promotion'] == 'd'){
-			$stmts = "SELECT * FROM `login` where account_id = '$accid' and hrchange = '1'";
+			$stmts = "SELECT * FROM `login` where account_id = '$accid' and hrchange != '0'";
 			$data = $conn->query($stmts)->fetch_assoc();
 			$emcatergory = $data['oldpost'];
-			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' where account_id = '$accid'";
-			if ($conn->query($stmts) === TRUE) {	 		
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' $sq where account_id = '$accid' ";
+			if ($conn->query($sql) === TRUE) {	 		
+			//	echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 		  	}
 		}
 	}

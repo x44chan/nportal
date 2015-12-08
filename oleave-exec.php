@@ -21,7 +21,12 @@
 			$typeoflea = $_POST['typeoflea'];
 			$othersl = '';
 		}
-
+		$restric = 0;
+		if($typeoflea == 'Vacation Leave'){
+			if(date("Y-m-d", strtotime("+7 days", strtotime($datefile))) > date("Y-m-d", strtotime($dateofleavfr)) ){
+				$restric = 1;
+			}
+		}
 		$reason = $_POST['leareason'];
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
@@ -34,17 +39,28 @@
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state);
-		$stmt->execute();
-		if($_SESSION['level'] == 'EMP'){
-    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penlea"); </script>';
-    	}elseif ($_SESSION['level'] == 'ACC') {
-    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penlea"); </script>';
-    	}elseif ($_SESSION['level'] == 'TECH') {
-    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penlea"); </script>';
-    	}elseif ($_SESSION['level'] == 'HR') {
-    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penlea"); </script>';
-    	}
-		$conn->close();	
-
+		if($restric == 0){
+			$stmt->execute();
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penlea"); </script>';
+	    	}
+			$conn->close();	
+		}else{
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penlea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penlea"); </script>';
+	    	}
+		}
 	}
 ?>

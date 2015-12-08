@@ -225,74 +225,41 @@ $(document).ready(function(){
 			$cstatus = $row['ecstatus'];
 			$accidd = $row['account_id'];
 			$egender = $row['egender'];
-			if($accidd == '23' && date('Y') == "2015"){
-				$desick = '6';
-				$devl = '8';
-			}elseif($accidd == '26' && date('Y') == "2015"){
-				$desick = '1';
-				$devl = '2';
-			}elseif($accidd == '14' && date('Y') == "2015"){
-				$desick = '5';
-				$devl = '5';
-			}elseif($accidd == '3' && date('Y') == "2015"){
-				$desick = '3';
-				$devl = '6';
-			}elseif($accidd == '16' && date('Y') == "2015"){
-				$desick = '';
-				$devl = '3';
-			}elseif($accidd == '12' && date('Y') == "2015"){
-				$desick = '';
-				$devl = '2';
-			}elseif($accidd == '20' && date('Y') == "2015"){
-				$desick = '1';
-				$devl = '1';
-			}elseif($accidd == '17' && date('Y') == "2015"){
-				$desick = '';
-				$devl = '6';
-			}elseif($accidd == '11' && date('Y') == "2015"){
-				$desick = '3';
-				$devl = '7';
-			}elseif($accidd == '10' && date('Y') == "2015"){
-				$desick = '';
-				$devl = '3';
-			}elseif($accidd == '4' && date('Y') == "2015"){
-				$desick = '';
-				$devl = '7';
-			}else{
-				$desick = 0;
-				$devl = 0;
+			if(date("Y") == 2015){	
+				$sl = $row['sickleave'] - $row['usedsl'];
+				$vl = $row['vacleave'] - $row['usedsl'];
+			}else{				
+				$sl = $row['sickleave'];
+				$vl = $row['vacleave'];
 			}
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Sick Leave' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
-					$availsick = $row['sickleave'] - $row1['count'];
+					$availsick = $sl - $row1['count'];
 					$scount = $row1['count'];						
 					}
 			}		
 			if($scount == null){
 				$scount = " - ";
-			}
-			
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Vacation Leave' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			}			
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
-					$availvac = $row['vacleave'] - $row1['count'];
+					$availvac = $vl - $row1['count'];
 					$count = $row1['count'];
 					}
-			}			
-			
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Others%' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			}		
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Others%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
 					$totavailvac = $availvac - $row1['count'];
 					$count = $row1['count'];
 					}
-			}	
-
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Paternity Leave' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			}
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Paternity Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
@@ -300,8 +267,7 @@ $(document).ready(function(){
 					$count = $row1['count'];
 					}
 			}
-
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Wedding Leave' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Wedding Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
@@ -368,11 +334,11 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td align = center>	Sick Leave Balance: </td>
-					<td><input readonly="" id = "sickleave" value = "<?php echo $availsick - $desick;?>" class = "form-control"/></td>
+					<td><input readonly="" id = "sickleave" value = "<?php echo $availsick;?>" class = "form-control"/></td>
 				</tr>	
 				<tr>
 					<td align = center>	Vacation Leave Balance: </td>
-					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac - $devl;?>" type = "number" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>" type = "number" class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>

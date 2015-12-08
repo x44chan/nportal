@@ -105,9 +105,9 @@
 <?php 
 		include("conf.php");
 		if(isset($_GET['active']) && $_GET['active'] == '0'){
-      $sql = "SELECT * from `login` where level != 'Admin' and active = '0' order by lname ASC";
+      $sql = "SELECT * from `login` where level != 'Admin' and active = '0' order by edatehired ASC";
     }else{
-      $sql = "SELECT * from `login` where level != 'Admin' and (active = '1' or active IS NULL) order by lname ASC";
+      $sql = "SELECT * from `login` where level != 'Admin' and (active = '1' or active IS NULL)  and edatehired is not null order by edatehired ASC";
     }
    
 		$result = $conn->query($sql);
@@ -138,8 +138,8 @@
         echo '<td>' . date("M j, Y", strtotime($row['edatehired'])) . '</td>';
         if(isset($_GET['active'])){
           //$btn = '<a onclick = "return confirm(\'Are you sure?.\');"  href = "?reactive=' . $row['account_id']. '" class = "btn btn-success"><span class="glyphicon glyphicon-check"></span> Re-Activate</a>';
+          $edit = '<a href = "?inacres=' . $row['account_id']. '" class = "btn btn-warning" data-toggle="tooltip" title = "Modify Account"><span class="glyphicon glyphicon-edit"></span></a> ';
           $btn = "";
-          $edit = "";
         }else{
           $edit = '<a href = "?modify=' . $row['account_id']. '" class = "btn btn-warning" data-toggle="tooltip" title = "Modify Account"><span class="glyphicon glyphicon-edit"></span></a> ';
           $btn = '<a onclick = "return confirm(\'Are you sure?.\');"  href = "?inactive=' . $row['account_id']. '" class = "btn btn-danger" data-toggle="tooltip" title = "Mark as In-Active"><span class="glyphicon glyphicon-remove"></span></a>';
@@ -189,7 +189,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-4">
+      <div class="col-xs-5">
         <label>Edit Category <font color = "red"> * </font></label>
         <select class="form-control" required name = "empcatergory">
           <option value="">----------------</option>
@@ -198,13 +198,23 @@
           <option <?php if($row['empcatergory'] == "Regular"){ echo ' selected '; } ?> value="Regular">Regular</option>
         </select>
       </div>
-      <div class="col-xs-4">
-        <label>Sick Leave <font color = "red"> * <i>(Enter 0 if none)</i></font></label>
-        <input <?php if($row['sickleave'] >= 0){echo ' value = "' . $row['sickleave'] . '" ';}?> type="text" required name = "sickleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Sick Leave #">
+    </div>
+    <div class = "row">
+      <div class="col-xs-3">
+        <label>Sick Leave <font color = "red"> * <i>(0 if none)</i></font></label>
+        <input <?php if($row['vacleave'] > 1){ echo ' value = "' . $row['sickleave'] . '" '; } else { echo 'value = "0"' ;} ?> type="text" value = "0" name = "sickleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Sick Leave #">
       </div>
-      <div class="col-xs-4">
+      <div class="col-xs-2">
+        <label>Used S.L. </label>
+        <input type="text" <?php if($row['usedsl'] != null){ echo ' value = "' . $row['usedsl'] . '" '; } else { echo ' value = "0" ' ;} ?> name = "usedsl" pattern = "[0-9]*" class="form-control" placeholder = "Enter Sick Leave #">
+      </div>
+      <div class="col-xs-3">
         <label>Vacation Leave <font color = "red"> * <i>(Enter 0 if none)</i></font></label>
-        <input <?php if($row['sickleave'] >= 0){echo ' value = "' . $row['vacleave'] . '" ';}?>type="text" required name = "vacleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
+        <input type="text" <?php if($row['vacleave'] > 1){ echo ' value = "' . $row['vacleave'] . '" '; } else { echo ' value = "0" ' ;} ?> name = "vacleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
+      </div>
+      <div class="col-xs-2">
+        <label>Used V.L. </label>
+        <input <?php if($row['usedvl'] != null){ echo ' value = "' . $row['usedvl'] . '" '; } else { echo ' value = "0" ' ;} ?> type="text" name = "usedvl" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
       </div>
     </div>
     <div class="row">
@@ -220,26 +230,37 @@ if(isset($_POST['upsub'])){
   $empcatergory = mysql_escape_string($_POST['empcatergory']);
   $sickleave = mysql_escape_string($_POST['sickleave']);
   $vacleave = mysql_escape_string($_POST['vacleave']);
+  $usedvl = mysql_escape_string($_POST['usedvl']);
+  $usedsl = mysql_escape_string($_POST['usedsl']);
   $modify = mysql_escape_string($_GET['modify']);
   if($empcatergory  == 'Probationary'){
     $oldpost = 'Contractual';
     $probidate = date("Y-m-d");
-    $hrchange = '1';
+    $hrchange = date("Y-m-d");
   }elseif($empcatergory  == 'Contractual'){
-    $oldpost = 'Contractual';
+    $oldpost = "Contractual";
     $probidate = "";
-    $hrchange = '1';
+    $hrchange = date("Y-m-d");
   }else{
     $oldpost  = "Probationary";
     $probidate = "";
-    $hrchange = '1';
+    $hrchange = date("Y-m-d");
   }
+  $stmts2 = "SELECT count(account_id) as count FROM `login` where account_id = '$modify' and hrchange != '0'";
+  $data = $conn->query($stmts2)->fetch_assoc();
+  
+
   $stmt = "UPDATE `login` 
-          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', probidate = '$probidate', hrchange = '$hrchange', oldpost = '$oldpost'
-          where account_id = '$modify'";
-  if($conn->query($stmt) == TRUE){
-    echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
-  }        
+          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', probidate = '$probidate', hrchange = '$hrchange', oldpost = '$oldpost',
+              usedvl = '$usedvl', usedsl = '$usedsl'
+          where account_id = '$modify' and hrchange = 0";
+  if($data['count'] == 0){
+    if($conn->query($stmt) == TRUE){
+      echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
+    }       
+  }else{
+     echo '<script type = "text/javascript">alert("You still have pending changes."); window.location.replace("hr-emprof.php");</script>';
+  } 
 }
 ?>
 <?php

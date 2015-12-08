@@ -234,9 +234,13 @@
 					<td>CSR #: </td>
 					<td><input class = "form-control" type = "text" value = "<?php echo $row['csrnum'];?>" placeholder = "Enter CSR Number" name = "csrnum"/></td>
 				</tr>			
+				<?php
+					$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();
+				?>
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php echo $row['reason'];?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php echo $data1['reason'];?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -366,10 +370,14 @@
 							$('input[name="untimefr"]').ptTimeSelect();
 						});
 					</script>
-				</div>						
+				</div>	
+				<?php
+					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();
+				?>					
 				<tr>
 					<td>Reason: </td>
-					<td><textarea required name = "unreason"class = "form-control"><?php echo $row['reason'];?></textarea></td>
+					<td><textarea required name = "unreason"class = "form-control"><?php echo $data1['reason'];?></textarea></td>
 				</tr>
 				<tr>
 					<td style = "padding: 3px;"colspan = "2" align = center>
@@ -453,10 +461,13 @@
 						Number of Days: <input value = "<?php echo $row['numdays'];?>" maxlength = "3" style = "width: 90px;"type = "text" pattern = '[0-9.]+' required name = "numdays"class = "form-control"/>
 					</td>
 				</tr>					
-
+				<?php
+					$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();
+				?>
 				<tr>
 					<td>Reason: </td>
-					<td><textarea class = "form-control" name = "leareason"required><?php echo $row['reason'];?></textarea></td>
+					<td><textarea class = "form-control" name = "leareason"required><?php echo $data1['reason'];?></textarea></td>
 				</tr>
 				<tr>
 					<td style = "padding: 3px;"colspan = "2" align = center>
@@ -683,13 +694,15 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
 						<td>'.$newDate .'</td>						
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$row["reason"].'</td>
+						<td width = 300 height = 70>'.$data1['reason'].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
@@ -759,11 +772,14 @@
 				}else{
 					echo '<tr>';
 				}	
+				$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
+				
 				echo 
 					'<td width = 180>'.$newDate.'</td>
 					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
-					<td width = 250 height = 70>'.$row["reason"].'</td>
+					<td width = 250 height = 70>'.$data1["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
 					<td>'.$row["numofhrs"].'</td>
 					<td><b>';
@@ -925,6 +941,8 @@
 				}else{
 					echo '<tr>';
 				}		
+				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td>'.$newDate.'</td>
 					<td>'.$row["nameofemployee"].'</td>
@@ -934,7 +952,7 @@
 					<td width = "300">Fr: '.date("M j, Y", strtotime($row["dateofleavfr"])) .' <br>To: '.date("M j, Y", strtotime($row["dateofleavto"])).'</td>
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
-					<td >'.$row["reason"].'</td>	
+					<td >'.$data1["reason"].'</td>	
 					<td width = "200"><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';

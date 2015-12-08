@@ -191,7 +191,8 @@
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
-			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php echo $row['reason']; ?></td></tr>
+			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></td></tr>
 		<?php
 			if($row['typeoflea'] == "Sick Leave"){
 				echo "<tr><td width='30%''><b>Fit To Work </td><td width='30%'>
@@ -280,7 +281,8 @@
 				</tr>				
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php echo $row['reason'];?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php $query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -714,11 +716,13 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
-						<td width = 250 height = 70>'.$row["reason"]. '</td>
+						<td width = 250 height = 70>'.$data1["reason"]. '</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
@@ -771,11 +775,13 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
-						<td width = 250 height = 70>'.$row["reason"]. '</td>
+						<td width = 250 height = 70>'.$data1["reason"]. '</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
@@ -827,12 +833,14 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
 						<td>'.$newDate .'</td>	
 						<td>'.$newDate2 . '</td>					
 						<td>'.$row["nameofemp"].'</td>	
-						<td width = 300 height = 70>'.$row["reason"].'</td>					
+						<td width = 300 height = 70>'.$data1["reason"].'</td>					
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>						
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
@@ -906,6 +914,8 @@
 				}else{
 					echo '<tr>';
 				}
+				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td>'.$newDate.'</td>
 					 <td>'.$row["nameofemployee"].'</td>
@@ -915,7 +925,7 @@
 					 <td> Fr: '.date("M d, Y", strtotime($row["dateofleavfr"])) .'<br>To: '.date("M d, Y", strtotime($row["dateofleavto"])).'</td>
 					 <td>'.$row["numdays"].'</td>					
 					 <td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
-					 <td >'.$row["reason"].'</td>';
+					 <td >'.$data1["reason"].'</td>';
 					 if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
 				}else{
@@ -943,6 +953,8 @@
 				}else{
 					echo '<tr>';
 				}		
+				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'<td>'.$newDate.'</td>
 					<td>'.$row["nameofemployee"].'</td>
@@ -952,7 +964,7 @@
 					<td width = "300">Fr: '.date("M j, Y", strtotime($row["dateofleavfr"])) .' <br>To: '.date("M j, Y", strtotime($row["dateofleavto"])).'</td>
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' ' . $row['othersl']. '</td>	
-					<td >'.$row["reason"].'</td>	
+					<td >'.$data1["reason"].'</td>	
 					<td width = "200"><b>';
 							if($row['state'] == 'AHR'){
 								echo 'Pending to Admin<br>';
@@ -1023,12 +1035,14 @@ echo '</tbody></table></form>';
 				echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
-				}		
+				}
+				$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();		
 				echo 
 					'<td width = 180>'.$newDate.'</td>
 					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
-					<td width = 250 height = 70>'.$row["reason"].'</td>
+					<td width = 250 height = 70>'.$data1["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
 					<td>'.$row["numofhrs"].'</td>	';
 					 if($row['state'] == 'UAACCAdmin'){
@@ -1059,11 +1073,13 @@ echo '</tbody></table></form>';
 				}else{
 					echo '<tr>';
 				}	
+				$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();	
 				echo 
 					'<td width = 180>'.$newDate.'</td>
 					<td>'. date("M j, Y", strtotime($row["dateofundrtime"])).'</td>
 					<td>'.$row["name"].'</td>
-					<td width = 250 height = 70>'.$row["reason"].'</td>
+					<td width = 250 height = 70>'.$data1["reason"].'</td>
 					<td>'.$row["undertimefr"] . ' - ' . $row['undertimeto'].'</td>
 					<td>'.$row["numofhrs"].'</td>
 					<td><b>';
@@ -1316,7 +1332,8 @@ echo '</tbody></table></form>';
 				</tr>				
 				<tr>
 					<td><b>Reason (Work to be done): </b></td>
-					<td><?php echo $row['reason'];?></td>	
+					<td><?php $query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				$data1 = $conn->query($query1)->fetch_assoc();echo $data1['reason'];?></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
