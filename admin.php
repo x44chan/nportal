@@ -18,6 +18,11 @@
     	$('#myTable').DataTable({
 		    "iDisplayLength": 50    	
 		});
+		$('#tbloginLog').DataTable({
+            "iDisplayLength": 50,
+            "order": [[ 1, "desc" ]],
+            "info":     false
+		});
 		$('input[name = "transct"]').hide();
 		$('select[name = "source"]').change(function() {
 		    var selected = $(this).val();			
@@ -54,7 +59,8 @@
 		<div class="btn-group btn-group-lg">
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
-     		<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>	
+     		<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
+     		<a href = "?login_log" type = "button"class = "btn btn-primary"  >Login Log</a>	
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -87,6 +93,10 @@
 <?php
 	if(isset($_GET['cashac']) && $_GET['cashac'] == 'a'){
 		include 'caloan/cashac-admin.php';
+	}
+	if(isset($_GET['login_log'])){
+		include 'login_log.php';
+		echo '</div><div style = "display: none;">';
 	}
 	if(isset($_GET['loanac']) && $_GET['loanac'] == 'a'){
 		include 'caloan/loanac-admin.php';
@@ -387,25 +397,35 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	}
-	$sql = "SELECT * from `login` where hrchange = '1'";
+	$sql = "SELECT * from `login` where hrchange != '0'";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
+		$tag2 = "Promotion";
+		$tag = "";
 		while($row = $result->fetch_assoc()){
 			if($row['probidate'] != null){
 				$edate = date("M j, Y", strtotime($row['probidate']));
 			}else{
 				$edate = "";
 			}
+			if($row['vacleave'] != '0'){
+				$tag2 = 'Vacation Leave<br><br>' . $tag2;
+				$tag = 'Vacation Leave: ' . $row['vacleave'] . '<br> <font color = "red">Used V.Leave: ' . $row['usedvl'] .'</font><br>'. $tag;
+			}
+			if($row['sickleave'] != '0'){
+				$tag2 = 'Sick Leave<br><br>' . $tag2;
+				$tag = 'Sick Leave: ' . $row['sickleave'] . '<br> <font color = "red">Used S.Leave: ' . $row['usedsl'] .'</font><br>'. $tag;
+			}
 	?>
 				<tr>
 					<td><?php echo $edate;?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Promotion<br></td>
-					<td><b><i><font color = "red"><?php echo $row['oldpost'] . '</font><br>To<br><font color = "green">' . $row['empcatergory'] . '</font>';?></b></td>
+					<td><b><?php echo $tag2;?></td>
+					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>';?></b></td>
 					<td><b> HR Department </b></td>
 					<td>
 						<?php 
-							if($row['hrchange'] == '1'){
+							if($row['hrchange'] != '0'){
 								echo '<a class = "btn btn-primary" href = "newuser-exec.php?promotion=a&account_id='.$row['account_id'].'">Approve</a> ';
 								echo '<a class = "btn btn-primary" href = "newuser-exec.php?promotion=d&account_id='.$row['account_id'].'"">Disapprove</a>';
 							}

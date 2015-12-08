@@ -153,7 +153,7 @@
 		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon')";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
-			echo '<div id = "backs" style = "margin-bottom: 50px;"><a class = "btn btn-primary pull-right" href = "acc-printallchange.php"/>Print All To Return Changes</a></div>';
+			//echo '<div id = "backs" style = "margin-bottom: 50px;"><a class = "btn btn-primary pull-right" href = "acc-printallchange.php"/>Print All To Return Changes</a></div>';
 			echo '<table class = "table" id = "myTableliq">';
 			echo '<thead>';
 				echo '<tr>';
@@ -286,15 +286,29 @@
 				echo '</tr>';	
 				$totalliq += $data['liqamount'];
 			}
-			$a = str_replace(',', '', $amount['amount']);
-			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: </b></td><td>₱ '.number_format($totalliq).'<br><br>₱ '.number_format($a - $totalliq).'</td><td></td><td></td><td></td></tr>';
-			echo '</tbody></table>';
-			echo '<hr>';
-			if(!isset($_GET['complete'])){
-				echo '<div align="center"><a class = "btn btn-danger" href = "?liqdate">Back</a>';
+			if($data['accval'] == null){
+				$excess = '<a href = "petty-exec.php?excesscode='.$_GET['liqdate'].'&acc='.$_GET['acc'].'" class = "btn btn-success">Receive Change</a>';
 			}else{
-				echo '<div align="center"><a href = "?complete=1&petty_id='.$_GET['liqdate'].'" class = "btn btn-danger">Back</a>';
+				$excess = $data['admincode'];
 			}
+			if($data['accval'] == 'AdminRcv'){
+				$rcv = 'Pending Accounting Validation';
+			}elseif($data['accval'] == null){
+				$rcv = "";
+			}else{
+				$rcv = '<font color = "green">Completed</font>';
+			}
+			$a = str_replace(',', '', $amount['amount']);
+			$change = ($a - $totalliq);
+			if($change == 0){
+				$rcv = " - ";
+				$excess = " - ";
+			}
+			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: <br><br>Code: <br><br>Status: </b></td><td>₱ '.number_format($totalliq).'<br><br>₱ '. number_format($change) .'<br><br>'.$excess.'<br><br><b>'.$rcv.'</b></td><td></td><td></td><td></td></tr>';
+			echo '</tbody></table></div>';
+			echo '<div align = "center"><a href = "admin-petty.php?liqdate" class = "btn btn-danger">Back</a>';
+		}else{
+			echo '<script type="text/javascript">window.location.replace("?liqdate"); </script>';
 		}
 	}
 ?>

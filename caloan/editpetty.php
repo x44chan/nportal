@@ -18,11 +18,11 @@
 ?>
 <form action = "" method="post">
 	<div class="row">
-		<div class="col-xs-4">
+		<div class="col-xs-3">
 			<label>Name</label>
 			<i><p style="margin-left: 10px;"><?php echo $row['fname'] . ' ' . $row['lname'];?></p></i>
 		</div>
-		<div class="col-xs-4">
+		<div class="col-xs-3">
 			<label>Particular</label>
 			<select class="form-control" name = "upparti">
 				<option value=""> ----------- </option>
@@ -31,9 +31,13 @@
 				<option value="Transfer" <?php if($row['particular'] == "Transfer"){ echo ' selected '; }?>> Transfer </option>
 			</select>
 		</div>
-		<div class="col-xs-4">
+		<div class="col-xs-3">
 			<label>Update Amount</label>
 			<input type="text" class="form-control" value="<?php echo $row['amount'];?>" name = "upamount" id = "uppet" pattern = "[0-9,]*">
+		</div>
+		<div class="col-xs-3">
+			<label>Reason</label>
+			<textarea name = "upreason" class="form-control"><?php echo $row['petreason'];?></textarea>
 		</div>
 	</div>
 	<div class="row">
@@ -53,7 +57,8 @@ echo '</div>';
 	if(isset($_POST['uppetty'])){
 		$upparti = mysqli_real_escape_string($conn, $_POST['upparti']);
 		$upamount =  mysqli_real_escape_string($conn, $_POST['upamount']);
-		$sql = "UPDATE `petty` set amount = '$upamount', particular = '$upparti' where account_id = '$accid' and petty_id = '$petid' and state = 'UAPetty'";
+		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
+		$sql = "UPDATE `petty` set amount = '$upamount', particular = '$upparti', petreason = '$upreason' where account_id = '$accid' and petty_id = '$petid' and state = 'UAPetty'";
 		if($conn->query($sql) == TRUE){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
