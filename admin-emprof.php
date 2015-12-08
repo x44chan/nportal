@@ -12,13 +12,15 @@
 	<?php
 	}
 ?>
-<script type="text/javascript">		
+<script type="text/javascript">   
     $(document).ready( function () {
-    	$('#myTable').DataTable({
+      $('[data-toggle="tooltip"]').tooltip();
+      $('#xmyTable').DataTable({
         "aaSorting": []
     } );
-	});
+  });
 </script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
 <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
 <div align = "center">
@@ -29,6 +31,7 @@
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
       <a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>	
+      <a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -61,6 +64,10 @@
 ?>
 <div id = "needaproval" style="min-height: 300px; text-transform: capitalize;">
 <?php 
+if(isset($_GET['login_log'])){
+    include 'login_log.php';
+    echo '</div><div style = "display: none;">';
+  }
 	if(!isset($_GET['view'])){?>
 	<div id = "report"><h2 align = "center"><?php if(isset($_GET['active']) && $_GET['active'] == '0'){echo '<i>In-Active</>';}?> Employee List </h2>
   <?php 
@@ -70,13 +77,14 @@
       echo '<a href ="admin-emprof.php?active=0" class = "btn btn-danger pull-right" style = "margin-bottom: 20px; margin-right: 10px;"><span class="glyphicon glyphicon-eye-close"></span>  View In-Active Employee </a>';
     }
   ?>
-		<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">
+		<table id = "xmyTable" align = "center" class = "table table-hover" style="font-size: 14px;">
 		<thead>
 				<tr>
 					<th>Account ID</th>
           <th>Name</th>
           <th>Position</th>
           <th>Department</th>
+          <?php if(isset($_GET['active']) && $_GET['active'] == 0){echo '<th> Last Day / Reason </th>'; }?>
           <th>Category</th>
           <th>Date Hired</th>
           <th>Action</th>
@@ -103,20 +111,29 @@
         }else{
           $edate = "";
           $tonull = 'asd';
-        }
-        if($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+5 months", strtotime($edate)))){
-          echo '<tr style = "color: red; font-weight: bold;">';
-        }elseif($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+4 months", strtotime($edate))) ){
-         echo '<tr style = "color: green; font-weight: bold;">';
-        }else{
+        }if(isset($_GET['active']) && $_GET['active'] == '0'){
           echo '<tr>';
-        }   
+        }else{
+          if($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+5 months", strtotime($edate)))){
+            echo '<tr style = "color: red; font-weight: bold;">';
+          }elseif($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+4 months", strtotime($edate))) ){
+           echo '<tr style = "color: green; font-weight: bold;">';
+          }else{
+            echo '<tr>';
+          }   
+        }
+         if($row['edatehired'] < date("2005-m-d")){
+          $row['edatehired'] = "";
+        }else{
+          $row['edatehired'] = date("M j, Y", strtotime($row['edatehired']));
+        }
         echo '<td>' . $row['account_id'] . '</td>';
         echo '<td>' . $row['fname'] . ' ' . $row['mname']. ' ' . $row['lname'] . '</td>';       
         echo '<td>' . $row['position'] . '</td>';
         echo '<td>' . $row['department'] . '</td>';
+         if(isset($_GET['active']) && $_GET['active'] == 0){echo '<td> '.date("M j, Y", strtotime($row['last_day'])). ' / <font color = "red"><b>' . $row['ldreason'] .' </td>'; }
         echo '<td>' . $row['empcatergory'] . '</td>';
-        echo '<td>' . date("M j, Y", strtotime($row['edatehired'])) . '</td>';
+        echo '<td>' . $row['edatehired'] . '</td>';
 				echo '<td><a href = "?view=' . $row['account_id']. '" class = "btn btn-primary" target = "_blank"><span class="glyphicon glyphicon-search"></span> View Profile</a></td>'; 
 				echo '</tr>';
 			}

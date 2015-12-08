@@ -115,7 +115,8 @@
 		<div class="btn-group btn-group-lg">
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>
-			<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>				
+			<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
+			<a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>				
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -148,6 +149,10 @@
 ?>
 <div id = "needaproval">
 <?php
+if(isset($_GET['login_log'])){
+		include 'login_log.php';
+		echo '</div><div style = "display: none;">';
+	}
 	if(isset($_GET['liqdate']) && $_GET['liqdate'] == ""){
 		include 'conf.php';
 		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon')";

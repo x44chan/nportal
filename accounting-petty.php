@@ -152,8 +152,9 @@
 				echo '<tr>';
 				echo '<th>Petty ID</th>';
 				echo '<th>Date</th>';
-				echo '<th>Name</th>';
-				echo '<th>Petty Amount</th>';
+				echo '<th>Name</th>';				
+				echo '<th>Source</th>';
+				echo '<th>Amount</th>';
 				echo '<th>Total Used Petty</th>';
 				echo '<th>Change</th>';
 				echo '<th id = "backs" >Status</th>';
@@ -176,7 +177,7 @@
 					$tots = '<td>₱ ' . number_format($data2['totalliq']) . '</td>';
     				$a = str_replace(',', '', $row['amount']);
 					$change =  $a - $data2['totalliq'];
-					$change = number_format($change);
+					$change = '₱ ' . number_format($change);
 					if($change == 0){
 						$change =  " - ";
 					}
@@ -192,8 +193,12 @@
 					$red = '<tr>';
 				}
 				
-				if($data['liqdate'] == ""){
-					echo '<tr style = "display: none;">';
+				if($row['state'] == 'UAPetty'){
+					continue;
+				}elseif($data['liqdate'] == ""){
+					$data['liqdate'] = $row['date'];
+					$data['liqstate'] = "";
+					echo '<tr>';
 				}elseif($data['liqstate'] != 'CompleteLiqdate'){
 					echo $red;
 				}elseif($change == " - "){
@@ -204,9 +209,10 @@
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
+				echo '<td>' . $row['source'] . '</td>';
 				echo '<td>₱ ' . $row['amount'] . '</td>';
 				echo $tots;
-				echo '<td>₱ ' .  $change . '</td>';
+				echo '<td>' .  $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
 					echo '<td id = "backs" ><b><font color = "green">Completed</font></b><br>';
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
@@ -422,7 +428,7 @@
 				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">' . $row['particular'].'</td></tr>';	
 				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;">₱ '; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'</td></tr>';
 				if($row['particular'] == "Check"){ echo '<tr><td>Check #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; }		
-				echo '<input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<input class = "form-control" type = "hidden" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
 		
 				echo '<input name = "appart" value = "' . $row['particular'] . '" type="hidden"/>';
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "accounting-petty.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
@@ -558,10 +564,11 @@
 
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AApettyRep' $filt";
 		$result = $conn->query($sql);
+		$total = 0;
+		$change = 0;
+		$used = 0;
 		if($result->num_rows > 0){
-			$total = 0;
-			$change = 0;
-			$used = 0;
+			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
 				echo '<tr>';

@@ -1,3 +1,4 @@
+<?php date_default_timezone_set("Asia/Manila"); ?>
 <?php
 	if(isset($_SESSION['acc_id'])){
 		$accid = $_SESSION['acc_id'];

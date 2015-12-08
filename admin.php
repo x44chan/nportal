@@ -18,11 +18,7 @@
     	$('#myTable').DataTable({
 		    "iDisplayLength": 50    	
 		});
-		$('#tbloginLog').DataTable({
-            "iDisplayLength": 50,
-            "order": [[ 1, "desc" ]],
-            "info":     false
-		});
+		
 		$('input[name = "transct"]').hide();
 		$('select[name = "source"]').change(function() {
 		    var selected = $(this).val();			
@@ -60,7 +56,7 @@
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
      		<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
-     		<a href = "?login_log" type = "button"class = "btn btn-primary"  >Login Log</a>	
+     		<a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>	
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -669,7 +665,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					$data1 = $conn->query($query1)->fetch_assoc();	
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
-					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>NuM jays: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
+					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$data1['reason'].'</td>';
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';

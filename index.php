@@ -75,6 +75,10 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				}else{
 					$_SESSION['category'] = $row['empcatergory'];
 				}
+				$datetime = date("M j, Y g:i:s A");
+				$in = "in";
+				$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
+				$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
 				?>
 			<?php
 				if($_SESSION['level'] == 'Admin'){
@@ -86,11 +90,13 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				<script type="text/javascript">	window.location.replace("employee.php?ac=penot"); </script>
 			<?php
 				}else if($_SESSION['level'] == 'HR'){
+					$stmt->execute();
 			?>
 				<script type="text/javascript"> window.location.replace("hr.php?ac=penot"); </script>
 			<?php
 				}else if($row['level'] == 'TECH'){
-				echo '<script type="text/javascript"> window.location.replace("techsupervisor.php?ac=penot"); </script>';
+					$stmt->execute();
+					echo '<script type="text/javascript"> window.location.replace("techsupervisor.php?ac=penot"); </script>';
 				}else{
 			?>
 				<script type="text/javascript"> window.location.replace("accounting.php?ac=penot"); </script>

@@ -77,7 +77,8 @@
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary" href = "admin.php">Home</a>
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>
-			<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>			
+			<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
+			<a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>			
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -99,9 +100,18 @@
 		</div>
 	</div>
 </div>
+<?php
 
+if(isset($_GET['login_log'])){
+		include 'login_log.php';
+		echo '</div><div style = "display: none;">';
+	}?>
 <div id = "dappot" style = "margin-top: -30px; display: none;">
 	<?php 
+	if(isset($_GET['login_log'])){
+		include 'login_log.php';
+		echo '</div><div style = "display: none;">';
+	}
 		include("conf.php");
 		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'DAAdmin'";
 		$result = $conn->query($sql);
