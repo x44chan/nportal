@@ -10,19 +10,19 @@ $(document).ready(function(){
         $("#regerr").attr("href", "admin.php?");
     });
 	$('#typeoflea').change(function() {
-    var selected = $(this).val();
-	
-	if(selected == 'Others'){
-		$('#othersl').attr('disabled',false);
-		$("#othersl").attr('required',true);
-		$('#othersl').attr("placeholder", "Enter Type of Leave");
-	}else{
-		$('#othersl').val("");
-		$('#othersl').attr('disabled',true);
-		$('#othersl').attr("placeholder", " ");
-		$("#othersl").attr('required',false);
-	}
-});
+	    var selected = $(this).val();
+		
+		if(selected == 'Others'){
+			$('#othersl').attr('disabled',false);
+			$("#othersl").attr('required',true);
+			$('#othersl').attr("placeholder", "Enter Type of Leave");
+		}else{
+			$('#othersl').val("");
+			$('#othersl').attr('disabled',true);
+			$('#othersl').attr("placeholder", " ");
+			$("#othersl").attr('required',false);
+		}
+	});
 	$("#petamount").keyup(function(e){
         $(this).val(format($(this).val()));
     });
