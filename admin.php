@@ -645,7 +645,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$othersl = "";
 					}
-					$query1 = "SELECT * FROM `nleave` where leave_d = '$row[leave_id]'";
+					$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();	
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
