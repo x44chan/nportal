@@ -81,24 +81,47 @@
 		}	
 		if($_SESSION['level'] == 'HR'){
 			$state = 'AHR';
-		}	
+		}
+		$stmts2x = "SELECT * FROM `overtime` where overtime_id = '$_SESSION[otid]' and  account_id = '$accid'";
+  		$dxata = $conn->query($stmts2x)->fetch_assoc();
+		if(date("D") == 'Mon'){
+			$minus = '-3 days';
+		}else{
+			$minus = '-1 days';
+		}
+		$restric = 0;
+		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date)) || date("Y-m-d") < date("Y-m-d", strtotime($date))){
+				$restric = 1;			
+		}
 		$stmt = "UPDATE `overtime` set 
 			otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
 			where account_id = '$accid' and state like '$state' and overtime_id = '$_SESSION[otid]'";
-		if ($conn->query($stmt) === TRUE) {
+		if($restric == 0){
+			if ($conn->query($stmt) === TRUE) {
+				if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}
+		  	}else {
+		    	echo "Error updating record: " . $conn->error;
+		  	}
+			$conn->close();
+		}else{
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penot"); </script>';
 	    	}
-	  	}else {
-	    	echo "Error updating record: " . $conn->error;
-	  	}
-		$conn->close();
+		}
 		
 	}
 
