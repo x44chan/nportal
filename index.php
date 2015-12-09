@@ -70,7 +70,7 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				$_SESSION['post'] = $row['position'];
 				$_SESSION['dept'] = $row['department'];
 				$_SESSION['datehired'] = $row['edatehired'];
-				if($row['hrchange'] == 1){
+				if($row['hrchange'] != 0){
 					$_SESSION['category'] = $row['oldpost'];
 				}else{
 					$_SESSION['category'] = $row['empcatergory'];
@@ -78,16 +78,15 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				echo  '<div class="alert alert-success" align = "center">						
 						<strong>Logging in ~!</strong>
 						</div>';
-			  	echo '<script type="text/javascript">setTimeout(function() {window.location.href = "/csr"},1000);; </script>';
 				?>
 			<?php
 				if($_SESSION['level'] == 'Admin'){
 			?>
-				<script type="text/javascript">window.location.href = "admin.php"; </script>
+				<script type="text/javascript">setTimeout(function() {window.location.href = "admin.php"},600);</script>
 			<?php
 				}else if($_SESSION['level'] == 'EMP'){
 			?>
-				<script type="text/javascript">	window.location.replace("employee.php?ac=penot"); </script>
+				<script type="text/javascript">setTimeout(function() {window.location.href = "employee.php?ac=penot"},600);</script>
 			<?php
 				}else if($_SESSION['level'] == 'HR'){
 					$datetime = date("M j, Y g:i:s A");
@@ -96,7 +95,7 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
 					$stmt->execute();
 			?>
-				<script type="text/javascript"> window.location.replace("hr.php?ac=penot"); </script>
+				<script type="text/javascript">setTimeout(function() {window.location.href = "hr.php?ac=penot"},600);</script>
 			<?php
 				}else if($row['level'] == 'TECH'){
 					$datetime = date("M j, Y g:i:s A");
@@ -104,10 +103,10 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
 					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
 					$stmt->execute();
-					echo '<script type="text/javascript"> window.location.replace("techsupervisor.php?ac=penot"); </script>';
+					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "techsupervisor.php?ac=penot"},600);</script>';
 				}else{
 			?>
-				<script type="text/javascript"> window.location.replace("accounting.php?ac=penot"); </script>
+				<script type="text/javascript">setTimeout(function() {window.location.href = "accounting.php?ac=penot"},600);</script>
 			<?php
 				}				
 			}

@@ -39,8 +39,8 @@
 				die("Connection error:". $conn->connect_error);
 			}
 		}else if($_SESSION['level'] == 'TECH' && ($state == 'UA' || $state == 'DATECH')){
-			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
+			$dates = date('Y-m-d h:i A');
+			$sql = "UPDATE overtime set state = '$state',dateacc = '$dates',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{
@@ -48,13 +48,26 @@
 			}
 		}elseif($_SESSION['level'] == 'Admin' && ($state == 'AAdmin' || $state == 'DAAdmin')){
 			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
-				$states = "(state  = 'AHR' or state like 'UA%')";
+				$states = "(state  = 'AHR' or state = 'UA' or state = 'UATech')";
 				$link = "?bypass";
 			}else{
-				$states = "state  = 'AHR'";
+				$states = "(state  = 'AHR' or state = 'UALate')";
 				$link = "";
 			}
-			$sql = "UPDATE overtime set state = '$state' where overtime_id = $id and $states";
+			$otlate = "";
+			if(isset($_GET['late'])){
+				$states = "state = 'UALate'";
+				$otlate = ', otlate = "1"';
+				if(isset($_GET['post'])){
+					$state = 'UATech';
+				}else{
+					$state = 'UA';
+				}
+				if(isset($_GET['level'])){
+					$state = 'AAdmin';
+				}
+			}
+			$sql = "UPDATE overtime set state = '$state' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
@@ -128,7 +141,7 @@
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
 
-			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UATech'";			
+			$sql = "UPDATE officialbusiness set state = '$state',dateacc = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){				
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
@@ -181,7 +194,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UATech'";			
+			$sql = "UPDATE undertime set state = '$state',dateacc = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
@@ -234,7 +247,7 @@
 			}
 		}else if($_SESSION['level'] == 'TECH'){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE nleave set state = '$state',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UATech'";			
+			$sql = "UPDATE nleave set state = '$state',dateacc = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{

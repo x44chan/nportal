@@ -648,6 +648,14 @@
 				}else{
 					$otbreak = "";
 				}
+				if($row['csrnum'] != ""){
+					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
+				}
+				if($row['otlate'] != null){
+					$otlate =  '<b><font color = "red"><i>Approved Late Filing <br>by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -655,19 +663,27 @@
 						<td>'.$newDate .'</td>						
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
-						<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$data1["reason"].'</td>
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td width = 300 height = 70>'.$data1['reason'].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo $otlate;
 								echo 'Pending to HR<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to HR<br>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to Tech Supervisor<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'AHR'){
+								echo $otlate;
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
@@ -680,8 +696,11 @@
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
-							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-						}
+								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+							}elseif($row['state'] == 'UALate'){
+								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
+								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
+							}
 						echo '<td></tr>';
 			}
 			

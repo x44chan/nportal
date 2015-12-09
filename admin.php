@@ -66,6 +66,7 @@
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				</ul>
 			</div>
+			<a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
 			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
 			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
@@ -414,12 +415,19 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$tag2 = 'Sick Leave<br><br>' . $tag2;
 				$tag = 'Sick Leave: ' . $row['sickleave'] . '<br> <font color = "red">Used S.Leave: ' . $row['usedsl'] .'</font><br>'. $tag;
 			}
+			if($row['empcatergory'] == 'Regular'){
+				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['regdate']));
+			}elseif($row['empcatergory'] == 'Probationary'){
+				$datecat = $datecat = '<br>Date: ' . date("M j, Y", strtotime($row['probidate']));
+			}else{
+				$datecat = "";
+			}
 	?>
 				<tr>
 					<td><b>Categorization</b></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b><?php echo $tag2;?></td>
-					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>';?></b></td>
+					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>' . $datecat;?></b></td>
 					<td><b> HR Department </b></td>
 					<td>
 						<?php 
@@ -505,7 +513,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";
 				
 			}else{
-				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and state = 'AHR' and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state = 'UALate') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
 				
 			}
 			$result = $conn->query($sql);
@@ -529,16 +537,29 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$explo[1] = '.0';
 					}	
+					if($row['state'] == 'UALate'){
+						$late = '<font color = "red"><i>Late Filed</i></font><br>';
+					}else{
+						$late = "";
+					}
 					$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();
+					if($row['otlate'] != null){
+						$otlate =  '<br><br><b><font color = "red"><i>Approved Late Filing by the Dep. Head</i></font></b>';
+					}else{
+						$otlate = "";
+					}
 					echo '<td>'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$explo[0].$explo[1].'</font></td>';
+					echo '<td><b>'.$late.'Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$explo[0].$explo[1].'</font>'.$otlate .'</td>';
 					echo '<td>'.$data1['reason'].'</td>';	
 						if($row['datehr'] == ""){
 							$datehr = '<b><i>HR REQUEST</i></b>';
 							if(isset($_GET['bypass'])){
 								$datehr = '<b><i> Bypass </i></b>';
+							}
+							if($row['state'] == 'UALate'){
+								$datehr = '<b><font color = "red"><i>Late Filed O.T. Request <br>Waiting for Approval</i></font></b>';
 							}
 							echo '<td > '.$datehr. '</td>';
 						}else{
@@ -564,8 +585,23 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						}
 						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
-					echo '<td >
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+					if($row['state'] == 'UALate'){
+						if(strtolower($row['position']) == 'service technician'){
+							$post = '&post=1';
+						}else{
+							$post = "";
+						}
+						$ualate = '&late' . $post;
+					}else{
+						$ualate = "";
+					}
+					if($row['level'] == 'HR'){
+						$hrlevel = "&level=hr";
+					}else{
+						$hrlevel = "";
+					}
+					echo '<td>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass . $ualate . $hrlevel .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}

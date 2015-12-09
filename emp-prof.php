@@ -125,7 +125,7 @@
               <input type="text" value = "<?php echo $row['childname1']; ?>"id = "childname" name = "childname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
             </div>
             <div class = "col-md-3" >
-              <input type="date"  data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo $row['childbday1'];?>" id = "childbday" name = "childbday" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
+              <input type="date"  data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo date('Y-m-d', strtotime($row['childbday1']));?>" id = "childbday" name = "childbday" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
             </div>
           </div>
           <div class="row">
@@ -133,7 +133,7 @@
               <input type="text" value = "<?php echo $row['childname2']; ?>"id = "childname" name = "childname2" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
             </div>
             <div class = "col-md-3">
-              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo $row['childbday2'];?>" id = "childbday" name = "childbday2" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
+              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo date('Y-m-d', strtotime($row['childbday2']));?>" id = "childbday" name = "childbday2" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
             </div>
           </div>
           <div class="row">

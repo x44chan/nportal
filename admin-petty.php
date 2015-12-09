@@ -125,6 +125,7 @@
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				</ul>
 			</div>
+			<a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
 			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
 			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>

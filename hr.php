@@ -68,9 +68,9 @@
 				<ul class="dropdown-menu" role="menu">
 				  <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
 				  <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
+				  <li><a  type = "button" href = "tech-sched.php" >Tech Scheduling</a></li>
 				</ul>
 			</div>			
-				
 			<a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
 			<a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
@@ -208,12 +208,19 @@
 				<select class="form-control" name = "payment" required>
 					<option value="">------</option>
 					<option value="wthoutpay">Without Pay</option>
-					<option value="wthpay">With Pay</option>
+					<?php //if($row['empcatergory'] == 'Regular'){ ?>
+						<option value="wthpay">With Pay</option>
+					<?php //} ?>
 				</select>
 			</td>
 		</tr>
-		<tr><td><input type = "hidden" value = "<?php echo $row['leave_id']?>" name = "leave_id"/>
-		<tr><td colspan="2"><button class="btn btn-primary" name = "leaveapp">Approve Leave</button> <a href = "?ac=penlea" class="btn btn-danger"> Back </a></td></tr>
+		<input type = "hidden" value = "<?php echo $row['leave_id']?>" name = "leave_id"/>
+		<tr>
+			<td colspan="2">
+				<button class="btn btn-primary" name = "leaveapp">Approve Leave</button>
+				<a href = "?ac=penlea" class="btn btn-danger"> Back </a>
+			</td>
+		</tr>
 		</table>
 	</form>
 <?php
@@ -718,6 +725,11 @@
 				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
+				if($row['otlate'] != null){
+					$otlate = '<b><font color = "green"><i>Approved Late Filing by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
@@ -730,7 +742,7 @@
 				}elseif($row['state'] == 'UATech'){
 						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 				}else{
-					echo '<td width = "250">
+					echo '<td width = "250">'.$otlate.'
 							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&upovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>
@@ -775,6 +787,11 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				if($row['otlate'] != null){
+					$otlate = '<b><font color = "green"><i>Approved Late Filing by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -789,7 +806,7 @@
 				}elseif($row['state'] == 'UATech'){
 						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 				}else{
-					echo '<td width = "250">
+					echo '<td width = "250">'.$otlate.'
 							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&upovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>
@@ -833,6 +850,11 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				if($row['otlate'] != null){
+					$otlate =  '<b><font color = "red"><i>Approved Late Filing <br>by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -848,9 +870,13 @@
 								echo 'Pending to Admin<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AAdmin'){
+								echo $otlate;
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}elseif($row['state'] == 'UALate'){
+								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
+								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
 							}
 						echo '<td></tr>';
 			}
@@ -919,7 +945,7 @@
 				echo 
 					'<td>'.$newDate.'</td>
 					 <td>'.$row["nameofemployee"].'</td>
-					 <td>'.date("M d, Y", strtotime($row["datehired"])).'</td>
+					 <td>'.date("M d, Y", strtotime($row["edatehired"])).'</td>
 					 <td >'.$row["deprt"].'</td>
 					 <td>'.$row['posttile'].'</td>					
 					 <td> Fr: '.date("M d, Y", strtotime($row["dateofleavfr"])) .'<br>To: '.date("M d, Y", strtotime($row["dateofleavto"])).'</td>
@@ -1309,7 +1335,11 @@ echo '</tbody></table></form>';
 							</tr>
 						</thead>';
 			while($row = $result->fetch_assoc()){
-				?>	
+				if($row['otlate'] != null){
+					echo  '<tr><td colspan = "2"><b><font color = "green"><i>Approved Late Filing by the Dep. Head</i></font></b></td><tr>';
+				}
+				?>
+
 				<tr>
 					<td><b>Date File: </b></td>
 					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>

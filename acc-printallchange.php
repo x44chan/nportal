@@ -5,7 +5,7 @@ include 'conf.php';
 		$sql = "SELECT * FROM `petty`";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
-echo '<table class = "table" id = "myTableliq">';
+			echo '<table class = "table" id = "myTableliq">';
 			echo '<thead>';
 				echo '<tr>';
 				echo '<th>Petty ID</th>';
@@ -19,6 +19,9 @@ echo '<table class = "table" id = "myTableliq">';
 				echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
+		$tchange = 0;
+		$tamount = 0;
+		$tused = 0;
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
@@ -70,8 +73,12 @@ echo '<table class = "table" id = "myTableliq">';
 					echo '<td><b> Pending Liquidate</td>';
 				}
 				echo '<td id = "show" style = "display: none;"></td>';
-				echo '</tr>';	
+				echo '</tr>';
+				$tamount += $a;
+				$tused += $data2['totalliq'];
+				$tchange += ($a - $data2['totalliq']);
 			}	
+			echo '<tr ><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"><b>Total: </td><td style = "border-top: 1px solid;">₱ '.number_format($tamount).'</td><td style = "border-top: 1px solid;">₱ '.number_format($tused).'<td style = "border-top: 1px solid;">₱ '. number_format($tchange).'</td><td style = "border-top: 1px solid;"></td></tr>';
 			echo '</tbody></table></div>';
 		}
 
@@ -80,9 +87,9 @@ echo '<table class = "table" id = "myTableliq">';
 
 <script type="text/javascript">
 	$(window).load(function() {
-      window.print();
-      window.location.href = "accounting-petty.php?liqdate";
-});
+    	window.print();
+    	window.location.href = "accounting-petty.php?liqdate";
+	});
 </script>
 
 <style type="text/css">

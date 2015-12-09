@@ -97,9 +97,10 @@
 				<ul class="dropdown-menu" role="menu">
 				  <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
 				  <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
+				  <li><a  type = "button" href = "tech-sched.php" >Tech Scheduling</a></li>
 				</ul>
 			</div>
-				
+			
 			<a  type = "button"class = "btn btn-primary"  href = "hr-req-app.php" > My Approved Request</a>		
 			<a  type = "button"class = "btn btn-primary  active"  href = "hr-req-dapp.php">My Dispproved Request</a>		
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>

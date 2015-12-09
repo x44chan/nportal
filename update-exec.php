@@ -3,7 +3,7 @@
 	include('conf.php');
 	
 	date_default_timezone_set('Asia/Manila');
-	if(isset($_POST['upotsubmit'])){		
+	if(isset($_POST['upotsubmit']) || isset($_POST['lateotupsub'])){		
 		//hrs:minutes computation
 		function gettimediff($dtime,$atime){ 
 		 $nextday = $dtime > $atime?1:0;
@@ -50,7 +50,8 @@
 		$start = mysql_escape_string($_POST['uptimein']);
 		$end = mysql_escape_string($_POST['uptimeout']);
 		$post = strtolower($_SESSION['post']);
-		$reason = $_POST['reason'];
+		$reason = mysql_escape_string($_POST['reason']);
+		$csrnum = mysql_escape_string($_POST['csrnum']);
 		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
 			if($_POST['otbreak'] == '30 Mins'){
 				$approvedothrs = date("G:i", strtotime("-30 min", strtotime($approvedothrs)));
@@ -93,8 +94,12 @@
 		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date)) || date("Y-m-d") < date("Y-m-d", strtotime($date))){
 				$restric = 1;			
 		}
+		if(isset($_POST['lateotupsub'])){
+			$restric = 0;
+			$state = 'UALate';
+		}
 		$stmt = "UPDATE `overtime` set 
-			otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
+			csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
 			where account_id = '$accid' and state like '$state' and overtime_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
@@ -149,24 +154,52 @@
 		if($_SESSION['level'] == 'HR'){
 			$state = 'AHR';
 		}
+		$stmts2xx = "SELECT * FROM `officialbusiness` where officialbusiness_id = '$_SESSION[otid]' and  account_id = '$accid'";
+  		$dxatax = $conn->query($stmts2xx)->fetch_assoc();
+		$restric = 0;
+		if(date("D") == 'Mon'){
+			$minus = '-3 days';
+		}else{
+			$minus = '-1 days';
+		}
+		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date)) || date("Y-m-d") < date("Y-m-d", strtotime($date))){
+				$restric = 1;			
+		}
+		if(isset($_POST['lateobsub'])){
+			$state = 'UALate';
+			$restric = 0;
+		}
 		$stmt = "UPDATE `officialbusiness` set 
 			obreason = '$obreason', obtimein = '$obtimein', obtimeout = '$obtimeout', officialworksched = '$officialworksched', obdatereq = '$date'
 			where account_id = '$accid' and state = '$state' and officialbusiness_id = '$_SESSION[otid]'";
-		if ($conn->query($stmt) === TRUE) {
-	    	if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		//if($restric == 0){
+			if ($conn->query($stmt) === TRUE) {
+				if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}
+		  	}else {
+		    	echo "Error updating record: " . $conn->error;
+		  	}
+			$conn->close();
+		/*}else{
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penob"); </script>';
 	    	}
-	  	}else {
-	    	echo "Error updating record: " . $conn->error;
-	  	}
+		}
 		$conn->close();
-		
+		*/
 	}
 
 	if(isset($_POST['upleasubmit'])){		
@@ -296,17 +329,20 @@
 			}else{
 				$otbreak = null;
 			}
+			$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){
 			$upstate = 'AHR';
 			$state = 'UA';
 			$redirec = 'hr.php?ac='.$ac;
+			$dates = "datehr = '$datex',";
 		}elseif($_SESSION['level'] == 'TECH'){
 			$upstate = 'UA';
 			$state = 'UATech';
+			$dates = "dateacc = '$datex',";
 			$redirec = 'techsupervisor.php?ac='.$ac;
 		}
 		$stmt = "UPDATE `overtime` set 
-			startofot = '$hruptimein', endofot = '$hruptimeout', dareason = '$dareason', datehr = '$date', oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
+			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
 			where account_id = '$accid' and state = '$state' and overtime_id = '$overtime'";
 		if ($conn->query($stmt) === TRUE) {
 	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';

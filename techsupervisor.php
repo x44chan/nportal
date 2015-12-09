@@ -41,7 +41,7 @@
 				  ?>
 				</ul>
 			</div>
-				
+			<a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>	
 			<a type = "button" class = "btn btn-primary"  href = "techsupervisor-app.php" id = "showapproveda">My Approved Request</a>
 			<a type = "button" class = "btn btn-primary" href = "techsupervisor-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
@@ -175,6 +175,9 @@ if(isset($_GET['upovertime'])){
 							</tr>
 						</thead>';
 			while($row = $result->fetch_assoc()){
+				if($row['otlate'] != null){
+					echo  '<tr><td colspan = "2"><b><font color = "green"><i>Approved Late Filing by the Dep. Head</i></font></b></td><tr>';
+				}
 				?>	
 				<tr>
 					<td><b>Date File: </b></td>
@@ -799,6 +802,11 @@ if(isset($_GET['upovertime'])){
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				if($row['otlate'] != null){
+					$otlate =  '<b><font color = "red"><i>Approved Late Filing <br>by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -811,7 +819,7 @@ if(isset($_GET['upovertime'])){
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td></tr>';
 				}else{
-					echo '<td width = "200">
+					echo '<td width = "200">'.$otlate.'
 							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=UA&overtime='.$row['overtime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&upovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>
@@ -855,7 +863,13 @@ if(isset($_GET['upovertime'])){
 				}
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
-				}$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
+				}
+				if($row['otlate'] != null){
+					$otlate =  '<b><font color = "red"><i>Approved Late Filing <br>by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
+				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
@@ -869,13 +883,20 @@ if(isset($_GET['upovertime'])){
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to HR<br>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to Tech Supervisor<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'AHR'){
+								echo $otlate;
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
@@ -888,8 +909,11 @@ if(isset($_GET['upovertime'])){
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
-							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-						}
+								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+							}elseif($row['state'] == 'UALate'){
+								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
+								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
+							}
 						echo '<td></tr>';
 			}
 		}

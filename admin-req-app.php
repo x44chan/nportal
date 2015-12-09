@@ -87,7 +87,8 @@
 				  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				</ul>
-			</div>					
+			</div>
+			<a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
 			<a  type = "button"class = "btn btn-primary  active"  href = "admin-req-app.php"> Approved Request</a>		
 			<a type = "button"class = "btn btn-primary"  href = "admin-req-dapp.php">Dispproved Request</a>		
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>

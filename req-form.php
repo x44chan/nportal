@@ -20,6 +20,16 @@ $(document).ready(function(){
 	$('form').preventDoubleSubmission();
 });
 </script>
+<div id = "latefiling">
+<?php
+	if(isset($_GET['late_filing'])){
+		include 'caloan/latefiling.php';
+	}
+	if(isset($_GET['edit_late'])){
+		include 'caloan/editlate.php';
+	}
+?>
+</div>
 <div id = "offb" style = "margin-top: -30px; display: none; padding: ">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
@@ -141,6 +151,9 @@ $(document).ready(function(){
 					</td>
 				</tr>	
 				<tr>
+					<td colspan="2"><b><i><a href = "?late_filing" class="btn btn-warning form-control"> Click Me ! For Late Filing</a><br><br></td>
+				</tr>
+				<tr>
 					<td>Date File: </td>
 					<td><input type = "text" class = "form-control" readonly name = "datefile" value = "<?php echo date('F j, Y');?>"/></td>
 				</tr>
@@ -154,7 +167,7 @@ $(document).ready(function(){
 				</tr>	
 				<tr>
 					<td>CSR #: </td>
-					<td><input class = "form-control" type = "text" placeholder = "Enter CSR Number" name = "csrnum"/></td>
+					<td><input class = "form-control" type = "text" autocomplete = "off" placeholder = "Enter CSR Number" name = "csrnum"/></td>
 				</tr>			
 				<tr>
 					<td>Reason (Work to be done): <font color = "red">*</font></td>
@@ -217,10 +230,12 @@ $(document).ready(function(){
 <?php
 	include('conf.php');
 	$accid = $_SESSION['acc_id'];
-	$sql = "SELECT * from `login` where account_id = '$accid'";
+	$sql = "SELECT * from `login` where account_id = '$accid' and empcatergory = 'Regular'";
 	$result = $conn->query($sql);
 	$datey = date("Y");
-	if($result->num_rows > 0){
+	$availsick = 0;
+	$totavailvac = 0;
+	if($result->num_rows > 0){		
 		while($row = $result->fetch_assoc()){
 			$cstatus = $row['ecstatus'];
 			$accidd = $row['account_id'];
@@ -251,7 +266,7 @@ $(document).ready(function(){
 					$count = $row1['count'];
 					}
 			}		
-			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Others%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
 			if($result1->num_rows > 0){
 				while($row1 = $result1->fetch_assoc()){
@@ -354,7 +369,7 @@ $(document).ready(function(){
 					<td><textarea placeholder = "Enter leave reason" class = "form-control" name = "leareason"required></textarea></td>
 				</tr>
 				<tr>
-					<td colspan = 4 align = center><input type = "submit" name = "leasubmit" class = "btn btn-default"/><input type = "button" onclick = "$('#leave').hide(); $('#dash').show();" id = "hideot" name = "submit" class = "btn btn-default" value = "Cancel"></td>					
+					<td colspan = 4 align = center><input type = "submit" name = "leasubmit" class = "btn btn-default"/><input type = "button" onclick = "$('#leave').hide(); $('#dash').show(); location.reload();" id = "hideot" name = "submit" class = "btn btn-default" value = "Cancel"></td>					
 				</tr>
 			</table>
 		</div>
@@ -743,6 +758,20 @@ $(document).ready(function(){
 	    	$("#to").attr('required',true);
 	    	$("#fr").attr('required',true);
 	        $("#rday2").show();
+	    }
+	});
+	$('#restday3').change(function(){
+	    if($('#restday3').is(":checked")){ 	        
+	    	$("#rday3").hide();
+	    	$("#reqto3").attr('required',false);
+	    	$("#reqfr3").attr('required',false);
+	    	$("#reqfr3").val("");
+	    	$("#reqto3").val("");
+
+	    }else{
+	    	$("#reqto3").attr('required',true);
+	    	$("#reqfr3").attr('required',true);
+	        $("#rday3").show();
 	    }
 	});
 });

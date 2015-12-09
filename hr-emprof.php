@@ -19,6 +19,7 @@
       $('#myTable').DataTable({
         "aaSorting": []
     } );
+
 	});
 </script>
 
@@ -55,9 +56,10 @@
         <ul class="dropdown-menu" role="menu">
           <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
           <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
+          <li><a  type = "button" href = "tech-sched.php" >Tech Scheduling</a></li>
         </ul>
       </div>
-     
+      <a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>
       <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
       <a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
@@ -264,6 +266,10 @@
           <option <?php if($row['empcatergory'] == "Regular"){ echo ' selected '; } ?> value="Regular">Regular</option>
         </select>
       </div>
+      <div class="col-xs-5">
+        <label>Date</label>
+        <input type = "date" data-date='{"startView": 2, "openOnMouseFocus": true}' required name = "catdate" class="form-control"/>
+      </div>
     </div>
     <div class = "row">
       <div class="col-xs-3">
@@ -283,9 +289,11 @@
         <input <?php if($row['usedvl'] != null){ echo ' value = "' . $row['usedvl'] . '" '; } else { echo ' value = "0" ' ;} ?> type="text" name = "usedvl" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
       </div>
     </div>
+    
     <div class="row">
       <div class="col-xs-12" align="center">
         <button class="btn btn-primary" name = "upsub"> Update Account </button>
+        <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
       </div>
     </div>
     <input type = "hidden" value = "<php echo  $accid;?>" name = "accid"/>
@@ -299,26 +307,28 @@ if(isset($_POST['upsub'])){
   $usedvl = mysql_escape_string($_POST['usedvl']);
   $usedsl = mysql_escape_string($_POST['usedsl']);
   $modify = mysql_escape_string($_GET['modify']);
+  $catdate = mysql_escape_string($_POST['catdate']);
   if($empcatergory  == 'Probationary'){
     $oldpost = 'Contractual';
-    $probidate = date("Y-m-d");
     $hrchange = date("Y-m-d");
+    $catdates = ", probidate = '$catdate'";
   }elseif($empcatergory  == 'Contractual'){
     $oldpost = "Contractual";
-    $probidate = "";
     $hrchange = date("Y-m-d");
+    $catdates = "";
   }else{
     $oldpost  = "Probationary";
     $probidate = "";
     $hrchange = date("Y-m-d");
+    $catdates = ", regdate = '$catdate'";
   }
   $stmts2 = "SELECT count(account_id) as count FROM `login` where account_id = '$modify' and hrchange != '0'";
   $data = $conn->query($stmts2)->fetch_assoc();
   
 
   $stmt = "UPDATE `login` 
-          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', probidate = '$probidate', hrchange = '$hrchange', oldpost = '$oldpost',
-              usedvl = '$usedvl', usedsl = '$usedsl'
+          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', hrchange = '$hrchange', oldpost = '$oldpost',
+              usedvl = '$usedvl', usedsl = '$usedsl' $catdates
           where account_id = '$modify' and hrchange = 0";
   if($data['count'] == 0){
     if($conn->query($stmt) == TRUE){

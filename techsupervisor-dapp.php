@@ -1,163 +1,84 @@
 <?php 
-
 	session_start();
-
 	$accid = $_SESSION['acc_id'];
-
 	include("conf.php");
-
 	if(isset($_SESSION['acc_id'])){
-
 		if($_SESSION['level'] != 'TECH'){
-
 			header("location: index.php");
-
 		}
-
 	}else{
-
 		header("location: index.php");
-
 	}
-
 	date_default_timezone_set('Asia/Manila');
-
 	include("header.php");	
-
 ?>
-
 <script type = "text/javascript">
-
 	$(function(){
-
 			$("#dappot").hide();
-
 			$("#fordappot").on("click", function(){
-
 				$("#dappot").show();
-
 				$("#newuser").hide();
-
 				$("#dappob").hide();
-
 				$("#undertime").hide();
-
 				$("#offb").hide();
-
 				$("#formhidden").hide();
-
 				$("#disappleave").hide();
-
 				$('#disappundr').hide();
-
 				$('#leave').hide();
-
 			});
-
 			
-
 			$("#disappundr").hide();
-
 			$("#fordappundr").on("click", function(){
-
 				$("#disappundr").show();
-
 				$("#dappot").hide();
-
 				$("#undertime").hide();
-
 				$("#dappob").hide();
-
 				$("#formhidden").hide();
-
 				$("#newuser").hide();
-
 				$("#disappleave").hide();
-
 				$('#leave').hide();
-
 			});
-
 			
-
 			$("#disappleave").hide();
-
 			$("#fordisappleave").on("click", function(){
-
 				$("#disappleave").show();
-
 				$("#disappundr").hide();
-
 				$("#dappot").hide();
-
 				$("#undertime").hide();
-
 				$("#dappob").hide();
-
 				$("#formhidden").hide();
-
 				$("#newuser").hide();
-
 				$('#leave').hide();
-
 			});
-
-			
 
 			$("#dappob").hide();
-
 			$("#fordappob").on("click", function(){	
-
 				$("#disappundr").hide();
-
 				$("#dappob").show();
-
 				$("#dappot").hide();
-
 				$("#undertime").hide();
-
 				$("#offb").hide();
-
 				$("#disappleave").hide();
-
 				$("#formhidden").hide();
-
 				$("#newuser").hide();
-
 				$('#leave').hide();
-
 			});
-
-
-
 	});
-
 </script>
 
 <div align = "center" style = "margin-bottom: 30px; ">
-
 	<div class="alert alert-success"><br>
-
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
-
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
-
 		<div class="btn-group btn-group-lg">
-
 			<a  type = "button"class = "btn btn-primary" href = "techsupervisor.php?ac=penot">Home</a>	
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
-
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
-
 				<ul class="dropdown-menu" role="menu">
-
 				  <li><a href="#" id = "newovertime">Overtime Request</a></li>
-
 				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
-
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
-
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
 				  <?php
@@ -170,43 +91,25 @@
 				  	}
 				  ?>
 				</ul>
-
 			</div>
-				
-			<a  type = "button"class = "btn btn-primary"  href = "techsupervisor-app.php" >My Approved Request<	/a>		
-
+			<a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>
+			<a  type = "button"class = "btn btn-primary"  href = "techsupervisor-app.php" >My Approved Request</a>	
 			<a  type = "button"class = "btn btn-primary  active"  href = "techsupervisor-dapp.php">My Dispproved Request</a>		
-
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
-
 		</div>
-
 		<br><br>
-
 		<div class = "btn-group btn-group">
-
 			<button  type = "button"class = "btn btn-success" id = "fordappot"> Disapproved Overtime Request </button>
-
 			<button  type = "button"class = "btn btn-success" id = "fordappob"> Disapproved Official Business Request </button>			
-
 			<button  type = "button"class = "btn btn-success" id = "fordisappleave"> Disapproved Leave Request </button>		
-
 			<button  type = "button"class = "btn btn-success" id = "fordappundr"> Disapproved Undertime Request </button>	
-
 		</div>
-
 	</div>
-
 </div>
 
-
-
 <div id = "dappot" style = "margin-top: -30px; display: none;">
-
 	<?php 
-
 		include("conf.php");
-
 		$sql = "SELECT * FROM overtime,login where login.account_id = $accid and overtime.account_id = $accid and state like 'DA%' ORDER BY datefile ASC";
 
 		$result = $conn->query($sql);

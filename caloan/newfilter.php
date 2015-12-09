@@ -220,13 +220,18 @@
 			}else{
 				$otbreak = "";
 			}
+			if($row['otlate'] != null){
+				$otlate = '<br><i><b><font color = "green"> App. Late Filing by the Dep. Head</font></b><i>';
+			}else{
+				$otlate = "";
+			}
 			$originalDate = date($row['datefile']);
 			$newDate = date("M j, Y", strtotime($originalDate));			
 			echo
 				'<tr>
 					<td>'.$newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
-					<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>	
+					<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak. $otlate.'</td>	
 					<td><strong>'.$explo[0].$explo2.'</strong></td>			
 					<td >'.$row["reason"].'</td>
 					<td >'.$row["officialworksched"].'</td>					

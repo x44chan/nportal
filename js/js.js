@@ -13,6 +13,15 @@ $(document).ready(function(){
     $("#regerr").click(function(){
         $("#regerr").attr("href", "admin.php?");
     });
+    $('select[name = "empcatergory"]').change(function() {
+    	var selected = $(this).val();
+    	$('option:selected', this).attr('selected',true).siblings().removeAttr('selected');
+    	if(selected != 'Contractual'){
+    		$('input[name = "catdate"]').attr('required',true); 
+      	}else{
+        	$('input[name = "catdate"]').attr('required',false);
+      	}
+    });
 	$('#typeoflea').change(function() {
 	    var selected = $(this).val();
 		
@@ -129,6 +138,7 @@ $(function(){
 $(function(){
     $("#formhidden").hide();
     $("#newovertime").on("click", function(){
+    	$("#latefiling").hide();
         $("#formhidden").toggle();
 		$("#approvedrequest").hide();
 		$("#leave").hide();
@@ -154,6 +164,7 @@ $(function(){
 $(function(){
     $("#leave").hide();
     $("#newleave").on("click", function(){
+    	$("#latefiling").hide();
         $("#leave").show();
 		$('#typeoflea').focus().select();
 		$("#approvedrequest").hide();
@@ -181,6 +192,7 @@ $(function(){
 $(function(){
     $("#undertime").hide();
     $("#newundertime").on("click", function(){
+    	$("#latefiling").hide();
         $("#undertime").show();
 		$("#formhidden").hide();
 		$("#approvedrequest").hide();
@@ -206,6 +218,7 @@ $(function(){
 $(function(){
     $("#offb").hide();
     $("#newoffb").on("click", function(){
+    	$("#latefiling").hide();
         $("#offb").show();
 		$("#dash").hide();
 		$("#undertime").hide();
@@ -285,6 +298,7 @@ $(function(){
 		$("#offb").hide();
 		$("#leave").hide();
 		$("#dash").show();
+		location.reload();
     });
 });
 
@@ -293,6 +307,7 @@ $(function(){
     $("#hideob").on("click", function(){
 		$("#offb").hide();
 		$("#dash").show();
+		location.reload();
     });
 });
 
@@ -301,5 +316,6 @@ $(function(){
     $("#hideout").on("click", function(){
 		$("#undertime").hide();
 		$("#dash").show();
+		location.reload();
     });
 });

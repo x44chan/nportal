@@ -10,8 +10,7 @@
 	?>
 		
 	<script type="text/javascript"> 
-		window.location.replace("index.php");
-		
+		window.location.replace("index.php");		
 	</script>	
 	
 	<?php
@@ -27,15 +26,15 @@
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
-				  <li><a href="#" id = "newovertime">Overtime Request</a></li>
-				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
-				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
-				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+					<li><a href="#" id = "newovertime">Overtime Request</a></li>
+					<li><a href="#" id = "newoffb">Official Business Request</a></li>
+					<li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
+					<li><a href="#" id = "newundertime">Undertime Request Form</a></li>
+					<li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
 				  <?php
 				  	if($_SESSION['category'] == "Regular"){
 				  ?>
-				  	<li class="divider"></li>
+					<li class="divider"></li>
 				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
 				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
 				  <?php
@@ -70,8 +69,8 @@
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penca'){
 		include("caloan/cashadv.php");
 	}
-	
 ?>
+
 <?php 
 	if(isset($_GET['loan']) && $_GET['loan'] > 0){
 		include("caloan/loan.php");
@@ -694,6 +693,11 @@
 				if($row['csrnum'] != ""){
 					$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 				}
+				if($row['otlate'] != null){
+					$otlate =  '<b><font color = "red"><i>Approved Late Filing <br>by the Dep. Head</i></font></b><br>';
+				}else{
+					$otlate = "";
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -707,13 +711,20 @@
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to HR<br>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
 								echo 'Pending to Tech Supervisor<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
 							}else if($row['state'] == 'AHR'){
+								echo $otlate;
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
@@ -726,8 +737,11 @@
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
-							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-						}
+								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+							}elseif($row['state'] == 'UALate'){
+								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
+								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
+							}
 						echo '<td></tr>';
 			}
 			
