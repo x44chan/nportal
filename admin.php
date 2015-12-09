@@ -314,11 +314,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			<thead>
 				<tr>
 					<th width = "12%" ><i>Date File</i></th>					
-					<th width = "17%" ><i>Name of Employee</i></th>
+					<th width = "16%" ><i>Name of Employee</i></th>
 					<th width = "13%" ><i>Type</i></th>
-					<th width = "24%" ><i>Reason</i></th>
+					<th width = "23%" ><i>Reason</i></th>
 					<th width = "19%" ><i>Checked By.</i></th>
-					<th width = "15%" ><i>Action</i></th>
+					<th width = "18%" ><i>Action</i></th>
 				</tr>
 			</thead>
 			<tbody id="people">
@@ -396,9 +396,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	$sql = "SELECT * from `login` where hrchange != '0'";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
-		$tag2 = "Promotion";
-		$tag = "";
+		
 		while($row = $result->fetch_assoc()){
+			$tag2 = "Promotion";
+			$tag = "";
 			if($row['probidate'] != null){
 				$edate = date("M j, Y", strtotime($row['probidate']));
 			}else{

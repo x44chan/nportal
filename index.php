@@ -75,10 +75,10 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				}else{
 					$_SESSION['category'] = $row['empcatergory'];
 				}
-				$datetime = date("M j, Y g:i:s A");
-				$in = "in";
-				$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
-				$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
+				echo  '<div class="alert alert-success" align = "center">						
+						<strong>Logging in ~!</strong>
+						</div>';
+			  	echo '<script type="text/javascript">setTimeout(function() {window.location.href = "/csr"},1000);; </script>';
 				?>
 			<?php
 				if($_SESSION['level'] == 'Admin'){
@@ -90,11 +90,19 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				<script type="text/javascript">	window.location.replace("employee.php?ac=penot"); </script>
 			<?php
 				}else if($_SESSION['level'] == 'HR'){
+					$datetime = date("M j, Y g:i:s A");
+					$in = "in";
+					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
+					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
 					$stmt->execute();
 			?>
 				<script type="text/javascript"> window.location.replace("hr.php?ac=penot"); </script>
 			<?php
 				}else if($row['level'] == 'TECH'){
+					$datetime = date("M j, Y g:i:s A");
+					$in = "in";
+					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
+					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
 					$stmt->execute();
 					echo '<script type="text/javascript"> window.location.replace("techsupervisor.php?ac=penot"); </script>';
 				}else{
