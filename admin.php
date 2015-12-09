@@ -16,7 +16,8 @@
 <script type="text/javascript">		
     $(document).ready( function () {
     	$('#myTable').DataTable({
-		    "iDisplayLength": 50    	
+		    "iDisplayLength": 50 ,
+		    "order": [[ 0, "desc" ]]  	
 		});
 		
 		$('input[name = "transct"]').hide();
@@ -398,7 +399,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	if($result->num_rows > 0){
 		
 		while($row = $result->fetch_assoc()){
-			$tag2 = "Promotion";
+			$tag2 = "Category";
 			$tag = "";
 			if($row['probidate'] != null){
 				$edate = date("M j, Y", strtotime($row['probidate']));
@@ -415,7 +416,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}
 	?>
 				<tr>
-					<td><?php echo $edate;?></td>			
+					<td><b>Categorization</b></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b><?php echo $tag2;?></td>
 					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>';?></b></td>
@@ -536,6 +537,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>'.$data1['reason'].'</td>';	
 						if($row['datehr'] == ""){
 							$datehr = '<b><i>HR REQUEST</i></b>';
+							if(isset($_GET['bypass'])){
+								$datehr = '<b><i> Bypass </i></b>';
+							}
 							echo '<td > '.$datehr. '</td>';
 						}else{
 							if($row['oldot'] != null && $row['state'] == 'AHR'){
@@ -544,7 +548,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$hrclose = "</font></i>";
 							}else{
 								$oldot = "";
-								$hrot = '<b>Filed OT: ';
+								$hrot = '<b>Filed OT: <font color = "green">';
 								$hrclose ='</b>';
 							}
 							if($row['otbreak'] != null){
@@ -553,7 +557,12 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$otbreak = "";
 							}
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td style = "text-align:left;"><b>HR/Tech.: '.$datehr. '</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
+						if($row['dateacc'] != ""){
+							$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+						}else{
+							$datetech = "";
+						}
+						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					echo '<td >
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
@@ -585,12 +594,20 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font></td>';
 					echo '<td>'.$data1['reason'].'</td>';
+					if($row['dateacc'] != ""){
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+					}else{
+						$datetech = "";
+					}
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
-						echo '<td>HR: '.$datehr. '</td>';
+						if(isset($_GET['bypass'])){
+							$datehr = '<b><i> Bypass </i></b>';
+						}
+						echo '<td><b>'.$datehr. $datetech .'</td>';
 					}else{
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td>HR: '.$datehr. '</td>';
+						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
 					}
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
@@ -620,12 +637,21 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font></td>';
 					echo '<td>'.$row['obreason'].'</td>';
+
+					if($row['dateacc'] != ""){
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+					}else{
+						$datetech = "";
+					}
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
-						echo '<td>HR: '.$datehr. '</td>';
+						if(isset($_GET['bypass'])){
+							$datehr = '<b><i> Bypass </i></b>';
+						}
+						echo '<td><b>'.$datehr. $datetech .'</td>';
 					}else{
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td>HR: '.$datehr. '</td>';
+						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
 					}
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
@@ -668,12 +694,20 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
 					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$data1['reason'].'</td>';
+					if($row['dateacc'] != ""){
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+					}else{
+						$datetech = "";
+					}
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
-						echo '<td>HR: '.$datehr. '</td>';
+						if(isset($_GET['bypass'])){
+								$datehr = '<b><i> Bypass </i></b>';
+							}
+						echo '<td><b>'.$datehr. $datetech .'</td>';
 					}else{
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td>HR: '.$datehr. '</td>';
+						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
 					}
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
