@@ -183,13 +183,12 @@
 <?php 
 	if(!isset($_GET['view'])){	
 		if(isset($_POST['datefr']) && isset($_POST['dateto'])){
+			echo '<script type="text/javascript">	window.reload();</script>';
 			$strt = mysql_escape_string($_POST['datefr']);
 			$end = mysql_escape_string($_POST['dateto']);
 			$sql = "SELECT * FROM tech_sched,login  where tech_sched.account_id = login.account_id and scheddate BETWEEN '$strt' and '$end' order by scheddate desc";
 		}else{
-			$strt = date("Y-m-d");
-			$end = date("Y-m-d", strtotime("+5 day"));
-			$sql = "SELECT * FROM tech_sched,login  where tech_sched.account_id = login.account_id and scheddate BETWEEN '$strt' and '$end' order by scheddate desc";
+			$sql = "SELECT * FROM tech_sched,login  where tech_sched.account_id = login.account_id and CURDATE() <= scheddate order by scheddate desc";
 		}
 		$result = $conn->query($sql);	
 		if(isset($strt) && isset($end)){
@@ -224,7 +223,7 @@
 						<label style = "margin-left: 10px;"for = "datestrt">Date To:</label>
 						<input required type = "date" class = "form-control input-sm" name = "dateto" value = "'.$end.'"/>					
 						<button style = "margin-left: 10px;"class = "btn btn-primary btn-sm" name = "daterange"><span class="icon-search"></span> Search</button>
-						<a href = "?module=daterange" class = "btn btn-danger  btn-sm" name = "daterange"><span class="icon-spinner11"></span> Clear</a>
+						<a href = "tech-sched.php" class = "btn btn-danger  btn-sm" name = "daterange"><span class="icon-spinner11"></span> Clear</a>
 					</div>
 				</div>
 			</form>
@@ -247,7 +246,7 @@
 							<label>Select Technician</label>
 							<select name = "tech" required class = "form-control input-sm" >
 								<option value = ""> - - - - - - - </option>';
-							$query = "SELECT * FROM login where position like '%ervice%'";
+							$query = "SELECT * FROM login where position like '%ervice%' and active != '0'";
 							$result2 = $conn->query($query);	
 							if($result2->num_rows > 0){
 								while ($row2 = $result2->fetch_assoc()) {
@@ -258,7 +257,7 @@
 						</div>
 						<div class = "col-xs-2">
 							<label>Date</label>
-							<input required type = "date" name = "scheddate" class = "form-control input-sm" value = "' . date("Y-m-d") . '"/>
+							<input required type = "date" name = "scheddate" class = "form-control input-sm" value = "' . date("Y-m-d", strtotime("+1 day")) . '"/>
 						</div>
 						<div class = "col-xs-2">
 							<label>Time In</label>
@@ -298,6 +297,8 @@
 						';
 					if($_SESSION['level'] == 'TECH'){
 						echo '<th>Action</th>';
+					}else{
+						echo '<th>Status</th>';
 					}
 
 			echo '
@@ -312,8 +313,12 @@
 					echo '<td>' . $row['location'] . '</td>';
 					if($_SESSION['level'] == 'TECH' && date("Y-m-d") < date("Y-m-d", strtotime($row['scheddate']))){
 						echo '<td><a href = "?modify=' . $row['techsched_id'] .'" class = "btn btn-warning"><span class="glyphicon glyphicon-edit"></span></a> <a onclick = "return confirm(\'Are you sure?\');"href = "?del=' . $row['techsched_id'] .'" class = "btn btn-danger"><span class="glyphicon glyphicon-trash"></span></a></td>';
-					}else{
+					}elseif(date("Y-m-d") == date("Y-m-d", strtotime($row['scheddate']))){
 						echo '<td><b>Ongoing</b></td>';
+					}elseif(date("Y-m-d") < date("Y-m-d", strtotime($row['scheddate']))){
+						echo '<td><b>Pending</b></td>';
+					}else{
+						echo '<td><b>Completed</b></td>';
 					}
 					//echo '<td><a style = "width: 100px;" target = "_blank" href = "?view='.$row['techsched_id'] .'" class = "btn btn-primary"><span class = "icon-eye"></span> View</a></td>';
 				echo '</tr>';
@@ -325,10 +330,15 @@
 ?>
 <?php 
 	if(isset($_POST['schedsub'])){
-		$stmt = $conn->prepare("INSERT INTO `tech_sched` (account_id, schedtimein, schedtimeout, scheddate, location) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("issss", $_POST['tech'], $_POST['schedtimein'], $_POST['schedtimeout'], $_POST['scheddate'], $_POST['location']);
-		$stmt->execute();
-		echo '<script type="text/javascript">	window.location.replace("tech-sched.php");</script>';
+		//if(date("Y-m-d", strtotime($_POST['scheddate'])) <= date("Y-m-d")){
+		//	echo '<script type="text/javascript"> alert("Wrong date."); window.location.replace("tech-sched.php");</script>';
+		//}else{
+			$stmt = $conn->prepare("INSERT INTO `tech_sched` (account_id, schedtimein, schedtimeout, scheddate, location) VALUES (?, ?, ?, ?, ?)");
+			$stmt->bind_param("issss", $_POST['tech'], $_POST['schedtimein'], $_POST['schedtimeout'], $_POST['scheddate'], $_POST['location']);
+			$stmt->execute();
+			echo '<script type="text/javascript">	window.location.replace("tech-sched.php");</script>';
+		//}
+		
 	}
 
 ?>

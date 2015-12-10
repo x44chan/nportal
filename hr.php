@@ -673,6 +673,16 @@
 	?>
 	<form role = "form" action = "approval.php"    method = "get">
 			<table class = "table table-hover" align = "center">
+			<?php 
+				
+				if(isset($_GET['bypass'])){
+					$_SESSION['bypass'] = 1;
+					echo '<a href = "?ac=' . $_GET['ac'] . '"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Un-Bypass Tech Approval </a>';
+				}else{					
+					unset($_SESSION['bypass']);
+					echo '<a href = "?ac=' . $_GET['ac'] . '&bypass"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Bypass Tech Approval </a>';
+				}
+			?>
 				<thead>				
 					<tr>
 						<td colspan = 7 align = center><h2> Pending Overtime Request </h2></td>
@@ -739,7 +749,7 @@
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
-				}elseif($row['state'] == 'UATech'){
+				}elseif($row['state'] == 'UATech' && !isset($_GET['bypass'])){
 						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 				}else{
 					echo '<td width = "250">'.$otlate.'
@@ -803,7 +813,7 @@
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
-				}elseif($row['state'] == 'UATech'){
+				}elseif($row['state'] == 'UATech' && !isset($_GET['bypass'])){
 						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 				}else{
 					echo '<td width = "250">'.$otlate.'
@@ -1151,6 +1161,16 @@ echo '</tbody></table></form>';
 ?>
 
 	<form role = "form" action = "approval.php"    method = "get">
+	<?php 
+		
+		if(isset($_GET['bypass'])){
+			$_SESSION['bypass'] = 1;
+			echo '<a href = "?ac=' . $_GET['ac'] . '"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Un-Bypass Tech Approval </a>';
+		}else{					
+			unset($_SESSION['bypass']);
+			echo '<a href = "?ac=' . $_GET['ac'] . '&bypass"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Bypass Tech Approval </a>';
+		}
+	?>
 		<table class = "table table-hover" align = "center">
 			<thead>
 				<tr>
@@ -1230,15 +1250,15 @@ echo '</tbody></table></form>';
 						<td >'.$row["obreason"].'</td>	';
 						if($row['state'] == 'UAACCAdmin'){
 							echo '<td><strong>Pending to Admin<strong></td>';
-						}elseif($row['state'] == 'UATech'){
+						}elseif($row['state'] == 'UATech' && !isset($_GET['bypass'])){
 							echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 						}else{
-						echo'
-							<td width = "200">
-								<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>
-								<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button" id = "DAHR">Disapprove</a>
-							</td>
-						</tr>';
+							echo'
+								<td width = "200">
+									<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>
+									<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button" id = "DAHR">Disapprove</a>
+								</td>
+							</tr>';
 						}
 			}
 		}
@@ -1324,7 +1344,12 @@ echo '</tbody></table></form>';
 	if(isset($_GET['upovertime'])){	
 		$id = mysqli_real_escape_string($conn, $_GET['upovertime']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and overtime_id = '$id' and state = 'UA'";
+		if(isset($_SESSION['bypass'])){
+			$xstate = '(state = "UA"  or state = "UATech")';
+		}else{
+			$xstate = ' state = "UA" ';
+		}
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and overtime_id = '$id' and $xstate";
 		$result = $conn->query($sql);		
 		if($result->num_rows > 0){
 			echo '<form action = "update-exec.php" method = "post" class = "form-group">

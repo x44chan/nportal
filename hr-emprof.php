@@ -59,7 +59,6 @@
           <li><a  type = "button" href = "tech-sched.php" >Tech Scheduling</a></li>
         </ul>
       </div>
-      <a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>
       <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
       <a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>

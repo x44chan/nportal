@@ -422,18 +422,24 @@ $(document).ready(function(){
 		$acc_id = mysql_escape_string($_SESSION['acc_id']);
 		$particularpet = mysql_escape_string($_POST['particularpet']);
 		$amountpet = mysql_escape_string($_POST['amountpet']);
-		$state = 'UAPetty';
+		if($particularpet == 'Transfer'){
+			$state = 'UATransfer';	
+		}else{
+			$state = 'UAPetty';
+		}
 		$datefile = date("Y-m-d");
 		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and petty.state = 'AAPettyRep' order by state ASC, source asc";
 		$result = $conn->query($sql);
-		
-		if($result->num_rows > 0){
-			$count = 0;
+		$count = 0;
+		if($result->num_rows > 0){			
 			while($row = $result->fetch_assoc()){
 			$petid = $row['petty_id'];
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
+					$count += 1;
+				}
+				if($data['liqstate'] == 'LIQDATE'){
 					$count += 1;
 				}
 		   }
@@ -457,7 +463,7 @@ $(document).ready(function(){
 	    	}elseif ($_SESSION['level'] == 'ACC') {
 	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    	//	echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
 	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}

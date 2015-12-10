@@ -1,6 +1,5 @@
 <?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penpty'){
-
 		include("conf.php");
 		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid order by state ASC, source asc";
 		$result = $conn->query($sql);
@@ -18,7 +17,7 @@
 						<th>Name</th>
 						<th>Particular</th>
 						<th>Source</th>
-						<th>Transfer Code</th>
+						<th>Reference #</th>
 						<th>Amount</th>
 						<th>Action</th>
 					</tr>
@@ -50,7 +49,7 @@
 						<td>'.$row['particular'].'</td>
 						<td>'.$row['source'].'</td>
 						<td>'.$transcode.'</td>
-						<td>&#8369; '.$row['amount'].'</td>
+						<td>&#8369; ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo '</td>
 						<td>';
 							if($row['state'] == "CPetty"){
 								echo '<b><font color = "red">Canceled Petty</font></b>';
@@ -66,6 +65,15 @@
 								echo '</font></br>Code: ' . $row['rcve_code'];
 							}elseif($row['state'] == 'AAPetty'){
 								echo '<font color = "green"><b>Pending to Accounting</font>';
+							}elseif($row['state'] == 'UATransfer'){
+								echo '<b> Pending for Processing</b><br>';
+								echo '<a href = "?editpetty='.$row['petty_id'].'" class = "btn btn-danger"> Edit Petty </a> <a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canpetty='.$row['petty_id'].'" class = "btn btn-danger"> Cancel </a>';
+							}elseif($row['state'] == 'TransProc'){
+								echo '<b><font color = "green"> Proccessed by the Accounting </font></b><br>';
+								echo '<a href = "?getcode='.$row['petty_id'].'" class = "btn btn-success">Get Code</a>';
+							}elseif($row['state'] == 'TransProcCode'){
+								echo '<font color = "green"><b>For Admin Verification & Releasing';
+								echo '</font></br>Code: ' . $row['rcve_code'];
 							}elseif($row['state'] == 'AAPettyRep'){
 								$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 								$data = $conn->query($sql)->fetch_assoc();
@@ -92,5 +100,20 @@ if(isset($_GET['editpetty']) && $_GET['editpetty'] > 0){
 }
 if(isset($_GET['editliqdate']) && $_GET['editliqdate'] > 0){
 	include("caloan/editliqdate.php");
+}
+if(isset($_GET['getcode'])){
+	$code = mysql_escape_string($_GET['getcode']);
+	$sql = "UPDATE `petty` set state = 'TransProcCode' where petty_id = '$code' and state = 'TransProc'";
+	if($conn->query($sql) == TRUE){
+	 	if($_SESSION['level'] == 'EMP'){
+    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'ACC') {
+    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'TECH') {
+    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'HR') {
+    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+    	}
+	}
 }
 ?> 

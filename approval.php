@@ -22,25 +22,23 @@
 			$dareason = "";
 		}
 		
-		if($_SESSION['level'] == 'ACC'){
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state',dateacc = '$date',dareason = '$dareason' where overtime_id = $id and state = 'AHR'";			
-			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_GET['ac'].'"); </script>';		
+			if(isset($_SESSION['bypass'])){
+				$xstate = '(state = "UA"  or state = "UATech")';
 			}else{
-				die("Connection error:". $conn->connect_error);
+				$xstate = ' state = "UA" ';
 			}
-		}else if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
-			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UA'";			
+			unset($_SESSION['bypass']);
+			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
 		}else if($_SESSION['level'] == 'TECH' && ($state == 'UA' || $state == 'DATECH')){
-			$dates = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state',dateacc = '$dates',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE overtime set state = '$state',dateacc = '$date',dareason = '$dareason' where overtime_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{
@@ -122,25 +120,22 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'ACC'){
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE officialbusiness set state = '$state',dateacc = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'AHR'";			
-			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_GET['ac'].'"); </script>';		
+			if(isset($_SESSION['bypass'])){
+				$xstate = '(state = "UA"  or state = "UATech")';
 			}else{
-				die("Connection error:". $conn->connect_error);
+				$xstate = ' state = "UA" ';
 			}
-		}else if($_SESSION['level'] == 'HR'){
-			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UA'";			
+			unset($_SESSION['bypass']);
+			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else if($_SESSION['level'] == 'TECH'){
+		}else if($_SESSION['level'] == 'TECH' && ($state == 'UA' || $state == 'DATECH')){
 			$date = date('Y-m-d h:i A');
-
 			$sql = "UPDATE officialbusiness set state = '$state',dateacc = '$date',dareason = '$dareason'  where officialbusiness_id = $id and state = 'UATech'";			
 			if($conn->query($sql) == TRUE){				
 				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
@@ -176,15 +171,7 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'ACC'){
-			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE undertime set state = '$state',dateacc = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'AHR'";			
-			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_GET['ac'].'"); </script>';		
-			}else{
-				die("Connection error:". $conn->connect_error);
-			}
-		}else if($_SESSION['level'] == 'HR'){
+		if($_SESSION['level'] == 'HR'){
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
@@ -229,15 +216,7 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'ACC'){
-			$date = date('F d, Y h:i A');
-			$sql = "UPDATE nleave set state = '$state',dateacc = '$date',dareason = '$dareason'  where leave_id = $id and state = 'AHR'";			
-			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_GET['ac'].'"); </script>';			
-			}else{
-				die("Connection error:". $conn->connect_error);
-			}
-		}else if($_SESSION['level'] == 'HR'){
+		if($_SESSION['level'] == 'HR'){
 			$date = date('F d, Y h:i A');
 			$sql = "UPDATE nleave set state = '$state',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){

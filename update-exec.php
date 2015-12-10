@@ -91,7 +91,7 @@
 			$minus = '-1 days';
 		}
 		$restric = 0;
-		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date)) || date("Y-m-d") < date("Y-m-d", strtotime($date))){
+		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date)) || $dxata['datefile'] < date("Y-m-d", strtotime($date))){
 				$restric = 1;			
 		}
 		if(isset($_POST['lateotupsub'])){
@@ -162,7 +162,7 @@
 		}else{
 			$minus = '-1 days';
 		}
-		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date)) || date("Y-m-d") < date("Y-m-d", strtotime($date))){
+		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date)) || $dxatax['obdate'] < date("Y-m-d", strtotime($date))){
 				$restric = 1;			
 		}
 		if(isset($_POST['lateobsub'])){
@@ -172,7 +172,7 @@
 		$stmt = "UPDATE `officialbusiness` set 
 			obreason = '$obreason', obtimein = '$obtimein', obtimeout = '$obtimeout', officialworksched = '$officialworksched', obdatereq = '$date'
 			where account_id = '$accid' and state = '$state' and officialbusiness_id = '$_SESSION[otid]'";
-		//if($restric == 0){
+		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
@@ -187,7 +187,7 @@
 		    	echo "Error updating record: " . $conn->error;
 		  	}
 			$conn->close();
-		/*}else{
+		}else{
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
@@ -199,7 +199,6 @@
 	    	}
 		}
 		$conn->close();
-		*/
 	}
 
 	if(isset($_POST['upleasubmit'])){		
@@ -333,17 +332,22 @@
 		if($_SESSION['level'] == 'HR'){
 			$upstate = 'AHR';
 			$state = 'UA';
+			if(isset($_SESSION['bypass'])){
+				$xstate = '(state = "UA"  or state = "UATech")';
+			}else{
+				$xstate = ' state = "UA" ';
+			}
 			$redirec = 'hr.php?ac='.$ac;
 			$dates = "datehr = '$datex',";
 		}elseif($_SESSION['level'] == 'TECH'){
 			$upstate = 'UA';
-			$state = 'UATech';
+			$xstate = 'state = "UATech"';
 			$dates = "dateacc = '$datex',";
 			$redirec = 'techsupervisor.php?ac='.$ac;
 		}
 		$stmt = "UPDATE `overtime` set 
 			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
-			where account_id = '$accid' and state = '$state' and overtime_id = '$overtime'";
+			where account_id = '$accid' and $xstate and overtime_id = '$overtime'";
 		if ($conn->query($stmt) === TRUE) {
 	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
 			

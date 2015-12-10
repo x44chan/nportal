@@ -2,7 +2,7 @@
 
 include 'header.php';
 include 'conf.php';
-		$sql = "SELECT * FROM `petty`";
+		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon')";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';
@@ -33,7 +33,7 @@ include 'conf.php';
 				$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$petid'";
 				$data2 = $conn->query($query2)->fetch_assoc();
 				if($data2['totalliq'] != ""){
-					$tots = '<td>₱ ' . number_format($data2['totalliq']) . '</td>';
+					$tots = '<td>₱ ' . number_format($data2['totalliq'],2) . '</td>';
     				$a = str_replace(',', '', $row['amount']);
 					$change =  $a - $data2['totalliq'];
 					if($change == 0){
@@ -57,14 +57,15 @@ include 'conf.php';
 					echo '<tr>';
 				}
 				if(is_numeric($change)){
-					$change = number_format($change);
+					$change = number_format($change,2);
 				}else{
 					$change = $change;
-				}		
+				}	
+
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
-				echo '<td>₱ ' . $row['amount'] . '</td>';
+				echo '<td>₱ ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo '</td>';
 				echo $tots;
 				echo '<td>₱ ' . $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
@@ -78,7 +79,7 @@ include 'conf.php';
 				$tused += $data2['totalliq'];
 				$tchange += ($a - $data2['totalliq']);
 			}	
-			echo '<tr ><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"><b>Total: </td><td style = "border-top: 1px solid;">₱ '.number_format($tamount).'</td><td style = "border-top: 1px solid;">₱ '.number_format($tused).'<td style = "border-top: 1px solid;">₱ '. number_format($tchange).'</td><td style = "border-top: 1px solid;"></td></tr>';
+			echo '<tr ><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"><b>Total: </td><td style = "border-top: 1px solid;">₱ '.number_format($tamount,2).'</td><td style = "border-top: 1px solid;">₱ '.number_format($tused,2).'<td style = "border-top: 1px solid;">₱ '. number_format($tchange,2).'</td><td style = "border-top: 1px solid;"></td></tr>';
 			echo '</tbody></table></div>';
 		}
 
@@ -94,6 +95,10 @@ include 'conf.php';
 
 <style type="text/css">
 	#bords tr, #bords td{border-top: 1px black solid !important;}	
+	body * {
+    	visibility: hidden;
+    
+  	}
 	@media print {		
 		body * {
 	    	visibility: hidden;

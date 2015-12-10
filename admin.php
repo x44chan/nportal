@@ -1,6 +1,7 @@
 <?php session_start(); ?>
 <?php  $title="Admin Page";
 	include('header.php');	
+	include('conf.php');
 	date_default_timezone_set('Asia/Manila');
 ?>
 <?php if($_SESSION['level'] != 'Admin'){
@@ -99,6 +100,57 @@
 	if(isset($_GET['loanac']) && $_GET['loanac'] == 'a'){
 		include 'caloan/loanac-admin.php';
 	}
+	if(isset($_POST['submitrans'])){
+		$petid = mysql_escape_string($_POST['petty_id']);
+		$valcode = mysql_escape_string($_POST['valcode']);
+		$refcode = mysql_escape_string($_POST['transctc']);
+		$source = mysql_escape_string($_POST['source']);
+		$xxsql = "SELECT * FROM `petty` where petty_id = '$petid' and rcve_code = '$valcode' and state = 'TransProcCode'";
+		$xxresult = $conn->query($xxsql);		
+		if($xxresult->num_rows <= 0){
+			$_SESSION['transct'] = $refcode;	
+			echo '<script type="text/javascript">alert("Wrong code");window.location.replace("?transrelease=1&petty_id='.$petid.'"); </script>';
+					
+		}else{
+			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source' where petty_id = '$petid' and state = 'TransProcCode'";
+			if($conn->query($sql) == TRUE){
+				echo '<script type="text/javascript">alert("Successful");window.location.replace("admin.php"); </script>';	
+			}
+		}
+	}
+	if(isset($_GET['transrelease'])){
+		echo '<form action = "" method = "post">';
+		echo '<table align = "center" class = "table table-hover table-bordered" style = "width: 65%;">';
+		echo '<thead><th colspan = 2><h2>Petty Transfer</h2></th></thead>';
+		include("conf.php");
+		$pettyid = $_GET['petty_id'];
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$pettyid' and state = 'TransProcCode'";
+		$result = $conn->query($sql);
+		$xrefcode = "";
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				if(isset($_SESSION['transct'])){
+					$xrefcode = $_SESSION['transct'];
+				}
+				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y", strtotime($row['date'])).'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
+				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">Transfer</td></tr>';
+				echo '<tr><td style = "width: 30%;">Employee Code: <font color = "red">*</font></td><td style = "width: 50%;"><input required type = "text" class = "form-control" name = "valcode" placeholder = "Enter code"/></td></tr>';
+				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option></select></td></tr>';
+				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input value = "'.$xrefcode.'" placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transctc"/></tr></td>'; 
+				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitrans">Submit</button><br><br><a href = "admin.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
+
+			}
+			
+		}
+		echo "</table></form></div><div style = 'display: none;'>";
+	}else{
+		unset($_SESSION['transct']);
+	}
+	
 ?>
 <?php
 	if(isset($_GET['pettyac']) && $_GET['pettyac'] == 'a'){
@@ -132,11 +184,10 @@
 				}
 					echo '<option value = "">----------</option>
               			<option value = "Cash" '.$cash.'>Cash</option>
-              			<option value = "Check" '.$check.'>Check</option>
-              			<option value = "Transfer" '.$trans.'>Transfer</option>';				
+              			<option value = "Check" '.$check.'>Check</option>';				
 				echo '</select></td></tr>';	
 				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option><option value = "Accounting">Accounting</option></select></td></tr>';
-				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo'"/></td></tr>';
 				echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transct"/></tr></td>'; 
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitpetty">Submit</button><br><br><a href = "admin.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 
@@ -224,7 +275,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				echo '<tr><td><label>Particular</label></td><td>' . $row['particular'] . '</td></tr>';
 				echo '<tr><td><label>Source</label></td><td>' . $row['source'] . '</td></tr>';				
 				echo '<tr><td><label>Amount</label></td><td>₱ ';
-				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); } ;
+				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); } ;
 				echo '</td></tr>';
 				if($row['transfer_id'] != null){echo '<tr><td><b>Reference #: </td><td>';echo $row['transfer_id'];echo '</td></tr>';}
 				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
@@ -326,7 +377,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			<tbody id="people">
 			<?php
 	include("conf.php");
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'UAPetty'";
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (state = 'UAPetty' or state = 'TransProcCode')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -334,11 +385,17 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></font></i></td>
+				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font></i></td>
 				<td><?php echo $row['petreason'];?></td>
-				<td> - </td>
-				<td><?php echo '<a class = "btn btn-primary" href = "?pettyac=a&petty_id='.$row['petty_id'].'">Approve</a> ';
-						echo '<a class = "btn btn-primary" href = "petty-exec.php?pettyac=d&petty_id='.$row['petty_id'].'"">Disapprove</a>';?></td>
+				<td><?php if($row['acctrans'] != null){ echo '<i><b>ACC: ' .date("M j, Y g:i A", strtotime($row['acctrans'])) . '</b></i>'; } else { echo ' - '; } ?> </td>
+				<td><?php 
+					if($row['state'] == 'UAPetty'){
+						echo '<a class = "btn btn-primary" href = "?pettyac=a&petty_id='.$row['petty_id'].'">Approve</a> ';
+						echo '<a class = "btn btn-primary" href = "petty-exec.php?pettyac=d&petty_id='.$row['petty_id'].'"">Disapprove</a>';
+					}elseif($row['state'] == 'TransProcCode'){
+						echo '<a class = "btn btn-success" style = "width: 100px" href = "?transrelease=1&petty_id='.$row['petty_id'].'">Release</a> ';
+					}					
+					?></td>
 				</tr>
 
 	<?php
@@ -477,7 +534,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b><?php echo $row['particular'];?><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></font></i></td>
+				<td><b><?php echo $row['particular'];?><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font></i></td>
 				<td><?php echo $row['petreason'];?></td>
 				<td></td>
 				<td>
@@ -578,11 +635,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$otbreak = "";
 							}
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						if($row['dateacc'] != ""){
+						if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
 							$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
-						}else{
+						}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
+							$datetech = "<br>TECH: HR Bypass";
+						}
+
+						if(strtolower($row['position']) <> 'service technician'){
 							$datetech = "";
 						}
+
 						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					if($row['state'] == 'UALate'){
@@ -674,9 +736,13 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td><b>Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font></td>';
 					echo '<td>'.$row['obreason'].'</td>';
 
-					if($row['dateacc'] != ""){
+					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
 						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
-					}else{
+					}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
+						$datetech = "<br>TECH: HR Bypass";
+					}
+
+					if(strtolower($row['position']) <> 'service technician'){
 						$datetech = "";
 					}
 					if($row['datehr'] == ""){

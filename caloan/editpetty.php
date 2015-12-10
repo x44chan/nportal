@@ -2,7 +2,7 @@
 	$accid = $_SESSION['acc_id'];
 	$petid = mysql_escape_string($_GET['editpetty']);
 	include("conf.php");
-	$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and petty_id = '$petid' and state = 'UAPetty' order by state ASC, source asc";
+	$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer') order by state ASC, source asc";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 ?>
@@ -33,7 +33,7 @@
 		</div>
 		<div class="col-xs-3">
 			<label>Update Amount</label>
-			<input type="text" class="form-control" value="<?php echo $row['amount'];?>" name = "upamount" id = "uppet" pattern = "[0-9,]*">
+			<input type="text" class="form-control" value="<?php echo $row['amount'];?>" name = "upamount" id = "uppet" pattern = "[0-9,.]*">
 		</div>
 		<div class="col-xs-3">
 			<label>Reason</label>
@@ -58,7 +58,12 @@ echo '</div>';
 		$upparti = mysqli_real_escape_string($conn, $_POST['upparti']);
 		$upamount =  mysqli_real_escape_string($conn, $_POST['upamount']);
 		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
-		$sql = "UPDATE `petty` set amount = '$upamount', particular = '$upparti', petreason = '$upreason' where account_id = '$accid' and petty_id = '$petid' and state = 'UAPetty'";
+		if($upparti == 'Transfer'){
+			$state = 'UATransfer';	
+		}else{
+			$state = 'UAPetty';
+		}
+		$sql = "UPDATE `petty` set amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
 		if($conn->query($sql) == TRUE){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';

@@ -2,8 +2,7 @@
 	session_start();
 	include('conf.php');
 	
-	if(isset($_POST['otsubmit'])){	
-			
+	if(isset($_POST['otsubmit']) || isset($_POST['lateotsub'])){				
 		//hrs:minutes computation
 		function gettimediff($dtime,$atime){ 
 		 $nextday = $dtime > $atime?1:0;
@@ -53,7 +52,7 @@
 		$accid = $_SESSION['acc_id'];		
 		$datefile = date("Y-m-d");
 		$dateofot = $_POST['dateofot'];
-		$nameofemployee = $_POST['nameofemployee'];
+		$nameofemployee = $_SESSION['name'];
 		$startofot = $_POST['startofot'];
 		$endofot = $_POST['endofot'];
 		if(isset($_POST['restday']) && $_POST['restday'] == 'restday'){
@@ -76,9 +75,13 @@
 		}else{
 			$minus = '-1 days';
 		}
-		if(date("Y-m-d", strtotime($minus, strtotime($datefile))) > date("Y-m-d", strtotime($dateofot)) || date("Y-m-d") < date("Y-m-d", strtotime($dateofot))){
+		if(date("Y-m-d", strtotime($minus, strtotime($datefile))) > date("Y-m-d", strtotime($dateofot)) || date("Y-m-d", strtotime($datefile)) < date("Y-m-d", strtotime($dateofot))){
 				$restric = 1;			
-		}		
+		}
+		if(isset($_POST['lateotsub'])){
+			$state = 'UALate';
+			$restric = 0;
+		}
 		$stmt = $conn->prepare("INSERT into `overtime` (account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssssssssss",$accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		if($restric == 0){
