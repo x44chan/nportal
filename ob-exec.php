@@ -26,7 +26,7 @@
 		}else{
 			$officialworksched = $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
 		}
-		/*$restric = 0;
+		$restric = 0;
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
 		}else{
@@ -38,10 +38,10 @@
 		if(isset($_POST['lateobsub'])){
 			$state = 'UALate';
 			$restric = 0;
-		}*/
+		}
 		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, obtimein, obtimeout, officialworksched, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $obtimein, $obtimeout, $officialworksched, $state);
-		//if($restric == 0){
+		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penob"); </script>';
@@ -53,7 +53,7 @@
 	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penob"); </script>';
 	    	}
 			$conn->close();
-		/*}else{
+		}else{
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
@@ -63,7 +63,7 @@
 	    	}elseif ($_SESSION['level'] == 'HR') {
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penot"); </script>';
 	    	}
-		}*/
+		}
 	}
 
 ?>
