@@ -31,6 +31,7 @@
 		if(substr($approvedothrs,0,2) > 8){
 			$approvedothrs = date("G:i", strtotime("-1 hour", strtotime($approvedothrs)));
 		}	
+
 		//ot break on ot exec
 		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
 			if($_POST['otbreak'] == '30 Mins'){
@@ -52,19 +53,7 @@
 		$post = strtolower($_SESSION['post']);
 		$reason = mysql_escape_string($_POST['reason']);
 		$csrnum = mysql_escape_string($_POST['csrnum']);
-		if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
-			if($_POST['otbreak'] == '30 Mins'){
-				$approvedothrs = date("G:i", strtotime("-30 min", strtotime($approvedothrs)));
-				$otbreak = '-30 Minutes';
-			}elseif ($_POST['otbreak'] == '1 Hour') {
-				$approvedothrs = date("G:i", strtotime("-1 Hour", strtotime($approvedothrs)));
-				$otbreak = '-1 Hour';
-			}else{
-				$otbreak = null;
-			}					
-		}else{
-			$otbreak = null;
-		}
+		
 		if(isset($_POST['updateofot'])){
 			$date = $_POST['updateofot'];
 		}

@@ -671,7 +671,7 @@
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UA' and position != 'service technician' and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UA' and position != 'service technician' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 			
 	?>
@@ -766,7 +766,7 @@
 			}
 		}
 
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and (state = 'UA' or state = 'UATech') and position = 'service technician ' and datefile BETWEEN '$tforque1' and '$tendque1' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and (state = 'UA' or state = 'UATech') and position = 'service technician ' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
