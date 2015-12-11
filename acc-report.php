@@ -32,6 +32,11 @@
 	#reports label, #reports label{
 		font-size: 13px;
 	}
+	<?php
+		if(isset($_GET['print'])){
+			echo 'body { visibility: hidden; }';
+		}
+	?>
 	@media print {
 
 		body * {
@@ -120,6 +125,7 @@ $(document).ready( function () {
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				</ul>
 			</div>				<a  type = "button"class = "btn btn-primary"  href = "acc-req-app.php"> Approved Request</a>		
 			<a type = "button"class = "btn btn-primary"  href = "acc-req-dapp.php">Dispproved Request</a>		
@@ -127,8 +133,6 @@ $(document).ready( function () {
 		</div>
 	</div>
 </div>
-
-	<div>
 <?php 
 	if(isset($_GET['sumar']) && $_GET['sumar'] == 'leasum'){
 		$title = "Employee Leave Summary";
@@ -295,18 +299,18 @@ $(document).ready( function () {
 		}
 	echo '</tbody></table>';
 	echo '<div align = "center" style = "margin-top: 30px;"><a href = "?rep=lea" class = "btn btn-danger"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to Leave Report </a></div></div>';
-	}
+	echo '</div>';}
 	?>
-	</div>
-</div>
-<div id = "userlist" <?php if(isset($_GET['acc_id'])){ echo 'style = "display: none;"';}?>>
+	
+
+<div id = "userlist">
 
 <?php 
 	include 'caloan/newfilter.php';
 ?>
 
 </div>
-<?php include('emp-prof.php') ?>
+<?php if(!isset($_GET['print'])){ include('emp-prof.php') ?>
 <?php 
 	if($_SESSION['pass'] == 'defaultpass'){
 		include('up-pass.php');
@@ -321,4 +325,4 @@ $(document).ready(function(){
 });
 </script>
 <?php } include("req-form.php");?>
-<?php include("footer.php");?>
+<?php include("footer.php"); }?>

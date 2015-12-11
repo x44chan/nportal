@@ -106,6 +106,15 @@
 	</div>
 </div>
 <?php
+	if($_SESSION['level'] == 'Admin'){
+		if(isset($_GET['login_log'])){
+			include 'login_log.php';
+			echo '</div><div style = "display: none;">';
+		}
+	}
+
+?>
+<?php
 	if(isset($_GET['modify']) && $_SESSION['level'] == 'TECH'){
 		$tid = mysql_escape_string($_GET['modify']);
 		$query = "SELECT * FROM `tech_sched`,`login` where tech_sched.account_id = login.account_id and techsched_id = '$tid' and CURDATE() < scheddate";
@@ -161,7 +170,7 @@
 		$modify = mysql_escape_string($_GET['modify']);
 		$stmt = "UPDATE `tech_sched` set 
 			scheddate = '$scheddate', schedtimein = '$schedtimein', schedtimeout = '$schedtimeout'
-		where account_id = '$accid' and techsched_id = '$modify'";
+		where account_id = '$accid' and techsched_id = '$modify' and CURDATE() < scheddate";
 	
 		if ($conn->query($stmt) === TRUE) {
 		
@@ -232,10 +241,10 @@
 					<hr>
 				</div>
 			</div>
-			<div class = "container" >';
+			';
 
 	if($_SESSION['level'] == 'TECH'){
-			echo '<div class = "row">
+			echo '<div class = "container"><div class = "row">
 					<div class = "col-xs-12" style = "margin-top: -30px;">
 						<i><h4 style = "text-decoration: underline;"><span class = "icon-file-text2"></span> Scheduling </h4></i>
 					</div>
@@ -287,7 +296,7 @@
 		}
 		echo'
 			
-			<div class="table-responsive" id = "csr123" >
+			<div class="table-responsive" id = "csr123" style = "margin: 0px 10px 0px 10px;">
 				<table class = "table table-hover" id = "schedulingTble">
 					<thead>
 						<th>Date</th>
@@ -344,7 +353,7 @@
 ?>
 
 </div>
-<?php include('emp-prof.php') ?>
+<?php if($_SESSION['level'] != 'Admin'){ include('emp-prof.php') ?>
 <?php 
 	if($_SESSION['pass'] == 'defaultpass'){
 		include('up-pass.php');
@@ -361,4 +370,44 @@ $(document).ready(function(){
 <?php }?>
 <?php include("footer.php");?>
 
-<?php include("req-form.php"); ?>
+<?php include("req-form.php"); }else{?>
+<div id = "newuser" class = "form-group" style = "display: none;">
+	<form role = "form" action = "newuser-exec.php" method = "post">
+		<table id = "myTable" align = "center" width = "450">
+			<tr>
+				<td colspan = 5 align = "center"><h2>New Account</h2></td>
+			</tr>
+			<tr>
+				<td colspan = 5><h3><font color = "red">Do not use your personal password</font></h3></td>
+			</tr>
+			<tr>
+				<td>Username: </td>
+				<td><input placeholder = "Enter Username" pattern=".{4,}" title="Four or more characters"required class ="form-control"type = "text" name = "reguname"/></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input placeholder = "Enter Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regpword"/></td>
+			</tr>
+			<tr>
+				<td>Confirm Password:</td>
+				<td><input placeholder = "Enter Confirm Password" required pattern=".{6,}" title="Six or more characters" class ="form-control"type = "password" name = "regcppword"/></td>
+			</tr>
+			<tr>
+				<td>Account Level:</td>
+				<td>
+					<select name = "level" class ="form-control">
+						<option value = "">------------
+						<option value = "HR">HR
+						<option value = "ACC">Accounting
+						<option value = "TECH">Technician Supervisor
+						<option value = "Admin">Admin
+					</select>
+				</td>
+			</tr>			
+			<tr>
+				<td colspan = 2 align = center><input class = "btn btn-default" type = "submit" name = "regsubmit" value = "Submit"/></td>
+			</tr>
+		</table>
+	</form>
+</div>
+<?php } ?>

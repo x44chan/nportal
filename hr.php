@@ -254,7 +254,7 @@
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and overtime_id = '$oid' and state = 'AHR'";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and overtime_id = '$oid' and state = 'UAAdmin'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<form role = "form"  align = "center"action = "update-exec.php" method = "post">
@@ -285,7 +285,11 @@
 				<tr>
 					<td>Date Of Overtime: </td>
 					<td><input value = "<?php echo $row['dateofot'];?>" required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "YYYY-MM-DD" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' name = "updateofot"/></td>
-				</tr>				
+				</tr>	
+				<tr>
+					<td>CSR #: </td>
+					<td><input class = "form-control" type = "text" value = "<?php echo $row['csrnum'];?>" placeholder = "Enter CSR Number" name = "csrnum"/></td>
+				</tr>			
 				<tr>
 					<td>Reason (Work to be done): </td>
 					<td><textarea required name = "reason"class = "form-control"><?php $query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
@@ -834,12 +838,13 @@
 				$originalDate = date($row['datefile']);
 				$newDate = date("M j, Y", strtotime($originalDate));
 				$newDate2 = date("M j, Y", strtotime($row['dateofot']));
+					
 				if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
 					echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
 				}
-				if($row['oldot'] != null && $row['state'] == 'AHR'){
+				if($row['oldot'] != null && ($row['state'] == 'AHR' || $row['state'] == 'UA')){
 					$oldot = '</b><br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
 					$hrot = '<b>App. OT: <i><font color = "green">';
 					$hrclose = "</font></i>";
@@ -869,24 +874,45 @@
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
-						<td>'.$newDate .'</td>	
-						<td>'.$newDate2 . '</td>					
-						<td>'.$row["nameofemp"].'</td>	
-						<td width = 300 height = 70>'.$data1["reason"].'</td>					
-						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>						
+						<td>'.$newDate .'</td>						
+						<td>'.$row["nameofemp"].'</td>
+						<td>'.$newDate2.'</td>
+						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td width = 300 height = 70>'.$data1['reason'].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
-							if($row['state'] == 'AHR'){
-								echo 'Pending to Admin<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
-							}else if($row['state'] == 'AAdmin'){
+							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo 'Pending for Time Checking <br>';
+							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
 								echo $otlate;
+								echo 'Pending for Time Checking HR<br>';
+							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+								echo $otlate;
+								echo 'Pending to Tech Supervisor<br>';
+								if($row['otlate'] == null){
+									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
+								}
+							}else if($row['state'] == 'CheckedHR'){
+								echo $otlate;
+								echo '<p><font color = "green">Checked by HR</font></p> ';
+							}else if($row['state'] == 'AACC'){
+								echo '<p><font color = "green">Approved by Accounting</font></p> ';
+							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'DAHR'){
+								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DAACC'){
+								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'DATECH'){
+								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UALate'){
 								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
 								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
+							}elseif($row['state'] == 'UAAdmin'){
+								echo '<p>Waiting for Admin Approval</p>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}
 						echo '<td></tr>';
 			}

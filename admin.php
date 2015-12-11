@@ -574,7 +574,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";
 				
 			}else{
-				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state = 'UALate') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'UAAdmin' or state = 'UALate')  and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
 				
 			}
 			$result = $conn->query($sql);
@@ -612,10 +612,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					echo '<td>'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>'.$late.'Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$explo[0].$explo[1].'</font>'.$otlate .'</td>';
+					echo '<td><b>'.$late.'Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$row['startofot'] . ' - ' . $row['endofot'].'</font>'.$otlate .'</td>';
 					echo '<td>'.$data1['reason'].'</td>';	
 						if($row['datehr'] == ""){
-							$datehr = '<b><i>HR REQUEST</i></b>';
+							$datehr = '<b><i>Waiting for approval</i></b>';
 							if(isset($_GET['bypass'])){
 								$datehr = '<b><i> Bypass </i></b>';
 							}
@@ -648,7 +648,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if(strtolower($row['position']) <> 'service technician'){
 							$datetech = "";
 						}
-
+						if($row['state'] == 'UAAdmin'){
+							$datehr = "<b> Waiting for Approval</b>";
+						}
 						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
 					}	
 					if($row['state'] == 'UALate'){

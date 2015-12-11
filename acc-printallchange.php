@@ -55,12 +55,16 @@ include 'conf.php';
 					echo '<tr id = "backs">';
 				}else{
 					echo '<tr>';
+					if(is_numeric($change)){
+						$change = number_format($change,2);
+					}else{
+						$change = $change;
+					}
+					$tamount += $a;
+					$tused += $data2['totalliq'];
+					$tchange += ($a - $data2['totalliq']);
 				}
-				if(is_numeric($change)){
-					$change = number_format($change,2);
-				}else{
-					$change = $change;
-				}	
+					
 
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
@@ -75,9 +79,7 @@ include 'conf.php';
 				}
 				echo '<td id = "show" style = "display: none;"></td>';
 				echo '</tr>';
-				$tamount += $a;
-				$tused += $data2['totalliq'];
-				$tchange += ($a - $data2['totalliq']);
+				
 			}	
 			echo '<tr ><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"></td><td style = "border-top: 1px solid;"><b>Total: </td><td style = "border-top: 1px solid;">₱ '.number_format($tamount,2).'</td><td style = "border-top: 1px solid;">₱ '.number_format($tused,2).'<td style = "border-top: 1px solid;">₱ '. number_format($tchange,2).'</td><td style = "border-top: 1px solid;"></td></tr>';
 			echo '</tbody></table></div>';
@@ -157,3 +159,6 @@ include 'conf.php';
 	}
 
 </style>
+teqz
+d3uk
+axgw

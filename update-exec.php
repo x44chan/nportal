@@ -76,9 +76,9 @@
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else if($post == "service technician"){
-			$state = 'UATech';	
+			$state = 'UAAdmin';	
 		}else{
-			$state = 'UA';	
+			$state = 'UAAdmin';	
 		}	
 		if($_SESSION['level'] == 'HR'){
 			$state = 'AHR';
@@ -98,6 +98,7 @@
 			$restric = 0;
 			$state = 'UALate';
 		}
+		$state = 'UAAdmin';
 		$stmt = "UPDATE `overtime` set 
 			csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
 			where account_id = '$accid' and state like '$state' and overtime_id = '$_SESSION[otid]'";
@@ -163,7 +164,7 @@
 			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date)) || $dxatax['obdate'] < date("Y-m-d", strtotime($date))){
-				$restric = 1;			
+				$restric = 0;			
 		}
 		if(isset($_POST['lateobsub'])){
 			$state = 'UALate';
@@ -330,7 +331,7 @@
 			}
 			$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){
-			$upstate = 'AHR';
+			$upstate = 'CheckedHR';
 			$state = 'UA';
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';
@@ -340,14 +341,15 @@
 			$redirec = 'hr.php?ac='.$ac;
 			$dates = "datehr = '$datex',";
 		}elseif($_SESSION['level'] == 'TECH'){
-			$upstate = 'UA';
+			$upstate = 'CheckedHR';
 			$xstate = 'state = "UATech"';
 			$dates = "dateacc = '$datex',";
 			$redirec = 'techsupervisor.php?ac='.$ac;
 		}
+		$upstate = 'CheckedHR';
 		$stmt = "UPDATE `overtime` set 
 			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
-			where account_id = '$accid' and $xstate and overtime_id = '$overtime'";
+			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		if ($conn->query($stmt) === TRUE) {
 	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
 			

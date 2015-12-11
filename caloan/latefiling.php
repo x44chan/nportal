@@ -1,7 +1,7 @@
 <div class="container" style="margin-top: -30px;">
 	<form action = "ot-exec.php" method="post" >
 		<div class="row">
-			<div class="col-xs-12"><u><i><h4>For Late Filing</h4></i></u></div>
+			<div class="col-xs-12"><u><i><h4>For Late Filing</h4></i><p style="font-size: 13px;"><i><font color = "red"> If your overtime is yesterday, apply it on the other form. </font></i></p></u><hr></div>
 		</div>
 		<div class="row">
 			<div class="col-xs-3">
@@ -50,7 +50,6 @@
 				<textarea required name = "reason" placeholder = "Enter your work order" class = "form-control col-sm-10"></textarea>
 			</div>
 		</div>
-
 		<div class="row" >
 			<div class="col-xs-4" style="margin-top: -20px;">
 				<label for="restday3" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday3"/> Rest Day</label>
@@ -59,7 +58,8 @@
 		<hr>
 		<div class="row">
 			<div class="col-xs-12" align="center">
-				<button class="btn btn-primary" name = "lateotsub" type="submit"> Submit Request </button> <a href="index.php" class="btn btn-danger"> Back </a>
+				<u><i><p style="font-size: 13px;"><font color = "red"> If your overtime is yesterday, apply it on the other form. </font></p></i></u>
+				<button class="btn btn-primary" name = "lateotsub" type="submit" onclick="return confirm('Are you sure?');"> Submit Request </button> <a href="index.php" class="btn btn-danger"> Back </a>
 			</div>
 		</div>
 	</form>

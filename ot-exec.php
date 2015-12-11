@@ -62,13 +62,7 @@
 		}		
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));;
 		$reason = $_POST['reason'];
-		if($_SESSION['level'] == "HR"){
-			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UATech';	
-		}else{
-			$state = 'UA';	
-		}
+		$state = 'UAAdmin';
 		$restric = 0;
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';

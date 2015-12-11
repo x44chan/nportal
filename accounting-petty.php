@@ -20,11 +20,11 @@
 	#bords tr, #bords td{border-top: 1px black solid !important;}
 	<?php
 		if(isset($_GET['print'])){
-			echo 'body *{ visibility: hidden; }';
+			echo 'body { visibility: hidden; }';
 		}
 	?>
 	@media print {		
-		body * {
+		body  {
 	    	visibility: hidden;
 	    
 	  	}
@@ -41,27 +41,27 @@
 	 	#report h2{
 	  		margin-bottom: 10px;
 	  		margin-top: 10px;
-	  		font-size: 20px;
+	  		font-size: 17px;
 	  		font-weight: bold;
 	    }
 	 	#report h4{
-			font-size: 15px;
+			font-size: 13px;
 		}
 		#report h3{
 	  		margin-bottom: 10px;
 		}
 		#report th{
-	  		font-size: 12px;
+	  		font-size: 10px;
 	  		width: 0;
 		} 
 		#report td{
-	  		font-size: 11px;
+	  		font-size: 9px;
 	  		bottom: 0px;
 	  		padding: 3px;
 	  		max-width: 210px;
 		}
 		#totss{
-			font-size: 14px;
+			font-size: 12px;
 		}
 		#report {
 	   		position: absolute;
@@ -116,6 +116,7 @@
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				</ul>
 			</div>	
 			<a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
@@ -143,6 +144,10 @@
 <?php
 	if(isset($_GET['transfer'])){
 		include 'caloan/transferpty.php';
+		echo '</div><div style = "display: none;">';
+	}
+	if(isset($_GET['replenish'])){
+		include 'caloan/replenish.php';
 		echo '</div><div style = "display: none;">';
 	}
 ?>
@@ -536,9 +541,9 @@
 				<?php if(isset($_GET['Eliseo'])){ echo '<br> Source: '; echo ' Eliseo ';}elseif(isset($_GET['Sharon'])){ echo '<br> Source: '; echo ' Sharon '; }elseif(isset($_GET['Accounting'])){ echo '<br> Source: '; echo ' Accounting '; } ?>
 			</i></b>
 		</div>
-		<div class="col-xs-12" align="right">
-			<i><b>Total Amount: <span class = "badge" id = "total" style = "font-size: 14px;"></span><br>
-			Total Used Petty: <span class = "badge" id = "used" style = "font-size: 14px;"></span></b></i>
+		<div class="col-xs-12" align="right" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>>
+			<i><b>Total Amount: <span class = "badge" id = "total" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>></span><br>
+			Total Used Petty: <span class = "badge" id = "used" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>></span></b></i>
 		</div>
 	</div>
 <?php
@@ -635,8 +640,8 @@
 		}
 		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($total,2).'");  $("#used").text("₱ '.number_format($used,2).'"); });</script>';
 		if(isset($_GET['print'])){
-			echo '<tr><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td></tr>';
-			echo '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
 		}		
 		echo "</tbody></table></div>";	
 		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
@@ -779,7 +784,7 @@
 	}
 ?>
 </div>
-<?php include('emp-prof.php') ?>
+<?php if(!isset($_GET['print'])){ include('emp-prof.php') ?>
 <?php 
 	if($_SESSION['pass'] == 'defaultpass'){
 		include('up-pass.php');
@@ -794,4 +799,4 @@ $(document).ready(function(){
 });
 </script>
 <?php } include("req-form.php");?>
-<?php include("footer.php");?>
+<?php include("footer.php"); }?>

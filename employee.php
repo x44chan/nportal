@@ -192,11 +192,9 @@
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
-		if(strtolower($_SESSION['post']) == 'service technician'){
-			$state = 'UATech';
-		}else{
-			$state = 'UA';
-		}
+		
+			$state = 'UAAdmin';
+		
 		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and overtime_id = '$oid' and state = '$state'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -710,22 +708,19 @@
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
-								echo 'Pending to HR<br>';
-								if($row['otlate'] == null){
-									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
-								}
+								echo 'Pending for Time Checking <br>';
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
 								echo $otlate;
-								echo 'Pending to HR<br>';
+								echo 'Pending for Time Checking HR<br>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 								echo $otlate;
 								echo 'Pending to Tech Supervisor<br>';
 								if($row['otlate'] == null){
 									echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 								}
-							}else if($row['state'] == 'AHR'){
+							}else if($row['state'] == 'CheckedHR'){
 								echo $otlate;
-								echo '<p><font color = "green">Approved by HR</font></p> ';
+								echo '<p><font color = "green">Checked by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
@@ -741,6 +736,9 @@
 							}elseif($row['state'] == 'UALate'){
 								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
 								echo '<a href = "?edit_late='.$row['overtime_id'].'" class = "btn btn-danger"> Edit Application </a>';
+							}elseif($row['state'] == 'UAAdmin'){
+								echo '<p>Waiting for Admin Approval</p>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}
 						echo '<td></tr>';
 			}

@@ -45,6 +45,7 @@
 				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				</ul>
 			</div>			
 			<a  type = "button"class = "btn btn-primary  active"  href = "acc-req-app.php"> Approved Request</a>		
@@ -216,7 +217,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				$petid = $row['petty_id'];
 				if($row['state'] == 'AAPettyRep'){
@@ -266,7 +267,7 @@
 	}echo '</tbody></table></form>';$conn->close();
 }
 ?> 
-	<?php 
+<?php 
 	if(isset($_GET['appot'])){
 		if(isset($_GET['prev'])){
 			echo '<a href = "?appot" class="pull-left btn btn-primary" style="margin-left: 10px; margin-top: -20px;"> Current Cutoff </a>';
@@ -303,23 +304,6 @@
 			<tbody>
 <?php
 		include("conf.php");
-		$cutoffdate = date("Y-m-d");
-		$date17 = date("d");
-		$dated = date("m");
-		$datey = date("Y");
-		if($date17 >= 17){
-			$forque = 16;
-			$endque = 31;
-		}else{
-			$forque = 1;
-			$endque = 15;
-		}
-		if(date("d") < 2){
-			$date17 = 16;
-			$forque = 16;
-			$endque = 32;
-			$dated = date("m", strtotime("previous month"));
-		}
 		if(isset($_GET['prev'])){
 			$date17 = date("d");
 			if($date17 >= 17){
@@ -327,11 +311,27 @@
 				$endque = date('Y-m-15');
 			}else{
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31');
+				$endque = date('Y-m-31', strtotime("previous month"));
 			}
-			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
+			if(date("d") >= 2 && date("d") < 17){
+				$forque = date('Y-m-16', strtotime("previous month"));
+				$endque = date('Y-m-t', strtotime("previous month"));
+			}
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and state = 'AAdmin'";
 		}else{
-			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
+			$date17 = date("d");
+			if($date17 >= 17){
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31');
+			}else{
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
+			}
+			if(date("d") < 2){
+				$forque = date('Y-m-16', strtotime("previous month"));
+				$endque = date('Y-m-d');
+			}
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and state = 'AAdmin'";
 		}
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -369,7 +369,7 @@
 						}else{
 							echo '<p><font color = "green">Approved by Dep. Head</p>';
 						}
-				echo '<td></tr>';
+				echo '</td></tr>';
 		}
 
 	}$conn->close();
@@ -380,37 +380,36 @@
 		</form>
 <?php
 	include("conf.php");
-	$date17 = date("d");
-	$dated = date("m");
-	$datey = date("Y");
-	if($date17 >= 17){
-		$forque = 16;
-		$endque = 31;
-		$cutoffdate = '16 - 30/31';	
-	}else{
-		$cutoffdate = '1 - 15';
-		$forque = 1;
-		$endque = 15;
-	}
-	if($date17 == 1){
-		$date17 = 16;
-		$forque = 16;
-		$endque = 32;
-		$dated = date("m", strtotime("previous month"));
-	}
-	if(isset($_GET['prev'])){
-		$date17 = date("d");
-		if($date17 >= 17){
-			$forque = date('Y-m-01');
-			$endque = date('Y-m-15');
+		if(isset($_GET['prev'])){
+			$date17 = date("d");
+			if($date17 >= 17){
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
+			}else{
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31', strtotime("previous month"));
+			}
+			if(date("d") == 2){
+				$forque = date('Y-m-16', strtotime("previous month"));
+				$endque = date('Y-m-t', strtotime("previous month"));
+			}
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and state = 'AAdmin'";
 		}else{
-			$forque = date('Y-m-16');
-			$endque = date('Y-m-31');
+			$date17 = date("d");
+			if($date17 >= 17){
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31');
+			}else{
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
+			}
+			if(date("d") < 2){
+				$forque = date('Y-m-16', strtotime("previous month"));
+				$endque = date('Y-m-d');
+			}
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and state = 'AAdmin'";
 		}
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque'";
-	}else{
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and DAY(dateofot) >= $forque and state = 'AAdmin' and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey";
-	}$result = $conn->query($sql);
+	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		$cutofftime2 = 0;	
 		$hours12 = 0;
@@ -467,7 +466,7 @@
 		}else{
 			$datade = date("F") ;
 		}
-
+		$cutoffdate = date("M j, Y", strtotime($forque)) . ' - ' . date("M j, Y", strtotime($endque));
 		$hours12 = $hours12;
 		$minutetosec = $minutes12;
 		$totalmin = $hours12 + $minutes12;
@@ -477,7 +476,7 @@
 		}else{
 			$point5 = '';
 		}
-		echo '<div align = "center">Total OT: <strong>'. ($hours12 + substr($totalothrs,0,2)) .$point5. ' Hour/s </strong>for '.$datade. ' ' . $cutoffdate . ', ' . date("Y").'</strong></div>';
+		echo '<div align = "center">Total OT: <strong>'. ($hours12 + substr($totalothrs,0,2)) .$point5. ' Hour/s </strong>for '.$cutoffdate . '</strong></div>';
 	}
 }
 ?>
@@ -531,7 +530,7 @@
 						}else{
 							echo '<p><font color = "green">Approved by Dep. Head</p>';
 						}
-				echo '<td></tr>';
+				echo '</td></tr>';
 		}
 		echo '</tbody></table></form>';
 	}$conn->close();
@@ -654,7 +653,7 @@
 						}else{
 							echo '<p><font color = "green">Approved by <br>Dep. Head</p>';
 						}
-				echo '<td></tr>';
+				echo '</td></tr>';
 		}
 		echo '</tbody></table></form>';
 	}$conn->close();

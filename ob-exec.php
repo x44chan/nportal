@@ -33,7 +33,7 @@
 			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($obdate))) > date("Y-m-d", strtotime($obdatereq)) || date("Y-m-d") < date("Y-m-d", strtotime($obdatereq))){
-				$restric = 1;			
+				$restric = 0;			
 		}
 		if(isset($_POST['lateobsub'])){
 			$state = 'UALate';

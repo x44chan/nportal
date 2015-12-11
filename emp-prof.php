@@ -28,7 +28,7 @@
         </div>
         <div class="row">
         <div class = "col-lg-5 col-md-5 col-sm-5 col-xs-5" align="center">
-            <img style = "margin: auto;"src="images/<?php echo $_SESSION['acc_id'];?>.jpg" class="img-rounded" onerror="if (this.src != 'images/default.jpg') this.src = 'images/default.jpg';"alt="Cinque Terre" width="200" height="180"><br><br>
+            <img style = "margin: auto;"src="<?php if(!file_exists('images/'.$_SESSION['acc_id'] .'.jpg"')){ echo 'images/'.$_SESSION['acc_id'] .'.jpg"';} else { echo "images/default.jpg"; }?>" class="img-rounded" onerror="if (this.src != 'images/default.jpg') this.src = 'images/default.jpg';"alt="Cinque Terre" width="200" height="180"><br><br>
             <a href = "takephoto.php" class="btn btn-primary"><span class="glyphicon glyphicon-camera"></span> Take Photo </a>
          </div>
           <div class="col-md-7">
@@ -91,7 +91,7 @@
           </select>
         </div>
       </div>
-      <div id = "marriedform" style="<?php if($row['ecstatus'] == 'Married'){ echo 'display: inline';} else{ echo 'display: none;"';}?>">
+      <div id = "marriedform" style="<?php if($row['ecstatus'] == 'Married'){ echo 'display: inline';} else{ echo 'display: none;';}?>">
           <div>
             <div style="border-bottom: 1px solid #eee;"></div>
             <h3>For Married</h3>          

@@ -20,17 +20,19 @@ $(document).ready(function(){
 	$('form').preventDoubleSubmission();
 });
 </script>
-<div id = "latefiling">
+
 <?php
 	if(isset($_GET['late_filing'])){
+		echo '<div id = "latefiling">';
 		include 'caloan/latefiling.php';
+		echo '</div>';
 	}
 	if(isset($_GET['edit_late'])){
 		include 'caloan/editlate.php';
 	}
 ?>
-</div>
-<div id = "offb" style = "margin-top: -30px; display: none; padding: ">
+
+<div id = "offb" style = "margin-top: -30px; display: none; ">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
 			<table width = "60%" align = "center">

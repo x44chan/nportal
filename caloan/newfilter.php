@@ -87,10 +87,10 @@
 			$acounts = 0;
 			while ($row = $result->fetch_assoc()) {	
 				$accidd = $row['account_id'];
-						$ssql1 = "SELECT count(account_id) as otcount FROM overtime where overtime.account_id = $accidd and state = 'AAdmin' and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
-						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and state = 'AAdmin' and obdate BETWEEN '$date1' and '$date2' ORDER BY obdate ASC";
-						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and state = 'AAdmin' and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
-						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and state = 'AAdmin' and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+						$ssql1 = "SELECT count(account_id) as otcount FROM overtime where overtime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and obdate BETWEEN '$date1' and '$date2' ORDER BY obdate ASC";
+						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
 						$ssql6 = "SELECT count(account_id) as loanc  FROM loan_cutoff where loan_cutoff.account_id = $accidd and state = 'CutOffPaid' and '$date1' BETWEEN cutoffdate and enddate and enddate >= '$date2' ORDER BY cutoffdate ASC";
 						
@@ -128,6 +128,7 @@
 							$acounts = $data6['loanc'];
 							$title = "Loan Report";
 						}
+						$_SESSION['acounts'] = $acounts;
 						if($acounts > 0 ){
 							echo '<tr>';	
 						}else{
@@ -154,7 +155,8 @@
 <?php } ?>
 <div id = "reportg">
 <?php 
-	if(isset($_GET['report'])){		
+	if(isset($_GET['report'])){	
+		
 		//unset($_SESSION['date']);
 		//unset($_SESSION['date0']);
 		$accids = mysql_escape_string($_GET['accid']);
@@ -174,7 +176,7 @@
 	<h4 style = "margin-left: 10px;">Category: <b><i><?php echo $empcatergorys;?></i></b></h4>
 	<hr>
 <?php if($_GET['report'] == 'all' || $_GET['report'] == 'ot'){
-		$sql = "SELECT * FROM overtime where overtime.account_id = $accids and state = 'AAdmin' and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 		?> 
@@ -201,7 +203,7 @@
 			$dated = date("m");
 			$datey = date("Y");		
 			$explo = (explode(":",$row['approvedothrs']));
-			if($row['oldot'] != null && $row['state'] == 'AAdmin'){
+			if($row['oldot'] != null && ($row['state'] == 'AAdmin' || $row['state'] == 'CheckedHR')){
 					$oldot = '<br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
 					$hrot = '<b>App. OT: <i><font color = "green">';//( '.$row['approvedothrs'] . ' ) ';
 					$hrclose = "</font></i>";
@@ -241,7 +243,7 @@
 		?>
 
 <?php	
-	$sql = "SELECT * FROM overtime where overtime.account_id = $accids and state = 'AAdmin' and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+	$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		$cutofftime2 = 0;	
@@ -262,7 +264,7 @@
 		$dated = date("F");
 		$cutoffs = date("Y-m-16");
 		
-		if($row['state'] == 'AAdmin' && $row['dateofot'] >= $cutoffs){	
+		if(($row['state'] == 'AAdmin' || $row['state'] == 'CheckedHR') && $row['dateofot'] >= $cutoffs){	
 			$cutoffdate = '16 - 30/31';				
 			$hrs1 = $row['approvedothrs'];
 			$min1 = $row['approvedothrs'];
@@ -275,7 +277,7 @@
 			$hours1 = $hours1 +floor($seconds1 / (60 * 60));
 			$hours12 += $hours1;
 			$minutes12 += $minutes1;
-		}else if($row['state'] == 'AAdmin' && $row['dateofot'] < $cutoffs){
+		}else if(($row['state'] == 'AAdmin' || $row['state'] == 'CheckedHR') && $row['dateofot'] < $cutoffs){
 			$cutoffdate = '1 - 15';
 			$hrs1 = $row['approvedothrs'];
 			$min1 = $row['approvedothrs'];
@@ -606,9 +608,12 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 	</div>
 
 <?php
-		echo '<div align = "center"><button id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" onclick = "window.print();"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</button>';
+		echo '<div align = "center"><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report='.$_GET['report'].'&print&accid='.$_GET['accid'].'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a>';
 		echo '<a id = "backs" class = "btn btn-danger" href="javascript:window.open(\'\',\'_parent\',\'\');window.close();"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back</a></div>';
 		echo '</div>';
+		if(isset($_GET['print'])){
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report='.$_GET['report'].'&accid='.$_GET['accid'].'";});</script>';
+		}
 }
 
 ?>
