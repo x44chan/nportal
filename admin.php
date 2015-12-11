@@ -474,11 +474,15 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}
 			if($row['empcatergory'] == 'Regular'){
 				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['regdate']));
+				if($row['regdate'] == null){
+					$datecat = "";
+				}
 			}elseif($row['empcatergory'] == 'Probationary'){
 				$datecat = $datecat = '<br>Date: ' . date("M j, Y", strtotime($row['probidate']));
 			}else{
 				$datecat = "";
 			}
+			
 	?>
 				<tr>
 					<td><b>Categorization</b></td>			
