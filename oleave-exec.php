@@ -1,8 +1,9 @@
 <?php
 	session_start();
 	include('conf.php');	
-
-	if(isset($_POST['leasubmit'])){
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}elseif(isset($_POST['leasubmit'])){
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
 		$datefile = date("Y-m-d");
@@ -61,6 +62,17 @@
 	    	}elseif ($_SESSION['level'] == 'HR') {
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penlea"); </script>';
 	    	}
+		}
+	}
+	if(isset($_GET['adleave'])){
+		$balid = mysql_escape_string($_GET['leavebal_id']);
+		if($_GET['adleave'] == 'a'){
+			$sql = "UPDATE nleave_bal set state = 'AAdmin' where leavebal_id = '$balid' and state = 'UA'";
+			if ($conn->query($sql) === TRUE) {
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}
+		}elseif($_GET['adleave'] == 'd'){
+
 		}
 	}
 ?>

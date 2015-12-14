@@ -1,8 +1,9 @@
 <?php
 	session_start();
 	include('conf.php');	
-
-	if(isset($_POST['unsubmit'])){
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}elseif(isset($_POST['unsubmit'])){
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
 		$undate = date("Y-m-d");

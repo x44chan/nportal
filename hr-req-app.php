@@ -118,7 +118,7 @@
 <div id = "dappot" style = "margin-top: -30px; display: none;">
 	<?php 
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id  and state like 'A%' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id  and (state like 'A%' or state = 'CheckedHR') ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>

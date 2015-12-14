@@ -452,6 +452,26 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	}
+	$sql = "SELECT * from `nleave_bal`,`login` where nleave_bal.account_id = login.account_id and state ='UA'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>			
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b>Leave Balance<br>Vacation Leave: <font color = "green"> <?php echo $row['vleave'];?></font><br>Sick Leave: <font color = "green"> <?php echo $row['sleave'];?><br></font><b>For: <font color = "green"><?php echo date("M", strtotime($row['startdate']));?> - <?php echo date("M Y", strtotime($row['enddate']));?></font></td>
+					<td> - </td>
+					<td><b> HR Department </b></td>
+					<td> <?php 
+							echo '<a class = "btn btn-primary" href = "oleave-exec.php?adleave=a&leavebal_id='.$row['leavebal_id'].'">Approve</a> ';
+							echo '<a class = "btn btn-primary" href = "oleave-exec.php?adleave=d&leavebal_id='.$row['leavebal_id'].'"">Disapprove</a>';
+						?>
+					</td>
+				</tr>
+	<?php
+		}
+	}
 	$sql = "SELECT * from `login` where hrchange != '0'";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
@@ -483,7 +503,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['contractdate']));
 			}
 
-			if($row['contractdate'] < date("2000-12-31")){
+			if($row['empcatergory'] == 'Contractual' && $row['contractdate'] < date("2000-12-31")){
 				$datecat = "";
 			}
 			
@@ -561,24 +581,22 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$date17 = date("d");
 			$dated = date("m");
 			$datey = date("Y");
-			if($date17 > 16){
-				$forque = 16;
-				$endque = 31;
+			if($date17 >= 17){
+				$forque = date('Y-m-16');
+				$endque = date('Y-m-31');
 			}else{
-				$forque = 1;
-				$endque = 15;
+				$forque = date('Y-m-01');
+				$endque = date('Y-m-15');
 			}
 			if(date("d") < 2){
-				$date17 = 16;
-				$forque = 16;
-				$endque = 32;
-				$dated = date("m", strtotime("previous month"));
+				$forque = date('Y-m-16', strtotime("previous month"));
+				$endque = date('Y-m-d');
 			}
 			if(isset($_GET['bypass'])){
-				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
 				
 			}else{
-				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'UAAdmin' or state = 'UALate')  and DAY(dateofot) >= $forque and DAY(dateofot) <= $endque and MONTH(dateofot) = $dated and YEAR(dateofot) = $datey ORDER BY datefile ASC";	
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'UAAdmin' or state = 'UALate')  and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";	
 				
 			}
 			$result = $conn->query($sql);
@@ -679,9 +697,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				}
 			}
 			if(isset($_GET['bypass'])){
-				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and (state = 'AHR' or state like 'UA%') and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY datefile ASC";
+				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
 			}else{
-				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and state = 'AHR' and DAY(dateofundrtime) >= $forque and DAY(dateofundrtime) <= $endque and MONTH(dateofundrtime) = $dated and YEAR(dateofundrtime) = $datey ORDER BY datefile ASC";		
+				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and state = 'AHR' and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";		
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
@@ -724,9 +742,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				}
 			}
 			if(isset($_GET['bypass'])){
-				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'AHR' or state like 'UA%') and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";
+				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'AHR' or state like 'UA%') and obdate BETWEEN '$forque' and '$endque' ORDER BY obdate ASC";
 			}else{
-				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'AHR' and DAY(obdatereq) >= $forque and DAY(obdatereq) <= $endque and MONTH(obdatereq) = $dated and YEAR(obdatereq) = $datey ORDER BY obdate ASC";		
+				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'AHR' and obdate BETWEEN '$forque' and '$endque' ORDER BY obdate ASC";		
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){

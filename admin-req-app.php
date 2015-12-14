@@ -261,7 +261,7 @@
 <?php
 		include("conf.php");
 		$cutoffdate = date("Y-m-d");
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and state = 'AAdmin' order by datefile desc";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'UA') order by datefile desc";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 		$cutofftime2 = 0;	

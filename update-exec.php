@@ -1,7 +1,9 @@
 <?php
 	session_start();
 	include('conf.php');
-	
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}
 	date_default_timezone_set('Asia/Manila');
 	if(isset($_POST['upotsubmit']) || isset($_POST['lateotupsub'])){		
 		//hrs:minutes computation
@@ -123,16 +125,16 @@
 	if(isset($_POST['upobsubmit'])){		
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];
-		$obtimein = $_POST['obtimein'];
-		$obtimeout = $_POST['obtimeout'];
-		$obreason = $_POST['obreason'];
+		$obtimein = mysql_escape_string($_POST['obtimein']);
+		$obtimeout = mysql_escape_string($_POST['obtimeout']);
+		$obreason = mysql_escape_string($_POST['obreason']);
 		if(isset($_POST['updateofob'])){
-			$date = $_POST['updateofob'];
+			$date = mysql_escape_string($_POST['updateofob']);
 		}
 		if(isset($_POST['uprestday']) && $_POST['uprestday'] == 'restday'){
 			$officialworksched = "Restday";
 		}else{
-			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+			$officialworksched = mysql_escape_string($_POST['upoffr']). ' - ' . mysql_escape_string($_POST['upoffto']);
 		}
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	

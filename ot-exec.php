@@ -1,8 +1,9 @@
 <?php
 	session_start();
 	include('conf.php');
-	
-	if(isset($_POST['otsubmit']) || isset($_POST['lateotsub'])){				
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}elseif(isset($_POST['otsubmit']) || isset($_POST['lateotsub'])){				
 		//hrs:minutes computation
 		function gettimediff($dtime,$atime){ 
 		 $nextday = $dtime > $atime?1:0;

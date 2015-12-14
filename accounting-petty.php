@@ -14,6 +14,10 @@
         	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
 
     	} );
+    	 $('#myTablepet').DataTable( {
+	        "order": [ 0, "desc" ],
+	        "iDisplayLength": 12
+	    });
 	});
 </script>
 <style type="text/css">
@@ -562,7 +566,7 @@
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
 			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.'";});</script>';
 		}else{
-			echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
+			echo '<table id = "myTablepet" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		}
 		
 		echo '<thead>
@@ -592,7 +596,7 @@
 			$filt = "";
 		}
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AApettyRep' $filt";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -620,10 +624,16 @@
 				echo number_format($data2['totalliq'],2) . '</td>';
 				$used += $data2['totalliq'];
 				
-				echo '<td>';
+				echo '<td><b>';
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 				$data = $conn->query($sql)->fetch_assoc();
-				if($data['petty_id'] == null){
+				if($row['state'] == 'AAAPettyReceive'){
+					echo 'Pending for Employee Code';
+				}elseif($row['state'] == 'AAPettyReceived'){
+					echo 'Pending for Employee Code';
+				}elseif($row['state'] == 'AAPetty'){
+					echo '<font color = "green"><b>Pending to Accounting</font>';
+				}elseif($data['petty_id'] == null){
 					echo '<b>Pending Liquidation</b>';
 				}elseif($data['liqstate'] == 'EmpVal'){
 					echo '<font color = "green"><b>Liquidated</font><br>';

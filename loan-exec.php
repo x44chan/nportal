@@ -1,6 +1,9 @@
 <?php
 	include 'conf.php';
 	session_start();
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}
 	if(isset($_POST['updteloan'])){
 		$o = mysql_escape_string($_POST['cashadvid']);
 		$accid = mysql_escape_string($_POST['accid']);

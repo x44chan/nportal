@@ -224,8 +224,9 @@
 	    if($result->num_rows > 0){
 	      while($row = $result->fetch_assoc()){
 ?>
-<form action = "" method="post">
-  <div class="container">
+
+<div class="container">
+  <form action = "" method="post">
     <div class="row">
       <div class="col-xs-12">
         <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Employee Details</i></u></h4>
@@ -252,7 +253,7 @@
     <div class="row">
       <div class="col-xs-12">
         <hr>
-        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Account</i></u></h4>
+        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Category</i></u></h4>
       </div>
     </div>
     <div class="row">
@@ -270,6 +271,7 @@
         <input required type = "date" <?php if($row['empcatergory'] == "Regular"){ echo ' value = "' . $row['regdate'] . '"'; } elseif($row['empcatergory'] == "Probationary"){ echo ' value = "' . $row['probidate'] . '"';}else{ echo ' value = "' . $row['contractdate'] . '"';}?> data-date='{"startView": 2, "openOnMouseFocus": true}' required name = "catdate" class="form-control"/>
       </div>
     </div>
+    <?php if(date("Y") == "2015"){ ?>
     <div class = "row">
       <div class="col-xs-3">
         <label>Sick Leave <font color = "red"> * <i>(0 if none)</i></font></label>
@@ -288,25 +290,89 @@
         <input <?php if($row['usedvl'] != null){ echo ' value = "' . $row['usedvl'] . '" '; } else { echo ' value = "0" ' ;} ?> type="text" name = "usedvl" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
       </div>
     </div>
-    
+    <?php } ?>
     <div class="row">
       <div class="col-xs-12" align="center">
         <button class="btn btn-primary" name = "upsub"> Update Account </button>
         <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
       </div>
     </div>
-    <input type = "hidden" value = "<php echo  $accid;?>" name = "accid"/>
+    <input type = "hidden" value = "<?php echo  $accid;?>" name = "accid"/>
+  </form>
+  <?php if($row['empcatergory'] == "Regular"){ ?>
+  <?php 
+      $id = mysql_escape_string($_GET['modify']);
+      $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and state = 'AAdmin'";
+      $dataxx = $conn->query($sqlxx)->fetch_assoc();
+      
+  ?>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Leave </i></u></h4>
+    </div>
   </div>
-</form>
+  <form action = "" method="post">
+    <div class = "row">
+      <div class="col-xs-3">
+        <label>Sick Leave <font color = "red"> * </font></label>
+        <input required type="text" <?php if($dataxx['sleave'] > 0){ echo ' value = "' . $dataxx['sleave'] . '"'; } ?>name = "sickleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Sick Leave #">
+      </div>
+      <div class="col-xs-3">
+        <label>Vacation Leave <font color = "red"> * </font></label>
+        <input type="text" required <?php if($dataxx['sleave'] > 0){ echo ' value = "' . $dataxx['vleave'] . '" '; } ?> name = "vacleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
+      </div>
+      <div class="col-xs-3">
+        <label>Balance For <font color = "red"> * </font></label>
+        <select class="form-control" name = "startdate" required>
+          <option value=""> - - - - - - - </option>
+          <option value="<?php echo date('Y-m-01', strtotime('January Y'));?>"><?php echo date('F', strtotime('January'));?> - <?php echo date('F Y', strtotime('December Y'));?></option>
+          <option value="<?php echo date('Y-m-01', strtotime('next year', strtotime('January Y')));?>"><?php echo date('F', strtotime('January'));?> - <?php echo date('F Y', strtotime('next year', strtotime('December Y')));?></option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12" align="center">
+        <button class="btn btn-primary" name = "updateleave"> Update Leave </button>
+        <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
+      </div>
+    </div>
+   
+  </form>
+    <?php } ?>
+</div>
+  
 <?php
+if(isset($_POST['updateleave'])){
+  $sleave = mysql_escape_string($_POST['sickleave']);
+  $vleave = mysql_escape_string($_POST['vacleave']);
+  $startdate = mysql_escape_string($_POST['startdate']);
+  $enddate = date('Y-12-t', strtotime($_POST['startdate']));
+  $accid = mysql_escape_string($_GET['modify']);
+  $state = 'UA';
+  $datefile = date("Y-m-d");
+  $sql = $conn->prepare("INSERT INTO `nleave_bal` (account_id, sleave, vleave, startdate, enddate, state, datefile) VALUES (?, ?, ?, ?, ?, ?, ?)");
+  $sql->bind_param("iiissss", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile);
+  $select = "SELECT count(account_id) as penleave FROM nleave_bal where account_id = '$accid' and state != 'DALeave'";
+  $datax = $conn->query($select)->fetch_assoc();
+  if($datax['penleave'] == 0){  
+    if($sql->execute()){
+      echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
+    }
+  }else{
+    echo '<script type = "text/javascript">alert("You still have pending changes."); window.location.replace("hr-emprof.php");</script>';
+  }
+}
 if(isset($_POST['upsub'])){
-  $empcatergory = mysql_escape_string($_POST['empcatergory']);
+  $empcatergory = mysql_escape_string($_POST['empcatergory']);  
+  $catdate = mysql_escape_string($_POST['catdate']);  
+  $modify = mysql_escape_string($_GET['modify']);
+  
   $sickleave = mysql_escape_string($_POST['sickleave']);
   $vacleave = mysql_escape_string($_POST['vacleave']);
   $usedvl = mysql_escape_string($_POST['usedvl']);
   $usedsl = mysql_escape_string($_POST['usedsl']);
-  $modify = mysql_escape_string($_GET['modify']);
-  $catdate = mysql_escape_string($_POST['catdate']);
+
   if($empcatergory  == 'Probationary'){
     $oldpost = 'Contractual';
     $hrchange = date("Y-m-d");

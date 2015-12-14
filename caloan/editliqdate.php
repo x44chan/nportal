@@ -15,10 +15,14 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-6">
+			<div class="col-xs-4">
 				<label>Petty Amount</label>
 				<p style="margin-left: 10px;">₱ <?php echo $data['amount'];?></p>
 			</div>
+			<!--<div class="col-xs-2">
+				<label>Change</label><br>
+				₱ <span id = "xchange"> 0 </span>
+			</div>-->
 		<?php if($data['transfer_id'] == null){?>
 			<div class="col-xs-6">
 				<label>Classification</label>
@@ -51,7 +55,7 @@
 		<div class="row" id = "addr">
 			<div class="col-xs-3" id = "typediv">
 				<label>Type</label>
-				<select required class="form-control input-md" id = "type" name = "type<?php echo $i;?>">
+				<select required class="form-control input-md" id = "type<?php echo $i;?>" name = "type<?php echo $i;?>">
 					<option value=""> - - - - - </option>
 				<?php
 					$sqls = "SELECT * FROM `petty_type` ORDER BY type_id";
@@ -71,11 +75,11 @@
 			</div>
 			<div class="col-xs-3">
 				<label>Others</label>
-				<input type = "text" class="form-control input-md" id = "others" name = "others<?php echo $i;?>" value = "<?php echo $row['liqothers'];?>" placeholder = "Others" <?php if($row['liqtype'] != "Others"){ echo ' disabled ';}?>>
+				<input type = "text" class="form-control input-md" id = "others<?php echo $i;?>" name = "others<?php echo $i;?>" value = "<?php echo $row['liqothers'];?>" placeholder = "Others" <?php if($row['liqtype'] != "Others"){ echo ' disabled ';}?>>
 			</div>
 			<div class="col-xs-3">
 				<label>Amount</label>
-				<input required  autocomplete = 'off' pattern = "[0-9.]*" value = "<?php echo $row['liqamount'];?>"  class = "form-control input-md" type = "text" id = "amount" name = "amount<?php echo $i;?>" placeholder = "Enter Amount"/>
+				<input required  autocomplete = 'off' pattern = "[0-9.]*" value = "<?php echo $row['liqamount'];?>"  class = "form-control input-md" type = "text" id = "amount<?php echo $i;?>" name = "amount<?php echo $i;?>" placeholder = "Enter Amount"/>
 			</div>
 			<div class="col-xs-3">
 				<label>Transaction</label>
@@ -127,3 +131,40 @@
 		}
 	}
 ?>
+<script type="text/javascript">
+	/*$(document).ready(function(){
+		var i = <?php echo $i;?>;
+		$(function () {
+	    	for(b = 1; b < i; b++) {
+	    	    (function (b) {
+	    	    	$('select[id$="type' + b + '"]').change(function() {
+					    var selected = $(this).val();	
+						if(selected == 'Others'){
+							$("#others"+b).attr("disabled", false);
+							$("#others"+b).attr("required", true);
+						}else{
+							$("#others"+b).attr("disabled", true);
+							$("#others"+b).attr("required", false);
+						}
+					});
+	     		})(b);
+	   	 	}
+		});
+		$(function () {
+	    	for(b = 1; b < i; b++) {
+				$("#amount"+b).change(function() {
+					var amount = "<?php echo  $data['amount'];?>";
+					var amount2 = amount.replace(/[^\d]/g, "");
+					var sum = 0;
+			    	for(b = 1; b < i; b++) {
+			    	    (function (b) {
+			    	    	var amount1 = $('#amount' + b).val();
+			    	    	amount2 = amount2 - amount1;			    	    	
+			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			     		})(b);
+			   	 	}			   	 	
+				});
+			}
+		});
+	});*/
+</script>

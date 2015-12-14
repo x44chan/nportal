@@ -1,6 +1,9 @@
 <?php
 	include("conf.php");
 	session_start();
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}
 	function random_string($length) {
 		    $key = '';
 		    $keys = array_merge(range(0, 9), range('a', 'z'));

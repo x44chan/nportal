@@ -1,8 +1,9 @@
 <?php
 	session_start();
 	include('conf.php');	
-
-	if(isset($_POST['submit'])){
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}elseif(isset($_POST['submit'])){
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
 		$obdate = date("Y-m-d");

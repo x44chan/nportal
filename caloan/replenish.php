@@ -142,50 +142,70 @@
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
 			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?replenish";});</script>';
 		}else{
-			echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
+			echo '<table id = "myTablepet" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		}
 		
 		echo '<thead>
 				<tr>
-					<th>Petty#</th>
-					<th>Date</th>
-					<th>Received By</th>
-					<th>Description</th>
-					<th>Total Used Petty</th>
+					<th width = "8%">Petty#</th>
+					<th width = "10%">Date</th>
+					<th width = "10%">Received By</th>
+					<th width = "40%">Description</th>
+					<th width = "8%">Petty Amount</th>
+					<th width = "8%">Total Used Petty</th>
+					<th width = "6%">Change</th>
 				</tr>
 			  </thead>
 			  <tbody>';
 		include("conf.php");
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash'";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' order by date desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
 		$used = 0;
+		$xchange = 0;
 		if($result->num_rows > 0){			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
 				$query2 = "SELECT sum(liqamount) as totalliq,liqinfo,liqtype FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
 				$data2 = $conn->query($query2)->fetch_assoc();
+				if($data2['liqinfo'] == null){
+					$state = '<b>Pending Liquidation</b>';
+				}elseif($data2['totalliq'] <= 0){
+					continue;
+				}else{
+					$state = '₱ ' . number_format($data2['totalliq'],2);
+				}
+				$a = str_replace(',', '', $row['amount']);
+				if($data2['liqinfo'] == null){
+					$xchange += $a;
+					$tchange = ' - ';
+				}else{
+					$tchange = '₱ '. number_format($a - $data2['totalliq']);
+				}
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
 				echo '<td>' . $row['fname'] . ' '. $row['lname'] . '</td>';				
 				echo '<td>' . $row['petreason'] . '</td>';
-				echo '<td>₱ ';
-					$a = str_replace(',', '', $row['amount']);
-					echo number_format($data2['totalliq'],2);
+				echo '<td>₱ ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); } ;echo '</td>';
+				echo '<td>';
+					
+					echo $state;
 				echo '</td>';
-					$used += $data2['totalliq'];
-				
+					
+				echo '<td>'.$tchange.'</td>';
 				echo '</tr>';
+				$used += $data2['totalliq'];
 				$total += $a;
-				$change += $a - $data2['totalliq'];
+				$change += ($a - $data2['totalliq']);
 			}
 		}
 		if(isset($_GET['print'])){
-			echo '<tr id = "bords"><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td></tr>';
-			echo '<tr id = "bords"><td></td><td></td><td></td><td><b>Balance: </td><td>₱ '.number_format($_SESSION['repleamount'] - $used, 2).'</td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td>₱ '.number_format($change - $xchange,2).'</td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b>Balance: </td><td>₱ '.number_format($_SESSION['repleamount'] - $total,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b>Cash On Hand: </td><td>₱ '.number_format(($_SESSION['repleamount'] - $total) + ($change - $xchange), 2).'</td><td></td></tr>';
 			echo '<tr><td colspan = 10 style = "border-top: 0px;"><br><br><br><br><br> -- Nothing Follows -- </td></tr>';
 		}		
 		echo "</tbody></table></div>";	

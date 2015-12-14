@@ -29,7 +29,9 @@
 			}else{
 				$xstate = ' state = "UA" ';
 			}
-			$state = "CheckedHR";
+			if($state == 'AHR'){
+				$state = "CheckedHR";	
+			}
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
@@ -66,7 +68,9 @@
 					$state = 'UA';
 				}
 			}
-			$state = 'UA';
+			if($state == 'AAdmin'){
+				$state = 'UA';
+			}
 			$sql = "UPDATE overtime set state = '$state' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';

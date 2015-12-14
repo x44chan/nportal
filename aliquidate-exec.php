@@ -1,7 +1,9 @@
 <?php
 	include 'conf.php';
 	session_start();
-	if(isset($_POST['lsub'])){
+	if(!isset($_SESSION['acc_id'])){
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+	}elseif(isset($_POST['lsub'])){
 		$liqstate = 'LIQDATE';
 		$counter = $_POST['counter'];
 		$date = date("Y-m-d");

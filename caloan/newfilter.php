@@ -32,7 +32,7 @@
 	<div class="container" id = "reports" style="margin-top: -30px;">
 		<div class="row">
 			<div class="col-xs-12">
-				<h4 style="margin-left: -20px;"><u><i>Report Filtering </i></u></h4>
+				<h4 style="margin-left: -20px;"><u><i>Report Filtering <a href = "?sumar=leasum" class="btn btn-success pull-right"> Employee Leave Summary </a></i></u></h4><br>				
 			</div>
 		</div>
 		<div class="row" >
@@ -167,6 +167,7 @@
 		$position = $res123['position'];	
 		$department = $res123['department'];
 		$empcatergorys = $res123['empcatergory'];
+		$leave
 			
 	?>	
 	<h4 style = "margin-left: 10px;">Period: <i><strong><?php echo $cutoffdate11;?></strong></i></h4>
@@ -385,8 +386,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 				</thead>
 				<tbody>
 	<?php
-			while($row = $result->fetch_assoc()){
-				
+			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
 				$newDate = date("M j, Y", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
@@ -395,7 +395,6 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 				}else{
 					echo '<tr>';
 				}
-
 				if($row['othersl'] == null || $row['othersl'] == ""){
 					$otherslea = "";
 				}else{

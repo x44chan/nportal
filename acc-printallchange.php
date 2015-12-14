@@ -2,7 +2,7 @@
 
 include 'header.php';
 include 'conf.php';
-		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon')";
+		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon') and particular != 'Check'";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';
@@ -29,7 +29,10 @@ include 'conf.php';
 				$query = "SELECT * FROM `petty_liqdate` where petty_id = '$petid'";
 				$data = $conn->query($query)->fetch_assoc();
 				$query1 = "SELECT * FROM `login` where account_id = '$accid'";
-				$data1 = $conn->query($query1)->fetch_assoc();				
+				$data1 = $conn->query($query1)->fetch_assoc();
+				if($data1['position'] == 'House Helper'){
+					continue;
+				}		
 				$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$petid'";
 				$data2 = $conn->query($query2)->fetch_assoc();
 				if($data2['totalliq'] != ""){
@@ -74,6 +77,10 @@ include 'conf.php';
 				echo '<td>₱ ' . $change . '</td>';
 				if($data['liqstate'] == 'CompleteLiqdate'){
 					echo '<td id = "backs" ><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
+				}elseif($data['liqstate'] == 'EmpVal'){
+					echo '<td id = "backs" ><b><font color = "red">For Employee Validation</font></b><br>';
+				}elseif($data['liqstate'] == 'LIQDATE'){
+					echo '<td><b> Pending Completion</b></td>';
 				}else{
 					echo '<td><b> Pending Liquidate</td>';
 				}

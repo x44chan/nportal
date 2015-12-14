@@ -18,6 +18,10 @@
       $('#xmyTable').DataTable({
         "aaSorting": []
     } );
+      $('#myTablelea').DataTable( {
+        "aaSorting": [],
+        "iDisplayLength": 12
+    });
   });
 </script>
 
@@ -48,6 +52,135 @@
 		
 	</div>
 </div>
+<a href = "?sumar=leasum" class="btn btn-success pull-right" style="margin-right: 10px;"> Employee Leave Summary </a>
+<?php 
+  if(isset($_GET['sumar']) && $_GET['sumar'] == 'leasum'){
+    $title = "Employee Leave Summary";
+?>
+  <div id = "report">
+    <i><h2 align = "center">Employee Leave Summary</h2>
+    <h4 align = "center">January <?php echo date("Y");?> - December <?php echo date("Y");?></h4></i>
+    <table id = "myTablelea" align = "center" class = "table table-hover" style="font-size: 16px;">
+    <thead>
+        <tr>
+          <th>Account ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Given S.L.</th>
+          <th>Total Used S.L.</th>
+          <th>Avail S.L.</th>
+          <th>Given V.L.</th>
+          <th>Total Used V.L.</th>
+          <th>Avail V.L.</th>
+          <!--<th>Paternity/Wedding Leave</th>-->
+        </tr>
+        </thead>
+        <tbody>
+<?php 
+    include("conf.php");
+    $sql = "SELECT * from `login` where level != 'Admin' and active != 0 order by edatehired asc";
+    $result = $conn->query($sql);
+    $datey = date("Y");
+    
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+        $availsick = 0;
+            $totavailvac = 0;
+            $vlcount = 0;
+            $scount = 0;
+            $accidd = $row['account_id'];
+            if(date("Y") == 2015){  
+              $sl = $row['sickleave'];
+              $vl = $row['vacleave'];
+              $usedsl = $row['usedsl'];
+              $usedvl = $row['usedvl'];
+            }else{        
+              $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+              $datalea = $conn->query($leaveexec)->fetch_assoc();
+              $sl = $datalea['sleave'];
+              $vl = $datalea['vleave'];
+              $usedsl = 0;
+              $usedvl = 0;
+            }
+            if($row['sickleave'] < 1){
+              $row['sickleave'] = ' - ';
+            }
+            if($row['vacleave'] < 1){
+              $row['vacleave'] = ' - ';
+            }
+
+            $sql1 = "SELECT SUM(numdays) as scount  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+            $result1 = $conn->query($sql1);
+            if($result1->num_rows > 0){
+              while($row1 = $result1->fetch_assoc()){
+                $availsick = $sl - $row1['scount'] - $usedsl;
+                $scount += $row1['scount'];           
+                }
+            }
+            
+            $sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+            $result1 = $conn->query($sql1);
+            if($result1->num_rows > 0){
+              while($row1 = $result1->fetch_assoc()){
+                $availvac = $vl - $row1['count'];
+                $vlcount += $row1['count'];
+                }
+            }   
+            $sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+            $result1 = $conn->query($sql1);
+            if($result1->num_rows > 0){
+              while($row1 = $result1->fetch_assoc()){
+                $totavailvac = $availvac - $row1['count'] - $usedvl;
+                $vlcount += $row1['count'];
+                }
+            }
+            if($totavailvac == 0){
+              $totavailvac = ' - ';
+            }
+            if($availsick == 0){
+              $availsick = ' - ';
+            }
+            $vlcount += $usedvl;
+            $scount += $usedsl;
+            if($scount == 0){
+              $scount = ' - ';
+            }
+            if($vlcount == 0){
+              $vlcount = ' - ';
+            }
+            if($sl <= 0){
+              $sl = ' - ';
+            }
+            if($vl <= 0){
+              $vl = ' - ';
+            }
+            if($row['empcatergory'] == 'Regular'){
+              $regdate = '<br>Date: <font color = "green">'.date("M j, Y", strtotime($row['regdate']));
+            }else{
+              $regdate = "";
+            }
+            echo '<tr>';
+            echo '<td>'.$accidd.'</td>';
+            echo '<td>'.$row['fname']. ' ' . $row['mname']. ' '.$row['lname'].'</td>'; 
+            echo '<td><b>' . $row['empcatergory'] . $regdate . '</td>';       
+            echo '<td style = "background-color: yellow;">'.$sl.'</td>';          
+            echo '<td>'.$scount.'</td>';        
+            echo '<td style = "background-color: #993333; color: white;">'.$availsick.'</td>';          
+            echo '<td style = "background-color: yellow;">'.$vl.'</td>';
+            echo '<td>'.$vlcount.'</td>';       
+            echo '<td style = "background-color: #993333; color: white;">'.$totavailvac.'</td>';
+            
+        
+        //echo '<td> '.$patwed.'</td>';
+        echo '</tr>';
+      }
+    }
+  echo '</tbody></table>';
+  echo '<div align = "center" style = "margin-top: 30px;"><a href = "admin-emprof.php" class = "btn btn-danger"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to Employee List </a></div></div>';
+  echo '</div><div style = "display: none;">';
+
+}
+  ?>
 <?php	
 	if(isset($_GET['suc'])){
 		if($_GET['suc'] == 1){

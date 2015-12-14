@@ -37,6 +37,14 @@
 		$state = 'AHR';
 	}
 ?>
+<script type="text/javascript">
+	 $(document).ready( function () {
+    	$('#myTable').DataTable({
+		    "iDisplayLength": 25 ,
+		    "order": [[ 0, "desc" ]]  	
+		});
+	});
+</script>
 <div align = "center">
 	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
@@ -674,23 +682,20 @@
 		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id and state = 'UA' and position != 'service technician' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 			
-	?>
+	?><h2 align="center" style="margin-top: 35px;"> Pending Overtime Request </h2>
 	<form role = "form" action = "approval.php"    method = "get">
-			<table class = "table table-hover" align = "center">
+			<table id = "myTable" class = "table table-hover" align = "center">
 			<?php 
 				
-				if(isset($_GET['bypass'])){
+				/*if(isset($_GET['bypass'])){
 					$_SESSION['bypass'] = 1;
 					echo '<a href = "?ac=' . $_GET['ac'] . '"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Un-Bypass Tech Approval </a>';
 				}else{					
 					unset($_SESSION['bypass']);
 					echo '<a href = "?ac=' . $_GET['ac'] . '&bypass"class="btn btn-primary pull-right" style="margin-bottom: -50px; margin-top: 20px; margin-right: 20px;"> Bypass Tech Approval </a>';
-				}
+				}*/
 			?>
-				<thead>				
-					<tr>
-						<td colspan = 7 align = center><h2> Pending Overtime Request </h2></td>
-					</tr>
+				<thead>	
 					<tr >
 						<th>Date File</th>
 						<th>Date of Overtime</th>
@@ -772,7 +777,9 @@
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
 				$newDate = date("M j, Y", strtotime($originalDate));
-
+				if($row['datefile'] < date("2015-12-10")){
+					continue;
+				}
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['2daysred'] ){
 					echo '<tr style = "color: red">';
@@ -914,7 +921,7 @@
 								echo '<p>Waiting for Admin Approval</p>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}
-						echo '<td></tr>';
+						echo '</td></tr>';
 			}
 		}else{
 			$error += 1;

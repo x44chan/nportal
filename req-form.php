@@ -244,10 +244,16 @@ $(document).ready(function(){
 			$egender = $row['egender'];
 			if(date("Y") == 2015){	
 				$sl = $row['sickleave'] - $row['usedsl'];
-				$vl = $row['vacleave'] - $row['usedsl'];
+				$vl = $row['vacleave'] - $row['usedvl'];
+				$usedsl = $row['usedsl'];
+				$usedvl = $row['usedvl'];
 			}else{				
-				$sl = $row['sickleave'];
-				$vl = $row['vacleave'];
+				$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+				$datalea = $conn->query($leaveexec)->fetch_assoc();
+				$sl = $datalea['sleave'];
+				$vl = $datalea['vleave'];
+				$usedsl = 0;
+				$usedvl = 0;
 			}
 			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 			$result1 = $conn->query($sql1);
@@ -465,7 +471,7 @@ $(document).ready(function(){
 	    	}elseif ($_SESSION['level'] == 'ACC') {
 	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    	//	echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
 	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}

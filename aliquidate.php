@@ -14,10 +14,18 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-6">
+			<div class="col-xs-2">
 				<label>Petty Amount</label>
 				<p style="margin-left: 10px;">₱ <?php echo $data['amount'];?></p>
 			</div>
+			<!--<div class="col-xs-2">
+				<label>Used Petty</label><br>
+				₱ <span id = "xused"> 0 </span>
+			</div>
+			<div class="col-xs-2">
+				<label>Change</label><br>
+				₱ <span id = "xchange"> 0 </span>
+			</div>-->
 		<?php if($data['transfer_id'] == null){?>
 			<div class="col-xs-6">
 				<label>Classification</label>
@@ -36,6 +44,11 @@
 			</div>
 		<?php } ?>
 		</div>
+		<!--<div class="row">
+			<div class="col-xs-offset-4 col-xs-2">
+				<button id = "xcompute" class="btn btn-primary">Compute</button>
+			</div>
+		</div>-->
 	<form action = "aliquidate-exec.php" method="post">
 	<input type = "hidden" name = "pet_id" value = "<?php echo $data['petty_id'];?>"/>
 		<div class="row">
@@ -132,7 +145,7 @@
 $(document).ready(function(){
 	var i=1;
 	$("#add_row").click(function(){
-		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9,.]*'/></div><div class='col-xs-3'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
+		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-3'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
 		$('#rcpt'+i).html('<div class="col-xs-4"><label><input type = "checkbox" name = "wthrcpt'+i+'" id = "wthrcpt'+i+'"/> Check if With Receipt</label></div>');
 
 <?php
@@ -143,7 +156,7 @@ $(document).ready(function(){
 		$('#tab_logic').append('<div class="row" id = "rcpt'+(i+1)+'"></div>');
   		i++;
   		$('#counter').val(i);
-		$(function () {
+		/*$(function () {
 	    	for(b = 1; b < i; b++) {
 	    	    (function (b) {
 	    	    	$('select[id$="type' + b + '"]').change(function() {
@@ -159,6 +172,24 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
+			$(function () {
+	    	for(b = 1; b < i; b++) {
+				$("#amount"+b).change(function() {
+					var amount = "<?php echo  $data['amount'];?>";
+					var amount2 = amount.replace(/[^\d]/g, "");
+					var sum = 0;
+			    	for(b = 0; b < i; b++) {
+			    	    (function (b) {
+			    	    	var amount1 = $('#amount' + b).val();
+			    	    	amount2 = amount2 - amount1;
+			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
+			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			     		})(b);
+			   	 	}			   	 	
+				});
+			}
+		});*/
 	});
 	$("#delete_row").click(function(){
     	if(i>1){
@@ -166,10 +197,24 @@ $(document).ready(function(){
     		$('#rcpt'+(i-1)).html('');
 			i--;
 			$('#counter').val(i);
+			/*var amount = "<?php echo  $data['amount'];?>";
+			var amount2 = amount.replace(/[^\d]/g, "");
+			var sum = 0;
+	    	for(b = 0; b < i; b++) {
+	    	    (function (b) {
+	    	    	var amount1 = $('#amount' + b).val();
+	    	    	amount2 = amount2 - amount1;
+	    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+	    	    	sum = parseFloat(amount1) + parseFloat(sum);
+	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+	     		})(b);
+	   	 	}*/	
+
 		}
 	});
 
-		$(function () {
+		/*$(function () {
 	    	for(b = 0; b < 1; b++) {
 	    	    (function (b) {
 	    	    	$('select[id$="type' + b + '"]').change(function() {
@@ -185,20 +230,27 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
-/*	var change = 0;
-	b = 0;
-	while(b <= $('#counter').val()){
-		var addr = 'amount' + b;
-		$('#' + addr).change(function() {
-			alert(b);
-			var amount = "<?php echo  $data['amount'];?>";
-			var amount2 = amount.replace(/[^\d]/g, "");
-			var amount1 = parseInt($('#' + addr).val());
-   			var change =   (amount2 - amount1);
-   			$("#xchange").val(change);
-		});
-		b++;
-	}*/
+		$(function () {
+	    	for(b = 0; b < 1; b++) {
+				$("#amount"+b).change(function() {
+					var amount = "<?php echo  $data['amount'];?>";
+					var amount2 = amount.replace(/[^\d]/g, "");
+					var sum = 0;
+			    	for(b = 0; b < i; b++) {
+			    	    (function (b) {
+			    	    	var amount1 = $('#amount' + b).val();
+			    	    	amount2 = amount2 - amount1;
+			    	    	sum = parseFloat(amount1) + parseFloat(sum);
+			    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			     		})(b);
+			   	 	}			   	 	
+				});
+			}
+		});*/
+	
+
 });
 </script>
 <?php

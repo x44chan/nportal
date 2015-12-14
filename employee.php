@@ -740,7 +740,7 @@
 								echo '<p>Waiting for Admin Approval</p>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}
-						echo '<td></tr>';
+						echo '</td></tr>';
 			}
 			
 		}echo '</tbody></table></form>';
