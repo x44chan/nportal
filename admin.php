@@ -482,6 +482,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}elseif($row['empcatergory'] == 'Contractual'){
 				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['contractdate']));
 			}
+
+			if($row['contractdate'] < date("2000-12-31")){
+				$datecat = "";
+			}
 			
 	?>
 				<tr>
