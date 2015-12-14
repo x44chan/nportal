@@ -191,6 +191,38 @@ $(document).ready(function(){
     </div>
       </div>
       <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
+      <?php 
+        if($row['usedsl'] > 0){
+          $usedsl = '<div class="col-xs-3">
+                    <label>Used Sick Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedsl'].'</p></i>
+                  </div>';
+        }else{
+          $usedsl = "";
+        }
+        if($row['usedvl'] > 0){
+          $usedvl = '<div class="col-xs-3">
+                    <label>Used Vacation Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedvl'].'</p></i>
+                  </div>';
+        }else{
+          $usedvl = "";
+        }
+        if($row['sickleave'] > 0 && $row['vacleave'] > 0){
+          echo '<div class="row">
+                  <div class="col-xs-3">
+                    <label>Given Sick Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['sickleave'].'</p></i>
+                  </div>
+                  '.$usedsl.'
+                  <div class="col-xs-3">
+                    <label>Given Vacation Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['vacleave'].'</p></i>
+                  </div>
+                  '.$usedvl.'
+                </div>';
+        } 
+      ?>
   		<div class="row">
          <div class="col-md-8">
             <label for="usrname"> Home Address </label>
