@@ -478,9 +478,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					$datecat = "";
 				}
 			}elseif($row['empcatergory'] == 'Probationary'){
-				$datecat = $datecat = '<br>Date: ' . date("M j, Y", strtotime($row['probidate']));
-			}else{
-				$datecat = "";
+				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['probidate']));
+			}elseif($row['empcatergory'] == 'Contractual'){
+				$datecat = '<br>Date: ' . date("M j, Y", strtotime($row['contractdate']));
 			}
 			
 	?>

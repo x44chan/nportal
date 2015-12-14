@@ -11,7 +11,14 @@
 			$stmts = "SELECT * FROM `login` where account_id = '$accid' and hrchange != '0'";
 			$data = $conn->query($stmts)->fetch_assoc();
 			$emcatergory = $data['oldpost'];
-			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' where account_id = '$accid' ";
+			if($data['empcatergory'] == 'Regular'){
+				$datex = ', regdate = ""';
+			}elseif($data['empcatergory'] == 'Probationary'){
+				$datex = ', probidate = ""'; 
+			}else{
+				$datex = ', contractdate = ""';
+			}
+			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' $datex where account_id = '$accid' ";
 			if ($conn->query($sql) === TRUE) {	 		
 				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 		  	}

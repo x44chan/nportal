@@ -267,7 +267,7 @@
       </div>
       <div class="col-xs-5">
         <label>Date</label>
-        <input type = "date" data-date='{"startView": 2, "openOnMouseFocus": true}' required name = "catdate" class="form-control"/>
+        <input required type = "date" <?php if($row['empcatergory'] == "Regular"){ echo ' value = "' . $row['regdate'] . '"'; } elseif($row['empcatergory'] == "Probationary"){ echo ' value = "' . $row['probidate'] . '"';}else{ echo ' value = "' . $row['contractdate'] . '"';}?> data-date='{"startView": 2, "openOnMouseFocus": true}' required name = "catdate" class="form-control"/>
       </div>
     </div>
     <div class = "row">
@@ -314,7 +314,7 @@ if(isset($_POST['upsub'])){
   }elseif($empcatergory  == 'Contractual'){
     $oldpost = "Contractual";
     $hrchange = date("Y-m-d");
-    $catdates = "";
+    $catdates = ", contractdate = '$catdate'";
   }else{
     $oldpost  = "Probationary";
     $probidate = "";
@@ -387,6 +387,38 @@ if(isset($_POST['upsub'])){
     </div>
       </div>
       <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
+      <?php 
+        if($row['usedsl'] > 0){
+          $usedsl = '<div class="col-xs-3">
+                    <label>Used Sick Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedsl'].'</p></i>
+                  </div>';
+        }else{
+          $usedsl = "";
+        }
+        if($row['usedvl'] > 0){
+          $usedvl = '<div class="col-xs-3">
+                    <label>Used Vacation Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedvl'].'</p></i>
+                  </div>';
+        }else{
+          $usedvl = "";
+        }
+        if($row['sickleave'] > 0 && $row['vacleave'] > 0){
+          echo '<div class="row">
+                  <div class="col-xs-3">
+                    <label>Given Sick Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['sickleave'].'</p></i>
+                  </div>
+                  '.$usedsl.'
+                  <div class="col-xs-3">
+                    <label>Given Vacation Leave</label>
+                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['vacleave'].'</p></i>
+                  </div>
+                  '.$usedvl.'
+                </div>';
+        } 
+      ?>
   		<div class="row">
          <div class="col-md-8">
             <label for="usrname"> Home Address </label>
