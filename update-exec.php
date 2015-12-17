@@ -298,6 +298,13 @@
 			$time1 = date('H:i', strtotime($hruptimein));
 			$time2 = date('H:i', strtotime($hruptimeout));
 			$newappot = gettimediff($time1,$time2);
+			$time3 = date('H:i', strtotime($oldotstrt));
+			$time4 = date("H:i", strtotime($oldotend));
+			$oldappot = gettimediff($time3,$time4);
+			$hrrestric = 0;
+			if($newappot > $oldappot){
+				$hrrestric += 1;
+			}
 			$oldot = $oldotstrt . ' - ' . $oldotend;
 			if(substr($newappot,0,2) > 8){
 				$newappot = date("G:i", strtotime("-1 hour", strtotime($newappot)));
@@ -338,14 +345,16 @@
 		$stmt = "UPDATE `overtime` set 
 			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
-		if ($conn->query($stmt) === TRUE) {
-	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
-			
-	  	}else {
-	    	echo "Error updating record: " . $conn->error;
-	  	}
-		$conn->close();
-
+		if($hrrestric == 0){
+			if ($conn->query($stmt) === TRUE) {
+		    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
+		  	}else {
+		    	echo "Error updating record: " . $conn->error;
+		  	}
+			$conn->close();
+		}else{
+			echo '<script type="text/javascript">alert("Restricted to add O.T");window.location.replace("'.$redirec.'"); </script>';
+		}
 	}
 
 	if(isset($_POST['hrupobsubmit'])){	
