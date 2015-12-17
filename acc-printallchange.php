@@ -2,7 +2,7 @@
 
 include 'header.php';
 include 'conf.php';
-		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon') and particular != 'Check'";
+		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon') and particular != 'Check' order by petty_id desc";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';

@@ -74,6 +74,189 @@
 		</div><br><br>
 	</div>
 </div>
+<?php
+	include('conf.php');
+	if(isset($_GET['dofficialbusiness_id'])){
+		$id = mysqli_real_escape_string($conn, $_GET['dofficialbusiness_id']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$query1 = "SELECT * FROM `officialbusiness`,`login` where officialbusiness.account_id = login.account_id and officialbusiness_id = '$id'";
+		$data1 = $conn->query($query1)->fetch_assoc();
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapprove Official Business </h3></th>
+						</tr>
+					</thead>
+					<tr>
+						<td> Name: </td>
+						<td>' . $data1['fname'] . ' ' . $data1['lname'] . '</td>
+					</tr>
+					<tr>
+						<td> Date of Request: </td>
+						<td>' . date("M j, Y", strtotime($data1['obdate'])) . '</td>
+					</tr>
+					<tr>
+						<td> Time: </td>
+						<td>' . $data1['obtimein'] . ' to ' . $data1['obtimeout'] . '</td>
+					</tr>
+					<tr>
+						<td> Reason: </td>
+						<td>' . $data1['obreason'] . '</td>
+					</tr>
+					<tr>
+						<td align = "right"><label for = "dareason">Input Disapproval reason</label></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penob" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "officialbusiness_id" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+					</tr>
+				</table>
+			</form>';	
+			echo '<div style = "display: none;">';	
+	}
+?>
+
+
+<?php
+	include('conf.php');
+	if(isset($_GET['dundertime'])){
+		$id = mysqli_real_escape_string($conn, $_GET['dundertime']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$query1 = "SELECT * FROM `undertime`,`login` where undertime.account_id = login.account_id and undertime_id = '$id'";
+		$data1 = $conn->query($query1)->fetch_assoc();
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+						</tr>
+					</thead>
+						<tr>
+							<td> Name: </td>
+							<td>' . $data1['fname'] . ' ' . $data1['lname'] . '</td>
+						</tr>
+						<tr>
+							<td> Date of Request: </td>
+							<td>' . date("M j, Y", strtotime($data1['dateofundrtime'])) . '</td>
+						</tr>
+						<tr>
+							<td> Time: </td>
+							<td>' . $data1['undertimefr'] . ' to ' . $data1['undertimeto'] . '</td>
+						</tr>
+						<tr>
+							<td> Reason: </td>
+							<td>' . $data1['reason'] . '</td>
+						</tr>
+					<tr>
+						<td align = "right"><label for = "dareason">Input Disapproval reason</label></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penundr" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "undertime" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+					</tr>
+				</table>
+			</form>';	echo '<div style = "display: none;">';	
+}
+?>
+
+
+<?php
+	include('conf.php');
+	if(isset($_GET['dleave'])){
+		$id = mysqli_real_escape_string($conn, $_GET['dleave']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$query1 = "SELECT * FROM `nleave`,`login` where nleave.account_id = login.account_id and leave_id = '$id'";
+		$data1 = $conn->query($query1)->fetch_assoc();
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+						</tr>
+					</thead>
+					<tr>
+						<td> Name: </td>
+						<td>' . $data1['fname'] . ' ' . $data1['lname'] . '</td>
+					</tr>
+					<tr>
+						<td> Date of Request: </td>
+						<td>' . date("M j, Y", strtotime($data1['dateofleavfr'])) . ' to ' . date('M j, Y', strtotime($data1['dateofleavfr'])) . '</td>
+					</tr>
+					<tr>
+						<td> Type: </td>
+						<td>' . $data1['typeoflea'] . '</td>
+					</tr>
+					<tr>
+						<td> Reason: </td>
+						<td>' . $data1['reason'] . '</td>
+					</tr>
+					<tr>
+						<td align = "right"><label for = "dareason">Input Disapproval reason</label></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penlea" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "leave" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+					</tr>
+				</table>
+			</form>';echo '<div style = "display: none;">';				
+	}
+
+		if(isset($_GET['dovertime'])){	
+			$id = mysqli_real_escape_string($conn, $_GET['dovertime']);
+			$state = mysqli_real_escape_string($conn, $_GET['approve']);
+			$query1 = "SELECT * FROM `overtime`,`login` where overtime.account_id = login.account_id and overtime_id = '$id'";
+			$data1 = $conn->query($query1)->fetch_assoc();
+			echo '<form action = "approval.php" method = "get" class = "form-group">
+					<table class = "table table-hover" align = "center">
+						<thead>
+							<tr>
+								<th colspan  = 3><h3> Disapproval Reason </h3></th>
+							</tr>
+						</thead>
+						<tr>
+							<td> Name: </td>
+							<td>' . $data1['fname'] . ' ' . $data1['lname'] . '</td>
+						</tr>
+						<tr>
+							<td> Date of Request: </td>
+							<td>' . date("M j, Y", strtotime($data1['dateofot'])) . '</td>
+						</tr>
+						<tr>
+							<td> Time: </td>
+							<td>' . $data1['startofot'] . ' to ' . $data1['endofot'] . '</td>
+						</tr>
+						<tr>
+							<td> Reason: </td>
+							<td>' . $data1['reason'] . '</td>
+						</tr>
+						<tr>
+							<td align = "right"><label for = "dareason">Input Disapproval reason</label></td>
+							<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+						</tr>
+						<tr>
+							<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penot" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a></td>
+						</tr>
+						<tr>
+							<td><input type = "hidden" name = "overtime" value = "'.$id.'"/></td>
+							<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+						</tr>
+					</table>
+				</form>';echo '<div style = "display: none;">';	
+			}
+?>
 <?php	
 	if(isset($_GET['suc'])){
 		if($_GET['suc'] == 1){
@@ -596,7 +779,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
 				
 			}else{
-				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'UAAdmin' or state = 'UALate')  and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";	
+				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state = 'UAAdmin' or state = 'UALate')  and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";	
 				
 			}
 			$result = $conn->query($sql);
@@ -692,14 +875,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					echo '<td>
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass . $ualate . $hrlevel .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&overtime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
 				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
 			}else{
-				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and state = 'AHR' and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";		
+				$sql = "SELECT * from undertime,login where login.account_id = undertime.account_id and (state = 'AHR' or state = 'UAAdmin' or state = 'UALate') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";		
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
@@ -715,10 +898,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();	
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
+					if($row['state'] == 'UALate'){
+						$late = '<b><i><font color = "red"> Late Filed </font></b><br>';
+					}else{
+						$late = "";
+					}
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font></td>';
+					echo '<td><b>'.$late.'Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font><br>Time: <font color = "green">'.$row['undertimefr'] . ' - ' . $row['undertimeto'] .'</td>';
 					echo '<td>'.$data1['reason'].'</td>';
 					if($row['dateacc'] != ""){
 						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
@@ -730,21 +917,27 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if(isset($_GET['bypass'])){
 							$datehr = '<b><i> Bypass </i></b>';
 						}
-						echo '<td><b>'.$datehr. $datetech .'</td>';
+						if($row['state'] == 'UALate'){
+							$datehr = '<b><i><font color = "red"> Late Filed O.B. Request<br> Waiting for Approval</font></b>';
+						}else{
+							$datehr = "<b><i>Waiting for Approval";
+						}
+						echo '<td><b>'.$datehr. '</td>';
 					}else{
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
+
+						echo '<td><b>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dundertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
 				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'AHR' or state like 'UA%') and obdate BETWEEN '$forque' and '$endque' ORDER BY obdate ASC";
 			}else{
-				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'AHR' and obdate BETWEEN '$forque' and '$endque' ORDER BY obdate ASC";		
+				$sql = "SELECT * from officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'AHR' or state = 'UAAdmin' or state = 'UALate') or state and obdate BETWEEN '$forque' and '$endque' ORDER BY obdate ASC";		
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
@@ -759,9 +952,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
+					if($row['state'] == 'UALate'){
+						$late = '<b><i><font color = "red"> Late Filed </font></b><br>';
+					}else{
+						$late = "";
+					}
 					echo '<td>'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font></td>';
+					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font><br>Time <font color = "green">'.$row['obtimein'] . ' - ' . $row['obtimeout'] .'</td>';
 					echo '<td>'.$row['obreason'].'</td>';
 
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
@@ -773,26 +971,36 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					if(strtolower($row['position']) <> 'service technician'){
 						$datetech = "";
 					}
+					if($row['state'] == 'UALate'){
+						$late = "&late";
+					}else{
+						$late = "";
+					}
 					if($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						if(isset($_GET['bypass'])){
 							$datehr = '<b><i> Bypass </i></b>';
 						}
-						echo '<td><b>'.$datehr. $datetech .'</td>';
+						if($row['state'] == 'UALate'){
+							$datehr = '<b><i><font color = "red"> Late Filed O.B. Request<br> Waiting for Approval</font></b>';
+						}else{
+							$datehr = "<b><i>Waiting for Approval";
+						}
+						echo '<td><b>'.$datehr. '</td>';
 					}else{
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
+						echo '<td><b>HR: '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass . $late .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
 				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state like 'UA%' or state = 'ReqCLeaHR') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
 			}else{
-				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state = 'ReqCLeaHR') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";	
+				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state = 'ReqCLeaHR' or state = 'UAAdmin') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";	
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
@@ -834,6 +1042,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$datetech = "";
 					}
+					if($row['leapay'] == 'wthoutpay'){
+						$row['leapay'] = 'Payment: <font color = "red">w/o Pay';
+					}else{
+						$row['leapay'] = 'Payment: <font color = "green">w/ Pay';
+					}
 					if($row['state'] == 'ReqCLeaHR'){
 						echo '<td> - </td>';
 					}elseif($row['datehr'] == ""){
@@ -841,15 +1054,23 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if(isset($_GET['bypass'])){
 								$datehr = '<b><i> Bypass </i></b>';
 							}
+						if($row['state'] == 'UAAdmin'){
+							$datehr = "Waiting for approval. <br><i> Scheduled Vacation Leave";
+						}
 						echo '<td><b>'.$datehr. $datetech .'</td>';
-					}else{
+					}else{						
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
+						echo '<td><b>HR: '.$datehr. $datetech . '<br>' . $row['leapay'] .'</td>';
 					}
 					if($row['state'] != 'ReqCLeaHR'){
+						if($row['state'] == 'UAAdmin'){
+							$sched = "&sched";
+						}else{
+							$sched = "";
+						}
 						echo '<td width = "200">
-								<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
-								<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+								<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass . $sched .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+								<a href = "?approve=DA'.$_SESSION['level'].'&dleave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 							</td></tr>';
 					}else{
 						echo '<td width = "200">
@@ -862,6 +1083,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		</tbody>
 		</table>
 	</form>
+
 </div>
 <?php if(isset($_GET['pettyac']) || isset($_GET['release']) || isset($_GET['cashacre']) || isset($_GET['loanrelease'])){ echo '</div>';} ?>
 <div id = "newuser" class = "form-group" style = "display: none;">

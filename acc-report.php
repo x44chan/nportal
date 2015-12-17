@@ -43,6 +43,9 @@
 	    	visibility: hidden;
 	    
 	  	}
+	  	#reportg h4{
+	  		font-size: 15px;
+	  	}
 	  	#datepr{
 	  		margin-top: 25px;
 	  	}
@@ -50,17 +53,17 @@
 	    	visibility: visible;
 	 	}
 		#reportg th{
-	  		font-size: 11px;
+	  		font-size: 10px;
 	  		width: 0;
 		} 
 		#reportg td{
-	  		font-size: 10px;
+	  		font-size: 9px;
 	  		bottom: 0px;
 	  		padding: 1px;
 	  		max-width: 210px;
 		}
 		#totss{
-			font-size: 13px;
+			font-size: 12px;
 		}
 		#reportg {
 	   		position: absolute;
@@ -72,12 +75,12 @@
 	  		display: none;
 	  	}
 	  	p{
-	  		font-size: 12px;
+	  		font-size: 11px;
 	  	}
 	}
 
 	#myTablelea td, #myTablelea th{
-		font-size: 14px;
+		font-size: 13px;
 	}
 
 </style>
@@ -160,7 +163,7 @@ $(document).ready( function () {
 			  <tbody>
 <?php 
 		include("conf.php");
-		$sql = "SELECT * from `login` where level != 'Admin' and active != 0 order by edatehired";
+		$sql = "SELECT * from `login` where level != 'Admin' and active != 0 and position != 'House Helper' order by edatehired";
 		$result = $conn->query($sql);
 		$datey = date("Y");
 		

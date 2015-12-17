@@ -309,7 +309,7 @@
 <div id = "disappleave" style = "display: none; margin-top: -30px;">
 	<?php 
 	include("conf.php");
-	$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and state like 'A%' ORDER BY datefile ASC";
+	$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and (state like  'A%' or state like '%Lea%' or state = 'CLea') ORDER BY datefile ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 	?>	
@@ -363,12 +363,21 @@
 							echo '<p><font color = "green">Approved by Accounting</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by Dep. Head</font></p> '.$row['dareason'];
+							if($row['typeoflea'] != 'Sick Leave'){
+								echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
+							}
 						}else if($row['state'] == 'DAHR'){
 							echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'DAACC'){
 							echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'DAAdmin'){
 							echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+						}elseif($row['state'] == 'CLea'){
+							echo '<font color = "red"> Leave Canceled  </font>';
+						}elseif($row['state'] == 'ReqCLea'){
+							echo '<font color = "red"> Pending Cancelation Request </font>';
+						}elseif($row['state'] == 'ReqCLeaHR'){
+							echo '<font color = "red"> Pending Cancelation Request </font>';
 						}
 					echo '<td></tr>';
 		}

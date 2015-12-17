@@ -16,14 +16,16 @@
 		$unreason = $_POST['unreason'];
 		$unumofhrs = $_POST['unumofhrs'];
 
-		if($_SESSION['level'] == "HR"){
-			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UATech';	
+		$state = 'UAAdmin';
+		if(date("D") == 'Mon'){
+			$minus = '-3 days';
 		}else{
-			$state = 'UA';	
-		}		
-
+			$minus = '-1 days';
+		}
+		if(date("Y-m-d", strtotime($minus, strtotime($undate))) > date("Y-m-d", strtotime($undatereq)) || date("Y-m-d", strtotime($undate)) < date("Y-m-d", strtotime($undatereq))){
+			$state = 'UALate';
+			$restric = 0;	
+		}
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));
 		$stmt = $conn->prepare("INSERT into `undertime` (account_id, twodaysred, datefile, name, position, department, dateofundrtime, undertimefr, undertimeto, reason, state, numofhrs) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssss",$accid, $twodaysred, $undate, $unname, $unpost, $undept, $undatereq, $undertimefr, $undertimeto, $unreason, $state, $unumofhrs);

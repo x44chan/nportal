@@ -24,19 +24,66 @@
 		}
 		$restric = 0;
 		if($typeoflea == 'Vacation Leave'){
-			if(date("Y-m-d", strtotime("+7 days", strtotime($datefile))) > date("Y-m-d", strtotime($dateofleavfr)) ){
+			if(date("Y-m-d", strtotime("+7 days", strtotime($datefile))) > date("Y-m-d", strtotime($dateofleavfr))){
 				$restric = 1;
 			}
 		}
 		$reason = $_POST['leareason'];
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UATech';	
 		}else{
 			$state = 'UA';	
 		}
-
+		$accid = $_SESSION['acc_id'];
+		$sql = "SELECT * from `login` where account_id = '$accid' and empcatergory = 'Regular'";
+		$result = $conn->query($sql);
+		$datey = date("Y");
+		$availsick = 0;
+		$totavailvac = 0;
+		if($result->num_rows > 0){		
+			while($row = $result->fetch_assoc()){
+				$cstatus = $row['ecstatus'];
+				$accidd = $row['account_id'];
+				$egender = $row['egender'];
+				if(date("Y") == 2015){	
+					$sl = $row['sickleave'] - $row['usedsl'];
+					$vl = $row['vacleave'] - $row['usedvl'];
+					$usedsl = $row['usedsl'];
+					$usedvl = $row['usedvl'];
+				}else{				
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+					$datalea = $conn->query($leaveexec)->fetch_assoc();
+					$sl = $datalea['sleave'];
+					$vl = $datalea['vleave'];
+					$usedsl = 0;
+					$usedvl = 0;
+				}
+						
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$availvac = $vl - $row1['count'];
+						$count = $row1['count'];
+						}
+				}		
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$totavailvac = $availvac - $row1['count'];
+						$count = $row1['count'];
+						}
+				}			
+			}
+		}
+		$bal = $totavailvac - $_POST['numdays'];
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && $bal > 0){
+			$state = 'UAAdmin';
+		}
+		if($bal <= 0){
+			echo '<script type="text/javascript">alert("1"); </script>';
+		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state);

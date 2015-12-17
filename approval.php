@@ -22,7 +22,7 @@
 			$dareason = "";
 		}
 		
-		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
+		if($_SESSION['level'] == 'HR' && $state == 'AHR'){
 			$date = date('Y-m-d h:i A');
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';
@@ -52,7 +52,7 @@
 				$states = "(state  = 'AHR' or state = 'UA' or state = 'UATech')";
 				$link = "?bypass";
 			}else{
-				$states = "(state  = 'UAAdmin' or state = 'UALate')";
+				$states = "(state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 				$link = "";
 			}
 			$otlate = "";
@@ -68,10 +68,15 @@
 					$state = 'UA';
 				}
 			}
+			if($state == 'DAAdmin'){
+				$dareason = $_GET['dareason'];
+			}else{
+				$dareason = "";
+			}
 			if($state == 'AAdmin'){
 				$state = 'UA';
 			}
-			$sql = "UPDATE overtime set state = '$state' $otlate where overtime_id = $id and $states";
+			$sql = "UPDATE overtime set state = '$state', dareason = '$dareason' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
@@ -103,6 +108,9 @@
 			$upstate = 'UA';
 			$state = 'UATech';
 		}
+		if(isset($_POST['accadmin']) && $_POST['accadmin'] > 0){
+			$upstate = 'AAdmin';
+		}
 		$oid = mysql_escape_string($_POST['leave_id']);
 		$date = date('Y-m-d h:i A');
 		$sql = "UPDATE nleave set 
@@ -126,12 +134,15 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
+		if($_SESSION['level'] == 'HR' && $state == 'AHR' ){
 			$date = date('Y-m-d h:i A');
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';
 			}else{
 				$xstate = ' state = "UA" ';
+			}
+			if($state == 'AHR'){
+				$state = "CheckedHR";	
 			}
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and $xstate";			
@@ -148,7 +159,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else{
+		}else if($_SESSION['level'] == 'Admin' && ($state == 'AAdmin' || $state == 'DAAdmin')){
 			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
 				$states = "(state  = 'AHR' or state like 'UA%')";
 				$link = "?bypass";
@@ -156,13 +167,29 @@
 				$states = "state  = 'AHR'";
 				$link = "";
 			}
-			$sql = "UPDATE officialbusiness set state = '$state' where officialbusiness_id = $id and $states";
+			if($state == 'AAdmin'){
+				$state = "UA";	
+			}
+			if(isset($_GET['late'])){
+				$oblate = ', oblate = "1"';
+			}else{
+				$oblate = "";
+			}
+			if($state == 'AAdmin'){
+				$state = 'UA';
+			}
+			if($state == 'DAAdmin'){
+				$dareason = $_GET['dareason'];
+			}else{
+				$dareason = "";
+			}
+			$sql = "UPDATE officialbusiness set state = '$state', dareason = '$dareason' $oblate where officialbusiness_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
-			die("Connection error:". $conn->connect_error);
+				die("Connection error:". $conn->connect_error);
+			}		
 		}		
-	}		
 	}
 ?>
 
@@ -177,8 +204,9 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'HR'){
+		if($_SESSION['level'] == 'HR' && $state == 'AHR'){
 			$date = date('Y-m-d h:i A');
+			$state = 'CheckedHR';
 			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
@@ -201,12 +229,25 @@
 				$states = "state  = 'AHR'";
 				$link = "";
 			}
-			$sql = "UPDATE undertime set state = '$state' where undertime_id = $id and $states";
+			if(isset($_GET['late'])){
+				$undrlate = ', undlate = "1"';
+			}else{
+				$undrlate = "";
+			}
+			if($state == 'AAdmin'){
+				$state = 'UA';
+			}
+			if($state == 'DAAdmin'){
+				$dareason = $_GET['dareason'];
+			}else{
+				$dareason = "";
+			}
+			$sql = "UPDATE undertime set state = '$state', dareason = '$dareason' $undrlate where undertime_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
-			die("Connection error:". $conn->connect_error);
-		}		
+				die("Connection error:". $conn->connect_error);
+			}		
 	}
 }
 ?>
@@ -224,7 +265,15 @@
 		}
 		if($_SESSION['level'] == 'HR'){
 			$date = date('F d, Y h:i A');
-			$sql = "UPDATE nleave set state = '$state',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UA'";			
+			if($state == 'DAHR'){
+				$accadmin = " and accadmin < 1";
+			}else{
+				$accadmin = "";
+			}
+			if(isset($_POST['accadmin']) && $_POST['accadmin'] > 0){
+				$state = 'AAdmin';
+			}
+			$sql = "UPDATE nleave set state = '$state',datehr = '$date',dareason = '$dareason'  where leave_id = $id and state = 'UA' $accadmin";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';		
 			}else{
@@ -238,7 +287,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else{
+		}else if($_SESSION['level'] == 'Admin'){
 			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
 				$states = "(state  = 'AHR' or state like 'UA%')";
 				$link = "?bypass";
@@ -246,7 +295,19 @@
 				$states = "state  = 'AHR'";
 				$link = "";
 			}
-			$sql = "UPDATE nleave set state = '$state' where leave_id = $id and $states";
+			if(isset($_GET['sched'])){
+				$states = 'state = "UAAdmin"';
+				$state = 'UA';
+				$apadmin = ', accadmin = "1"';
+			}else{
+				$apadmin = "";
+			}
+			if($state == 'DAAdmin'){
+				$dareason = $_GET['dareason'];
+			}else{
+				$dareason = "";
+			}
+			$sql = "UPDATE nleave set state = '$state',dareason = '$dareason' $apadmin where leave_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{

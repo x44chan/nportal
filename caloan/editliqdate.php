@@ -107,6 +107,7 @@
 	if(isset($_POST['upliqdate'])){
 		$len = $i;
 		echo $len;
+		$count = 0;
 		for($i = 1; $i <= $len; $i++){
 			$liqtype = $_POST['type'.$i];
 			$liqamount = $_POST['amount'.$i];
@@ -126,8 +127,11 @@
 						liqtype = '$liqtype', liqothers = '$liqothers', liqamount = '$liqamount', liqinfo = '$liqinfo', rcpt = '$rcpt'
 					where petty_id = '$petid' and account_id = '$accid' and liqstate = 'LIQDATE' and liqdate_id = '$liqid'";
 			if($conn->query($stmt) == TRUE){
-		    	echo '<script type="text/javascript">alert("Edit successful"); window.location.replace("?ac=penpty"); </script>';		    	
+		    	$count += 1;		    	
 			}
+		}
+		if($count>0){
+			echo '<script type="text/javascript">alert("Edit successful"); window.location.replace("?ac=penpty"); </script>';
 		}
 	}
 ?>

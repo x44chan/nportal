@@ -188,12 +188,13 @@
 		<table width = "100%"class = "table table-hover " align = "center">
 			<thead>				
 				<tr>
-					<th width = "120">Date File</th>			
-					<th width = "120">Date of O.T.</th>
-					<th width = "200">From - To</th>
-					<th width = "50">OT</th>
-					<th width = "300">Reason</th>
-					<th width = "200">Official Work Schedule</th>
+					<th width="12%">Date File</th>			
+					<th width="10%">Date of O.T.</th>
+					<th width="10%">From - To</th>
+					<th width="15%">Checked by HR</th>
+					<th width="5%">OT</th>
+					<th width="30%">Reason</th>
+					<th width="10%">Official Work Schedule</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -205,12 +206,12 @@
 			$datey = date("Y");		
 			$explo = (explode(":",$row['approvedothrs']));
 			if($row['oldot'] != null && ($row['state'] == 'AAdmin' || $row['state'] == 'CheckedHR')){
-					$oldot = '<br><b>Based On: <i><font color = "green">'.$row['dareason'].'</font></b></i><br><b>Filed OT: <i><font color = "red">'. $row['oldot'] . '</font></i>';
-					$hrot = '<b>App. OT: <i><font color = "green">';//( '.$row['approvedothrs'] . ' ) ';
-					$hrclose = "</font></i>";
+					$oldot = '<b><font color = "red">'. $row['oldot'] . '</font>';
+					$hrot = '<b><i>';
+					$hrclose = '<br>Based On: <i><font color = "green">'.$row['dareason']. "</font></i>";
 			}else{
-				$oldot = "";
-				$hrot = '';
+				$oldot = $row["startofot"] . ' - ' . $row['endofot'];
+				$hrot = '<b><i>';
 				$hrclose = '';
 			}
 			if($explo[1] > 0){
@@ -223,21 +224,18 @@
 			}else{
 				$otbreak = "";
 			}
-			if($row['otlate'] != null){
-				$otlate = '<br><i><b><font color = "green"> App. Late Filing by the Dep. Head</font></b><i>';
-			}else{
-				$otlate = "";
-			}
+			
 			$originalDate = date($row['datefile']);
 			$newDate = date("M j, Y", strtotime($originalDate));			
 			echo
 				'<tr>
 					<td>'.$newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
-					<td style = "text-align:left;">'. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak. $otlate.'</td>	
-					<td><strong>'.$explo[0].$explo2.'</strong></td>			
-					<td >'.$row["reason"].'</td>
-					<td >'.$row["officialworksched"].'</td>					
+					<td style = "text-align:left;">'.  $oldot . $otbreak .'</td>	
+					<td>'.$hrot .  $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . $otbreak  .'</td>
+					<td><strong>'.$explo[0].$explo2.'</strong></td>
+					<td>'.$row["reason"].'</td>
+					<td>'.$row["officialworksched"].'</td>					
 					</tr>';
 		}
 
@@ -311,8 +309,7 @@
 		}else{
 			$point5 = '';
 		}
-		echo '<tr ><td colspan = 4 style = "text-align: right; font-size: 16px;"><i id = "totss">Total OT: <u><strong>'. ($hours12 + substr($totalothrs,0,2)) .$point5. ' Hour/s</strong></i></u></td><td colspan = 3></td></tbody></table></form>';
-		echo '<hr>';
+		echo '<tr ><td colspan = 5 style = "text-align: right; font-size: 16px;"><i id = "totss">Total OT: <u><strong>'. ($hours12 + substr($totalothrs,0,2)) .$point5. ' Hour/s</strong></i></u></td><td colspan = 3></td></tbody></table></form>';
 		}
 		echo '</tbody></table></div>';
 	}
@@ -321,7 +318,7 @@
 <?php
 	}
 if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
-	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and state = 'AAdmin' and obdate BETWEEN '$date1' and '$date2' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and obdate BETWEEN '$date1' and '$date2' ORDER BY obdate ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -331,11 +328,12 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 		<table width = "100%" class = "table table-hover" align = "center">
 			<thead>
 				<tr>
-					<th width="120">Date File</th>
-					<th width="140">Date of Request</th>
-					<th>Time In - Time Out</th>
-					<th>Official Work Schedule</th>
-					<th width = "300">Reason</th>
+					<th width="12%">Date File</th>
+					<th width="12%">Date of Request</th>					
+					<th width="15%">Time In - Time Out</th>
+					<th width="16%">Check by HR</th>
+					<th width="15%">Official Work Schedule</th>
+					<th width="30%">Reason</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -348,11 +346,19 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 			$datey = date("Y");	
 			$originalDate = date($row['obdate']);
 			$newDate = date("M j, Y", strtotime($originalDate));
+			if($row['edithr'] != ""){
+				$oldob = $row['edithr'];
+				$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];
+			}else{
+				$oldob = $row['obtimein'] . ' - ' . $row['obtimeout'];
+				$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];
+			}
 			echo
 				'<tr>
 					<td width = 100>'.$newDate.'</td>
 					<td>'.date("M j, Y",strtotime($row['obdatereq'])).'</td>					
-					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+					<td>'.$oldob.'</td>
+					<td><i><b>'.$hr.'</b></td>
 					<td>'.$row["officialworksched"].'</td>				
 					<td >'.$row["obreason"].'</td>';
 					echo '</tr>';
@@ -376,12 +382,12 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 	<table width = "100%" class = "table table-hover" align = "center">
 			<thead>					
 					<tr>
-						<th>Date File</th>				
-						<th>Date of Leave (Fr - To)</th>
-						<th># of Day/s</th>
-						<th>Type</th>
-						<th>Reason</th>
-						<th>Payment</th>
+						<th width="15%">Date File</th>				
+						<th width="15%">Date of Leave (Fr - To)</th>
+						<th width="10%"># of Day/s</th>
+						<th width="10%">Type</th>
+						<th width="30%">Reason</th>
+						<th width="20%">Checked by HR (Payment)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -401,9 +407,9 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 					$otherslea = ': ' . $row['othersl'];
 				}
 				if($row['leapay'] == 'wthoutpay'){
-					$pay = 'W/O Pay';
+					$pay = 'w/o Pay';
 				}else{
-					$pay = 'W/ Pay';
+					$pay = 'w/ Pay';
 				}
 				echo 
 					'<td>'.$newDate.'</td>
@@ -422,7 +428,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 }
 }
 if($_GET['report'] == 'all' || $_GET['report'] == 'undr'){
-	$sql = "SELECT * FROM undertime where undertime.account_id = $accids and state = 'AAdmin' and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+	$sql = "SELECT * FROM undertime where undertime.account_id = $accids and  (state = 'AAdmin' or state = 'CheckedHR') and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 ?>
@@ -430,11 +436,12 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'undr'){
 	<table class = "table table-hover" align = "center">
 			<thead>
 				<tr>
-					<th width="105">Date File</th>
-					<th width="155">Date of Undertime</th>					
-					<th>Fr - To (Undertime)</th>
-					<th># of Hrs/Minutes</th>
-					<th width="300">Reason</th>
+					<th width="12%">Date File</th>
+					<th width="12%">Date of Undertime</th>					
+					<th width="15%">Fr - To (Undertime)</th>
+					<th width="15%">Checked by HR</th>
+					<th width="11%"># of Hrs/Minutes</th>
+					<th width="45%">Reason</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -444,11 +451,19 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'undr'){
 			$newDate = date("M j, Y", strtotime($originalDate));
 	
 			$datetoday = date("Y-m-d");
+			if($row['edithr'] != ""){
+				$oldundr = $row['edithr'];
+				$hr = $row['undertimefr'] . ' - ' . $row['undertimeto'];
+			}else{
+				$oldundr = $row['undertimefr'] . ' - ' . $row['undertimeto'];
+				$hr = $row['undertimefr'] . ' - ' . $row['undertimeto'];
+			}
 			echo 
 				'<tr>
 					<td>'.$newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofundrtime"])).'</td>							
-					<td>Fr: '.$row["undertimefr"] . '<br>To: ' . $row['undertimeto'].'</td>
+					<td>'.$oldundr.'</td>
+					<td><b>'.$hr.'</td>
 					<td>'.$row["numofhrs"].'</td>
 					<td>'.$row["reason"].'</td></tr>';
 		}

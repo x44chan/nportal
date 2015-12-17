@@ -66,13 +66,8 @@
 		}		
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UAAdmin';	
 		}else{
-			$state = 'UAAdmin';	
-		}	
-		if($_SESSION['level'] == 'HR'){
-			$state = 'AHR';
+			$state = '(state = "UAAdmin" or state = "UALate")';	
 		}
 		$stmts2x = "SELECT * FROM `overtime` where overtime_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxata = $conn->query($stmts2x)->fetch_assoc();
@@ -82,17 +77,17 @@
 			$minus = '-1 days';
 		}
 		$restric = 0;
-		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date)) || $dxata['datefile'] < date("Y-m-d", strtotime($date))){
-				$restric = 1;			
+		
+		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date))){
+				$restric = 0;
+				$uplate = ', state = "UALate" ';		
+		}else{
+				$uplate = ', state = "UAAdmin" ';
 		}
-		if(isset($_POST['lateotupsub'])){
-			$restric = 0;
-			$state = 'UALate';
-		}
-		$state = 'UAAdmin';
+		
 		$stmt = "UPDATE `overtime` set 
-			csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date'
-			where account_id = '$accid' and state like '$state' and overtime_id = '$_SESSION[otid]'";
+			csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
+			where account_id = '$accid' and $state and overtime_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
 				if($_SESSION['level'] == 'EMP'){
@@ -138,13 +133,8 @@
 		}
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UATech';	
 		}else{
-			$state = 'UA';	
-		}	
-		if($_SESSION['level'] == 'HR'){
-			$state = 'AHR';
+			$state = '(state = "UAAdmin" or state = "UALate")';	
 		}
 		$stmts2xx = "SELECT * FROM `officialbusiness` where officialbusiness_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxatax = $conn->query($stmts2xx)->fetch_assoc();
@@ -154,16 +144,14 @@
 		}else{
 			$minus = '-1 days';
 		}
-		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date)) || $dxatax['obdate'] < date("Y-m-d", strtotime($date))){
-				$restric = 0;			
-		}
-		if(isset($_POST['lateobsub'])){
-			$state = 'UALate';
-			$restric = 0;
+		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date))){
+			$uplate = ',state = "UALate"';			
+		}else{
+			$uplate = ',state = "UAAdmin"';	
 		}
 		$stmt = "UPDATE `officialbusiness` set 
-			obreason = '$obreason', obtimein = '$obtimein', obtimeout = '$obtimeout', officialworksched = '$officialworksched', obdatereq = '$date'
-			where account_id = '$accid' and state = '$state' and officialbusiness_id = '$_SESSION[otid]'";
+			obreason = '$obreason', obtimein = '$obtimein', obtimeout = '$obtimeout', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
+			where account_id = '$accid' and $state and officialbusiness_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
 				if($_SESSION['level'] == 'EMP'){
@@ -190,7 +178,6 @@
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penob"); </script>';
 	    	}
 		}
-		$conn->close();
 	}
 
 	if(isset($_POST['upleasubmit'])){		
@@ -232,26 +219,36 @@
 	if(isset($_POST['upunsubmit'])){	
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
-		$undatereq = $_POST['undatereq'];
-		$undertimefr = $_POST['untimefr'];
-		$undertimeto = $_POST['untimeto'];
-		$unreason = $_POST['unreason'];
+		$undatereq = mysql_escape_string($_POST['undatereq']);
+		$undertimefr = mysql_escape_string($_POST['untimefr']);
+		$undertimeto = mysql_escape_string($_POST['untimeto']);
+		$unreason = mysql_escape_string($_POST['unreason']);
 		
-		$unumofhrs = $_POST['unumofhrs'];
+		$unumofhrs = mysql_escape_string($_POST['unumofhrs']);
 		
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
-		}else if($post == "service technician"){
-			$state = 'UATech';	
 		}else{
-			$state = 'UA';	
+			$state = ' (state = "UAAdmin" or state = "UALate")';	
 		}
-		if($_SESSION['level'] == 'HR'){
-			$state = 'AHR';
+		$stmts2x = "SELECT * FROM `undertime` where undertime_id = '$_SESSION[otid]' and  account_id = '$accid'";
+  		$dxata = $conn->query($stmts2x)->fetch_assoc();
+		if(date("D") == 'Mon'){
+			$minus = '-3 days';
+		}else{
+			$minus = '-1 days';
+		}
+		$restric = 0;
+		
+		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($undatereq))) {
+			$restric = 0;
+			$uplate = ', state = "UALate" ';		
+		}else{
+			$uplate = ', state = "UAAdmin" ';	
 		}
 		$stmt = "UPDATE `undertime` set 
-			dateofundrtime = '$undatereq', undertimefr = '$undertimefr', undertimeto = '$undertimeto', reason = '$unreason', numofhrs = '$unumofhrs'
-			where account_id = '$accid' and state = '$state' and undertime_id = '$_SESSION[otid]'";
+			dateofundrtime = '$undatereq', undertimefr = '$undertimefr', undertimeto = '$undertimeto', reason = '$unreason', numofhrs = '$unumofhrs' $uplate
+			where account_id = '$accid' and $state and undertime_id = '$_SESSION[otid]'";
 		if ($conn->query($stmt) === TRUE) {
 	    	if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
@@ -343,6 +340,49 @@
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		if ($conn->query($stmt) === TRUE) {
 	    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
+			
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+		$conn->close();
+
+	}
+
+	if(isset($_POST['hrupobsubmit'])){	
+		$obtimein = mysql_escape_string($_POST['obtimein']);
+		$obtimeout = mysql_escape_string($_POST['obtimeout']);			
+		$accid = mysql_escape_string($_POST['accid']);
+		$obid = $_SESSION['otid'];
+		$date = date('Y-m-d h:i A');
+		$upstate = 'CheckedHR';
+		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
+		$stmt = "UPDATE `officialbusiness` set 
+				obtimein = '$obtimein', obtimeout = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date'
+			where account_id = '$accid' and state = 'UA' and officialbusiness_id = '$obid'";
+		if ($conn->query($stmt) === TRUE) {
+	    	echo '<script type="text/javascript">window.location.replace("hr.php?ac=penob"); </script>';
+			
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+		$conn->close();
+
+	}
+
+	if(isset($_POST['hrupunsubmit'])){	
+		$obtimein = mysql_escape_string($_POST['untimefr']);
+		$obtimeout = mysql_escape_string($_POST['untimeto']);			
+		$accid = mysql_escape_string($_SESSION['acc']);
+		$numofhrs = mysql_escape_string($_POST['unumofhrs']);
+		$obid = $_SESSION['otid'];
+		$date = date('Y-m-d h:i A');
+		$upstate = 'CheckedHR';
+		$edithr = $_SESSION['oldunr'];
+		$stmt = "UPDATE `undertime` set 
+				undertimefr = '$obtimein', undertimeto = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date', numofhrs = '$numofhrs'
+			where account_id = '$accid' and state = 'UA' and undertime_id = '$obid'";
+		if ($conn->query($stmt) === TRUE) {
+	    	echo '<script type="text/javascript">window.location.replace("hr.php?ac=penundr"); </script>';
 			
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;

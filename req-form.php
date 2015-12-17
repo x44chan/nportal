@@ -27,9 +27,6 @@ $(document).ready(function(){
 		include 'caloan/latefiling.php';
 		echo '</div>';
 	}
-	if(isset($_GET['edit_late'])){
-		include 'caloan/editlate.php';
-	}
 ?>
 
 <div id = "offb" style = "margin-top: -30px; display: none; ">
@@ -151,9 +148,6 @@ $(document).ready(function(){
 					<td colspan = 2 align = center>
 						<h5><p style = "font-style: italic; color: red;">No over 30 Minutes or less than 30 Minutes. (Counted Overtime is 30 Minutes or Hour/s Only)<br>6:00 PM - 8.50 PM (Counted Overtime: 2 Hours and 30 Minutes)	</h5>
 					</td>
-				</tr>	
-				<tr>
-					<td colspan="2"><b><i><a href = "?late_filing" class="btn btn-warning form-control"> Click Me ! For Late Filing</a><br><br></td>
 				</tr>
 				<tr>
 					<td>Date File: </td>
@@ -180,8 +174,7 @@ $(document).ready(function(){
 					<td>Start (Time of OT): <font color = "red">*</font></td>
 					<td>
 						<input required onkeydown="return false;" class = "form-control"  name = "startofot" autocomplete ="off" placeholder = "Click to Set time"/>
-					</td>
-					
+					</td>					
 				</tr>				
 				<tr>
 					<td>End (Time of OT): <font color = "red">*</font></td>
@@ -208,20 +201,18 @@ $(document).ready(function(){
 						<label for = "fr">From:</label><input onkeydown="return false;" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  name = "officialworkschedfr"/>
 						<label for = "to" style="margin-left: 5px;">To:</label><input onkeydown="return false;" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  name = "officialworkschedto"/>
 					</td>					
-				</tr>		
-						
-					<script type="text/javascript">
-						$(document).ready(function(){
-							$('input[name="startofot"]').ptTimeSelect();
-							$('input[name="officialworkschedto"]').ptTimeSelect();
-							$('input[name="officialworkschedfr"]').ptTimeSelect();							
-							$('input[name="endofot"]').ptTimeSelect();
-						});
-					</script>
+				</tr>							
+				<script type="text/javascript">
+					$(document).ready(function(){
+						$('input[name="startofot"]').ptTimeSelect();
+						$('input[name="officialworkschedto"]').ptTimeSelect();
+						$('input[name="officialworkschedfr"]').ptTimeSelect();							
+						$('input[name="endofot"]').ptTimeSelect();
+					});
+				</script>
 				</div>
 				<tr>
 					<td colspan = 2 align = center><input type = "submit" name = "otsubmit" class = "btn btn-default"/><input type = "button" id = "hideot" name = "submit" class = "btn btn-default" value = "Cancel"></td>
-					
 				</tr>
 			</table>
 		</div>
@@ -426,7 +417,7 @@ $(document).ready(function(){
     </div>
   </div> 
 <?php
-	if(isset($_POST['submitpet'])){
+	if(isset($_POST['submitpet']) && isset($_SESSION['acc_id'])){
 		$acc_id = mysql_escape_string($_SESSION['acc_id']);
 		$particularpet = mysql_escape_string($_POST['particularpet']);
 		$amountpet = mysql_escape_string($_POST['amountpet']);
@@ -436,7 +427,7 @@ $(document).ready(function(){
 			$state = 'UAPetty';
 		}
 		$datefile = date("Y-m-d");
-		$sql = "SELECT * FROM petty,login where login.account_id = $accid and petty.account_id = $accid and petty.state = 'AAPettyRep' order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and petty.account_id = '$acc_id' and petty.state = 'AAPettyRep' order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
 		if($result->num_rows > 0){			
@@ -448,6 +439,9 @@ $(document).ready(function(){
 					$count += 1;
 				}
 				if($data['liqstate'] == 'LIQDATE'){
+					$count += 1;
+				}
+				if($data['liqstate'] == 'EmpVal'){
 					$count += 1;
 				}
 		   }
@@ -464,7 +458,7 @@ $(document).ready(function(){
 	    	}
 		}else{
 			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("isssss",$accid, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
+			$stmt->bind_param("isssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
 			$stmt->execute();		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
@@ -523,7 +517,7 @@ $(document).ready(function(){
 });
  </script>
 <?php
-	if(isset($_POST['submitca'])){
+	if(isset($_POST['submitca']) && isset($_SESSION['acc_id'])){
 		$date = date("Y-m-d");
 		if($date > date('Y-m-16')){
 			$date = date("Y-m-01", strtotime("next month"));
@@ -578,7 +572,7 @@ $(document).ready(function(){
 ?>
 
 <?php
-	if(isset($_POST['loanpet'])){
+	if(isset($_POST['loanpet']) && isset($_SESSION['acc_id'])){
 		$accid = $_SESSION['acc_id'];
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 

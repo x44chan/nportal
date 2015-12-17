@@ -27,9 +27,14 @@
 
 	if(isset($_GET['canlea'])){
 		$petid = mysqli_real_escape_string($conn, $_GET['canlea']);
+		if($_SESSION['level'] == 'HR'){
+			$state = 'ReqCLeaHR';
+		}else{
+			$state = 'ReqCLea';
+		}
 		$stmt = "UPDATE `nleave` set 
 				state = 'ReqCLea'
-			where account_id = '$accid' and leave_id = '$petid'";
+			where account_id = '$accid' and typeoflea != 'Sick Leave' and leave_id = '$petid'";
 		if ($conn->query($stmt) === TRUE) {
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("req-app.php?applea"); </script>';
@@ -49,7 +54,7 @@
 		$petid = mysqli_real_escape_string($conn, $_GET['hrclea']);
 		$stmt = "UPDATE `nleave` set 
 				state = 'ReqCLeaHR'
-			where state = 'ReqCLea' and leave_id = '$petid'";
+			where state = 'ReqCLea' and typeoflea != 'Sick Leave'  and leave_id = '$petid'";
 		if ($conn->query($stmt) === TRUE) {
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("req-app.php?applea"); </script>';

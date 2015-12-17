@@ -232,7 +232,7 @@
 					echo '<td id = "backs" ><b><font color = "green">Completed</font></b><br>';
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'EmpVal'){
-					echo '<td id = "backs" ><b><font color = "red">For Employee Validation</font></b><br>';
+					echo '<td id = "backs" ><b><font color = "red">Pending for Completion</font></b><br>';
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'LIQDATE'){
 					echo '<td><b> Pending Completion</b><br><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
@@ -336,7 +336,7 @@
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-				<td><?php echo date("M j, y", strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><?php echo $row['particular'];?></td>
 				<td>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></td>
@@ -354,7 +354,7 @@
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-				<td><?php echo date("M j, y", strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><?php echo $row['particular'];?></td>
 				<td>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></td>
@@ -373,7 +373,7 @@
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-				<td><?php echo date("M j, y", strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><?php echo $row['particular'];?></td>
 				<td>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></td>
@@ -635,14 +635,14 @@
 						continue;
 					}
 				}
-				if(isset($_GET['sliqui'])){
+				elseif(isset($_GET['sliqui'])){
 					if($row['state'] == 'AAAPettyReceive' || $row['state'] == 'AAPettyReceived'){
 						
 					}else{
 						continue;
 					}
 				}
-				if(isset($_GET['spendingliq'])){
+				elseif(isset($_GET['spendingliq'])){
 					if($data['liqtype'] != ''){
 						continue;
 					}
@@ -653,8 +653,12 @@
 						continue;
 					}
 				}
-				if(isset($_GET['spendingcomp']) && $data['liqstate'] != 'LIQDATE') {
-					continue;
+				elseif(isset($_GET['spendingcomp'])){
+					if($data['liqstate'] == 'LIQDATE' || $data['liqstate'] == 'EmpVal'){
+						
+					}else{
+						continue;
+					}
 				}
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
@@ -687,7 +691,7 @@
 				}elseif($data['petty_id'] == null){
 					echo '<b>Pending Liquidation</b>';
 				}elseif($data['liqstate'] == 'EmpVal'){
-					echo '<font color = "green"><b>Liquidated</font><br>';
+					echo '<b>Pending Completion</b><br>';
 				}elseif($data['liqstate'] == 'CompleteLiqdate'){
 					echo '<font color = "green"><b>Completed</font>';
 				}elseif($data['liqstate'] == 'LIQDATE'){
