@@ -281,7 +281,9 @@ if(isset($_GET['login_log'])){
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'LIQDATE'){
 					echo '<td><b> Pending Completion</b><br><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
-				}else{
+				}elseif($row['source'] == ""){
+					echo '<td><b>Pending for Approval</td>';
+				}elseif($data['liqstate'] == ""){
 					echo '<td><b> Pending Liquidate</td>';
 				}
 				echo '<td id = "show" style = "display: none;"></td>';
@@ -477,7 +479,7 @@ if(isset($_GET['login_log'])){
 		}
 		echo "</table></form>";
 }
-if(isset($_GET['report']) && $_GET['report'] == '1'){
+	if(isset($_GET['report']) && $_GET['report'] == '1'){
 		if(isset($_SESSION['dates'])){
 			$date1 = $_SESSION['dates'];
 			$date2 = $_SESSION['dates0'];
@@ -490,7 +492,7 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 		if(isset($_POST['repfilter'])){
 			$_SESSION['dates'] = $_POST['repfr'];
 			$_SESSION['dates0'] = $_POST['repto'];
-			echo '<script type = "text/javascript">window.location.replace("admin-petty.php?report=1&'.$_POST['reptype'].'");</script>';
+			echo '<script type = "text/javascript">window.location.replace("admin-petty.php?report=1&'.$_POST['reptype'].'&'.$_POST['status'].'");</script>';
 		}
 		if(isset($_POST['represet'])){
 			unset($_SESSION['dates']);
@@ -506,13 +508,23 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 			</div>
 		</div>
 		<div class="row" >
-			<div class="col-xs-3 col-xs-offset-1" align="center">
+			<div class="col-xs-3" align="center">
 				<label>Select Source</label>
 				<select class="form-control input-sm" name ="reptype">
 					<option <?php if(isset($_GET['all'])){ echo ' selected '; } ?> value="all">All</option>				
 					<option <?php if(isset($_GET['Eliseo'])){ echo ' selected '; } ?> value="Eliseo">Eliseo</option>					
 					<option <?php if(isset($_GET['Sharon'])){ echo ' selected '; } ?> value="Sharon">Sharon</option>
 					<option <?php if(isset($_GET['Accounting'])){ echo ' selected '; } ?> value="Accounting">Accounting</option>
+				</select>
+			</div>
+			<div class="col-xs-2" align="center">
+				<label> Status </label>
+				<select class="form-control input-sm" name = "status">
+					<option <?php if(isset($_GET['sall'])){ echo ' selected '; } ?> value = "sall"> All </option>
+					<option <?php if(isset($_GET['scompleted'])){ echo ' selected '; } ?> value = "scompleted"> Completed </option>
+					<option <?php if(isset($_GET['sliqui'])){ echo ' selected '; } ?> value = "sliqui"> Pending Emp. Code </option>
+					<option <?php if(isset($_GET['spendingliq'])){ echo ' selected '; } ?> value="spendingliq"> Pending Liquidation </option>
+					<option <?php if(isset($_GET['spendingcomp'])){ echo ' selected '; } ?> value="spendingcomp"> Pending Completion </option>
 				</select>
 			</div>
 			<div class="col-xs-2" align="center">
@@ -523,7 +535,7 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 				<label>Date To</label>
 				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
 				<div class="form-group" align="left">
 					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
@@ -552,9 +564,9 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 				<?php if(isset($_GET['Eliseo'])){ echo '<br> Source: '; echo ' Eliseo ';}elseif(isset($_GET['Sharon'])){ echo '<br> Source: '; echo ' Sharon '; }elseif(isset($_GET['Accounting'])){ echo '<br> Source: '; echo ' Accounting '; } ?>
 			</i></b>
 		</div>
-		<div class="col-xs-12" align="right">
-			<i><b>Total Amount: <span class = "badge" id = "total" style = "font-size: 14px;"></span><br>
-			Total Used Petty: <span class = "badge" id = "used" style = "font-size: 14px;"></span></b></i>
+		<div class="col-xs-12" align="right" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>>
+			<i><b>Total Amount: <span class = "badge" id = "total" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>></span><br>
+			Total Used Petty: <span class = "badge" id = "used" <?php if(isset($_GET['print'])){ echo 'style="font-size: 12px;"'; } else{ echo 'style = "font-size: 14px;"';} ?>></span></b></i>
 		</div>
 	</div>
 <?php
@@ -569,9 +581,22 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 		}else{
 			$link = "";
 		}
+		if(isset($_GET['sall'])){
+			$link2 = "&sall";
+		}elseif(isset($_GET['scompleted'])){
+			$link2 = "&scompleted";
+		}elseif(isset($_GET['spendingliq'])){
+			$link2 = "&spendingliq";
+		}elseif(isset($_GET['spendingcomp'])){
+			$link2 = "&spendingcomp";
+		}elseif(isset($_GET['sliqui'])){
+			$link2 = "&sliqui";
+		}else{
+			$link2 = "";
+		}
 		if(isset($_GET['print'])){
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
-			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.'";});</script>';
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.$link2.'";});</script>';
 		}else{
 			echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		}
@@ -603,7 +628,7 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 			$filt = "";
 		}
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AApettyRep' $filt";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -612,6 +637,34 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
+				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+				$data = $conn->query($sql)->fetch_assoc();
+				if(isset($_GET['scompleted'])){
+					if($data['liqstate'] != 'CompleteLiqdate'){
+						continue;
+					}
+				}
+				if(isset($_GET['sliqui'])){
+					if($row['state'] == 'AAAPettyReceive' || $row['state'] == 'AAPettyReceived'){
+						
+					}else{
+						continue;
+					}
+				}
+				if(isset($_GET['spendingliq'])){
+					if($data['liqtype'] != ''){
+						continue;
+					}
+					if($row['state'] == 'AAAPettyReceive'){
+						continue;
+					}
+					if($row['state'] == 'AAPettyReceived'){
+						continue;
+					}
+				}
+				if(isset($_GET['spendingcomp']) && $data['liqstate'] != 'LIQDATE') {
+					continue;
+				}
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
@@ -631,10 +684,16 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 				echo number_format($data2['totalliq'],2) . '</td>';
 				$used += $data2['totalliq'];
 				
-				echo '<td>';
+				echo '<td><b>';
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 				$data = $conn->query($sql)->fetch_assoc();
-				if($data['petty_id'] == null){
+				if($row['state'] == 'AAAPettyReceive'){
+					echo 'Pending for Employee Code';
+				}elseif($row['state'] == 'AAPettyReceived'){
+					echo 'Pending for Employee Code';
+				}elseif($row['state'] == 'AAPetty'){
+					echo '<font color = "green"><b>Pending to Accounting</font>';
+				}elseif($data['petty_id'] == null){
 					echo '<b>Pending Liquidation</b>';
 				}elseif($data['liqstate'] == 'EmpVal'){
 					echo '<font color = "green"><b>Liquidated</font><br>';
@@ -651,11 +710,11 @@ if(isset($_GET['report']) && $_GET['report'] == '1'){
 		}
 		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($total,2).'");  $("#used").text("₱ '.number_format($used,2).'"); });</script>';
 		if(isset($_GET['print'])){
-			echo '<tr><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td></tr>';
-			echo '<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
 		}		
 		echo "</tbody></table></div>";	
-		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
+		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.$link2.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
 }
 ?>
 <?php

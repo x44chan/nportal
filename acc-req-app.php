@@ -597,10 +597,10 @@
 		}
 	}
 	?>
-	<?php 		
+<?php 		
 	if(isset($_GET['applea'])){
 	include("conf.php");
-	$sql = "SELECT * FROM nleave,login where login.account_id = $accid and nleave.account_id = $accid and state =  'AAdmin' ORDER BY datefile DESC";
+	$sql = "SELECT * FROM nleave,login where login.account_id = $accid and nleave.account_id = $accid and (state =  'AAdmin' or state like '%Lea%' or state = 'CLea') ORDER BY datefile DESC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 	?>	
@@ -650,8 +650,17 @@
 							echo '<p><font color = "green">Approved by HR</p>';
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</p>';
-						}else{
+						}elseif($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by <br>Dep. Head</p>';
+							if($row['typeoflea'] != 'Sick Leave'){
+								echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
+							}
+						}elseif($row['state'] == 'CLea'){
+							echo '<font color = "red"> Leave Canceled  </font>';
+						}elseif($row['state'] == 'ReqCLea'){
+							echo '<font color = "red"> Pending Cancelation Request </font>';
+						}elseif($row['state'] == 'ReqCLeaHR'){
+							echo '<font color = "red"> Pending Cancelation Request </font>';
 						}
 				echo '</td></tr>';
 		}

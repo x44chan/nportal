@@ -946,7 +946,7 @@
 			$endque = 16;
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and state like 'UA' and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
+		$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and (state = 'UA' or state = 'ReqCLea') and YEAR(datefile) = $datey ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		
 	?>
@@ -997,14 +997,16 @@
 					 <td >'.$data1["reason"].'</td>';
 					 if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
-				}else{
-				echo'	
-					 <td width = "200">
-						<a href = "?leaapprove='.$row['account_id'].'&leave='.$row['leave_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>
-						<a href = "?approve=DA'.$_SESSION['level'].'&dleave='.$row['leave_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button">Disapprove</a>
-					</td>
-					</tr>';
-			}
+					}elseif($row['state'] == 'ReqCLea'){
+						echo '<td width = "200"> <a class = "btn btn-danger" onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?hrclea='.$row['leave_id'].'"> Approve Cancelation Req. </a></td>';
+					}else{
+						echo'	
+						 <td width = "200">
+							<a href = "?leaapprove='.$row['account_id'].'&leave='.$row['leave_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dleave='.$row['leave_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button">Disapprove</a>
+						</td>
+						</tr>';
+					}
 		}
 	}else{
 		$error += 1;

@@ -391,7 +391,7 @@
 ?>
 
 <?php
-	if(isset($_GET['excesscode'])){
+	if(isset($_GET['excesscode']) && $_SESSION['level'] == 'AAdmin'){
 		$pet_id = mysql_escape_string($_GET['excesscode']);
 		$query = "SELECT * FROM `petty_liqdate` where petty_id = '$pet_id'";
 		$result = $conn->query($query);

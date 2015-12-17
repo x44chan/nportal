@@ -483,7 +483,7 @@
 		if(isset($_POST['repfilter'])){
 			$_SESSION['dates'] = $_POST['repfr'];
 			$_SESSION['dates0'] = $_POST['repto'];
-			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?report=1&'.$_POST['reptype'].'");</script>';
+			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?report=1&'.$_POST['reptype'].'&'.$_POST['status'].'");</script>';
 		}
 		if(isset($_POST['represet'])){
 			unset($_SESSION['dates']);
@@ -499,13 +499,23 @@
 			</div>
 		</div>
 		<div class="row" >
-			<div class="col-xs-3 col-xs-offset-1" align="center">
+			<div class="col-xs-3" align="center">
 				<label>Select Source</label>
 				<select class="form-control input-sm" name ="reptype">
 					<option <?php if(isset($_GET['all'])){ echo ' selected '; } ?> value="all">All</option>				
 					<option <?php if(isset($_GET['Eliseo'])){ echo ' selected '; } ?> value="Eliseo">Eliseo</option>					
 					<option <?php if(isset($_GET['Sharon'])){ echo ' selected '; } ?> value="Sharon">Sharon</option>
 					<option <?php if(isset($_GET['Accounting'])){ echo ' selected '; } ?> value="Accounting">Accounting</option>
+				</select>
+			</div>
+			<div class="col-xs-2" align="center">
+				<label> Status </label>
+				<select class="form-control input-sm" name = "status">
+					<option <?php if(isset($_GET['sall'])){ echo ' selected '; } ?> value = "sall"> All </option>
+					<option <?php if(isset($_GET['scompleted'])){ echo ' selected '; } ?> value = "scompleted"> Completed </option>
+					<option <?php if(isset($_GET['sliqui'])){ echo ' selected '; } ?> value = "sliqui"> Pending Emp. Code </option>
+					<option <?php if(isset($_GET['spendingliq'])){ echo ' selected '; } ?> value="spendingliq"> Pending Liquidation </option>
+					<option <?php if(isset($_GET['spendingcomp'])){ echo ' selected '; } ?> value="spendingcomp"> Pending Completion </option>
 				</select>
 			</div>
 			<div class="col-xs-2" align="center">
@@ -516,7 +526,7 @@
 				<label>Date To</label>
 				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
 				<div class="form-group" align="left">
 					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
@@ -562,9 +572,22 @@
 		}else{
 			$link = "";
 		}
+		if(isset($_GET['sall'])){
+			$link2 = "&sall";
+		}elseif(isset($_GET['scompleted'])){
+			$link2 = "&scompleted";
+		}elseif(isset($_GET['spendingliq'])){
+			$link2 = "&spendingliq";
+		}elseif(isset($_GET['spendingcomp'])){
+			$link2 = "&spendingcomp";
+		}elseif(isset($_GET['sliqui'])){
+			$link2 = "&sliqui";
+		}else{
+			$link2 = "";
+		}
 		if(isset($_GET['print'])){
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
-			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.'";});</script>';
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.$link2.'";});</script>';
 		}else{
 			echo '<table id = "myTablepet" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		}
@@ -605,6 +628,34 @@
 			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
+				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+				$data = $conn->query($sql)->fetch_assoc();
+				if(isset($_GET['scompleted'])){
+					if($data['liqstate'] != 'CompleteLiqdate'){
+						continue;
+					}
+				}
+				if(isset($_GET['sliqui'])){
+					if($row['state'] == 'AAAPettyReceive' || $row['state'] == 'AAPettyReceived'){
+						
+					}else{
+						continue;
+					}
+				}
+				if(isset($_GET['spendingliq'])){
+					if($data['liqtype'] != ''){
+						continue;
+					}
+					if($row['state'] == 'AAAPettyReceive'){
+						continue;
+					}
+					if($row['state'] == 'AAPettyReceived'){
+						continue;
+					}
+				}
+				if(isset($_GET['spendingcomp']) && $data['liqstate'] != 'LIQDATE') {
+					continue;
+				}
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
@@ -654,7 +705,7 @@
 			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
 		}		
 		echo "</tbody></table></div>";	
-		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
+		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.$link2.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
 }
 ?>
 <?php

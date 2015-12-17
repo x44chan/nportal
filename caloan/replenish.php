@@ -12,7 +12,7 @@
 			$_SESSION['dates'] = $_POST['repfr'];
 			$_SESSION['dates0'] = $_POST['repto'];
 			$_SESSION['repleamount'] = $_POST['repleamount'];
-			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?replenish");</script>';
+			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?replenish&'.$_POST['stats'].'");</script>';
 		}
 		if(isset($_POST['represet'])){
 			unset($_SESSION['dates']);
@@ -91,9 +91,17 @@
 			</div>
 		</div>
 		<div class="row" >
-			<div class="col-xs-3 col-xs-offset-1" align="center">
+			<div class="col-xs-3" align="center">
 				<label>Total Fund</label>
 				<input type = "text" class="form-control input-sm" required <?php if(isset($_SESSION['repleamount'])){ echo ' value = "' . $_SESSION['repleamount'] . '" '; } else { echo ' value = "0" '; }?>name = "repleamount" placeholder = "Enter amount"/>
+			</div>			
+			<div class="col-xs-2" align="center">
+				<label>Status</label>
+				<select name = "stats" class="form-control input-sm">
+					<option value = ""> All </option>
+					<option <?php if(isset($_GET['nopending'])){ echo ' selected '; } ?> value = "nopending"> Completed </option>
+					<option <?php if(isset($_GET['spendliqui'])){ echo ' selected '; } ?> value = "spendliqui"> All Pending </option>
+				</select>
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date From</label>
@@ -103,7 +111,7 @@
 				<label>Date To</label>
 				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
 				<div class="form-group" align="left">
 					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
@@ -138,9 +146,16 @@
 		</div>
 	</div>
 <?php
+		if(isset($_GET['nopending'])){
+			$xlink = "nopending";
+		}elseif (isset($_GET['spendliqui'])){
+			$xlink = 'spendliqui';
+		}else{
+			$xlink = "";
+		}
 		if(isset($_GET['print'])){
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
-			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?replenish";});</script>';
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?replenish&'.$xlink.'";});</script>';
 		}else{
 			echo '<table id = "myTablepet" align = "center" class = "table table-hover" style="font-size: 14px;">';
 		}
@@ -172,18 +187,27 @@
 				$data2 = $conn->query($query2)->fetch_assoc();
 				if($data2['liqinfo'] == null){
 					$state = '<b>Pending Liquidation</b>';
+					if(isset($_GET['nopending'])){
+						continue;
+					}
 				}elseif($data2['totalliq'] <= 0){
 					continue;
 				}else{
 					$state = '₱ ' . number_format($data2['totalliq'],2);
+				}
+				if($data2['liqinfo'] != null){
+					if(isset($_GET['spendliqui'])){
+						continue;	
+					} 
 				}
 				$a = str_replace(',', '', $row['amount']);
 				if($data2['liqinfo'] == null){
 					$xchange += $a;
 					$tchange = ' - ';
 				}else{
-					$tchange = '₱ '. number_format($a - $data2['totalliq']);
+					$tchange = '₱ '. number_format($a - $data2['totalliq'], 2);
 				}
+
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
@@ -208,7 +232,8 @@
 			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b>Cash On Hand: </td><td>₱ '.number_format(($_SESSION['repleamount'] - $total) + ($change - $xchange), 2).'</td><td></td></tr>';
 			echo '<tr><td colspan = 10 style = "border-top: 0px;"><br><br><br><br><br> -- Nothing Follows -- </td></tr>';
 		}		
+		
 		echo "</tbody></table></div>";	
-		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?replenish&print"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
+		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?replenish&print&'.$xlink.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
 
 ?>

@@ -586,7 +586,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				$endque = date('Y-m-31');
 			}else{
 				$forque = date('Y-m-01');
-				$endque = date('Y-m-15');
+				$endque = date('Y-m-16');
 			}
 			if(date("d") < 2){
 				$forque = date('Y-m-16', strtotime("previous month"));
@@ -790,9 +790,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				}
 			}
 			if(isset($_GET['bypass'])){
-				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state like 'UA%') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
+				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state like 'UA%' or state = 'ReqCLeaHR') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";
 			}else{
-				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and state = 'AHR' and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";	
+				$sql = "SELECT * from nleave,login where login.account_id = nleave.account_id and (state = 'AHR' or state = 'ReqCLeaHR') and YEAR(dateofleavfr) = $datey ORDER BY datefile ASC";	
 			}
 			$result = $conn->query($sql);
 			if($result->num_rows > 0){
@@ -818,18 +818,25 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$othersl = "";
 					}
+					if($row['state'] == 'ReqCLeaHR'){
+						$cancel = '<font color = "red"> Cancelation of Leave </font><p style = "text-decoration: line-through;">';
+					}else{
+						$cancel = "";
+					}
 					$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();	
 					echo '<td>'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
-					echo '<td><b>'.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
+					echo '<td><b>'.$cancel.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$data1['reason'].'</td>';
 					if($row['dateacc'] != ""){
 						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
 					}else{
 						$datetech = "";
 					}
-					if($row['datehr'] == ""){
+					if($row['state'] == 'ReqCLeaHR'){
+						echo '<td> - </td>';
+					}elseif($row['datehr'] == ""){
 						$datehr = 'HR REQUEST';
 						if(isset($_GET['bypass'])){
 								$datehr = '<b><i> Bypass </i></b>';
@@ -839,10 +846,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td><b>HR: '.$datehr. $datetech .'</td>';
 					}
-					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
-							<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
-						</td></tr>';
+					if($row['state'] != 'ReqCLeaHR'){
+						echo '<td width = "200">
+								<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+								<a href = "approval.php?approve=DA'.$_SESSION['level'].'&leave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+							</td></tr>';
+					}else{
+						echo '<td width = "200">
+								<a href = "cancel-req.php?adlea=' . $row['leave_id'] . '" class = "btn btn-danger"> Approve </a>								
+							</td></tr>';
+					}
 				}
 			}
 		?>

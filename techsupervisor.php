@@ -748,7 +748,7 @@ if(isset($_GET['upovertime'])){
 			$endque = date('Y-m-31');
 		}else{
 			$forque = date('Y-m-01');
-			$endque = date('Y-m-15');
+			$endque = date('Y-m-16');
 		}
 		if(date("d") < 2){
 			$forque = date('Y-m-16', strtotime("previous month"));
@@ -1013,8 +1013,14 @@ if(isset($_GET['upovertime'])){
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
-							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-						}
+								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+							}elseif($row['state'] == 'CLea'){
+								echo '<font color = "red"> Leave Canceled  </font>';
+							}elseif($row['state'] == 'ReqCLea'){
+								echo '<font color = "red"> Pending Cancelation Request </font>';
+							}elseif($row['state'] == 'ReqCLeaHR'){
+								echo '<font color = "red"> Pending Cancelation Request </font>';
+							}
 						echo '<td></tr>';
 		}
 		}
@@ -1087,7 +1093,7 @@ if(isset($_GET['upovertime'])){
 			$endque = date('Y-m-31');
 		}else{
 			$forque = date('Y-m-01');
-			$endque = date('Y-m-15');
+			$endque = date('Y-m-16');
 		}
 		if(date("d") < 2){
 			$forque = date('Y-m-16', strtotime("previous month"));
@@ -1213,7 +1219,7 @@ if(isset($_GET['upovertime'])){
 		$endque = date('Y-m-31');
 	}else{
 		$forque = date('Y-m-01');
-		$endque = date('Y-m-15');
+		$endque = date('Y-m-16');
 	}
 	if(date("d") < 2){
 		$forque = date('Y-m-16', strtotime("previous month"));

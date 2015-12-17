@@ -2,7 +2,7 @@
 	$host = "127.0.0.1";
 	$uname = "root";
 	$pword = "";
-	$db = "new";
+	$db = "testnew";
 	
 	$conn = new mysqli($host, $uname, $pword, $db);
 	
