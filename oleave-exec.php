@@ -77,11 +77,12 @@
 				}			
 			}
 		}
-		$bal = $totavailvac - $_POST['numdays'];
-		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && $bal > 0){
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $_POST['numdays'])){
 			$state = 'UAAdmin';
 		}
-		
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
+			$restric = 3;
+		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state);
@@ -98,14 +99,19 @@
 	    	}
 			$conn->close();	
 		}else{
+			if($restric == 3){
+				$alert = "No more Vacation Leave Balance.";
+			}else{
+				$alert = "Wrong Date";
+			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac=penlea"); </script>';
 	    	}
 		}
 	}

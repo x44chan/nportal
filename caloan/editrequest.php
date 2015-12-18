@@ -207,7 +207,7 @@
 		}else{
 			$state = 'UA';
 		}
-		$sql = "SELECT * FROM nleave,login where nleave.account_id = $accid and login.account_id = $accid and leave_id = '$oid' and state = '$state'";
+		$sql = "SELECT * FROM nleave,login where nleave.account_id = $accid and login.account_id = $accid and leave_id = '$oid' and ((state = 'UA' and accadmin is null) or (state = 'UAAdmin' and accadmin = '1'))";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<form role = "form"  align = "center"action = "update-exec.php" method = "post">

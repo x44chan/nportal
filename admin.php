@@ -97,8 +97,12 @@
 						<td>' . date("M j, Y", strtotime($data1['obdate'])) . '</td>
 					</tr>
 					<tr>
-						<td> Time: </td>
-						<td>' . $data1['obtimein'] . ' to ' . $data1['obtimeout'] . '</td>
+						<td> Time In / Out: </td>
+						<td>' . $data1['obtimein'] . ' / ' . $data1['obtimeout'] . '</td>
+					</tr>
+					<tr>
+						<td> Schedule: </td>
+						<td>' . $data1['officialworksched'] . '</td>
 					</tr>
 					<tr>
 						<td> Reason: </td>
@@ -551,9 +555,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<th width = "12%" ><i>Date File</i></th>					
 					<th width = "16%" ><i>Name of Employee</i></th>
-					<th width = "13%" ><i>Type</i></th>
+					<th width = "16%" ><i>Type</i></th>
 					<th width = "23%" ><i>Reason</i></th>
-					<th width = "19%" ><i>Checked By.</i></th>
+					<th width = "16%" ><i>Checked By.</i></th>
 					<th width = "18%" ><i>Action</i></th>
 				</tr>
 			</thead>
@@ -959,7 +963,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					echo '<td>'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font><br>Time <font color = "green">'.$row['obtimein'] . ' - ' . $row['obtimeout'] .'</td>';
+					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font><br>In-Out: <font color = "green">'.$row['obtimein'] . ' - ' . $row['obtimeout'] .'</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</td>';
 					echo '<td>'.$row['obreason'].'</td>';
 
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){

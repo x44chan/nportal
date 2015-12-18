@@ -1809,27 +1809,31 @@ echo '</tbody></table></form>';
 	if(isset($_GET['dleave'])){
 		$id = mysqli_real_escape_string($conn, $_GET['dleave']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
-		echo '<form action = "approval.php" method = "get" class = "form-group">
-				<table class = "table table-hover" align = "center">
-					<thead>
+		$query1 = "SELECT * FROM `nleave`,`login` where nleave.account_id = login.account_id and leave_id = '$id' and accadmin is null";
+		$data1 = $conn->query($query1)->fetch_assoc();
+		if($data1['leave_id'] != null){
+			echo '<form action = "approval.php" method = "get" class = "form-group">
+					<table class = "table table-hover" align = "center">
+						<thead>
+							<tr>
+								<th colspan  = 3><h3> Disapproval Reason </h3></th>
+							</tr>
+						</thead>
 						<tr>
-							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+							<td align = "right"><labe for = "dareason">Input Disapproval reason</labe></td>
+							<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
 						</tr>
-					</thead>
-					<tr>
-						<td align = "right"><labe for = "dareason">Input Disapproval reason</labe></td>
-						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
-					</tr>
-					<tr>
-						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penlea" class = "btn btn-danger">Back</a></td>
-					</tr>
-					<tr>
-						<td><input type = "hidden" name = "leave" value = "'.$id.'"/></td>
-						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
-						<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
-					</tr>
-				</table>
-			</form>';			
+						<tr>
+							<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penlea" class = "btn btn-danger">Back</a></td>
+						</tr>
+						<tr>
+							<td><input type = "hidden" name = "leave" value = "'.$id.'"/></td>
+							<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+							<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+						</tr>
+					</table>
+				</form>';	
+			}		
 	}
 ?>
 </div>

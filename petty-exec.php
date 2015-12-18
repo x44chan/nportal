@@ -398,7 +398,7 @@
 		if($result->num_rows > 0){
 			$sql ="UPDATE petty_liqdate set 
 		   		accval = 'AdminRcv'
-		    where petty_id = '$pet_id' and accval IS NULL"; 
+		    where petty_id = '$pet_id' and accval IS NULL and liqstate = 'CompleteLiqdate'"; 
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin-petty.php?liqdate='.$_GET['excesscode'].'&acc='.$_GET['acc'].'"); </script>';
@@ -416,6 +416,9 @@
 			//	echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
+	}else{
+		
+		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}
 
 

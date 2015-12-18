@@ -428,7 +428,7 @@
 						<th>Position</th>
 						<th>Department</th>
 						<th>Date of Request</th>
-						<th>Time In - Time Out</th>
+						<th width="12%">Time In - Time Out</th>
 						<th>Offical Work Schedule</th>
 						<th>Reason</th>
 						<th>State</th>
@@ -447,14 +447,18 @@
 				}else{
 					echo '<tr>';
 				}
-				
+				if($row['edithr'] != null){
+					$sched = '<b>Checked by HR: <br><font color = "green">' . $row["obtimein"] . ' - ' . $row['obtimeout'] .'</font><br>Filed O.B.: <br><font color = "red">' .$row['edithr'].'</font>';
+				}else{
+					$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
+				}
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
 						<td>'.$row["obpost"].'</td>
 						<td >'.$row["obdept"].'</td>
 						<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
-						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+						<td>'.$sched.'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td >'.$row["obreason"].'</td>	
 						<td><b>';
