@@ -65,7 +65,7 @@
 			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
 		}		
 		if($_SESSION['level'] == "HR"){
-			$state = 'AHR';	
+			$state = 'state = "UAAdmin"';	
 		}else{
 			$state = '(state = "UAAdmin" or state = "UALate")';	
 		}
@@ -120,8 +120,8 @@
 	if(isset($_POST['upobsubmit'])){		
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];
-		$obtimein = mysql_escape_string($_POST['obtimein']);
-		$obtimeout = mysql_escape_string($_POST['obtimeout']);
+		//$obtimein = mysql_escape_string($_POST['obtimein']);
+		//$obtimeout = mysql_escape_string($_POST['obtimeout']);
 		$obreason = mysql_escape_string($_POST['obreason']);
 		if(isset($_POST['updateofob'])){
 			$date = mysql_escape_string($_POST['updateofob']);
@@ -150,7 +150,7 @@
 			$uplate = ',state = "UAAdmin"';	
 		}
 		$stmt = "UPDATE `officialbusiness` set 
-			obreason = '$obreason', obtimein = '$obtimein', obtimeout = '$obtimeout', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
+			obreason = '$obreason', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
 			where account_id = '$accid' and $state and officialbusiness_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {

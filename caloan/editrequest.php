@@ -338,17 +338,7 @@
 					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php echo $row['obreason'];?></textarea></td>
 					
 				</tr>
-				<div class = "ui-widget-content" style = "border: none;">
-				<tr>
-					<td>Time In: </td>
-					<td>
-						<input class = "form-control" value = "<?php echo $row['obtimein'];?>" name = "obtimein" id = "obtimein" autocomplete ="off" placeholder = "Click to Set time"/>
-					</td>
-				</tr>				
-				<tr>
-					<td>Time Out: </td>
-					<td><input class = "form-control" value = "<?php echo $row['obtimeout'];?>" name = "obtimeout" id = "obtimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
-				</tr>				
+				<div class = "ui-widget-content" style = "border: none;">	
 				<?php 
 					$count = strlen($row['officialworksched']);
 					if($count < 8){
@@ -381,26 +371,11 @@
 					</td>
 				</tr>
 				<script type="text/javascript">
-					$(document).ready(function(){	
-						$('#obtimein').click(function() {
-							$("#warning").hide();
-						});
-						$("#submituped").click(function(){						
-							if($("#obtimein").val() == "" && $("#obtimeout").val() == "" ){
-								$("#warning").show();
-								return false;
-							}else{
-								$("#warning").hide();
-							}
-						});
-					});
-				</script>
-				<script type="text/javascript">
 					$(document).ready(function(){
-						$('input[name="obtimein"]').ptTimeSelect();
+					//	$('input[name="obtimein"]').ptTimeSelect();
 						$('input[name="upoffr"]').ptTimeSelect();
 						$('input[name="upoffto"]').ptTimeSelect();							
-						$('input[name="obtimeout"]').ptTimeSelect();
+					//	$('input[name="obtimeout"]').ptTimeSelect();
 					});
 				</script>
 				</div>

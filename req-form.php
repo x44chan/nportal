@@ -67,17 +67,7 @@ $(document).ready(function(){
 					<td><textarea required name = "obreason" placeholder = "Enter your work order" class = "form-control col-sm-10"></textarea></td>
 					<td></td>
 				</tr>
-				<div class = "ui-widget-content" style = "border: none;">
-				<tr>
-					<td>Time In: </td>
-					<td>
-						<input class = "form-control" name = "obtimein" id = "obtimein" autocomplete ="off" placeholder = "Click to Set time"/>
-					</td>
-				</tr>				
-				<tr>
-					<td>Time Out: </td>
-					<td><input class = "form-control" name = "obtimeout" id = "obtimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
-				</tr>				
+				<div class = "ui-widget-content" style = "border: none;">			
 				<tr>					
 					<td style="float: right;">
 						<label for="restday2" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday2"/> Rest Day</label>
@@ -99,26 +89,11 @@ $(document).ready(function(){
 					</td>
 				</tr>
 				<script type="text/javascript">
-					$(document).ready(function(){	
-						$('#obtimein').click(function() {
-							$("#warning").hide();
-						});
-						$("#submits").click(function(){						
-							if($("#obtimein").val() == "" && $("#obtimeout").val() == "" ){
-								$("#warning").show();
-								return false;
-							}else{
-								$("#warning").hide();
-							}
-						});
-					});
-				</script>
-				<script type="text/javascript">
 					$(document).ready(function(){
-						$('input[name="obtimein"]').ptTimeSelect();
+					//	$('input[name="obtimein"]').ptTimeSelect();
 						$('input[name="obofficialworkschedto"]').ptTimeSelect();
 						$('input[name="obofficialworkschedfr"]').ptTimeSelect();							
-						$('input[name="obtimeout"]').ptTimeSelect();
+					//	$('input[name="obtimeout"]').ptTimeSelect();
 					});
 				</script>
 				</div>

@@ -13,8 +13,8 @@
 		$obdatereq = $_POST['obdatereq'];
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));
 		$obreason = $_POST['obreason'];
-		$obtimein = $_POST['obtimein'];
-		$obtimeout = $_POST['obtimeout'];
+		//$obtimein = $_POST['obtimein'];
+		//$obtimeout = $_POST['obtimeout'];
 		$state = 'UAAdmin';
 		if(isset($_POST['restday']) && $_POST['restday'] == 'restday'){
 			$officialworksched = "Restday";
@@ -31,8 +31,8 @@
 				$state = 'UALate';			
 		}
 		$restric = 0;
-		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, obtimein, obtimeout, officialworksched, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $obtimein, $obtimeout, $officialworksched, $state);
+		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("isssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $officialworksched, $state);
 		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){

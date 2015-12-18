@@ -97,10 +97,6 @@
 						<td>' . date("M j, Y", strtotime($data1['obdate'])) . '</td>
 					</tr>
 					<tr>
-						<td> Time In / Out: </td>
-						<td>' . $data1['obtimein'] . ' / ' . $data1['obtimeout'] . '</td>
-					</tr>
-					<tr>
 						<td> Schedule: </td>
 						<td>' . $data1['officialworksched'] . '</td>
 					</tr>
@@ -768,17 +764,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$date17 = date("d");
 			$dated = date("m");
 			$datey = date("Y");
-			if($date17 >= 17){
-				$forque = date('Y-m-16');
-				$endque = date('Y-m-31');
-			}else{
-				$forque = date('Y-m-01');
-				$endque = date('Y-m-16');
-			}
-			if(date("d") < 2){
-				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-d');
-			}
+			$forque = date('Y-m-01', strtotime("previous month"));
+			$endque = date('Y-m-d');	
+			
 			if(isset($_GET['bypass'])){
 				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
 				
@@ -963,7 +951,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					echo '<td>'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdate'])). '</font><br>In-Out: <font color = "green">'.$row['obtimein'] . ' - ' . $row['obtimeout'] .'</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</td>';
+					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdatereq'])). '</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</td>';
 					echo '<td>'.$row['obreason'].'</td>';
 
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){

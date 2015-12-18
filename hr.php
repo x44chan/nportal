@@ -785,7 +785,7 @@
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
-		$state = 'AHR';
+		$state = 'UAAdmin';
 		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and officialbusiness_id = '$oid' and state = '$state'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -1094,7 +1094,9 @@
 				$originalDate = date($row['datefile']);
 				$newDate = date("M j, Y", strtotime($originalDate));
 				$newDate2 = date("M j, Y", strtotime($row['dateofot']));
-					
+				if($row['state'] == 'UA'){
+					continue;
+				}	
 				if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
 					echo '<tr style = "color: red">';
 				}else{
@@ -1507,8 +1509,7 @@ echo '</tbody></table></form>';
 					}else{
 					echo'
 						<td width = "200">
-							<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
-							<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
 						</td>
 					</tr>';
 					}
@@ -1568,6 +1569,9 @@ echo '</tbody></table></form>';
 				}else{
 					$split = "";
 				}
+				if($row['state'] == 'UA' ||$row['state'] == 'UAAdmin'){
+					continue;
+				}
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
@@ -1578,11 +1582,13 @@ echo '</tbody></table></form>';
 						<td>'.$row["officialworksched"].'</td>				
 						<td >'.$row["obreason"].'</td>	
 					<td><b>';
-							if($row['state'] == 'AHR'){
+							if($row['state'] == 'UAAdmin' || $row['state'] == 'UALate'){
 								echo 'Pending to Admin<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'CheckedHR'){
+								echo '<p><font color = "green">Added to reports</font></p> ';
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}

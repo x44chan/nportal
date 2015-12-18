@@ -447,11 +447,9 @@
 				}else{
 					echo '<tr>';
 				}
-				if($row['edithr'] != null){
-					$sched = '<b>Checked by HR: <br><font color = "green">' . $row["obtimein"] . ' - ' . $row['obtimeout'] .'</font><br>Filed O.B.: <br><font color = "red">' .$row['edithr'].'</font>';
-				}else{
-					$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
-				}
+				
+				$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
+				
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>

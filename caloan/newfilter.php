@@ -329,10 +329,9 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 			<thead>
 				<tr>
 					<th width="12%">Date File</th>
-					<th width="12%">Date of Request</th>					
-					<th width="15%">Time In - Time Out</th>
-					<th width="16%">Check by HR</th>
-					<th width="15%">Official Work Schedule</th>
+					<th width="12%">Date of Request</th>	
+					<th width="20%">Check by HR (In - Out)</th>
+					<th width="26%">Official Work Schedule</th>
 					<th width="30%">Reason</th>
 				</tr>
 			</thead>
@@ -346,18 +345,12 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 			$datey = date("Y");	
 			$originalDate = date($row['obdate']);
 			$newDate = date("M j, Y", strtotime($originalDate));
-			if($row['edithr'] != ""){
-				$oldob = $row['edithr'];
-				$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];
-			}else{
-				$oldob = $row['obtimein'] . ' - ' . $row['obtimeout'];
-				$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];
-			}
+
+			$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];			
 			echo
 				'<tr>
 					<td width = 100>'.$newDate.'</td>
-					<td>'.date("M j, Y",strtotime($row['obdatereq'])).'</td>					
-					<td>'.$oldob.'</td>
+					<td>'.date("M j, Y",strtotime($row['obdatereq'])).'</td>	
 					<td><i><b>'.$hr.'</b></td>
 					<td>'.$row["officialworksched"].'</td>				
 					<td >'.$row["obreason"].'</td>';
