@@ -81,9 +81,7 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && $bal > 0){
 			$state = 'UAAdmin';
 		}
-		if($bal <= 0){
-			echo '<script type="text/javascript">alert("1"); </script>';
-		}
+		
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("isssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state);

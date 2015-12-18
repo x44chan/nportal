@@ -70,7 +70,7 @@
 	  	}
 	}
 
-	if(isset($_GET['adlea']) && $_SESSION['level'] == 'AAdmin'){
+	if(isset($_GET['adlea']) && $_SESSION['level'] == 'Admin'){
 		$petid = mysqli_real_escape_string($conn, $_GET['adlea']);
 		$stmt = "UPDATE `nleave` set 
 				state = 'CLea'

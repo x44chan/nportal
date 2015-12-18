@@ -379,6 +379,60 @@
 		$oid = mysql_escape_string($_GET['leave']);
 		$state = 'UA';
 		$accids = mysql_escape_string($_GET['leaapprove']);
+		$sql = "SELECT * from `login` where account_id = '$accids' and empcatergory = 'Regular'";
+		$result = $conn->query($sql);
+		$datey = date("Y");
+		$availsick = 0;
+		$totavailvac = 0;
+		if($result->num_rows > 0){		
+			while($row = $result->fetch_assoc()){
+				$cstatus = $row['ecstatus'];
+				$accidd = $row['account_id'];
+				$egender = $row['egender'];
+				if(date("Y") == 2015){	
+					$sl = $row['sickleave'] - $row['usedsl'];
+					$vl = $row['vacleave'] - $row['usedvl'];
+					$usedsl = $row['usedsl'];
+					$usedvl = $row['usedvl'];
+				}else{				
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$accids' and state = 'AAdmin'";
+					$datalea = $conn->query($leaveexec)->fetch_assoc();
+					$sl = $datalea['sleave'];
+					$vl = $datalea['vleave'];
+					$usedsl = 0;
+					$usedvl = 0;
+				}
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$availsick = $sl - $row1['count'];
+						$scount = $row1['count'];						
+						}
+				}		
+				if($scount == null){
+					$scount = " - ";
+				}			
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$availvac = $vl - $row1['count'];
+						$count = $row1['count'];
+						}
+				}		
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$totavailvac = $availvac - $row1['count'];
+						$count = $row1['count'];
+						}
+				}
+								
+				
+			}
+		}
 		$sql = "SELECT * FROM nleave,login where login.account_id = $accids and leave_id = '$oid' and state = 'UA'";
 		$result = $conn->query($sql);
 
@@ -392,6 +446,7 @@
 			<tr><td width="30%"><b>Name:</td><td width="30%"><?php echo $row['fname'] . ' ' . $row['lname']; ?></td></tr>
 			<tr><td width="30%"><b>Date Hired:</td><td width="30%"><?php echo date("M j, Y", strtotime($row['edatehired'])); ?></td></tr> 
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
+			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
 			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
@@ -411,9 +466,9 @@
 				<select class="form-control" name = "payment" required>
 					<option value="">------</option>
 					<option value="wthoutpay">Without Pay</option>
-					<?php //if($row['empcatergory'] == 'Regular'){ ?>
+					<?php if($row['empcatergory'] == 'Regular' && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($totavailvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
 						<option value="wthpay">With Pay</option>
-					<?php //} ?>
+					<?php } ?>
 				</select>
 			</td>
 		</tr>
