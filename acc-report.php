@@ -141,16 +141,26 @@ $(document).ready( function () {
 <?php 
 	if(isset($_GET['sumar']) && $_GET['sumar'] == 'leasum'){
 		$title = "Employee Leave Summary";
+		
 ?>
-	<div id = "report">
+	<div id = "reportg">
 		<i><h2 align = "center">Employee Leave Summary</h2>
 		<h4 align = "center">January <?php echo date("Y");?> - December <?php echo date("Y");?></h4></i>
-		<table id = "myTablelea" align = "center" class = "table table-hover" style="font-size: 16px;">
+		<?php
+			if(isset($_GET['print'])){
+				echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?sumar='.$_GET['sumar'].'";});</script>';
+				echo '<table align = "center" class = "table table-hover" style="font-size: 16px;">';
+				$qrty = " and empcatergory = 'Regular'";
+			}else{
+				echo '<table id = "myTablelea" align = "center" class = "table table-hover" style="font-size: 16px;">';
+				$qrty = "";
+			}
+		?>
 		<thead>
 				<tr>
-					<th>Account ID</th>
+					<th>Acc.-ID</th>
 					<th>Name</th>
-					<th>Category</th>
+					<th width="600">Category</th>
 					<th>Given S.L.</th>
 					<th>Total Used S.L.</th>
 					<th>Avail S.L.</th>
@@ -163,7 +173,7 @@ $(document).ready( function () {
 			  <tbody>
 <?php 
 		include("conf.php");
-		$sql = "SELECT * from `login` where level != 'Admin' and active != 0 and position != 'House Helper' order by edatehired";
+		$sql = "SELECT * from `login` where level != 'Admin' and active != 0 and position != 'House Helper' $qrty order by edatehired";
 		$result = $conn->query($sql);
 		$datey = date("Y");
 		
@@ -255,14 +265,12 @@ $(document).ready( function () {
 		        echo '<td>'.$vlcount.'</td>';       
 		        echo '<td style = "background-color: #993333; color: white;">'.$totavailvac.'</td>';
 		        
-
-		        
 		        //echo '<td> '.$patwed.'</td>';
 		        echo '</tr>';
 			}
 		}
-	echo '</tbody></table>';
-	echo '<div align = "center" style = "margin-top: 30px;"><a href = "acc-report.php" class = "btn btn-danger"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to Leave Report </a></div></div>';
+	echo '</tbody></table>';		
+	echo '<div align = "center" style = "margin-top: 30px;"><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?sumar='.$_GET['sumar'].'&print"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a> <a href = "acc-report.php" class = "btn btn-danger" id = "backs"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to Leave Report </a></div></div>';
 	echo '</div>';
 
 }

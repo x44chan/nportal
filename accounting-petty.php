@@ -520,11 +520,11 @@
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date From</label>
-				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
+				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['dates'])){ echo 'value = "'. $_SESSION['dates'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date To</label>
-				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
+				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['dates0'])){ echo 'value = "'. $_SESSION['dates0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
 			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
@@ -619,7 +619,7 @@
 			$filt = "";
 		}
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;

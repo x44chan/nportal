@@ -156,7 +156,7 @@ $(document).ready(function(){
 		$('#tab_logic').append('<div class="row" id = "rcpt'+(i+1)+'"></div>');
   		i++;
   		$('#counter').val(i);
-		/*$(function () {
+		$(function () {
 	    	for(b = 1; b < i; b++) {
 	    	    (function (b) {
 	    	    	$('select[id$="type' + b + '"]').change(function() {
@@ -172,7 +172,7 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
-			$(function () {
+		/*	$(function () {
 	    	for(b = 1; b < i; b++) {
 				$("#amount"+b).change(function() {
 					var amount = "<?php echo  $data['amount'];?>";
@@ -214,7 +214,7 @@ $(document).ready(function(){
 		}
 	});
 
-		/*$(function () {
+		$(function () {
 	    	for(b = 0; b < 1; b++) {
 	    	    (function (b) {
 	    	    	$('select[id$="type' + b + '"]').change(function() {
@@ -230,7 +230,7 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
-		$(function () {
+		/*$(function () {
 	    	for(b = 0; b < 1; b++) {
 				$("#amount"+b).change(function() {
 					var amount = "<?php echo  $data['amount'];?>";

@@ -15,11 +15,10 @@
 ?>
 <script type="text/javascript">		
     $(document).ready( function () {
-    	$('#myTable').DataTable({"order": [ 1, "desc" ]});
+    	$('#myTable').DataTable({"order": [ 0, "desc" ]});
     	$('#myTableliq').DataTable({
-    		"paging":   false,
-        	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
-
+        	"order": [ 0, "desc" ],
+        	"iDisplayLength": 25
     	} );
     	$('input[name = "transct"]').hide();
 		$('select[name = "source"]').change(function() {
@@ -529,11 +528,11 @@ if(isset($_GET['login_log'])){
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date From</label>
-				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
+				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['dates'])){ echo 'value = "'. $_SESSION['dates'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date To</label>
-				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
+				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['dates0'])){ echo 'value = "'. $_SESSION['dates0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
 			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
@@ -628,7 +627,7 @@ if(isset($_GET['login_log'])){
 			$filt = "";
 		}
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -714,7 +713,7 @@ if(isset($_GET['login_log'])){
 			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
 		}		
 		echo "</tbody></table></div>";	
-		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.$link2.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
+		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.$link2.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';
 }
 ?>
 <?php
