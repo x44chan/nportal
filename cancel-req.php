@@ -9,7 +9,7 @@
 		$petid = mysqli_real_escape_string($conn, $_GET['canpetty']);
 		$stmt = "UPDATE `petty` set 
 				state = 'CPetty'
-			where account_id = '$accid' and state = 'UAPetty' and petty_id = '$petid'";
+			where account_id = '$accid' and (state = 'UAPetty' or state = 'UATransfer') and petty_id = '$petid'";
 		if ($conn->query($stmt) === TRUE) {
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
