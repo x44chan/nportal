@@ -266,7 +266,7 @@
 		if($_SESSION['level'] == 'HR'){
 			$date = date('F d, Y h:i A');
 			if($state == 'DAHR'){
-				$accadmin = " and accadmin < 1";
+				$accadmin = " and accadmin is null";
 			}else{
 				$accadmin = "";
 			}

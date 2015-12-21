@@ -667,11 +667,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}else{
 				$edate = "";
 			}
-			if($row['vacleave'] != '0'){
+			if($row['vacleave'] != '0' && date("Y") == 2015){
 				$tag2 = 'Vacation Leave<br><br>' . $tag2;
 				$tag = 'Vacation Leave: ' . $row['vacleave'] . '<br> <font color = "red">Used V.Leave: ' . $row['usedvl'] .'</font><br>'. $tag;
 			}
-			if($row['sickleave'] != '0'){
+			if($row['sickleave'] != '0' && date("Y") == 2015){
 				$tag2 = 'Sick Leave<br><br>' . $tag2;
 				$tag = 'Sick Leave: ' . $row['sickleave'] . '<br> <font color = "red">Used S.Leave: ' . $row['usedsl'] .'</font><br>'. $tag;
 			}

@@ -295,7 +295,7 @@
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "red">Disapproved by Accounting</p>';
 						}else{
-							echo '<p><font color = "red">Disapproved by Dep. Head</p>';
+							echo '<p><font color = "red">Disapproved by Dep. Head</p></font>' . $row['dareason'];
 						}
 				echo '</td></tr>';
 		}
@@ -355,7 +355,7 @@
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "red">Disapproved by Accounting</p>';
 						}else{
-							echo '<p><font color = "red">Disapproved by Dep. Head</p>';
+							echo '<p><font color = "red">Disapproved by Dep. Head</p></font>' . $row['dareason'];
 						}
 				echo '</td></tr>';
 		}
@@ -417,7 +417,7 @@
 					}else if($row['state'] == 'AACC'){
 						echo '<p><font color = "red">Disapproved by Accounting</p>';
 					}else{
-						echo '<p><font color = "red">Disapproved by Dep. Head</p>';
+						echo '<p><font color = "red">Disapproved by Dep. Head</p></font>' . $row['dareason'];
 					}
 						echo '</td></tr>';
 					}
@@ -479,7 +479,7 @@
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "red">Disapproved by Accounting</p>';
 						}else{
-							echo '<p><font color = "red">Disapproved by <br>Dep. Head</p>';
+							echo '<p><font color = "red">Disapproved by <br>Dep. Head</p></font>' . $row['dareason'];
 						}
 				echo '</td></tr>';
 		}

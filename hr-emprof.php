@@ -262,7 +262,7 @@
         <select class="form-control" required name = "empcatergory">
           <option value="">----------------</option>
           <option <?php if($row['empcatergory'] == "Contractual"){ echo ' selected '; } ?> value="Contractual">Contractual</option>
-          <option <?php if($row['empcatergory'] == "Probationary"){ echo ' selected '; } ?> value="Probationary">Probitionary</option>
+          <option <?php if($row['empcatergory'] == "Probationary"){ echo ' selected '; } ?> value="Probationary">Probationary</option>
           <option <?php if($row['empcatergory'] == "Regular"){ echo ' selected '; } ?> value="Regular">Regular</option>
         </select>
       </div>
@@ -367,11 +367,12 @@ if(isset($_POST['upsub'])){
   $empcatergory = mysql_escape_string($_POST['empcatergory']);  
   $catdate = mysql_escape_string($_POST['catdate']);  
   $modify = mysql_escape_string($_GET['modify']);
-  
-  $sickleave = mysql_escape_string($_POST['sickleave']);
-  $vacleave = mysql_escape_string($_POST['vacleave']);
-  $usedvl = mysql_escape_string($_POST['usedvl']);
-  $usedsl = mysql_escape_string($_POST['usedsl']);
+  if(date("Y") == 2015){
+    $sickleave = mysql_escape_string($_POST['sickleave']);
+    $vacleave = mysql_escape_string($_POST['vacleave']);
+    $usedvl = mysql_escape_string($_POST['usedvl']);
+    $usedsl = mysql_escape_string($_POST['usedsl']);
+  }  
 
   if($empcatergory  == 'Probationary'){
     $oldpost = 'Contractual';
@@ -391,10 +392,16 @@ if(isset($_POST['upsub'])){
   $data = $conn->query($stmts2)->fetch_assoc();
   
 
-  $stmt = "UPDATE `login` 
-          set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', hrchange = '$hrchange', oldpost = '$oldpost',
-              usedvl = '$usedvl', usedsl = '$usedsl' $catdates
-          where account_id = '$modify' and hrchange = 0";
+  if(date("Y") == 2015){
+    $stmt = "UPDATE `login` 
+        set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', hrchange = '$hrchange', oldpost = '$oldpost',
+            usedvl = '$usedvl', usedsl = '$usedsl' $catdates
+        where account_id = '$modify' and hrchange = 0";
+  }else{
+    $stmt = "UPDATE `login` 
+        set empcatergory = '$empcatergory', hrchange = '$hrchange', oldpost = '$oldpost' $catdates
+        where account_id = '$modify' and hrchange = 0";
+  }
   if($data['count'] == 0){
     if($conn->query($stmt) == TRUE){
       echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
