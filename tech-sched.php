@@ -20,7 +20,7 @@
 		$('input[name="schedtimeout"]').ptTimeSelect2();
 		$('#schedulingTble').DataTable({
 		    "iDisplayLength": 25,
-		    "order": [[ 0, "asc" ]]  	
+		    "order": [[ 0, "desc" ]]  	
 		});
 	});
 </script>
