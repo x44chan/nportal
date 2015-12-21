@@ -19,6 +19,7 @@
 						<th>Source</th>
 						<th>Reference #</th>
 						<th>Amount</th>
+						<th width="20%">Reason</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -38,7 +39,7 @@
 				}
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid' and petty_liqdate.liqstate = 'CompleteLiqdate'";
 				$data = $conn->query($sql)->fetch_assoc();	
-				if(date("Y-m-d") > date("Y-m-d", strtotime("+ 15days", strtotime($row['date'])))){
+				if(date("Y-m-d") > date("Y-m-d", strtotime("+ 15days", strtotime($row['date']))) && $data['liqstate'] == 'CompleteLiqdate'){
 					continue;
 				}
 				echo 
@@ -50,6 +51,7 @@
 						<td>'.$row['source'].'</td>
 						<td>'.$transcode.'</td>
 						<td>&#8369; ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo '</td>
+						<td>'.$row['petreason'].'
 						<td>';
 							if($row['state'] == "CPetty"){
 								echo '<b><font color = "red">Canceled Petty</font></b>';
