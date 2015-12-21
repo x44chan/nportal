@@ -160,7 +160,7 @@ $(document).ready( function () {
 				<tr>
 					<th>Acc.-ID</th>
 					<th>Name</th>
-					<th width="600">Category</th>
+					<th width="12%">Category</th>
 					<th>Given S.L.</th>
 					<th>Total Used S.L.</th>
 					<th>Avail S.L.</th>
