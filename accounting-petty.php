@@ -246,7 +246,7 @@
 		}
 	}elseif(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		include 'conf.php';
-		$petyid = $_GET['liqdate'];
+		$petyid = mysql_escape_string($_GET['liqdate']);
 		$sql = "SELECT * FROM `petty_liqdate` where petty_id = '$petyid'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -451,7 +451,7 @@
 		echo '<table align = "center" class = "table table-hover table-bordered" style = "width: 65%;">';
 		echo '<thead><th colspan = 2><h2>Petty Voucher</h2></th></thead>';
 		include("conf.php");
-		$pettyid = $_GET['petty_id'];
+		$pettyid = mysql_escape_string($_GET['petty_id']);
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$pettyid'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -481,8 +481,8 @@
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
 		}
 		if(isset($_POST['repfilter'])){
-			$_SESSION['dates'] = $_POST['repfr'];
-			$_SESSION['dates0'] = $_POST['repto'];
+			$_SESSION['dates'] = mysql_escape_string($_POST['repfr']);
+			$_SESSION['dates0'] = mysql_escape_string($_POST['repto']);
 			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?report=1&'.$_POST['reptype'].'&'.$_POST['status'].'");</script>';
 		}
 		if(isset($_POST['represet'])){
@@ -715,7 +715,7 @@
 <?php
 	if(isset($_GET['release']) && $_GET['release'] == 1){
 		include("conf.php");
-		$petid = $_GET['petty_id'];
+		$petid = mysql_escape_string($_GET['petty_id']);
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyReceived'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -750,7 +750,7 @@
 <?php
 	if(isset($_GET['complete']) && $_GET['complete'] == 1){
 		include("conf.php");
-		$petid = $_GET['petty_id'];
+		$petid = mysql_escape_string($_GET['petty_id']);
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyRep'";
 		$result = $conn->query($sql);
 		$sql2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and liqstate != 'LIQDATE'";
@@ -810,7 +810,7 @@
 <?php
 	if(isset($_GET['validate']) && $_GET['validate'] == 1){
 		include("conf.php");
-		$petid = $_GET['petty_id'];
+		$petid = mysql_escape_string($_GET['petty_id']);
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyRep'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){

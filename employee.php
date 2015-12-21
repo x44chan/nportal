@@ -83,7 +83,7 @@
 		echo '<table align = "center" class = "table table-hover" style = "width: 65%; ">';
 		echo '<thead><th colspan = 2><h2>Update Loan Amount</h2></th></thead>';
 		include("conf.php");
-		$pettyid = $_GET['uploan'];
+		$pettyid = mysql_escape_string($_GET['uploan']);
 		$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and loan_id = '$pettyid' and state = 'ALoan' and loanamount != appamount";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){

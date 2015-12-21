@@ -33,9 +33,9 @@
 if(isset($_POST['regsubmit'])){
 		include('conf.php');
 		$uname = mysqli_real_escape_string($conn,$_POST['reguname']);
-		$pw = $_POST['regpword'];
-		$cpw = $_POST['regcppword'];
-		$level = $_POST['level'];
+		$pw = mysqli_real_escape_string($conn,$_POST['regpword']);
+		$cpw = mysqli_real_escape_string($conn,$_POST['regcppword']);
+		$level = mysqli_real_escape_string($conn,$_POST['level']);
 		$sql = "SELECT * FROM `login` where `uname` = '$uname'";
 		$result = $conn->query($sql);
 		if($pw != $cpw){
@@ -71,9 +71,9 @@ if(isset($_POST['hreg'])){
 		include('conf.php');
 		session_start();
 		$uname = mysqli_real_escape_string($conn,$_POST['reguname']);
-		$pw = $_POST['regpword'];
-		$cpw = $_POST['regcppword'];
-		$level = $_POST['level'];
+		$pw = mysqli_real_escape_string($conn,$_POST['regpword']);
+		$cpw = mysqli_real_escape_string($conn,$_POST['regcppword']);
+		$level = mysqli_real_escape_string($conn,$_POST['level']);
 		$sql = "SELECT * FROM `login` where `uname` = '$uname'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
