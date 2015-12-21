@@ -193,9 +193,7 @@
     				$a = str_replace(',', '', $row['amount']);
 					$change =  $a - $data2['totalliq'];
 					$change = '₱ ' . number_format($change);
-					if($change == 0){
-						$change =  " - ";
-					}
+					
 				}else{
 					$tots = '<td> - </td>'; 
 					$change =  " - ";
@@ -220,7 +218,10 @@
 					echo '<tr id = "backs">';
 				}else{
 					echo '<tr>';
-				}				
+				}		
+				if($change == '₱ 0'){
+					$change = ' - ';
+				}		
 				echo '<td>'.$row['petty_id'].'</td>';
 				echo '<td>'. $liqdatess .'</td>';
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
@@ -376,7 +377,7 @@
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><?php echo $row['particular'];?></td>
-				<td>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); }?></td>
+				<td>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></td>
 				<td><?php if($row['transfer_id'] == null){echo 'N/A';}else{echo $row['transfer_id'];} ?></td>
 				<td>
 					<?php echo '<a class = "btn btn-success" style = "width: 100px" href = "?transfer=1&petty_id='.$row['petty_id'].'"> Process </a>';?>

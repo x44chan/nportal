@@ -18,14 +18,14 @@
 				<label>Petty Amount</label>
 				<p style="margin-left: 10px;">₱ <?php echo $data['amount'];?></p>
 			</div>
-			<!--<div class="col-xs-2">
+			<div class="col-xs-2">
 				<label>Used Petty</label><br>
 				₱ <span id = "xused"> 0 </span>
 			</div>
 			<div class="col-xs-2">
 				<label>Change</label><br>
 				₱ <span id = "xchange"> 0 </span>
-			</div>-->
+			</div>
 		<?php if($data['transfer_id'] == null){?>
 			<div class="col-xs-6">
 				<label>Classification</label>
@@ -172,11 +172,11 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
-		/*	$(function () {
+		$(function () {
 	    	for(b = 1; b < i; b++) {
 				$("#amount"+b).change(function() {
 					var amount = "<?php echo  $data['amount'];?>";
-					var amount2 = amount.replace(/[^\d]/g, "");
+					var amount2 = amount.replace(',', "");
 					var sum = 0;
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
@@ -189,7 +189,7 @@ $(document).ready(function(){
 			   	 	}			   	 	
 				});
 			}
-		});*/
+		});
 	});
 	$("#delete_row").click(function(){
     	if(i>1){
@@ -197,8 +197,8 @@ $(document).ready(function(){
     		$('#rcpt'+(i-1)).html('');
 			i--;
 			$('#counter').val(i);
-			/*var amount = "<?php echo  $data['amount'];?>";
-			var amount2 = amount.replace(/[^\d]/g, "");
+			var amount = "<?php echo  $data['amount'];?>";
+			var amount2 = amount.replace(',', "");
 			var sum = 0;
 	    	for(b = 0; b < i; b++) {
 	    	    (function (b) {
@@ -209,7 +209,7 @@ $(document).ready(function(){
 	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 	     		})(b);
-	   	 	}*/	
+	   	 	}
 
 		}
 	});
@@ -230,11 +230,11 @@ $(document).ready(function(){
 	     		})(b);
 	   	 	}
 		});
-		/*$(function () {
+		$(function () {
 	    	for(b = 0; b < 1; b++) {
 				$("#amount"+b).change(function() {
 					var amount = "<?php echo  $data['amount'];?>";
-					var amount2 = amount.replace(/[^\d]/g, "");
+					var amount2 = amount.replace(',', "");
 					var sum = 0;
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
@@ -248,7 +248,7 @@ $(document).ready(function(){
 			   	 	}			   	 	
 				});
 			}
-		});*/
+		});
 	
 
 });

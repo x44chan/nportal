@@ -1734,7 +1734,7 @@ echo '</tbody></table></form>';
 				<tr>
 					<td><b>New Start of OT: </b></td>
 					<td>
-						<input id = "timein" onkeydown="return false;" value = "<?php echo $row['startofot'];?>" required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
+						<input id = "timein" value = "<?php echo $row['startofot'];?>" required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
 					</td>
 				</tr>				
 				<tr>

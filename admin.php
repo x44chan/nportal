@@ -322,7 +322,7 @@
 				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">Transfer</td></tr>';
 				echo '<tr><td style = "width: 30%;">Employee Code: <font color = "red">*</font></td><td style = "width: 50%;"><input required type = "text" class = "form-control" name = "valcode" placeholder = "Enter code"/></td></tr>';
 				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option></select></td></tr>';
-				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount']); };echo'"/></td></tr>';
+				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo'"/></td></tr>';
 				echo '<tr><td>Reference #: <font color = "red">*</font></td><td><input value = "'.$xrefcode.'" placeholder = "Enter reference #" required class = "form-control" type = "text" name = "transctc"/></tr></td>'; 
 				echo '<tr><td colspan = 2><button class = "btn btn-primary" name = "submitrans">Submit</button><br><br><a href = "admin.php" class = "btn btn-danger" name = "backpety">Back</a></td></tr>';
 
