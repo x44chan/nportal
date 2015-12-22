@@ -208,11 +208,12 @@
 		$accid = $_SESSION['acc_id'];
 		$pet_id = $_POST['pet_id'];
 		$rcve_code = $_POST['rcve_code'];
+		$releasedate = date("Y-m-d");
 		$query = "SELECT * FROM `petty` where petty_id = '$pet_id' and rcve_code = '$rcve_code'";
 		$result = $conn->query($query);
 		if($result->num_rows > 0){
 			$sql ="UPDATE petty set 
-		   		state = 'AAPettyRep'
+		   		state = 'AAPettyRep', releasedate = '$releasedate'
 		    where petty_id = '$pet_id' and state = 'AAPettyReceived' and rcve_code = '$rcve_code'"; 
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
@@ -276,11 +277,12 @@
 		$accid = $_SESSION['acc_id'];
 		$pet_id = $_POST['pet_id'];
 		$liqcode = $_POST['liqcode'];
+		$comdate = date("Y-m-d");
 		$query = "SELECT * FROM `petty_liqdate` where petty_id = '$pet_id' and liqcode is NULL";
 		$result = $conn->query($query);
 		if($result->num_rows > 0){
 			$sql ="UPDATE petty_liqdate set 
-		   		liqstate = 'EmpVal', liqcode = '$liqcode'
+		   		liqstate = 'EmpVal', liqcode = '$liqcode', completedate = '$comdate'
 		    where petty_id = '$pet_id' and liqstate = 'LIQDATE' and liqcode is NULL"; 
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){

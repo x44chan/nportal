@@ -125,7 +125,13 @@
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				</ul>
 			</div>
-			<a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
+				  <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
+				</ul>
+			</div>
 			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
 			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
@@ -159,6 +165,7 @@ if(isset($_GET['login_log'])){
 		$valcode = mysql_escape_string($_POST['valcode']);
 		$refcode = mysql_escape_string($_POST['transctc']);
 		$source = mysql_escape_string($_POST['source']);
+		$releasedate = date("Y-m-d");
 		$xxsql = "SELECT * FROM `petty` where petty_id = '$petid' and rcve_code = '$valcode' and state = 'TransProcCode'";
 		$xxresult = $conn->query($xxsql);		
 		if($xxresult->num_rows <= 0){
@@ -166,7 +173,7 @@ if(isset($_GET['login_log'])){
 			echo '<script type="text/javascript">alert("Wrong code");window.location.replace("?transrelease=1&petty_id='.$petid.'"); </script>';
 					
 		}else{
-			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source' where petty_id = '$petid' and state = 'TransProcCode'";
+			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source',releasedate = '$releasedate' where petty_id = '$petid' and state = 'TransProcCode'";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">alert("Successful");window.location.replace("admin.php"); </script>';	
 			}
