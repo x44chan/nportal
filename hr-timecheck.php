@@ -5,7 +5,7 @@
 
 	$accid = $_SESSION['acc_id'];
 
-	if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'TECH' || $_SESSION['level'] == 'Admin'){
+	if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'Admin'){
 	}else{
 		echo '<script type="text/javascript">	window.location.replace("index.php");</script>';
 	}
@@ -15,9 +15,25 @@
 <script type="text/javascript" src="css/src/jquery.ptTimeSelect2.js"></script>
 <link rel="stylesheet" type="text/css" href="css/src/jquery.ptTimeSelect2.css" />
 <script type="text/javascript">
+$(document).ready(function(){	
+	$('input[name="schedtimein"]').click(function() {
+		$("#warning").hide();
+	});
+	$("button[name='schedsub']").click(function(){						
+		if($('input[name="schedtimein"]').val() == "" && $('input[name="schedtimeout"]').val() == "" ){
+			$('input[name="schedtimein"]').attr("required", true);
+			$('input[name="schedtimeout"]').attr("required", true);
+		}else{
+			$('input[name="schedtimein"]').attr("required", false);
+			$('input[name="schedtimeout"]').attr("required", false);
+		}
+	});
+});
+</script>
+<script type="text/javascript">
 	$(document).ready(function(){
-		$('input[name="schedtimein"]').ptTimeSelect2();
-		$('input[name="schedtimeout"]').ptTimeSelect2();
+		//$('input[name="schedtimein"]').ptTimeSelect2();
+		//$('input[name="schedtimeout"]').ptTimeSelect2();
 		$('#schedulingTble').DataTable({
 		    "iDisplayLength": 25,
 		    "order": [[ 0, "desc" ]]  	
@@ -76,10 +92,6 @@
 			if($_SESSION['level'] == "HR"){
 				$hrf = "hr-req-app.php";
 				$hrf2 = "hr-req-dapp.php";
-			}else{
-				$hrf = "techsupervisor-app.php";
-				$hr2 = "techsupervisor-dapp.php";
-				echo '<a  type = "button"class = "btn btn-primary active"  href = "tech-sched.php" >Tech Scheduling</a>';
 			}
 			?>
 			<a type = "button" class = "btn btn-primary"  href = "<?php echo $hrf;?>" id = "showapproveda"> Approved Request</a>
@@ -170,62 +182,37 @@
 </div>
 <?php
 	}
-	if(isset($_POST['updatesched'])){
-		$scheddate = mysql_escape_string($_POST['scheddate']);
-		$schedtimein = mysql_escape_string($_POST['schedtimein']);
-		$schedtimeout = mysql_escape_string($_POST['schedtimeout']);
-		$modify = mysql_escape_string($_GET['modify']);
-		$stmt = "UPDATE `tech_sched` set 
-			scheddate = '$scheddate', schedtimein = '$schedtimein', schedtimeout = '$schedtimeout'
-		where account_id = '$accid' and techsched_id = '$modify' and CURDATE() < scheddate";
-	
-		if ($conn->query($stmt) === TRUE) {
-		
-	    	echo '<script type="text/javascript">window.location.replace("tech-sched.php"); </script>';
-	    	
-	  	}
-	}
-	if(isset($_GET['del'])){
-		$del = mysql_escape_string($_GET['del']);
-		$stmt = "DELETE FROM `tech_sched` where techsched_id = '$del'";
-	
-		if ($conn->query($stmt) === TRUE) {
-			echo '<script type="text/javascript">alert("Deleted");window.location.replace("tech-sched.php"); </script>';
-		}
-	}
-
 ?>
-<div id = "dash" <?php if(isset($_GET['late_filing']) || isset($_GET['modify'])){ echo ' style = "display: none;" ' ; } ?> >
+<div id = "dash">
 <?php 
 	if(!isset($_GET['view'])){	
 		if(isset($_POST['datefr']) && isset($_POST['dateto'])){
-			echo '<script type="text/javascript">	window.reload();</script>';
 			$strt = mysql_escape_string($_POST['datefr']);
 			$end = mysql_escape_string($_POST['dateto']);
-			$sql = "SELECT * FROM tech_sched,login  where tech_sched.account_id = login.account_id and scheddate BETWEEN '$strt' and '$end' order by scheddate desc";
+			$sql = "SELECT * FROM hrtime,login  where hrtime.account_id = login.account_id and tdate BETWEEN '$strt' and '$end' order by tdate desc";
 		}else{
-			$sql = "SELECT * FROM tech_sched,login  where tech_sched.account_id = login.account_id and CURDATE() <= scheddate order by scheddate desc";
+			$sql = "SELECT * FROM hrtime,login  where hrtime.account_id = login.account_id and CURDATE() >= tdate order by tdate desc";
 		}
 		$result = $conn->query($sql);	
 		if(isset($strt) && isset($end)){
 				$notifs = '<i><b>From: </b>'. date("M j, Y", strtotime($strt)) . '<b> To: </b>' . date("M j, Y", strtotime($end)) .'</i>';				
 			}else{
 				$notifs = "";
-				$strt = date("Y-m-d");
+				$strt = date("Y-m-d", strtotime("-1 day"));
 				$end = date("Y-m-d", strtotime("+5 day"));
 			}
 		echo '<div class = "container" style = "margin-top: -25px;">
 				<div class = "row" style="margin-bottom: 10px;">
 					<div class="col-xs-12">
 				    	<div align = "left">
-							<i><h4 style = "text-decoration: underline;"><span class = "icon-file-text2"></span> Technician Schedule </h4></i>
+							<i><h4 style = "text-decoration: underline;"><span class = "icon-file-text2"></span> Time Checking </h4></i>
 							'.$notifs.'
 						</div>
 				    </div>
 				</div>
 			</div>	
-			<div class = "row" style = "margin-top: -30px;">
-				<div class="col-xs-12" align = "center">
+			<div class = "row" >
+				<div class="col-xs-12" align = "center" style = "margin-top: -30px;">
 			    	<div>
 						<i><h4>Search by Date Range</h4></i>
 					</div>
@@ -239,7 +226,7 @@
 						<label style = "margin-left: 10px;"for = "datestrt">Date To:</label>
 						<input required type = "date" class = "form-control input-sm" name = "dateto" value = "'.$end.'"/>					
 						<button style = "margin-left: 10px;"class = "btn btn-primary btn-sm" name = "daterange"><span class="icon-search"></span> Search</button>
-						<a href = "tech-sched.php" class = "btn btn-danger  btn-sm" name = "daterange"><span class="icon-spinner11"></span> Clear</a>
+						<a href = "hr-timecheck.php" class = "btn btn-danger  btn-sm" name = "daterange"><span class="icon-spinner11"></span> Clear</a>
 					</div>
 				</div>
 			</form>
@@ -250,42 +237,53 @@
 			</div>
 			';
 
-	if($_SESSION['level'] == 'TECH'){
+	if($_SESSION['level'] == 'HR'){
 			echo '<div class = "container"><div class = "row">
 					<div class = "col-xs-12" style = "margin-top: -30px;">
-						<i><h4 style = "text-decoration: underline;"><span class = "icon-file-text2"></span> Scheduling </h4></i>
+						<i><h4 style = "text-decoration: underline;"><span class = "icon-file-text2"></span> Add time </h4></i>
 					</div>
 				</div>
 				<form action = "" method = "post">
 					<div class = "row">
 						<div class = "col-xs-3">
-							<label>Select Technician</label>
+							<label>Select Employee</label>
 							<select name = "tech" required class = "form-control input-sm" >
 								<option value = ""> - - - - - - - </option>';
-							$query = "SELECT * FROM login where position like '%ervice%' and active != '0'";
+							$query = "SELECT * FROM login where level != 'Admin' and position != 'House Helper' and active != '0' order by lname";
 							$result2 = $conn->query($query);	
 							if($result2->num_rows > 0){
 								while ($row2 = $result2->fetch_assoc()) {
-									echo '<option style = "text-align: capitalize;" value = "' . $row2['account_id'] . '">' . $row2['fname'] . ' ' . $row2['lname'] . '</option>';
+									if(strtoupper($row2['lname']) == $row2['fname'] || strtoupper($row2['lname']) == $row2['lname']){
+										$row2['fname'] = strtolower($row2['fname']);
+										$row2['lname'] = strtolower($row2['lname']);
+									}
+									echo '<option style = "text-align: capitalize;" value = "' . $row2['account_id'] . '">' . ucfirst($row2['lname']) . ', ' . ucfirst($row2['fname']) . '</option>';
 								}
 							}
-		echo '				</select>
+			echo '				</select>
 						</div>
 						<div class = "col-xs-2">
 							<label>Date</label>
-							<input required type = "date" name = "scheddate" class = "form-control input-sm" value = "' . date("Y-m-d", strtotime("+1 day")) . '"/>
+							<input required autocomplete = "off" type = "date" name = "scheddate" class = "form-control input-sm" value = "' . date("Y-m-d", strtotime("-1 day")) . '"/>
 						</div>
 						<div class = "col-xs-2">
 							<label>Time In</label>
-							<input required type = "text" name = "schedtimein" class = "form-control input-sm" placeholder = "Click to set Tiime"/>
+							<input type = "text" autocomplete = "off" name = "schedtimein" class = "form-control input-sm" placeholder = "8:00 AM"/>
 						</div>
 						<div class = "col-xs-2">
 							<label>Time Out</label>
-							<input required type = "text" name = "schedtimeout" class = "form-control input-sm" placeholder = "Click to set Tiime"/>
+							<input type = "text" autocomplete = "off" name = "schedtimeout" class = "form-control input-sm" placeholder = "6:00 PM"/>
 						</div>
 						<div class = "col-xs-3">
-							<label>Location</label>
-							<input required type = "text" name = "location" class = "form-control input-sm" placeholder = "Enter Location"/>
+							<label>Remarks</label>
+							<textarea required autocomplete = "off" type = "text" name = "location" class = "form-control input-sm" placeholder = "Enter Remarks"></textarea>
+						</div>
+					</div>
+					<div class = "row" id = "warning" style = "display: none;">
+						<div class = "col-xs-12" align = "center">
+							<div class="alert alert-danger fade in">
+	 							<small><strong>Warning!</strong> Fill out <b>Time In</b> or <b>Time Out</b></small>
+	 						</div>
 						</div>
 					</div>
 					<div class = "row">
@@ -307,36 +305,23 @@
 				<table class = "table table-hover" id = "schedulingTble">
 					<thead>
 						<th>Date</th>
-						<th>Technician</th>
+						<th>Employee</th>
 						<th>Time In - Time Out</th>
-						<th>Location</th>
-						';
-					if($_SESSION['level'] == 'TECH'){
-						echo '<th>Action</th>';
-					}else{
-						echo '<th>Status</th>';
-					}
-
-			echo '
+						<th>Remarks</th>
 					</thead>
 					<tbody>';
 		if($result->num_rows > 0){		
 			while($row = $result->fetch_assoc()){
+				if(strtoupper($row['lname']) == $row['fname'] || strtoupper($row['lname']) == $row['lname'] || strtoupper($row['mname']) == $row['mname']){
+					$row['fname'] = strtolower($row['fname']);
+					$row['lname'] = strtolower($row['lname']);
+					$row['mname'] = strtolower($row['mname']);
+				}
 				echo '<tr>';
-					echo '<td>' . date("M j, Y", strtotime($row['scheddate'])) . '</td>';
-					echo '<td>' . $row['fname'] . ' ' . $row['mname'] . ' ' . $row['lname'].'</td>';
-					echo '<td>' . $row['schedtimein'] . ' - ' . $row['schedtimeout'] . '</td>';
-					echo '<td>' . $row['location'] . '</td>';
-					if($_SESSION['level'] == 'TECH' && date("Y-m-d") < date("Y-m-d", strtotime($row['scheddate']))){
-						echo '<td><a href = "?modify=' . $row['techsched_id'] .'" class = "btn btn-warning"><span class="glyphicon glyphicon-edit"></span></a> <a onclick = "return confirm(\'Are you sure?\');"href = "?del=' . $row['techsched_id'] .'" class = "btn btn-danger"><span class="glyphicon glyphicon-trash"></span></a></td>';
-					}elseif(date("Y-m-d") == date("Y-m-d", strtotime($row['scheddate']))){
-						echo '<td><b>Ongoing</b></td>';
-					}elseif(date("Y-m-d") < date("Y-m-d", strtotime($row['scheddate']))){
-						echo '<td><b>Pending</b></td>';
-					}else{
-						echo '<td><b>Completed</b></td>';
-					}
-					//echo '<td><a style = "width: 100px;" target = "_blank" href = "?view='.$row['techsched_id'] .'" class = "btn btn-primary"><span class = "icon-eye"></span> View</a></td>';
+					echo '<td>' . date("M j, Y", strtotime($row['tdate'])) . '</td>';
+					echo '<td>' . ucfirst($row['lname']) . ', ' . ucfirst($row['fname']) . ' ' . ucfirst($row['mname']) .'</td>';
+					echo '<td>' . $row['tin'] . ' - ' . $row['tout'] . '</td>';
+					echo '<td>' . $row['remarks'] . '</td>';
 				echo '</tr>';
 			}
 		
@@ -346,14 +331,14 @@
 ?>
 <?php 
 	if(isset($_POST['schedsub'])){
-		//if(date("Y-m-d", strtotime($_POST['scheddate'])) <= date("Y-m-d")){
-		//	echo '<script type="text/javascript"> alert("Wrong date."); window.location.replace("tech-sched.php");</script>';
-		//}else{
-			$stmt = $conn->prepare("INSERT INTO `tech_sched` (account_id, schedtimein, schedtimeout, scheddate, location) VALUES (?, ?, ?, ?, ?)");
-			$stmt->bind_param("issss", $_POST['tech'], $_POST['schedtimein'], $_POST['schedtimeout'], $_POST['scheddate'], $_POST['location']);
+		if(date("Y-m-d", strtotime($_POST['scheddate'])) > date("Y-m-d")){
+			echo '<script type="text/javascript"> alert("Wrong date."); window.location.replace("hr-timecheck.php");</script>';
+		}else{
+			$stmt = $conn->prepare("INSERT INTO `hrtime` (account_id, tin, tout, tdate, remarks, hrdate) VALUES (?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("isssss", $_POST['tech'], $_POST['schedtimein'], $_POST['schedtimeout'], $_POST['scheddate'], $_POST['location'], date("Y-m-d"));
 			$stmt->execute();
-			echo '<script type="text/javascript">	window.location.replace("tech-sched.php");</script>';
-		//}
+			echo '<script type="text/javascript">	window.location.replace("hr-timecheck.php");</script>';
+		}
 		
 	}
 

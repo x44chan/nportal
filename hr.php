@@ -45,6 +45,9 @@
 		});
 	});
 </script>
+
+<script type="text/javascript" src="css/src/jquery.ptTimeSelect2.js"></script>
+<link rel="stylesheet" type="text/css" href="css/src/jquery.ptTimeSelect2.css" />
 <div align = "center">
 	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
@@ -74,9 +77,10 @@
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
-				  <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
 				  <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
-				  <li><a  type = "button" href = "tech-sched.php" >Tech Scheduling</a></li>
+				  <li><a  type = "button" href = "tech-sched.php">Tech Scheduling</a></li>
+				  <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
+				  <li><a  type = "button" href = "hr-timecheck.php">In/Out Reference</a></li>
 				</ul>
 			</div>			
 			<a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
@@ -273,20 +277,21 @@
 						});
 						$("#submituped").click(function(){						
 							if($("#obtimein").val() == "" && $("#obtimeout").val() == "" ){
-								$("#warning").show();
-								return false;
+								$("#obtimein").attr("required", true);
+								$("#obtimeout").attr("required", true);
 							}else{
-								$("#warning").hide();
+								$("#obtimein").attr("required", false);
+								$("#obtimeout").attr("required", false);
 							}
 						});
 					});
 				</script>
 				<script type="text/javascript">
 					$(document).ready(function(){
-						$('input[name="obtimein"]').ptTimeSelect();
-						$('input[name="upoffr"]').ptTimeSelect();
-						$('input[name="upoffto"]').ptTimeSelect();							
-						$('input[name="obtimeout"]').ptTimeSelect();
+						$('input[name="obtimein"]').ptTimeSelect2();
+						$('input[name="upoffr"]').ptTimeSelect2();
+						$('input[name="upoffto"]').ptTimeSelect2();
+						$('input[name="obtimeout"]').ptTimeSelect2();
 					});
 				</script>
 				</div>
@@ -886,10 +891,10 @@
 				</script>
 				<script type="text/javascript">
 					$(document).ready(function(){
-						$('input[name="obtimein"]').ptTimeSelect();
-						$('input[name="upoffr"]').ptTimeSelect();
-						$('input[name="upoffto"]').ptTimeSelect();							
-						$('input[name="obtimeout"]').ptTimeSelect();
+						$('input[name="obtimein"]').ptTimeSelect2();
+						$('input[name="upoffr"]').ptTimeSelect2();
+						$('input[name="upoffto"]').ptTimeSelect2();							
+						$('input[name="obtimeout"]').ptTimeSelect2();
 					});
 				</script>
 				</div>
@@ -1132,11 +1137,10 @@
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'
-						<td>'.$newDate .'</td>						
-						<td>'.$row["nameofemp"].'</td>
-						<td>'.$newDate2.'</td>
+						<td>'.$newDate .'</td>			
+						<td>'.$newDate2.'</td>			
+						<td>'.$row["nameofemp"].'</td><td width = 300 height = 70>'.$data1['reason'].'</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$data1['reason'].'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
@@ -1569,7 +1573,7 @@ echo '</tbody></table></form>';
 				}else{
 					$split = "";
 				}
-				if($row['state'] == 'UA' ||$row['state'] == 'UAAdmin'){
+				if($row['state'] == 'UA'){
 					continue;
 				}
 				echo 

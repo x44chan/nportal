@@ -110,7 +110,7 @@
 		<a id="add_row" class="btn btn-success pull-left">Add New Row</a><a id='delete_row' class="pull-right btn btn-danger">Delete New Row</a><br><br>
 		<div class="row">
 			<div class="col-xs-12" align="center">
-				<button class="btn btn-primary" type = "submit" name = "lsub" onclick = "return confirm('Are your sure?');">Submit Liqudation</button>
+				<button class="btn btn-primary" name = "lsub" onclick = "return confirm('Are your sure?');">Submit Liqudation</button>
 				<a href = "?ac=penpty" class = "btn btn-danger">Back</a>
 				<input type = "hidden" name = "counter" id = "counter" value = "0"/>
 			</div>
@@ -144,6 +144,7 @@
 ?>
 $(document).ready(function(){
 	var i=1;
+
 	$("#add_row").click(function(){
 		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-3'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
 		$('#rcpt'+i).html('<div class="col-xs-4"><label><input type = "checkbox" name = "wthrcpt'+i+'" id = "wthrcpt'+i+'"/> Check if With Receipt</label></div>');
@@ -175,16 +176,22 @@ $(document).ready(function(){
 		$(function () {
 	    	for(b = 1; b < i; b++) {
 				$("#amount"+b).change(function() {
-					var amount = "<?php echo  $data['amount'];?>";
-					var amount2 = amount.replace(',', "");
+					var amount = "<?php echo  str_replace(',', '', $data['amount']);?>";
+					var amount2 = amount.replace('/,/g', "");
 					var sum = 0;
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
 			    	    	var amount1 = $('#amount' + b).val();
-			    	    	amount2 = amount2 - amount1;
+			    	    	amount2 = amount2 - parseInt(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
 			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	if(amount.replace(',', "") < sum){			    	    		
+			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
+			    	    		alert("Not enought petty fund.");
+			    	    	}else{
+			    	    		$("button[name = 'lsub']").attr("disabled",false);
+			    	    	}
 			     		})(b);
 			   	 	}			   	 	
 				});
@@ -197,24 +204,30 @@ $(document).ready(function(){
     		$('#rcpt'+(i-1)).html('');
 			i--;
 			$('#counter').val(i);
-			var amount = "<?php echo  $data['amount'];?>";
-			var amount2 = amount.replace(',', "");
+			var amount = "<?php echo  str_replace(',', '', $data['amount']);?>";
+			var amount2 = amount.replace('/,/g', "");
 			var sum = 0;
 	    	for(b = 0; b < i; b++) {
 	    	    (function (b) {
 	    	    	var amount1 = $('#amount' + b).val();
-	    	    	amount2 = amount2 - amount1;
+	    	    	amount2 = amount2 - parseInt(amount1);
 	    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 	    	    	sum = parseFloat(amount1) + parseFloat(sum);
 	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+	    	    	if(amount.replace(',', "") < sum){
+	    	    		$("button[name = 'lsub']").attr("disabled","disabled");
+			    	    alert("Not enought petty fund.");
+	    	    	}else{
+	    	    		$("button[name = 'lsub']").attr("disabled",false);
+	    	    	}
 	     		})(b);
 	   	 	}
 
 		}
 	});
 
-		$(function () {
+	$(function () {
 	    	for(b = 0; b < 1; b++) {
 	    	    (function (b) {
 	    	    	$('select[id$="type' + b + '"]').change(function() {
@@ -233,17 +246,23 @@ $(document).ready(function(){
 		$(function () {
 	    	for(b = 0; b < 1; b++) {
 				$("#amount"+b).change(function() {
-					var amount = "<?php echo  $data['amount'];?>";
-					var amount2 = amount.replace(',', "");
+					var amount = "<?php echo  str_replace(',', '', $data['amount']);?>";
+					var amount2 = amount.replace('/,/g', "");
 					var sum = 0;
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
 			    	    	var amount1 = $('#amount' + b).val();
-			    	    	amount2 = amount2 - amount1;
+			    	    	amount2 = amount2 - parseInt(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);
 			    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	if(amount.replace(',', "") < sum){
+			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
+			    	    		alert("Not enought petty fund.");  
+			    	    	}else{
+			    	    		$("button[name = 'lsub']").attr("disabled",false);
+			    	    	}
 			     		})(b);
 			   	 	}			   	 	
 				});
