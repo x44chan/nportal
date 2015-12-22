@@ -12,7 +12,11 @@
 		$data = $conn->query($sql)->fetch_assoc();
 		$amount = 0;
 		for($i = 0; $i <= $counter; $i++){
-			$amount += $_POST['amount'.$i];
+			if(isset($_POST['amount'.$i])){		
+				$amount += $_POST['amount'.$i];	
+			}else{
+
+			}
 		}
 		if($amount > str_replace(",","", $data['amount'])){
 			echo '<script type="text/javascript"> alert("Ooops. Huli ka!");  window.location.replace("index.php"); </script>';
