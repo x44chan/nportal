@@ -105,7 +105,7 @@
 	echo '<div class = "row" id = "alertss" style = "display: none;">';
 		echo '<div class = "col-xs-12" align="center">';
 			echo '<div class="alert alert-danger">
-					<small><strong>Danger!</strong> Indicates a dangerous or potentially negative action.</small>
+					<small><strong>Not enought Petty Fund!</strong> check your liquidation.</small>
 				</div>';
 		echo '</div>';
 	echo '</div>';
