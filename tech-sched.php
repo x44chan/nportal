@@ -86,27 +86,34 @@
 			<a type = "button" class = "btn btn-primary" href = "<?php echo $hrf2;?>"  id = "showdispproveda"> Dispproved Request</a>
 			<?php }else{ ?><br><br>
 			<div class="btn-group btn-group-lg">
-			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
-			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
-     		<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
-     		<a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>	
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
-				  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
-				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
-				</ul>
-			</div>
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
-				  <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
-				</ul>
-			</div>
-			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
-			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+				<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
+				<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>	     			
+				<div class="btn-group btn-group-lg">
+					<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
+					<ul class="dropdown-menu" role="menu">
+					  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
+					  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+					  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+					</ul>
+				</div>
+				<div class="btn-group btn-group-lg">
+					<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
+					<ul class="dropdown-menu" role="menu">
+					  <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
+					  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
+					  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
+					</ul>
+				</div>
+				<div class="btn-group btn-group-lg">
+					<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
+					<ul class="dropdown-menu" role="menu">
+					  <li><a href = "?login_log" type = "button">Login Log</a></li>
+					  <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
+					  <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
+					</ul>
+				</div>
+				<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
+				<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<?php } ?>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>

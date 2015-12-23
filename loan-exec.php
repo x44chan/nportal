@@ -57,22 +57,58 @@
 	if(isset($_POST['caapp'])){
 		$o = mysql_escape_string($_POST['loanid']);
 		$accid = mysql_escape_string($_POST['accid']);
-		$appamount = mysql_escape_string($_POST['loanamount']);
-		$sql ="UPDATE loan set 
-	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount'
-	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
+		$appamount = mysql_escape_string($_POST['loanamount']);		
 	    $cutoffdate = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 	    $cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
 	    $duration = $_POST['upduration'] . ' Months';
-	    $enddate = date("Y-m-d", strtotime($duration, strtotime($cutoffdate)));
-	    
+	    $sql ="UPDATE loan set 
+	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount', startdate = '$cutoffdate', duration = '$duration'
+	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
 	 	if ($conn->query($sql) === TRUE) {	 
-	 		$sql2 ="UPDATE loan_cutoff set 
-	   		state = 'CutOffPaid', cutamount = '$cutamount', cutoffdate = '$cutoffdate', enddate = '$enddate', duration = '$duration'
-			    where loan_id = '$o' and account_id = '$accid' and state = 'UALoanCut'"; 
-			if($conn->query($sql2) === TRUE){
-				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
-			}
+				$cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
+				$state = 'CutOffPaid';
+				$cuts = 0;
+				$fif = 0;
+				$day = substr($cutoffdate, 8, 10);
+				$date = substr($cutoffdate, 5, 2);
+				$_POST['upduration'] *= 2;
+				for($i = 1; $i <= $_POST['upduration']; $i++){
+					if(isset($date)){
+						$datex = substr($date, 5, 2);
+					}else{
+						$datex = "";
+					}
+					$cuts = 15 * $i;
+					$fif += 15;
+					if($datex == '02'){
+						$cuts -= 1;
+						$fif -= 1;
+					}
+					if($day == '16'){
+						$day = '16';
+						$end = 't';
+					}else{
+						$day = '01';
+						$end = '15';
+					}
+					$date = date("Y-m-".$day, strtotime('+'.$fif.' days', strtotime($cutoffdate)));
+					$enddate = date("Y-m-".$end, strtotime('+'.$cuts.' days', strtotime($cutoffdate)));
+					$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+					$stmt->bind_param("iisssss", $o, $accid, $cutamount, $date, $state, $duration, $enddate);
+					$stmt->execute();
+					if($day == '16'){
+						$day = '01';
+						$end = '15';
+					}else{
+						$day = '16';
+						$end = 't';
+					}
+					if($datex == '02'){
+						$cuts += 1;
+						$fif += 1;
+					}
+				}
+			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	} 

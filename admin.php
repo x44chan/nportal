@@ -57,8 +57,15 @@
 		<div class="btn-group btn-group-lg">
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
-     		<a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>
-     		<a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>	
+     			
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
+				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+				</ul>
+			</div>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -67,7 +74,14 @@
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				</ul>
 			</div>
-			<a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "?login_log" type = "button">Login Log</a></li>
+				  <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
+				  <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
+				</ul>
+			</div>
 			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
 			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
@@ -288,6 +302,7 @@
 		$valcode = mysql_escape_string($_POST['valcode']);
 		$refcode = mysql_escape_string($_POST['transctc']);
 		$source = mysql_escape_string($_POST['source']);
+		$releasedate = date("Y-m-d");
 		$xxsql = "SELECT * FROM `petty` where petty_id = '$petid' and rcve_code = '$valcode' and state = 'TransProcCode'";
 		$xxresult = $conn->query($xxsql);		
 		if($xxresult->num_rows <= 0){
@@ -295,7 +310,7 @@
 			echo '<script type="text/javascript">alert("Wrong code");window.location.replace("?transrelease=1&petty_id='.$petid.'"); </script>';
 					
 		}else{
-			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source' where petty_id = '$petid' and state = 'TransProcCode'";
+			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source',releasedate = '$releasedate' where petty_id = '$petid' and state = 'TransProcCode'";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">alert("Successful");window.location.replace("admin.php"); </script>';	
 			}
@@ -592,7 +607,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['cadate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Cash Advance<br><b>Amount: <i><font color = "green">₱ <?php echo $row['caamount'];?></font></td>
+					<td><b>Cash Advance<br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['caamount']);?></font></td>
 					<td><?php echo $row['careason'];?></td>
 					<td> - </td>
 					<td>
@@ -618,7 +633,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Loan<br><b>Amount: <i><font color = "green">₱ <?php echo $row['loanamount'];?></td>
+					<td><b>Loan<br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
 					<td><?php echo $row['loanreason'];?></td>
 					<td> - </td>
 					<td>

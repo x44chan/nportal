@@ -152,13 +152,15 @@
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				$loan_id = $row['loan_id'];
-				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id'";
+				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate,state FROM `loan_cutoff` where loan_id = '$loan_id' order by cutoff_id desc";
 				$data = $conn->query($stmts)->fetch_assoc();
+				$stmtsx = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'Full'";
+				$datax = $conn->query($stmtsx)->fetch_assoc();
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
-					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
+					echo	'<td>' . date("M j, Y", strtotime($row['startdate'])). '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
 					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
@@ -175,8 +177,9 @@
 								}elseif($row['state'] == 'ARcvCashCode'){
 									echo '<font color = "green"><b>Received ';
 									echo '</font></br>Code: ' . $row['rcve_code'];
-								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
-									echo '<b><font color = "green">Completed</font></b>';
+								}elseif($row['state'] == 'ALoan' && (date("Y-m-d") >= date('Y-m-d', strtotime('+'.$row['duration'], strtotime($row['startdate'])))) || $datax['state'] == 'Full') {
+									echo '<b><font color = "green">Completed</font></b><br>';
+									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">View Request</a>';
 								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
 									echo '<a href = "?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">View Request</a>';
 								}

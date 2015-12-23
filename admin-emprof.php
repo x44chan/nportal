@@ -87,31 +87,94 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
 <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
 <div align = "center">
-	<div class="alert alert-success"><br>
-		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
-		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
-		<div class="btn-group btn-group-lg">
-			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
-			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
-      <a href = "admin-emprof.php" type = "button"class = "btn btn-primary"  id = "newuserbtn">Employee Profile</a>	
-      <a href = "?login_log" type = "button"class = "btn btn-primary">Login Log</a>
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				 <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
+  <div class="alert alert-success"><br>
+    Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
+    <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
+    <div class="btn-group btn-group-lg">
+      <a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a> 
+      <button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>      
+          
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
+          <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+          <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
           <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
           <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
-				</ul>
-			</div>
-      <a type = "button"class = "btn btn-primary"  href = "tech-sched.php">Tech Schedule</a>
-			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
-			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
-			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
-		</div><br><br>
-		
-	</div>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href = "?login_log" type = "button">Login Log</a></li>
+          <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
+          <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
+        </ul>
+      </div>
+      <a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
+      <a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+      <a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
+    </div><br><br>
+  </div>
 </div>
-<a href = "?sumar=leasum" class="btn btn-success pull-right" style="margin-right: 10px;"> Employee Leave Summary </a>
+<?php 
+  if(isset($_GET['loan']) && $_GET['loan'] == ''){
+    
+    
+?>
+  <div id = "reportg">
+    <i><h2 align = "center">Employee Loan</h2></i>
+    <?php
+      if(isset($_GET['print'])){
+        echo '<script type = "text/javascript"> $(window).load(function() {window.print();window.location.href = "?sumar='.$_GET['sumar'].'";});</script>';
+        echo '<table align = "center" class = "table table-hover" style="font-size: 16px;">';
+        $qrty = " and empcatergory = 'Regular'";
+      }else{
+        echo '<table id = "myTablelea" align = "center" class = "table table-hover" style="font-size: 16px;">';
+        $qrty = "";
+      }
+    ?>
+    <thead>
+        <tr>
+          <th>Name</th>
+          <th>Loan Date</th>
+          <th>Loan Amount</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+<?php 
+    include("conf.php");
+    $sql = "SELECT * from `login`,`loan` where login.account_id = loan.account_id and level != 'Admin' and active != 0 and position != 'House Helper' $qrty and empcatergory = 'Regular' and state = 'ALoan' order by edatehired";
+    $result = $conn->query($sql);
+    $datey = date("Y");
+    
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+        echo '<tr>';
+          echo '<td>' . $row['fname'] . ' ' . $row['lname'] . '</td>';
+          echo '<td> ' . date("M j, Y", strtotime($row['loandate'])) . '</td>';
+          echo '<td>₱ ' . number_format($row['appamount'],2) . '</td>';
+          echo '<td><a href = "?loan='.$row['loan_id'].'&accid='.$row['account_id'].'" class = "btn btn-primary"> View Request </a></td>';
+        echo '</tr>';
+      }
+    }
+  echo '</tbody></table>';    
+  echo '</div><div style = "display: none;">';
+
+}elseif(isset($_GET['loan']) && $_GET['loan'] != ''){
+  include('caloan/loan.php');
+  echo '<div style = "display: none">';
+}
+  ?>
+
 <?php 
   if(isset($_GET['sumar']) && $_GET['sumar'] == 'leasum'){
     $title = "Employee Leave Summary";
@@ -265,6 +328,8 @@
 	}
 ?>
 <div id = "needaproval" style="min-height: 300px; text-transform: capitalize;">
+
+<a href = "?sumar=leasum" class="btn btn-success pull-right" style="margin-right: 10px;"> Employee Leave Summary </a>
 <?php 
 if(isset($_GET['login_log'])){
     include 'login_log.php';

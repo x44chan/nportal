@@ -43,8 +43,14 @@
 	    	visibility: hidden;
 	    
 	  	}
+	  	#reportg #red {
+	  		color: red !important;
+	  	}
+	  	#reportg #green{
+	  		color: green !important;
+	  	}
 	  	#reportg h4{
-	  		font-size: 15px;
+	  		font-size: 14px;
 	  	}
 	  	#datepr{
 	  		margin-top: 25px;
@@ -62,8 +68,11 @@
 	  		padding: 1px;
 	  		max-width: 210px;
 		}
+		#reportg p{
+	  		font-size: 9px;
+		}
 		#totss{
-			font-size: 12px;
+			font-size: 11px;
 		}
 		#reportg {
 	   		position: absolute;
