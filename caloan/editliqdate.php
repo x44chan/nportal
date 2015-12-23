@@ -102,6 +102,13 @@
 		}
 		echo '<div class="row" id = "addr'.($i+1).'"></div>
 		<div class="row" id = "rcpt'.($i+1).'"></div></div><input  style = "display: none;" type = "text" name = "counter" id = "counter" value = "'.$i.'"/><input  style = "display: none;" type = "text" name = "pet_id" id = "counter" value = "'.$_GET['editliqdate'].'"/>';
+	echo '<div class = "row" id = "alertss" style = "display: none;">';
+		echo '<div class = "col-xs-12" align="center">';
+			echo '<div class="alert alert-danger">
+					<small><strong>Danger!</strong> Indicates a dangerous or potentially negative action.</small>
+				</div>';
+		echo '</div>';
+	echo '</div>';
 	echo '<div class = "row">';
 		echo '<div class = "col-xs-12" align = "center"><hr>';
 		echo '<a id="add_row" class="btn btn-success pull-left">Add New Row</a><a id="delete_row" class="pull-right btn btn-danger">Delete New Row</a><br><br>';
@@ -200,9 +207,10 @@ $(window).load(function(){
         	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
         	if(amount.replace(',', "") < sum){			    	    		
 	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
-	    		alert("Not enought petty fund.");
+	    		$("#alertss").show();
 	    	}else{
 	    		$("button[name = 'upliqdate']").attr("disabled",false);
+	    		$("#alertss").hide();
 	    	}
     	})(b);
    	}
@@ -229,9 +237,10 @@ $(document).ready(function(){
     	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
     	    	if(amount.replace(',', "") < sum){			    	    		
     	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
-    	    		alert("Not enought petty fund.");
+    	    		$("#alertss").show();
     	    	}else{
     	    		$("button[name = 'upliqdate']").attr("disabled",false);
+    	    		$("#alertss").hide();
     	    	}
      		})(b);
    	 	}
@@ -276,9 +285,10 @@ $(document).ready(function(){
 			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 			    	    	if(amount.replace(',', "") < sum){			    	    		
 			    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
-			    	    		alert("Not enought petty fund.");
+			    	    		$("#alertss").show();
 			    	    	}else{
 			    	    		$("button[name = 'upliqdate']").attr("disabled",false);
+			    	    		$("#alertss").hide();
 			    	    	}
 			     		})(b);
 			   	 	}			   	 	
@@ -308,9 +318,10 @@ $(document).ready(function(){
 	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 	    	    	if(amount.replace(',', "") < sum){			    	    		
 	    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
-	    	    		alert("Not enought petty fund.");
+	    	    		$("#alertss").show();
 	    	    	}else{
 	    	    		$("button[name = 'upliqdate']").attr("disabled",false);
+	    	    		$("#alertss").hide();
 	    	    	}
 	     		})(b);
 	   	 	}
@@ -354,9 +365,10 @@ $(document).ready(function(){
 			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 			    	    	if(amount.replace(',', "") < sum){			    	    		
 			    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
-			    	    		alert("Not enought petty fund.");
+			    	    		$("#alertss").show();
 			    	    	}else{
 			    	    		$("button[name = 'upliqdate']").attr("disabled",false);
+			    	    		$("#alertss").hide();
 			    	    	}
 			     		})(b);
 			   	 	}			   	 	
