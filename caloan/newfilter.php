@@ -26,8 +26,6 @@
 		}
 	$date2 = date("Y-m-d 23:59:59 ", strtotime("+1 day", strtotime($date2)));
 	if(!isset($_GET['report'])){
-		
-
 ?>
 <form action = "" method="post">
 	<div class="container" id = "reports" style="margin-top: -30px;">
@@ -93,7 +91,7 @@
 						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
-						$ssql6 = "SELECT count(account_id) as loanc  FROM loan_cutoff where loan_cutoff.account_id = $accidd and state = 'CutOffPaid' and '$date1' BETWEEN cutoffdate and enddate and enddate >= '$date2' ORDER BY cutoffdate ASC";
+						$ssql6 = "SELECT count(account_id) as loanc  FROM loan_cutoff where loan_cutoff.account_id = $accidd and ((state = 'CutOffPaid' and enddate >= '$date2') or (state = 'Full' and full BETWEEN '$date1' and '$date2')) ORDER BY cutoffdate ASC";
 						
 						if($_GET['rep'] == 'all'){
 							$data1 = $conn->query($ssql1)->fetch_assoc();
@@ -102,6 +100,9 @@
 							$data4 = $conn->query($ssql4)->fetch_assoc();
 							$data5 = $conn->query($ssql5)->fetch_assoc();
 							$data6 = $conn->query($ssql6)->fetch_assoc();
+							if($data6['loanc'] > 0){
+								$data6['loanc'] = 1;
+							}
 							$acounts =  $data1['otcount'] + $data2['obcount'] + $data3['leacount'] + $data4['undrcount'] + $data5['cashadv'] + $data6['loanc'];
 							$title = "Overall Report";
 						}elseif($_GET['rep'] == 'ot'){
@@ -126,6 +127,9 @@
 							$title = "Cash Advance Report";
 						}elseif($_GET['rep'] == 'loan'){
 							$data6 = $conn->query($ssql6)->fetch_assoc();
+							if($data6['loanc'] > 0){
+								$data6['loanc'] = 1;
+							}
 							$acounts = $data6['loanc'];
 							$title = "Loan Report";
 						}
@@ -498,8 +502,9 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ca'){
 			echo 
 				'<tr>
 					<td>'.$newDate.'</td>						
-					<td>'.$row["caamount"].'</td>
-					<td>'.$row["careason"].'</td></tr>';
+					<td>₱ '.number_format($row["caamount"]).'</td>
+					<td>'.$row["careason"].'</td>
+				</tr>';
 		}
 		?>
 		</tbody>
@@ -509,7 +514,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ca'){
 
 }
 if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
-	$sql = "SELECT * FROM loan,login,loan_cutoff where login.account_id = loan.account_id  and login.account_id = loan_cutoff.account_id and loan_cutoff.loan_id = loan.loan_id and loan.state = 'ALoan' and '$date1' BETWEEN loan_cutoff.cutoffdate and loan_cutoff.enddate and loan_cutoff.enddate >= '$date2' order by loandate desc";
+	$sql = "SELECT * FROM loan,login,loan_cutoff where login.account_id = $accids  and loan_cutoff.account_id = $accids and loan_cutoff.loan_id = loan.loan_id and loan.state = 'ALoan' and (loan_cutoff.enddate >= '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		
@@ -529,16 +534,10 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 <?php
 		while ($row = $result->fetch_assoc()) {
 			$loan_id = $row['loan_id'];
-			$stmtss = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'CutOffPaid' and '$date1' BETWEEN loan_cutoff.cutoffdate and loan_cutoff.enddate and loan_cutoff.enddate >= '$date2'";
+			$loanamount = $row['appamount'];
+			$stmtss = "SELECT count(account_id) as asd FROM `loan_cutoff` where loan_id = '$loan_id'";
 			$datas = $conn->query($stmtss)->fetch_assoc();
-			if($row['loan_id'] != $datas['loan_id']){
-				continue;
-			}
-			$len = substr($datas['duration'],0,2) * 2;			
-			$day = substr($datas['cutoffdate'], 8, 10);			
-			$cuts = 0;
-			$fif = 0;
-			$comp = $row['loanamount'];
+			$len = $datas['asd'];	
 ?>	
 			<tr>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd; border-left: 1px solid #ddd; vertical-align: middle; text-align: center;">
@@ -548,57 +547,46 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 					<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['loanamount']); ?></p></i>
 				</td>
 			</tr>
-			<?php
-				for($i = 1; $i <= $len; $i++){
-					$cuts = 15 * $i;
-					$fif += 15;
-					if($day == '16'){
-						$day = '16';
-						$end = 't';
-					}else{
-						$day = '01';
-						$end = '15';
-					}
-					$comp -= $datas['cutamount'];
-					$date1  =	date("Y-m-".$day, strtotime("+15 days", strtotime($datas['cutoffdate'])));
-					$date22	=	date("Y-m-".$end."", strtotime('+'.$cuts.' days', strtotime($datas['cutoffdate'])));
-					if($date22 <= $date2){
-						$states = '<p style = "margin-left: 10px;"><b><font color = "green"> Deducted </font></b></p>';
-						$balance = '₱ ' . ($comp);
-					}else{
-						$states = '<p style = "margin-left: 10px;"><b><font color = "red"> Pending </font></b></p>';
-						$balance = ' - ';
-					}
-
-			?>
-			<tr style="border-right: 1px solid #ddd;">
-				<td>
-					<i><?php echo '<p style="margin-left: 10px;">'.date("M ".$day.", Y", strtotime('+'.$fif.' days', strtotime($datas['cutoffdate']))) .' - ' . date("M ".$end.", Y", strtotime('+'.$cuts.' days', strtotime($datas['cutoffdate']))).'</p>';
-					?></i>
-				</td>
-				<td>
-					<i><p style="margin-left: 10px;">₱ <?php echo number_format($datas['cutamount']); ?></p></i>
-				</td>
-				<td>
-					<i><p style="margin-left: 10px;"> <?php echo $balance; ?></p></i>
-				</td>
-				<td>
-					<i><?php echo $states;?></i>
-				</td>
-			</tr>
-<?php
-				if($day == '16'){
-					$day = '01';
-					$end = '15';
-				}else{
-					$day = '16';
-					$end = 't';
-				}
-				
+<?php				
+	}
+	$sql = "SELECT * FROM loan_cutoff where loan_id = '$loan_id'";
+	$result = $conn->query($sql);
+	
+	if($result->num_rows > 0){
+		while ($row = $result->fetch_assoc()) {
+			$lineto = "";
+			if(date("Y-m-d") >= $row['enddate'] && $row['state'] != 'Cancel'){ 
+				$loanamount -= $row['cutamount'];
+				$ech = '₱ '.number_format($loanamount,2); 
+			} else {
+				$ech = ' - ';
 			}
+			if($row['state'] == 'Advance'){
+				$stat = '<b><p id = "gree"><font color = "green"> Advance: '. date("M j, Y", strtotime($row['full'])).' </font></p></b>';
+				$loanamount -= $row['cutamount'];
+				$ech = '₱ '.number_format($loanamount,2); 	
+			}elseif(date("Y-m-d") >= $row['enddate'] && $row['state'] == 'CutOffPaid'){ 
+				$stat = '<b><p id = "green"><font color = "green">Deducted</font></p></b>'; 
+			}elseif(date("Y-m-d") < $row['enddate'] && $row['state'] == 'CutOffPaid'){
+				$stat = '<b><p id = "red"><font color = "red"> Pending </font></p></b>';
+			}elseif($row['state'] == 'Cancel'){
+				$stat = '<b><p id = "red"><font color = "red"> Moved </font></p></b>';
+				$lineto = " style = 'text-decoration: line-through;'";
+			}elseif($row['state'] == 'Full'){
+				$stat = '<b><p id = "gree"><font color = "green"> Fully Paid as of '. date("M j, Y", strtotime($row['full'])).' </font></p></b>';
+				$ech = '₱ '. 0;
+			}
+			echo '<tr '.$lineto.' style = "border-right: 1px solid #ddd; border-left: 1px solid #ddd;">';
+				echo '<td>'.date("M j, Y", strtotime($row['cutoffdate'])) . ' - ' . date("M j, Y", strtotime($row['enddate'])).'</td>';
+				echo '<td>'. '₱ ' . number_format($row['cutamount'],2).'</td>';
+				echo '<td>'.$ech.'</td>';
+				echo '<td>'.$stat.'</td>';
+			echo '</tr>';
 		}
 
-?>				
+	}
+?>	
+					
 			</tbody>
 	</table>
 </div>

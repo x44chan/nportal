@@ -1,7 +1,12 @@
 <?php
 	include 'conf.php';
 	$loan = mysql_escape_string($_GET['loan']);
-	$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid and loan_id = '$loan' order by loandate desc";
+	if($_SESSION['level'] != 'Admin'){
+		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid and loan_id = '$loan' order by loandate desc";
+	}else{
+		$accid = mysqli_real_escape_string($conn, $_GET['accid']);
+		$sql = "SELECT * FROM loan,login where login.account_id = $accid and loan.account_id = $accid and loan_id = '$loan' order by loandate desc";
+	}
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 ?>
@@ -25,10 +30,7 @@
 		while ($row = $result->fetch_assoc()) {
 			$loanamount = $row['loanamount'];
 			$loan_id = $row['loan_id'];
-
 ?>
-
-
 		<div class="row">
 			<div class="col-xs-3">
 				<label>Name</label>
@@ -43,11 +45,6 @@
 				<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['appamount']); ?></p></i>
 			</div>
 		</div>
-<?php
-	$stmts3 = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and CURDATE() <= enddate";
-	$result3 = $conn->query($stmts3);
-	if($result3->num_rows > 0){
-?>
 		<div class="row">
 			<div class="col-xs-12">
 				<i><u><h4 style="margin-left: -20px;">Requested Cut-Offs Details</h4></u></i>
@@ -68,134 +65,63 @@
 				<label>State</label>
 			</div>
 		</div>
-<?php
-		while ($row3 = $result3->fetch_assoc()) {
-?>
 		<div class="row">
 			<div class="col-xs-3">
-				<i><p style="margin-left: 10px;"><?php echo date("M j, Y", strtotime($row3['cutoffdate'])); ?></p></i>
+				<i><p style="margin-left: 10px;"><?php echo date("M j, Y", strtotime($row['startdate'])); ?></p></i>
 			</div>
 			<div class="col-xs-3">
-				<i><p style="margin-left: 10px;"><?php echo $row3['duration']; ?></p></i>
+				<i><p style="margin-left: 10px;"><?php echo $row['duration']; ?></p></i>
 			</div>
 			<div class="col-xs-3">
-				<i><p style="margin-left: 10px;">₱ <?php echo number_format($row3['cutamount']); ?></p></i>
+				<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['appamount']/($row['duration'] * 2), 2); ?></p></i>
 			</div>
 			<div class="col-xs-3">
-				<i><p style="margin-left: 10px;"><?php if($row3['state'] == 'DALoan'){echo '<b ><font color ="red">Disapproved </font></b>';}elseif($row3['state'] == 'UALoanCut'){echo '<b>Pending</b>';}else{ echo '<b><font color = "green">Approved</font></b>';}?></p></i>
+				<i><p style="margin-left: 10px;"><?php if($row['state'] == 'DALoan'){echo '<b ><font color ="red">Disapproved </font></b>';}elseif($row['state'] == 'UALoanCut'){echo '<b>Pending</b>';}else{ echo '<b><font color = "green">Approved</font></b>';}?></p></i>
 			</div>
 		</div>
-<?php			
-
+<?php
 		}
 	}
+	$stmtss = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' ORDER BY cutoff_id desc limit 1";
+	$datas = $conn->query($stmtss)->fetch_assoc();
+	if($_SESSION['level'] == 'Admin' && $datas['state'] != 'Full'){
 ?>
-<?php
-	$stmts = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'CutOffPaid' and CURDATE() <= enddate";
-	$data = $conn->query($stmts)->fetch_assoc();
-	if($loan_id != $data['loan_id']){
-
-?>
-		<div class="row">
-			<div class="col-xs-12">
-				<i><u><h4 style="margin-left: -20px;">Payment Details</h4></u></i>
-				<hr>
-			</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<i><u><h4 style="margin-left: -25px;">Advance Payment</h4></u></i>
+			<hr>
 		</div>
-		<div class="row">	
-			<div class = "col-xs-2">
-				<label>Duration</label>
-				<select name = "duration" class="form-control" id = "duration" required>
-					<option value = ""> ----------- </option>
-					<option value = "1"> 1 Month </option>
-					<option value = "2"> 2 Months </option>
-					<option value = "3"> 3 Months </option>
-					<option value = "Others"> Others </option>
-				</select>
-			</div>
-			<div class="col-xs-2">
-				<label>Others</label>
-				<input type =  "text" maxlength="2" class="form-control" name = "others" disabled=""/>
-			</div>
-			<div class="col-xs-3">
-				<label>Payment Start (Month)</label>
-				<select class="form-control" name = "cutoffmonth" required >
-					<option value="">-----------</option>
-					<option value="01">Jan</option>
-					<option value="02">Feb</option>
-					<option value="03">Mar</option>
-					<option value="04">Apr</option>
-					<option value="05">May</option>
-					<option value="06">Jun</option>
-					<option value="07">Jul</option>
-					<option value="08">Aug</option>
-					<option value="09">Sep</option>
-					<option value="10">Oct</option>
-					<option value="11">Nov</option>
-					<option value="12">Dec</option>
-				</select>
-			</div>
-			<div class="col-xs-2">
-				<label>Payment Start (Day)</label>
-				<select class="form-control" name = "cutoffday">
-					<option value=""> - - - - - - - </option>
-					<option value="01">01</option>
-					<option value="16">16</option>
-				</select>
-			</div>
-			<div class="col-xs-3">
-				<label>Payment Start (Year)</label>
-				<select class="form-control" required name = "cutofyr">
-					<option value=""> - - - - - - - </option>
-					<option value="<?php echo date("Y");?>"><?php echo date("Y");?></option>
-					<option value="<?php echo date("Y", strtotime("+1 year"));?>"><?php echo date("Y", strtotime("+1 year"));?></option>
-				</select>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12" align="center">
-				<button class="btn btn-primary" name = "loancutoff" id = "submitss">Submit Request</button>
-				<?php if(isset($_GET['apploan'])){ echo '<a href = "?apploan" class = "btn btn-danger">Back</a>';}else{?>
-				<a href = "?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger">Back</a><?php }?>
-			</div>
-		</div>		
 	</div>
-	<input type = "hidden" name = "loanid" value = "<?php echo $row['loan_id'];?>"/>
-	<input type = "hidden" name = "loanamnt" value = "<?php echo $row['loanamount'];?>"/>
-	<input type = "hidden" name = "accid" value = "<?php echo $row['account_id'];?>"/>
+<form action="" method="post">
+	<div class="row">
+		<div class="col-xs-6 col-xs-offset-3">
+			<label>Number of Cut-Off</label>
+			<input type = "number" required name = "numcutoff" class="form-control input-sm" placeholder = "Enter number of cut-off"/>			
+		</div>
+		<div class="col-xs-12" align="center">
+			<br>
+			<button class="btn btn-primary btn-sm" required onclick="return confirm('Are you sure?');" name = "cutoffsub"> Submit </button>
+			<input type = "text" style="display: none;" value = "<?php echo $_GET['loan'];?>" name = "loan">
+		</div>
+	</div><br>
 </form>
-<script type="text/javascript">
-$(document).ready(function(){
-	$('#duration').change(function() {
-	    var selected = $(this).val();
-		
-		if(selected == 'Others'){
-			$('input[ name = "others" ]').attr('disabled',false);
-			$('input[ name = "others" ]').attr("placeholder", "# of Months");
-		}else{
-			$('input[ name = "others" ]').attr('disabled',true);
-			$('input[ name = "others" ]').attr("placeholder", "");
-		}
-	});
-});
-  /*$("button[ name = 'loancutoff'").click(function(){
-     var requested = <?php if(!isset($datas5['cutamount'])){ $datas5['cutamount'] = 0; } echo $datas5['cutamount'];?>;
-     var loan = <?php echo $loanamount;?>;
-     var inputamnt = $("input[ name = 'cutoffamount']").val();
-     var sub = loan - requested;
-
-     if(inputamnt > sub){
-     	alert("	Input correct amount. ");
-     	return false;
-     }else{
-     	confirm("Are you sure?");
-     }
-});*/
-</script>
 <?php
-			}else{
-				$stmts2 = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'CutOffPaid' and CURDATE() <= enddate";
-				$data2 = $conn->query($stmts2)->fetch_assoc();
+}
+	if(isset($_POST['cutoffsub']) && $_SESSION['level'] == 'Admin'){
+		for($i = 1; $i <= $_POST['numcutoff']; $i++){
+			$full = date("Y-m-d");
+			$loanid = $_POST['loan'];
+			$stmt = "UPDATE `loan_cutoff` set 
+				 state = 'Advance', full = '$full'
+			where account_id = '$accid' and loan_id = '$loanid' and state = 'CutOffPaid' and CURDATE() <= enddate ORDER BY cutoff_id limit 1";
+			if ($conn->query($stmt) === TRUE) {
+				echo '<script type="text/javascript">window.location.replace("admin-emprof.php?loan='.$loanid.'&accid='.$accid.'"); </script>';
+			}
+		}
+	}
+		$stmts2 = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' order by cutoffdate asc";
+		$result = $conn->query($stmts2);
+		if($result->num_rows > 0){
 ?>
 
 		<div class="row">
@@ -204,140 +130,76 @@ $(document).ready(function(){
 				<hr>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" align="center">
 			<div class="col-xs-3">
-				<label>Duration</label>
-				<i>
-				<?php 
-					$len = substr($data2['duration'],0,2) * 2;
-					$day = substr($data2['cutoffdate'], 8, 10);
-					$cuts = 0;
-					$fif = 0;
-					for($i = 1; $i <= $len; $i++){
-						$cuts = 15 * $i;
-						$fif += 15;
-						if($day == '16'){
-							$day = '16';
-							$end = 't';
-						}else{
-							$day = '1';
-							$end = '15';
-						}
-						echo '<p style="margin-left: 10px;">'.date("M ".$day.", Y", strtotime('+'.$fif.' days', strtotime($data2['cutoffdate']))) .' - ' . date("M ".$end.", Y", strtotime('+'.$cuts.' days', strtotime($data2['cutoffdate']))).'</p>';
-						if($day == '16'){
-							$day = '1';
-							$end = '15';
-						}else{
-							$day = '16';
-							$end = 't';
-						}
-					} 
-
-				?>
-				</i>
+				<label>Duration</label>				
 			</div>
 			<div class="col-xs-3">
-				<label>Cutoff Amount</label>
-				<i>
-					<?php
-						$len = substr($data2['duration'],0,2) * 2;
-						for($i = 1; $i <= $len; $i++){
-							echo '<p style="margin-left: 10px;">₱ '. number_format($data2['cutamount']).'</p>'; 
-						}
-						
-					?>
-				</i>
+				<label>Cutoff Amount</label>				
 			</div>
 			<div class="col-xs-3">
-				<label>Loan Balance</label>
-				<i>
-					<?php
-						$len = substr($data2['duration'],0,2) * 2;
-						$day = substr($data2['cutoffdate'], 8, 10);
-						$cuts = 0;
-						$comp = $row['loanamount'];
-						for($i = 1; $i <= $len; $i++){
-							$cuts = 15 * $i;
-							if($day == '16'){
-								$day = '16';
-								$end = 't';
-							}else{
-								$day = '01';
-								$end = '15';
-							}
-							$date1  =	date("Y-m-".$day, strtotime("+15 days", strtotime($data2['cutoffdate'])));
-							$date2	=	date("Y-m-".$end."", strtotime('+'.$cuts.' days', strtotime($data2['cutoffdate'])));
-							if($date2 < date("Y-m-d")){
-								$comp -= $data2['cutamount'];
-								$prt = '₱ '. number_format($comp);
-							}else{
-								$prt = ' - ';
-							}
-							if($day == '16'){
-								$day = '01';
-								$end = '15';
-							}else{
-								$day = '16';
-								$end = 't';
-							}
-						 
-						
-							
-							echo '<p style="margin-left: 10px;">'.$prt.'</p>'; 
-						}
-						
-					?>
-				</i>
+				<label>Loan Balance</label>				
 			</div>
 			<div class="col-xs-3">
-				<label>Status</label>
-				<i>
-				<?php 
-					$len = substr($data2['duration'],0,2) * 2;
-					$day = substr($data2['cutoffdate'], 8, 10);
-					$cuts = 0;
-					for($i = 1; $i <= $len; $i++){
-						$cuts = 15 * $i;
-						if($day == '16'){
-							$day = '16';
-							$end = 't';
-						}else{
-							$day = '01';
-							$end = '15';
-						}
-						$date1  =	date("Y-m-".$day, strtotime("+15 days", strtotime($data2['cutoffdate'])));
-						$date2	=	date("Y-m-".$end."", strtotime('+'.$cuts.' days', strtotime($data2['cutoffdate'])));
-						if($date2 < date("Y-m-d")){
-							echo '<p style = "margin-left: 10px;"><b><font color = "green"> Deducted </font></b></p>';
-						}else{
-							echo '<p style = "margin-left: 10px;"><b><font color = "red"> Pending </font></b></p>';
-						}
-						if($day == '16'){
-							$day = '01';
-							$end = '15';
-						}else{
-							$day = '16';
-							$end = 't';
-						}
-					} 
-
-				?>
-				</i>
-			</div>
-			<div class="row">
-				<div class="col-xs-12" align="center">
-					<hr>
-					<?php if(isset($_GET['apploan'])){ echo '<a href = "?apploan" class = "btn btn-danger">Back</a>';}else{?>
-					<a href = "?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger">Back</a><?php }?>
-				</div>
+				<label>Status</label>				
 			</div>
 		</div>
 <?php
-			}
+	$count = 0; 
+	while ($row = $result->fetch_assoc()) {
+		$stmtss = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' ORDER BY cutoff_id desc limit 1";
+		$datas = $conn->query($stmtss)->fetch_assoc();
+		if($_SESSION['level'] == 'Admin' && $count < 1 && $row['state'] != 'Cancel' && $datas['state'] != 'Full'){
+			$link = '
+				<br><a onclick = "return confirm(\'Are you sure?\');" class = "btn btn-success btn-sm" href = "cancel-req.php?loanid='.$row['loan_id'].'&fullpay=' . $row['cutoff_id'] . '&accid='.$row['account_id'].'"> Full Payment </a>
+				 <a onclick = "return confirm(\'Are you sure?\');" class = "btn btn-danger btn-sm" href = "cancel-req.php?loanid='.$row['loan_id'].'&canloan=' . $row['cutoff_id'] . '&accid='.$row['account_id'].'"> Move Loan </a>';
+			$count = 1;
+		}else{
+			$link = "";
 		}
-	}else{
-		echo '<script type="text/javascript">window.location.replace("?ac=penloan"); </script>';
+
+?>
+		<div class="row" align="center">
+			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
+				<p><i><?php echo date("M j, Y", strtotime($row['cutoffdate'])) . ' - ' . date("M j, Y", strtotime($row['enddate'])); ?></i></p>
+			</div>
+			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
+				<p><i>₱ <?php echo number_format($row['cutamount'],2); ?></i></p>
+			</div>
+			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
+				<p><i><?php if((date("Y-m-d") > $row['enddate'] && $row['state'] != 'Cancel') || ($row['state'] == 'Advance')){ $loanamount -= $row['cutamount'];echo '₱ '.number_format($loanamount,2); }elseif($row['state'] == 'Full'){ echo '₱ 0';} else { echo ' - '; } ?></i></p>
+			</div>
+			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
+				<p><i><?php if($row['state'] == 'Advance'){ $count = 0; echo '<b><font color = "green"> Advanced Payment: ' .date("M j, Y", strtotime($row['full'])).' </font></b>'; }elseif($row['state'] == 'Full'){ echo '<b><font color = "green"> Fully Paid as of ' .date("M j, Y", strtotime($row['full'])).' </font></b>'; }elseif($row['state'] == 'Cancel'){ echo '<b><font color = "red"> Moved </font></b>';}elseif(date("Y-m-d") > $row['enddate']){ $count = 0; echo '<b><font color = "green">Deducted</font></b>'; }else{ echo '<b><font color = "red"> Pending </font></b>'.$link;} ?></i></p>
+			</div>
+		</div>
+<?php 
 	}
+?>
+			<div class="row">
+				<div class="col-xs-12" align="center">
+					<hr>
+					<?php 
+						if($_SESSION['level'] == 'Admin'){ 
+							echo '<a href = "?loan" class = "btn btn-danger">Back</a>';
+						}else{ 
+							echo '<a href = "?ac='.$_GET['acc'].'" class = "btn btn-danger">Back</a>';
+						}
+					?>
+				</div>
+			</div>
+		
+<?php
+			
+	}else{
+		if($_SESSION['level'] == 'Admin'){
+			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		}else{
+			echo '<script type="text/javascript">window.location.replace("?ac=penloan"); </script>';
+		}
+		
+	}
+
 ?>
 <?php
 	

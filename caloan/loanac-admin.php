@@ -8,16 +8,13 @@
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
-				$stmts = "SELECT * FROM `loan_cutoff` where loan_id = '$pettyid' and state = 'UALoanCut' and CURDATE() <= enddate";
-				$data = $conn->query($stmts)->fetch_assoc();
-
 				echo '<tr><td style = "width: 30%;"><b>Date: </td><td style = "width: 50%;">' . date("F j, Y", strtotime($row['loandate'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Name: </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Reason: </td><td style = "width: 50%;">' . $row['loanreason'] .'</td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Loan Amount: </td><td style = "width: 50%;"><input autocomplete = "off" class = "form-control" pattern = "[0-9]*" type = "text" value = "' . $row['loanamount'] .'" name = "loanamount"/></td></tr>';
 				echo '<tr><td style = "width: 30%;"><b>Start Date: </b></td><td style = "width: 50%;">';
 				echo '<label class = "pull-left">Cut Off Month</label><select name = "cutoffmonth" class = "form-control" required>';
-					$datsss2 = substr($data['cutoffdate'],5,2);
+					$datsss2 = substr($row['startdate'],5,2);
 				?>	<option value=""> - - - - - - - </option>
 					<option <?php if($datsss2 == '01'){echo ' selected ';}?> value="01">Jan</option>
 					<option <?php if($datsss2 == '02'){echo ' selected ';}?> value="02">Feb</option>
@@ -35,17 +32,17 @@
 			<?php
 				echo '<label class = "pull-left">Cut Off Day</label>';
 				echo '<select name = "cutoffday" class = "form-control" required>';
-				$datsss3 = substr($data['cutoffdate'],8);
+				$datsss3 = substr($row['startdate'],8);
 				$date = date("Y-m-d");
 			?>
 				<option value=""> - - - - - - - </option>
-				<option value="01" <?php echo ' selected '; ?>> 01 </option>
-				<option value="16" <?php echo ' selected '; ?>> 16 </option>
+				<option value="01" <?php if($datsss3 == '01'){ echo ' selected '; }?>> 01 </option>
+				<option value="16" <?php if($datsss3 == '16'){ echo ' selected '; } ?>> 16 </option>
 
 			<?php
 				echo '</select>';
 				echo '<label class = "pull-left">Cut Off Year</label><select name = "cutoffyear" class = "form-control" required>';
-				$datsss3 = substr($data['cutoffdate'],0,4);
+				$datsss3 = substr($row['startdate'],0,4);
 			?>
 				<option value=""> - - - - - - </option>
 				<option value="<?php echo date("Y"); ?>" <?php if($datsss3 == date("Y")){echo ' selected ';} ?>><?php echo date("Y"); ?></option>
@@ -53,7 +50,7 @@
 			<?php
 				echo '</select>';
 				echo '</td></tr>';
-				echo '<tr><td style = "width: 30%;"><b>Duration (Months): </b></td><td style = "width: 50%;"><input maxlength = "2" autocomplete = "off" name = "upduration" type = "text" value = "' . substr($data['duration'], 0,2) . '" class = "form-control"/>';
+				echo '<tr><td style = "width: 30%;"><b>Duration (Months): </b></td><td style = "width: 50%;"><input maxlength = "2" autocomplete = "off" name = "upduration" type = "text" value = "' . substr($row['duration'], 0,2) . '" class = "form-control"/>';
 				echo '<input type = "hidden" name = "loanid" value = '.$pettyid.'/>';
 				echo '<input type = "hidden" name = "accid" value = '.$row['account_id'].'/>';
 				echo '<tr><td colspan = "2"><button class = "btn btn-primary" name = "caapp">Approve Loan</button> <a href = "admin.php" class = "btn btn-danger"> Back </a></td></tr>';
