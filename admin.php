@@ -959,14 +959,19 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
-					if($row['state'] == 'UALate'){
+					if($row['oblate'] != ""){
 						$late = '<b><i><font color = "red"> Late Filed </font></b><br>';
 					}else{
 						$late = "";
 					}
+					if($row['state'] == 'AHR'){
+						$ss = "";
+					}else{
+						$ss = "&ua";
+					}
 					echo '<td>'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
-					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdatereq'])). '</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</td>';
+					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdatereq'])). '</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</font><br> In-Out: <font color = "green">'. $row['obtimein'] . ' - ' . $row['obtimeout'] . '</td>';
 					echo '<td>'.$row['obreason'].'</td>';
 
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
@@ -995,11 +1000,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						}
 						echo '<td><b>'.$datehr. '</td>';
 					}else{
+						if($row['dateacc'] == 1){
+							$chk = 'ACC';
+						}else{
+							$chk = 'HR';
+						}
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-						echo '<td><b>HR: '.$datehr. '</td>';
+						echo '<td><b>'.$chk.': '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
-							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass . $late .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass . $late . $ss .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
 						</td></tr>';
 				}

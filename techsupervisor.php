@@ -861,54 +861,70 @@ if(isset($_GET['upovertime'])){
 		while($row = $result->fetch_assoc()){
 			
 			$originalDate = date($row['obdate']);
-			$newDate = date("F j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y", strtotime($originalDate));
 			$datetoday = date("Y-m-d");
-			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UATech' ){
+			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 				echo '<tr style = "color: red">';
 			}else{
 				echo '<tr>';
-			}		
+			}
+			
+			$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
+			if($row['oblate'] != ""){
+				$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+			}else{
+				$late = "";
+			}
 			echo 
-					'<td>'.$newDate.'</td>
+				'	<td>'.$newDate.'</td>
 					<td>'.$row["obename"].'</td>
 					<td>'.$row["obpost"].'</td>
 					<td >'.$row["obdept"].'</td>
-					<td>'.date("F d, Y", strtotime($row['obdatereq'])).'</td>					
-					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+					<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
+					<td>'.$sched.'</td>
 					<td>'.$row["officialworksched"].'</td>				
-					<td >'.$row["obreason"].'</td>
-						<td width = "200"><b>';
-							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
-								echo 'Pending for Time Checking <br>';
-							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
-								echo 'Pending for Time Checking <br>';
-							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
-								echo 'Pending to Tech Supervisor<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
-							}else if($row['state'] == 'AHR'){
-								echo '<p><font color = "green">Approved by HR</font></p> ';
-							}else if($row['state'] == 'AACC'){
-								echo '<p><font color = "green">Approved by Accounting</font></p> ';
-							}else if($row['state'] == 'AAdmin'){
-								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
-							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
-							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
-							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
-							}else if($row['state'] == 'DATECH'){
-								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
-							}elseif($row['state'] == 'UAAdmin'){
-								echo 'Waiting for Admin Approval<br>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
-							}elseif($row['state'] == 'UALate'){
-								echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
-								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'&late">Edit Application</a>';
-							}else if($row['state'] == 'CheckedHR'){
-								echo '<p><font color = "green">Checked by HR</font></p> ';
+					<td >'.$row["obreason"].'</td>	
+					<td><b>';
+						if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+							echo $late;
+							echo 'Pending for Time Checking <br>';
+							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+						}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+							echo $late;
+							echo 'Pending for Time Checking <br>';
+							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+						}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
+							echo 'Pending to Tech Supervisor<br>';
+							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+						}else if($row['state'] == 'AHR'){
+							if($row['dateacc'] == 1){
+								$chck = 'ACC';
+							}else{
+								$chck = 'HR';
 							}
-						echo '<td></tr>';
+							echo '<p><font color = "green">Approved by '.$chck.'</font></p> ';
+						}else if($row['state'] == 'AACC'){
+							echo '<p><font color = "green">Approved by Accounting</font></p> ';
+						}else if($row['state'] == 'AAdmin'){
+							echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+						}else if($row['state'] == 'DAHR'){
+							echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'DAACC'){
+							echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'DAAdmin'){
+							echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'DATECH'){
+							echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
+						}elseif($row['state'] == 'UAAdmin'){
+							echo 'Waiting for Admin Approval<br>';
+							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
+						}elseif($row['state'] == 'UALate'){
+							echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
+							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'&late">Edit Application</a>';
+						}else if($row['state'] == 'CheckedHR'){
+							echo '<p><font color = "green">Checked by HR</font></p> ';
+						}
+					echo '<td></tr>';
 		}
 	}
 	echo '</tbody></table></form>';

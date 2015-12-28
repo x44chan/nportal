@@ -452,7 +452,11 @@
 				}
 				
 				$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
-				
+				if($row['oblate'] != ""){
+					$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+				}else{
+					$late = "";
+				}
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
@@ -464,14 +468,23 @@
 						<td >'.$row["obreason"].'</td>	
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo $late;
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo $late;
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 								echo 'Pending to Tech Supervisor<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AHR'){
-								echo '<p><font color = "green">Approved by HR</font></p> ';
+								if($row['dateacc'] == 1){
+									$chck = 'ACC';
+								}else{
+									$chck = 'HR';
+								}
+								echo '<p><font color = "green">Approved by '.$chck.'</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
@@ -493,7 +506,7 @@
 							}else if($row['state'] == 'CheckedHR'){
 								echo '<p><font color = "green">Checked by HR</font></p> ';
 							}
-						echo '<td></tr>';
+						echo '</td></tr>';
 		}
 		
 	}echo '</tbody></table></form>';$conn->close();

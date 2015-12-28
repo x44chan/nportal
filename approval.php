@@ -141,9 +141,6 @@
 			}else{
 				$xstate = ' state = "UA" ';
 			}
-			if($state == 'AHR'){
-				$state = "CheckedHR";	
-			}
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
@@ -167,23 +164,15 @@
 				$states = "state  = 'AHR'";
 				$link = "";
 			}
-			if($state == 'AAdmin'){
-				$state = "UA";	
-			}
-			if(isset($_GET['late'])){
-				$oblate = ', oblate = "1"';
-			}else{
-				$oblate = "";
-			}
-			if($state == 'AAdmin'){
-				$state = 'UA';
-			}
 			if($state == 'DAAdmin'){
 				$dareason = $_GET['dareason'];
 			}else{
 				$dareason = "";
 			}
-			$sql = "UPDATE officialbusiness set state = '$state', dareason = '$dareason' $oblate where officialbusiness_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
+			if(isset($_GET['ua']) && $state = 'AAmin'){
+				$state = 'UA';
+			}
+			$sql = "UPDATE officialbusiness set state = '$state', dareason = '$dareason' where officialbusiness_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{

@@ -3,8 +3,7 @@
 		if(isset($_SESSION['date'])){
 			$date1 = $_SESSION['date'];
 			$date2 = $_SESSION['date0'];
-			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
-			
+			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));			
 		}elseif(date("d") < 16){
 			$date1 = date("Y-m-01");
 			$date2 = date("Y-m-15");
@@ -91,7 +90,7 @@
 						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
-						$ssql6 = "SELECT count(account_id) as loanc  FROM loan_cutoff where loan_cutoff.account_id = $accidd and ((state = 'CutOffPaid' and enddate >= '$date2') or (state = 'Full' and full BETWEEN '$date1' and '$date2')) ORDER BY cutoffdate ASC";
+						$ssql6 = "SELECT count(loan_cutoff.account_id) as loanc,loan_cutoff.state,loan_cutoff.loan_id,loan_cutoff.enddate,loan_cutoff.full,loan.*  FROM loan_cutoff,loan where loan_cutoff.loan_id = loan.loan_id and loan.state = 'ALoan' and (loan_cutoff.enddate >= '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
 						
 						if($_GET['rep'] == 'all'){
 							$data1 = $conn->query($ssql1)->fetch_assoc();

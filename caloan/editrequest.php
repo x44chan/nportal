@@ -292,12 +292,7 @@
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
-		if(!isset($_GET['late'])){
-			$state = 'UAAdmin';
-		}else{
-			$state = 'UALate';
-		}
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and officialbusiness_id = '$oid' and state = '$state'";
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = $accid and officialbusiness.account_id = $accid and officialbusiness_id = '$oid' and (state = 'UAAdmin' or state = 'UALate' or state = 'UA')";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<div ><form role = "form"  align = "center"action = "update-exec.php" method = "post">

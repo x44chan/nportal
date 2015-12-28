@@ -1455,7 +1455,7 @@ echo '</tbody></table></form>';
 			$endque = date('Y-m-d');
 		}
 	include("conf.php");
-	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and position != 'service technician' and obdate BETWEEN '$forque1' and '$endque1' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and obdate > '2015-12-03' and position != 'service technician' ORDER BY obdate ASC";
 	$result = $conn->query($sql);	
 ?>
 
@@ -1514,8 +1514,13 @@ echo '</tbody></table></form>';
 					}elseif($row['state'] == 'UATech'){
 						echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 					}else{
-					echo'
-						<td width = "200">
+					if($row['oblate'] == 1){
+								$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+							}else{
+								$late = "";
+							}
+						echo'
+							<td width = "200">'.$late.'
 							<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
 						</td>
 					</tr>';
@@ -1523,7 +1528,7 @@ echo '</tbody></table></form>';
 		}
 	}
 
-	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and (state = 'UA' or state = 'UATech') and position = 'service technician' and obdate BETWEEN '$tforque1' and '$tendque1' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and obdate > '2015-12-03' and (state = 'UA' or state = 'UATech') and position = 'service technician' ORDER BY obdate ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
@@ -1550,8 +1555,13 @@ echo '</tbody></table></form>';
 						}elseif($row['state'] == 'UATech' && !isset($_GET['bypass'])){
 							echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
 						}else{
-							echo'
-								<td width = "200">
+							if($row['oblate'] == 1){
+								$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+							}else{
+								$late = "";
+							}
+						echo'
+							<td width = "200">'.$late.'
 									<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
 								</td>
 							</tr>';
@@ -1589,7 +1599,7 @@ echo '</tbody></table></form>';
 						<td>'.$row["officialworksched"].'</td>				
 						<td >'.$row["obreason"].'</td>	
 					<td><b>';
-							if($row['state'] == 'UAAdmin' || $row['state'] == 'UALate'){
+							if($row['state'] == 'UAAdmin' || $row['state'] == 'UALate' || $row['state'] == 'UA'){
 								echo 'Pending to Admin<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AAdmin'){
@@ -1598,6 +1608,8 @@ echo '</tbody></table></form>';
 								echo '<p><font color = "green">Added to reports</font></p> ';
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Pending to Dep. Head</font></p> '.$row['dareason'];
 							}
 						echo '<td></tr>';
 		}
@@ -1741,7 +1753,7 @@ echo '</tbody></table></form>';
 				<tr>
 					<td><b>New Start of OT: </b></td>
 					<td>
-						<input id = "timein" value = "<?php echo $row['startofot'];?>" required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
+						<input id = "timein" value = "<?php echo $row['startofot'];?>" onkeydown="return false;"required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
 					</td>
 				</tr>				
 				<tr>

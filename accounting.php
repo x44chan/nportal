@@ -7,6 +7,8 @@
 <?php	if($_SESSION['level'] != 'ACC'){	?>		
 	<script type="text/javascript">	window.location.replace("index.php");</script>	
 <?php	}	?>
+<script type="text/javascript" src="css/src/jquery.ptTimeSelect2.js"></script>
+<link rel="stylesheet" type="text/css" href="css/src/jquery.ptTimeSelect2.css" />
 <div align = "center">
 	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
@@ -100,6 +102,121 @@
 		include 'aliquidate.php';	
 	}
 ?>
+<?php
+	if(isset($_GET['acc']) && isset($_GET['upob'])){
+		$oid = mysql_escape_string($_GET['upob']);
+		$_SESSION['otid'] = $oid;
+		$_SESSION['acc'] = $_GET['acc'];
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and officialbusiness_id = '$oid' and state = 'UA'";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			echo '<div ><form role = "form"  align = "center"action = "update-exec.php" method = "post">
+			<table class = "table" style = "width: 50%;" align = "center">';
+			while($row = $result->fetch_assoc()){
+			?>
+				<tr>
+					<td colspan = 2 align = center>
+						<h2> Edit Official Business Request </h2>
+					</td>
+				</tr>
+				<tr>
+					<td>Date File: </td>
+					<td><?php echo date('F j, Y', strtotime($row['obdate']));?></td>
+				</tr>
+				<tr>
+					<td>Name of Employee: </td>
+					<td><?php echo $row['obename'];?></td>
+				</tr>
+				<tr>
+					<td>ID No: </td>
+					<td><?php echo $_SESSION['acc_id'];?></td>
+				</tr>
+				<tr>
+					<td>Position: </td>
+					<td><?php echo $_SESSION['post'];?></td>
+				</tr>
+				<tr>
+					<td>Department: </td>
+					<td><?php echo $_SESSION['dept'];?></td>
+				</tr>
+				<tr>
+					<td>Date Of Official Business: </td>
+					<td><?php echo date('M j, Y', strtotime($row['obdatereq']));?></td>
+				</tr>				
+				<tr>
+					<td width="25%">Description of Work Order: </td>
+					<td width="25%"><?php echo $row['obreason'];?></td>					
+				</tr>
+				<tr>
+					<td> Official Work Schedule</td>
+					<td> <?php echo $row['officialworksched'];?></td>
+				</tr>
+				<div class = "ui-widget-content" style = "border: none;">
+				<tr>
+					<td>Time In: </td>
+					<td>
+						<input class = "form-control" value = "<?php echo $row['obtimein'];?>" name = "obtimein" id = "obtimein" autocomplete ="off" placeholder = "Click to Set time"/>
+					</td>
+				</tr>				
+				<tr>
+					<td>Time Out: </td>
+					<td><input class = "form-control" value = "<?php echo $row['obtimeout'];?>" name = "obtimeout" id = "obtimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
+				</tr>				
+				
+				<tr id = "warning" style="display: none;">
+					<td></td>
+					<td>
+						<div class="alert alert-danger fade in">
+						  <strong>Warning!</strong> Fill out <b>Time In</b> or <b>Time Out</b>
+						</div>
+					</td>
+				</tr>
+				<script type="text/javascript">
+					$(document).ready(function(){	
+						$('#obtimein').click(function() {
+							$("#warning").hide();
+						});
+						$("#submituped").click(function(){						
+							if($("#obtimein").val() == "" && $("#obtimeout").val() == "" ){
+								$("#obtimein").attr("required", true);
+								$("#obtimeout").attr("required", true);
+							}else{
+								$("#obtimein").attr("required", false);
+								$("#obtimeout").attr("required", false);
+							}
+						});
+					});
+				</script>
+				<script type="text/javascript">
+					$(document).ready(function(){
+						$('input[name="obtimein"]').ptTimeSelect2();
+						$('input[name="upoffr"]').ptTimeSelect2();
+						$('input[name="upoffto"]').ptTimeSelect2();
+						$('input[name="obtimeout"]').ptTimeSelect2();
+					});
+				</script>
+				</div>
+				<input value = "<?php echo $row['obtimein'];?>" type = "hidden" name = "oldobtimein"/>
+				<input value = "<?php echo $row['obtimeout'];?>" type = "hidden" name = "oldobtimeout"/>
+				<input value = "<?php echo $row['account_id'];?>" type = "hidden" name = "accid"/>
+				<tr>
+					<td style = "padding: 3px;"colspan = "2" align = center>
+						<input type = "submit" id = "submituped"name = "hrupobsubmit" onclick = "return confirm('Are you sure?.');" class = "btn btn-primary"/>					
+						<a href = "?ac=<?php echo $_GET['acc']?>" class = "btn btn-danger" value = "Cancel">Cancel</a>
+					</td>
+				</tr>
+		<?php
+
+			}
+		}else{
+			echo "<div align = 'center'><h2 >No record found.</h2>";
+			echo '<a href = "?ac='. $_GET['acc'].'" class = "btn btn-danger" value = "Cancel">Back</a></div>';
+		}
+		echo '</table>
+	</form></div>';
+	}
+	
+?>	
 <?php 
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penloan'){
 		include("conf.php");
@@ -391,12 +508,18 @@
 		$result = $conn->query($sql);
 		
 	?>	
+		<div>
+			<h2 align="center" style="margin-top:40px;"> Official Business Status </h2>
+		<?php if(!isset($_GET['bypass'])) { ?>	
+			<a href = "?ac=penob&bypass" class="btn btn-success pull-right" style="margin-right: 10px; margin-top: -30px;"> Bypass Approval </a>
+		<?php }else { ?>
+			<a href = "?ac=penob" class="btn btn-success pull-right" style="margin-right: 10px; margin-top: -30px;"> Un-Bypass Approval </a>
+		<?php } ?>
+		</div>
 		<form role = "form" action = "approval.php"    method = "get">
+
 			<table class = "table table-hover" align = "center">
 				<thead>
-					<tr>
-						<td colspan = 9 align = center><h2> Official Business Status </h2></td>
-					</tr>
 					<tr>
 						<th>Date File</th>
 						<th>Name of Employee</th>
@@ -421,26 +544,42 @@
 					echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
-				}		
+				}
+				
+				$sched = $row["obtimein"] . ' - ' . $row['obtimeout'];
+				if($row['oblate'] != ""){
+					$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+				}else{
+					$late = "";
+				}
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
 						<td>'.$row["obpost"].'</td>
 						<td >'.$row["obdept"].'</td>
 						<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
-						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+						<td>'.$sched.'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td >'.$row["obreason"].'</td>	
-					<td><b>';
+						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
+								echo $late;
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
+								echo $late;
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 								echo 'Pending to Tech Supervisor<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AHR'){
-								echo '<p><font color = "green">Approved by HR</font></p> ';
+								if($row['dateacc'] == 1){
+									$chck = 'ACC';
+								}else{
+									$chck = 'HR';
+								}
+								echo '<p><font color = "green">Approved by '.$chck.'</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
@@ -462,10 +601,52 @@
 							}else if($row['state'] == 'CheckedHR'){
 								echo '<p><font color = "green">Checked by HR</font></p> ';
 							}
-						echo '<td></tr>';
+						echo '</td></tr>';
 		}
 		
-	}echo '</tbody></table></form>';$conn->close();
+	}
+	if(isset($_GET['bypass'])){
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and obdate > '2015-12-03' ORDER BY obdate ASC";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){			
+				$originalDate = date($row['obdate']);
+				$newDate = date("M j, Y", strtotime($originalDate));
+				$datetoday = date("Y-m-d");
+				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+					echo '<tr style = "color: red">';
+				}else{
+					echo '<tr>';
+				}		
+				echo 
+						'<td>'.$newDate.'</td>
+						<td>'.$row["obename"].'</td>
+						<td>'.$row["obpost"].'</td>
+						<td >'.$row["obdept"].'</td>
+						<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
+						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+						<td>'.$row["officialworksched"].'</td>				
+						<td >'.$row["obreason"].'</td>	';
+						if($row['state'] == 'UAACCAdmin'){
+							echo '<td><strong>Pending to Admin<strong></td>';
+						}elseif($row['state'] == 'UATech'){
+							echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
+						}else{
+							if($row['oblate'] == 1){
+								$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+							}else{
+								$late = "";
+							}
+						echo'
+							<td width = "200">'.$late.'
+								<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
+							</td>
+						</tr>';
+						}
+			}
+		}
+	}
+	echo '</tbody></table></form>';$conn->close();
 }
 ?>
 

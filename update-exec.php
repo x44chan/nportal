@@ -71,7 +71,7 @@
 		}
 		$stmts2x = "SELECT * FROM `overtime` where overtime_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxata = $conn->query($stmts2x)->fetch_assoc();
-		if(date("D") == 'Mon'){
+		if(date("D", strtotime($dxata['datefile'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
 			$minus = '-1 days';
@@ -139,19 +139,19 @@
 		$stmts2xx = "SELECT * FROM `officialbusiness` where officialbusiness_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxatax = $conn->query($stmts2xx)->fetch_assoc();
 		$restric = 0;
-		if(date("D") == 'Mon'){
+		if(date("D", strtotime($dxatax['obdate'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
 			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date))){
-			$uplate = ',state = "UALate"';			
+			$uplate = ',oblate = 1';		
 		}else{
-			$uplate = ',state = "UAAdmin"';	
+			$uplate = ',oblate = null';	
 		}
 		$stmt = "UPDATE `officialbusiness` set 
 			obreason = '$obreason', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
-			where account_id = '$accid' and $state and officialbusiness_id = '$_SESSION[otid]'";
+			where account_id = '$accid' and (state = 'UALate' or state = 'UAAdmin' or state = 'UA') and officialbusiness_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
 				if($_SESSION['level'] == 'EMP'){
@@ -233,7 +233,7 @@
 		}
 		$stmts2x = "SELECT * FROM `undertime` where undertime_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxata = $conn->query($stmts2x)->fetch_assoc();
-		if(date("D") == 'Mon'){
+		if(date("D", strtotime($dxata['datefile'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
 			$minus = '-1 days';
@@ -302,7 +302,19 @@
 			$time4 = date("H:i", strtotime($oldotend));
 			$oldappot = gettimediff($time3,$time4);
 			$hrrestric = 0;
-			if($newappot > $oldappot){
+			$explo = (explode(":", $newappot));
+			$explo2 = (explode(":", $oldappot));
+			if($explo[1] > 0){
+				$explo[0] .= '.5';
+			}else{
+				$explo[0] .= '.0';
+			}
+			if($explo2[1] > 0){
+				$explo2[0] .= '.5';
+			}else{
+				$explo2[0] .= '.0';
+			}
+			if($explo[0] > $explo2[0]){
 				$hrrestric += 1;
 			}
 			$oldot = $oldotstrt . ' - ' . $oldotend;
@@ -363,14 +375,22 @@
 		$accid = mysql_escape_string($_POST['accid']);
 		$obid = $_SESSION['otid'];
 		$date = date('Y-m-d h:i A');
-		$upstate = 'CheckedHR';
+		$upstate = 'AHR';
+		if($_SESSION['level'] == 'ACC'){
+			$acc = ', dateacc = 1';
+		}else{
+			$acc = "";
+		}
 		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
 		$stmt = "UPDATE `officialbusiness` set 
-				obtimein = '$obtimein', obtimeout = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date'
+				obtimein = '$obtimein', obtimeout = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date' $acc
 			where account_id = '$accid' and state = 'UA' and officialbusiness_id = '$obid'";
 		if ($conn->query($stmt) === TRUE) {
-	    	echo '<script type="text/javascript">window.location.replace("hr.php?ac=penob"); </script>';
-			
+	    	if($_SESSION['level'] == 'ACC'){
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penob"); </script>';
+			}else{
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac=penob"); </script>';
+			}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}
