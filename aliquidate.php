@@ -182,7 +182,7 @@ $(document).ready(function(){
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
 			    	    	var amount1 = $('#amount' + b).val();
-			    	    	amount2 = amount2 - parseInt(amount1);
+			    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
 			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
 			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
@@ -210,7 +210,7 @@ $(document).ready(function(){
 	    	for(b = 0; b < i; b++) {
 	    	    (function (b) {
 	    	    	var amount1 = $('#amount' + b).val();
-	    	    	amount2 = amount2 - parseInt(amount1);
+	    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 	    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 	    	    	sum = parseFloat(amount1) + parseFloat(sum);
 	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
@@ -252,7 +252,7 @@ $(document).ready(function(){
 			    	for(b = 0; b < i; b++) {
 			    	    (function (b) {
 			    	    	var amount1 = $('#amount' + b).val();
-			    	    	amount2 = amount2 - parseInt(amount1);
+			    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);
 			    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
