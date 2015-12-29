@@ -54,7 +54,7 @@
 			}else{
 				$state = 'AAPetty';
 			}
-		}else if($_SESSION['level'] == 'ACC'){
+		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 			$state = 'AAAPettyReceive';
 			$source = 'Accounting';
 		}
@@ -62,9 +62,11 @@
 	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans', particular = '$particular'
 	    where petty_id = '$petty_id'"; 
 	 	if ($conn->query($sql) === TRUE) {	 		
-	    	if($_SESSION['level'] == 'Admin'){echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
-	    }
-	    	elseif($_SESSION['level'] == 'ACC'){echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';}
+	    	if($_SESSION['level'] == 'Admin'){
+	    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+	    	}elseif($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
+	    		echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
+	    	}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}  
@@ -218,7 +220,7 @@
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
-		 		}else if($_SESSION['level'] == 'ACC'){
+		 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
 		 		}
 		  	}else {
@@ -287,7 +289,7 @@
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
-		 		}else if($_SESSION['level'] == 'ACC'){
+		 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
 		 		}
 		  	}else {

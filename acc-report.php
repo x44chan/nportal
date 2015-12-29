@@ -132,7 +132,14 @@ $(document).ready( function () {
 				  ?>
 				</ul>
 			</div>			
-			<a type = "button" class = "btn btn-primary  active" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>
+			<div class="btn-group btn-group-lg">
+		    	<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+		        	<ul class="dropdown-menu" role="menu">
+		        		<li><a href = "acc-report.php">Cut Off Summary</a></li>
+		        		<li><a href="hr-emprof.php">Employee Profile</a></li>
+		        		<li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+		        	</ul>
+		    </div>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -193,13 +200,13 @@ $(document).ready( function () {
 		        $vlcount = 0;
 		        $scount = 0;
 		        $accidd = $row['account_id'];
-		        if(date("Y") == 2015){  
+		        if(date("Y-m-d") < "2015-12-29"){  
 		          $sl = $row['sickleave'];
 		          $vl = $row['vacleave'];
 		          $usedsl = $row['usedsl'];
 		          $usedvl = $row['usedvl'];
 		        }else{        
-		          $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+		          $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
 		          $datalea = $conn->query($leaveexec)->fetch_assoc();
 		          $sl = $datalea['sleave'];
 		          $vl = $datalea['vleave'];

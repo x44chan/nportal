@@ -77,12 +77,14 @@
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
-				  <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
-				  <li><a  type = "button" href = "tech-sched.php">Tech Scheduling</a></li>
-				  <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
-				  <li><a  type = "button" href = "hr-timecheck.php">In/Out Reference</a></li>
+				  <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
+				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
+				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
+				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
+				  <li class="divider"></li>
+				  <li><a href = "accounting-petty.php">Petty List</a></li>
 				</ul>
-			</div>			
+			</div>		
 			<a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
 			<a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>

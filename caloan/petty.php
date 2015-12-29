@@ -9,7 +9,7 @@
 			<table class = "table table-hover" align = "center">
 				<thead>
 					<tr>
-						<td colspan = 8 align = center><h2> Pending Petty Request </h2></td>
+						<td colspan = 9 align = center><h2> Pending Petty Request </h2></td>
 					</tr>
 					<tr>
 						<th>Petty #</th>
@@ -39,7 +39,7 @@
 				}
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid' and petty_liqdate.liqstate = 'CompleteLiqdate'";
 				$data = $conn->query($sql)->fetch_assoc();	
-				if(date("Y-m-d") > date("Y-m-d", strtotime("+ 15days", strtotime($row['date']))) && $data['liqstate'] == 'CompleteLiqdate'){
+				if(date("Y-m-d") > date("Y-m-d", strtotime("+12 days", strtotime($row['date']))) && $data['liqstate'] == 'CompleteLiqdate'){
 					continue;
 				}
 				echo 
@@ -61,7 +61,7 @@
 							}elseif($row['state'] == 'AAAPettyReceive'){
 								echo '<a href = "petty-exec.php?o='.$row['petty_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Petty</a>';
 							}elseif($row['state'] == 'DAPetty'){
-								echo 'Disapproved request';
+								echo '<b><font color = "red">Disapproved request';
 							}elseif($row['state'] == 'AAPettyReceived'){
 								echo '<font color = "green"><b>Received ';
 								echo '</font></br>Code: ' . $row['rcve_code'];

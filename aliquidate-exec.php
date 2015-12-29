@@ -3,7 +3,7 @@
 	session_start();
 	if(!isset($_SESSION['acc_id'])){
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
-	}elseif(isset($_POST['lsub'])){
+	}elseif(isset($_POST['lsub']) && $_SESSION['exec'] == 0){
 		$liqstate = 'LIQDATE';
 		$counter = $_POST['counter'];
 		$date = date("Y-m-d");
@@ -39,7 +39,18 @@
 						$conn->error();
 					}
 				}
-			}	
+			}
+			$_SESSION['exec'] = 1;	
 		}
+	}else{
+		if($_SESSION['level'] == 'EMP'){
+    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'ACC') {
+    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'TECH') {
+    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+    	}elseif ($_SESSION['level'] == 'HR') {
+    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+    	}
 	}
 ?>

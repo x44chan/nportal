@@ -122,8 +122,11 @@
 			if ($conn->query($sql) === TRUE) {
 				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 			}
-		}elseif($_GET['adleave'] == 'd'){
-
+		}elseif($_GET['adleave'] == 'd'){			
+			$sql = "UPDATE nleave_bal set state = 'DAAdmin' where leavebal_id = '$balid' and state = 'UA'";
+			if ($conn->query($sql) === TRUE) {
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}
 		}
 	}
 ?>

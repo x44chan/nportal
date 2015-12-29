@@ -682,11 +682,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}else{
 				$edate = "";
 			}
-			if($row['vacleave'] != '0' && date("Y") == 2015){
+			if($row['vacleave'] != '0' && date("Y-m-d") < "2015-12-29"){
 				$tag2 = 'Vacation Leave<br><br>' . $tag2;
 				$tag = 'Vacation Leave: ' . $row['vacleave'] . '<br> <font color = "red">Used V.Leave: ' . $row['usedvl'] .'</font><br>'. $tag;
 			}
-			if($row['sickleave'] != '0' && date("Y") == 2015){
+			if($row['sickleave'] != '0' && date("Y-m-d") < "2015-12-29"){
 				$tag2 = 'Sick Leave<br><br>' . $tag2;
 				$tag = 'Sick Leave: ' . $row['sickleave'] . '<br> <font color = "red">Used S.Leave: ' . $row['usedsl'] .'</font><br>'. $tag;
 			}
@@ -710,7 +710,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					<td><b>Categorization</b></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b><?php echo $tag2;?></td>
-					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>' . $datecat;?></b></td>
+					<td><b><i><font color = "red"><?php echo '</font><font color = "green">'. $tag . $row['empcatergory'] . '</font>' . $datecat . '<br>Payment: <font color = "green">' . $row['payment'] . '</font>';?></b></td>
 					<td><b> HR Department </b></td>
 					<td>
 						<?php 

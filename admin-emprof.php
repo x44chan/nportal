@@ -221,13 +221,13 @@
             $vlcount = 0;
             $scount = 0;
             $accidd = $row['account_id'];
-            if(date("Y") == 2015){  
+            if(date("Y-m-d") < "2015-12-29"){  
               $sl = $row['sickleave'];
               $vl = $row['vacleave'];
               $usedsl = $row['usedsl'];
               $usedvl = $row['usedvl'];
             }else{        
-              $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+              $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
               $datalea = $conn->query($leaveexec)->fetch_assoc();
               $sl = $datalea['sleave'];
               $vl = $datalea['vleave'];
@@ -457,38 +457,28 @@ $(document).ready(function(){
     </div>
       </div>
       <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
-      <?php 
-        if($row['usedsl'] > 0){
-          $usedsl = '<div class="col-xs-3">
-                    <label>Used Sick Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedsl'].'</p></i>
-                  </div>';
-        }else{
-          $usedsl = "";
-        }
-        if($row['usedvl'] > 0){
-          $usedvl = '<div class="col-xs-3">
-                    <label>Used Vacation Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedvl'].'</p></i>
-                  </div>';
-        }else{
-          $usedvl = "";
-        }
-        if($row['sickleave'] > 0 && $row['vacleave'] > 0){
-          echo '<div class="row">
-                  <div class="col-xs-3">
-                    <label>Given Sick Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['sickleave'].'</p></i>
-                  </div>
-                  '.$usedsl.'
-                  <div class="col-xs-3">
-                    <label>Given Vacation Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['vacleave'].'</p></i>
-                  </div>
-                  '.$usedvl.'
-                </div>';
-        } 
-      ?>
+       <?php
+            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
+            $datalea = $conn->query($leaveexec)->fetch_assoc();
+            $sl = $datalea['sleave'];
+            $vl = $datalea['vleave'];
+            if($sl <= 0){
+              $sl = 0;
+            }
+            if($vl <= 0){
+              $vl = 0;
+            }
+       ?>
+       <div class="row">
+         <div class="col-xs-4">
+           <label>Sick Leave</label>
+           <p style="margin-left: 10px"><i><?php echo $sl;?></i></p>
+         </div>
+         <div class="col-xs-4">
+           <label>Vacation Leave</label>
+           <p style="margin-left: 10px"><i><?php echo $vl;?></i></p>
+         </div>
+       </div>
   		<div class="row">
          <div class="col-md-8">
             <label for="usrname"> Home Address </label>
@@ -506,7 +496,7 @@ $(document).ready(function(){
         	</div>
           <div class="col-md-4">
             <label for="efname"> Category </label>
-            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory']?></p></i>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory'] . ' / ' . $row['payment'];?></p></i>
           </div>
           <div class="col-md-4">
             <label for="efname"> Expiry </label>

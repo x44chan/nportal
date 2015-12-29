@@ -38,7 +38,14 @@
 				  ?>
 				</ul>
 			</div>
-			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>
+			<div class="btn-group btn-group-lg">
+		    	<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+		        	<ul class="dropdown-menu" role="menu">
+		        		<li><a href = "acc-report.php">Cut Off Summary</a></li>
+		        		<li><a href="hr-emprof.php">Employee Profile</a></li>
+		        		<li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+		        	</ul>
+		    </div>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">

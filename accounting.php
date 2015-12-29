@@ -35,7 +35,14 @@
 				  ?>
 				</ul>
 			</div>
-			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>
+			<div class="btn-group btn-group-lg">
+		        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+		        	<ul class="dropdown-menu" role="menu">
+		        		<li><a href = "acc-report.php">Cut Off Summary</a></li>
+		            	<li><a href="hr-emprof.php">Employee Profile</a></li>
+		            	<li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+		          	</ul>
+		    </div>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -534,6 +541,47 @@
 				</thead>
 				<tbody>
 	<?php
+		if(isset($_GET['bypass'])){
+			$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and obdate > '2015-12-03' ORDER BY obdate ASC";
+			$result = $conn->query($sql);
+			if($result->num_rows > 0){
+				while($row = $result->fetch_assoc()){			
+					$originalDate = date($row['obdate']);
+					$newDate = date("M j, Y", strtotime($originalDate));
+					$datetoday = date("Y-m-d");
+					if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
+						echo '<tr style = "color: red">';
+					}else{
+						echo '<tr>';
+					}		
+					echo 
+							'<td>'.$newDate.'</td>
+							<td>'.$row["obename"].'</td>
+							<td>'.$row["obpost"].'</td>
+							<td >'.$row["obdept"].'</td>
+							<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
+							<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
+							<td>'.$row["officialworksched"].'</td>				
+							<td >'.$row["obreason"].'</td>	';
+							if($row['state'] == 'UAACCAdmin'){
+								echo '<td><strong>Pending to Admin<strong></td>';
+							}elseif($row['state'] == 'UATech'){
+								echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
+							}else{
+								if($row['oblate'] == 1){
+									$late = "<b><font color = 'red'> Late Filed </font></b><br>";
+								}else{
+									$late = "";
+								}
+							echo'
+								<td width = "200">'.$late.'
+									<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
+								</td>
+							</tr>';
+							}
+				}
+			}
+		}
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
 				
@@ -605,47 +653,7 @@
 		}
 		
 	}
-	if(isset($_GET['bypass'])){
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state = 'UA' and obdate > '2015-12-03' ORDER BY obdate ASC";
-		$result = $conn->query($sql);
-		if($result->num_rows > 0){
-			while($row = $result->fetch_assoc()){			
-				$originalDate = date($row['obdate']);
-				$newDate = date("M j, Y", strtotime($originalDate));
-				$datetoday = date("Y-m-d");
-				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
-					echo '<tr style = "color: red">';
-				}else{
-					echo '<tr>';
-				}		
-				echo 
-						'<td>'.$newDate.'</td>
-						<td>'.$row["obename"].'</td>
-						<td>'.$row["obpost"].'</td>
-						<td >'.$row["obdept"].'</td>
-						<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
-						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
-						<td>'.$row["officialworksched"].'</td>				
-						<td >'.$row["obreason"].'</td>	';
-						if($row['state'] == 'UAACCAdmin'){
-							echo '<td><strong>Pending to Admin<strong></td>';
-						}elseif($row['state'] == 'UATech'){
-							echo '<td><b>Pending to Tech. Supervisor</b></td></tr>';
-						}else{
-							if($row['oblate'] == 1){
-								$late = "<b><font color = 'red'> Late Filed </font></b><br>";
-							}else{
-								$late = "";
-							}
-						echo'
-							<td width = "200">'.$late.'
-								<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
-							</td>
-						</tr>';
-						}
-			}
-		}
-	}
+	
 	echo '</tbody></table></form>';$conn->close();
 }
 ?>

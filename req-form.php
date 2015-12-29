@@ -22,6 +22,7 @@ $(document).ready(function(){
 </script>
 
 <?php
+	$_SESSION['exec'] = 0;
 	if(isset($_GET['late_filing'])){
 		echo '<div id = "latefiling">';
 		include 'caloan/latefiling.php';
@@ -214,7 +215,7 @@ $(document).ready(function(){
 				$usedsl = $row['usedsl'];
 				$usedvl = $row['usedvl'];
 			}else{				
-				$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+				$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
 				$datalea = $conn->query($leaveexec)->fetch_assoc();
 				$sl = $datalea['sleave'];
 				$vl = $datalea['vleave'];
@@ -402,10 +403,10 @@ $(document).ready(function(){
 			$state = 'UAPetty';
 		}
 		$datefile = date("Y-m-d");
-		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and petty.account_id = '$acc_id' and petty.state = 'AAPettyRep' order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
-		if($result->num_rows > 0){			
+		if($result->num_rows > 0){	
 			while($row = $result->fetch_assoc()){
 			$petid = $row['petty_id'];
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
@@ -552,8 +553,10 @@ $(document).ready(function(){
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and CURDATE() <= enddate and (loan_cutoff.state != 'DALoan' and loan.state != 'DECLoan')";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
 		$resquery = $conn->query($query);
+		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
+		$resqueryxx = $conn->query($sqlxx);
 		$date = date("Y-m-d");
 		if($date > date('Y-m-16')){
 			$date = date("Y-m-01", strtotime("next month"));
@@ -566,7 +569,7 @@ $(document).ready(function(){
 		$resquery2 = $conn->query($query2);
 		if($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
 			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
-		}elseif($resquery->num_rows > 0){
+		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
 			if($_SESSION['level'] == 'EMP'){
     			echo '<script type="text/javascript">alert("You still have pending loan.");window.location.replace("employee.php?ac=penloan"); </script>';
 	 	  	}elseif ($_SESSION['level'] == 'ACC') {

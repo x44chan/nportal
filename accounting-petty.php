@@ -3,7 +3,7 @@
 	include('header.php');	
 	date_default_timezone_set('Asia/Manila');
 ?>
-<?php if($_SESSION['level'] != 'ACC'){	?>		
+<?php if($_SESSION['level'] != 'HR' && $_SESSION['level'] != 'ACC'){	?>		
 	<script type="text/javascript">	window.location.replace("index.php");</script>	
 <?php	} ?>
 <script type="text/javascript">		
@@ -88,46 +88,69 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
 <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
 <div align = "center">
-	<div class="alert alert-success"><br>
-		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
-		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
-		<div class="btn-group btn-group-lg">
-			<a  type = "button"class = "btn btn-primary"  href = "accounting.php?ac=penot">Home</a>
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a href="#" id = "newovertime">Overtime Request</a></li>
-				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
-				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
-				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
-				  <?php
-				  	if($_SESSION['category'] == "Regular"){
-				  ?>
-				  	<li class="divider"></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
-				  <?php
-				  	}
-				  ?>
-				</ul>
-			</div>
-			<a type = "button" class = "btn btn-primary" href = "acc-report.php" id = "showapproveda">Cutoff Summary</a>							
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
-				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
-				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
-				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
-				</ul>
-			</div>	
-			<a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
-			<a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
-			<a type = "button" class = "btn btn-danger" href = "logout.php"  role="button">Logout</a>
-		</div>
-	</div>
+  <div class="alert alert-success"><br>
+    Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
+    <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
+    <div class="btn-group btn-group-lg">
+      <a  type = "button"class = "btn btn-primary" href = "index.php">Home</a>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="#" id = "newovertime">Overtime Request</a></li>
+          <li><a href="#" id = "newoffb">Official Business Request</a></li>
+          <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>         
+          <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
+          <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+          <?php
+            if($_SESSION['category'] == "Regular"){
+          ?>
+            <li class="divider"></li>
+            <li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
+            <li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+          <?php
+            }
+          ?>
+        </ul>
+      </div>
+      <?php if($_SESSION['level'] == 'HR') { ?>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
+          <li><a href = "tech-sched.php">Tech Scheduling</a></li>
+          <li><a href = "hr-emprof.php">Employee Profile</a></li>
+          <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
+          <li class="divider"></li>
+          <li><a href = "accounting-petty.php">Petty List</a></li>
+        </ul>
+      </div>
+      <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
+      <a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
+      <?php }else{ ?>
+      <div class="btn-group btn-group-lg">
+          <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href = "acc-report.php">Cut Off Summary</a></li>
+            <li><a href="hr-emprof.php">Employee Profile</a></li>
+            <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+          </ul>
+      </div>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
+        </ul>
+      </div>
+      <a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
+      <a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+      <?php } ?>
+      <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
+    </div>
+  </div>
 </div>
 <?php	
 	if(isset($_GET['suc'])){

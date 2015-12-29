@@ -4,7 +4,7 @@
   include 'conf.php';
 	date_default_timezone_set('Asia/Manila');
 ?>
-<?php if($_SESSION['level'] != 'HR'){
+<?php if($_SESSION['level'] != 'HR' && $_SESSION['level'] != 'ACC'){
 	?>		
 	<script type="text/javascript"> 
 		window.location.replace("index.php");
@@ -30,7 +30,7 @@
     Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
     <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
     <div class="btn-group btn-group-lg">
-      <a  type = "button"class = "btn btn-primary"  href = "hr.php?ac=penot">Home</a>
+      <a  type = "button"class = "btn btn-primary" href = "index.php">Home</a>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -51,17 +51,41 @@
           ?>
         </ul>
       </div>
+      <?php if($_SESSION['level'] == 'HR') { ?>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
         <ul class="dropdown-menu" role="menu">
-          <li><a type="button" data-toggle="modal" data-target="#newAcc">Add User</a></li>
-          <li><a  type = "button" href = "tech-sched.php">Tech Scheduling</a></li>
-          <li><a href="hr-emprof.php" id = "newovertime">Employee Profile</a></li>
-          <li><a  type = "button" href = "hr-timecheck.php">In/Out Reference</a></li>
+          <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
+          <li><a href = "tech-sched.php">Tech Scheduling</a></li>
+          <li><a href = "hr-emprof.php">Employee Profile</a></li>
+          <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
+          <li class="divider"></li>
+          <li><a href = "accounting-petty.php">Petty List</a></li>
         </ul>
       </div>
       <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
       <a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
+      <?php }else{ ?>
+      <div class="btn-group btn-group-lg">
+          <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href = "acc-report.php">Cut Off Summary</a></li>
+            <li><a href="hr-emprof.php">Employee Profile</a></li>
+            <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+          </ul>
+      </div>
+      <div class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a type = "button"  href = "accounting-petty.php">Petty List</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
+          <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
+        </ul>
+      </div>
+      <a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
+      <a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+      <?php } ?>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
     </div>
   </div>
@@ -258,7 +282,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-5">
+      <div class="col-xs-4">
         <label>Edit Category <font color = "red"> * </font></label>
         <select class="form-control" required name = "empcatergory">
           <option value="">----------------</option>
@@ -267,12 +291,20 @@
           <option <?php if($row['empcatergory'] == "Regular"){ echo ' selected '; } ?> value="Regular">Regular</option>
         </select>
       </div>
-      <div class="col-xs-5">
+      <div class="col-xs-4">
+        <label>Payment <font color = "red"> * </font></label>
+        <select class="form-control" required name = "payment">
+          <option value="">----------------</option>
+          <option <?php if($row['payment'] == "Daily"){ echo ' selected '; } ?> value="Daily">Daily</option>
+          <option <?php if($row['payment'] == "Monthly"){ echo ' selected '; } ?> value="Monthly">Monthly</option>
+        </select>
+      </div>
+      <div class="col-xs-4">
         <label>Date</label>
         <input required type = "date" <?php if($row['empcatergory'] == "Regular"){ echo ' value = "' . $row['regdate'] . '"'; } elseif($row['empcatergory'] == "Probationary"){ echo ' value = "' . $row['probidate'] . '"';}else{ echo ' value = "' . $row['contractdate'] . '"';}?> data-date='{"startView": 2, "openOnMouseFocus": true}' required name = "catdate" class="form-control"/>
       </div>
     </div>
-    <?php if(date("Y") == "2015"){ ?>
+    <?php if(date("Y-m-d") < "2015-12-29"){ ?>
     <div class = "row">
       <div class="col-xs-3">
         <label>Sick Leave <font color = "red"> * <i>(0 if none)</i></font></label>
@@ -295,7 +327,6 @@
     <div class="row">
       <div class="col-xs-12" align="center">
         <button class="btn btn-primary" name = "upsub"> Update Account </button>
-        <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
       </div>
     </div>
     <input type = "hidden" value = "<?php echo  $accid;?>" name = "accid"/>
@@ -303,7 +334,7 @@
   <?php if($row['empcatergory'] == "Regular"){ ?>
   <?php 
       $id = mysql_escape_string($_GET['modify']);
-      $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and state = 'AAdmin'";
+      $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
       $dataxx = $conn->query($sqlxx)->fetch_assoc();
       
   ?>
@@ -323,6 +354,7 @@
         <label>Vacation Leave <font color = "red"> * </font></label>
         <input type="text" required <?php if($dataxx['sleave'] > 0){ echo ' value = "' . $dataxx['vleave'] . '" '; } ?> name = "vacleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
       </div>
+      <?php if($dataxx['sleave'] <= 0 && $dataxx['sleave'] <= 0) { ?>
       <div class="col-xs-3">
         <label>Balance For <font color = "red"> * </font></label>
         <select class="form-control" name = "startdate" required>
@@ -331,16 +363,22 @@
           <option value="<?php echo date('Y-m-01', strtotime('next year', strtotime('January Y')));?>"><?php echo date('F', strtotime('January'));?> - <?php echo date('F Y', strtotime('next year', strtotime('December Y')));?></option>
         </select>
       </div>
+      <?php } ?>
     </div>
+    
     <div class="row">
       <div class="col-xs-12" align="center">
+      <?php if($dataxx['sleave'] <= 0 && $dataxx['sleave'] <= 0) { ?>
         <button class="btn btn-primary" name = "updateleave"> Update Leave </button>
-        <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
+      <?php } ?>
       </div>
     </div>
-   
+    
   </form>
     <?php } ?>
+    <div align="center">
+      <a href = "hr-emprof.php" class="btn btn-danger"> Back </a>
+    </div>
 </div>
   
 <?php
@@ -368,7 +406,8 @@ if(isset($_POST['upsub'])){
   $empcatergory = mysql_escape_string($_POST['empcatergory']);  
   $catdate = mysql_escape_string($_POST['catdate']);  
   $modify = mysql_escape_string($_GET['modify']);
-  if(date("Y") == 2015){
+  $payment = mysqli_real_escape_string($conn, $_POST['payment']);
+  if(date("Y-m-d") < "2015-12-29"){
     $sickleave = mysql_escape_string($_POST['sickleave']);
     $vacleave = mysql_escape_string($_POST['vacleave']);
     $usedvl = mysql_escape_string($_POST['usedvl']);
@@ -393,14 +432,14 @@ if(isset($_POST['upsub'])){
   $data = $conn->query($stmts2)->fetch_assoc();
   
 
-  if(date("Y") == 2015){
+  if(date("Y-m-d") < "2015-12-29"){
     $stmt = "UPDATE `login` 
         set empcatergory = '$empcatergory', sickleave = '$sickleave', vacleave = '$vacleave', hrchange = '$hrchange', oldpost = '$oldpost',
             usedvl = '$usedvl', usedsl = '$usedsl' $catdates
         where account_id = '$modify' and hrchange = 0";
   }else{
     $stmt = "UPDATE `login` 
-        set empcatergory = '$empcatergory', hrchange = '$hrchange', oldpost = '$oldpost' $catdates
+        set empcatergory = '$empcatergory', hrchange = '$hrchange', oldpost = '$oldpost', payment = '$payment' $catdates
         where account_id = '$modify' and hrchange = 0";
   }
   if($data['count'] == 0){
@@ -461,38 +500,28 @@ if(isset($_POST['upsub'])){
     </div>
       </div>
       <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
-      <?php 
-        if($row['usedsl'] > 0){
-          $usedsl = '<div class="col-xs-3">
-                    <label>Used Sick Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedsl'].'</p></i>
-                  </div>';
-        }else{
-          $usedsl = "";
-        }
-        if($row['usedvl'] > 0){
-          $usedvl = '<div class="col-xs-3">
-                    <label>Used Vacation Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['usedvl'].'</p></i>
-                  </div>';
-        }else{
-          $usedvl = "";
-        }
-        if($row['sickleave'] > 0 && $row['vacleave'] > 0){
-          echo '<div class="row">
-                  <div class="col-xs-3">
-                    <label>Given Sick Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['sickleave'].'</p></i>
-                  </div>
-                  '.$usedsl.'
-                  <div class="col-xs-3">
-                    <label>Given Vacation Leave</label>
-                    <i><p style = "margin-left: 10px;" id = "usrname">'. $row['vacleave'].'</p></i>
-                  </div>
-                  '.$usedvl.'
-                </div>';
-        } 
-      ?>
+      <?php
+            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() <= enddate and state = 'AAdmin'";
+            $datalea = $conn->query($leaveexec)->fetch_assoc();
+            $sl = $datalea['sleave'];
+            $vl = $datalea['vleave'];
+            if($sl <= 0){
+              $sl = 0;
+            }
+            if($vl <= 0){
+              $vl = 0;
+            }
+       ?>
+       <div class="row">
+         <div class="col-xs-4">
+           <label>Sick Leave</label>
+           <p style="margin-left: 10px"><i><?php echo $sl;?></i></p>
+         </div>
+         <div class="col-xs-4">
+           <label>Vacation Leave</label>
+           <p style="margin-left: 10px"><i><?php echo $vl;?></i></p>
+         </div>
+       </div>
   		<div class="row">
          <div class="col-md-8">
             <label for="usrname"> Home Address </label>
@@ -506,11 +535,11 @@ if(isset($_POST['upsub'])){
         <div class="row">
             <div class="col-md-4">
           		<label for="efname"> Date Hired </label>
-         		<i><p style = "margin-left: 10px;" id = "usrname"><?php echo date('F j, Y', strtotime($row['edatehired']));?></p></i>
-        	</div>
+         		 <i><p style = "margin-left: 10px;" id = "usrname"><?php echo date('F j, Y', strtotime($row['edatehired']));?></p></i>
+          </div>
           <div class="col-md-4">
             <label for="efname"> Category </label>
-            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory']?></p></i>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory'] . ' / ' . $row['payment'];?></p></i>
           </div>
           <div class="col-md-4">
             <label for="efname"> Expiry </label>
