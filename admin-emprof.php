@@ -458,7 +458,7 @@ $(document).ready(function(){
       </div>
       <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
        <?php
-            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
+            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
             $datalea = $conn->query($leaveexec)->fetch_assoc();
             $sl = $datalea['sleave'];
             $vl = $datalea['vleave'];
