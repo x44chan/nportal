@@ -334,7 +334,7 @@
   <?php if($row['empcatergory'] == "Regular"){ ?>
   <?php 
       $id = mysql_escape_string($_GET['modify']);
-      $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
+      $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
       $dataxx = $conn->query($sqlxx)->fetch_assoc();
       
   ?>

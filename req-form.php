@@ -215,7 +215,7 @@ $(document).ready(function(){
 				$usedsl = $row['usedsl'];
 				$usedvl = $row['usedvl'];
 			}else{				
-				$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BEWEEN startdate and enddate and state = 'AAdmin'";
+				$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
 				$datalea = $conn->query($leaveexec)->fetch_assoc();
 				$sl = $datalea['sleave'];
 				$vl = $datalea['vleave'];
