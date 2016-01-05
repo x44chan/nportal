@@ -1755,12 +1755,12 @@ echo '</tbody></table></form>';
 				<tr>
 					<td><b>New Start of OT: </b></td>
 					<td>
-						<input id = "timein" value = "<?php echo $row['startofot'];?>" onkeydown="return false;"required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
+						<input id = "timein" value = "<?php echo $row['startofot'];?>" required class = "form-control" name = "hruptimein" autocomplete ="off" placeholder = "Click to Set time"/>
 					</td>
 				</tr>				
 				<tr>
 					<td><b>New End of OT: </b></td>
-					<td><input  value = "<?php echo $row['endofot'];?>" onkeydown="return false;"required class = "form-control" name = "hruptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
+					<td><input  value = "<?php echo $row['endofot'];?>" required class = "form-control" name = "hruptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
 				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>
