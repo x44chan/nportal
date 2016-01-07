@@ -392,7 +392,7 @@ if(isset($_POST['updateleave'])){
   $datefile = date("Y-m-d");
   $sql = $conn->prepare("INSERT INTO `nleave_bal` (account_id, sleave, vleave, startdate, enddate, state, datefile) VALUES (?, ?, ?, ?, ?, ?, ?)");
   $sql->bind_param("iiissss", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile);
-  $select = "SELECT count(account_id) as penleave FROM nleave_bal where account_id = '$accid' and state != 'DALeave'";
+  $select = "SELECT count(account_id) as penleave FROM nleave_bal where account_id = '$accid' and state != 'DAAdmin'";
   $datax = $conn->query($select)->fetch_assoc();
   if($datax['penleave'] == 0){  
     if($sql->execute()){
