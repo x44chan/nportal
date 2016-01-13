@@ -105,11 +105,11 @@
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date From</label>
-				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
+				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['dates'])){ echo 'value = "'. $_SESSION['dates'] . '" '; }else{ echo ' value = "' .date("Y-m-01") . '" '; } ?> />
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date To</label>
-				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
+				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['dates0'])){ echo 'value = "'. $_SESSION['dates0'] . '" '; }else{ echo ' value = "' .date("Y-m-t") . '" '; } ?> />
 			</div>
 			<div class="col-xs-3">
 				<label style="margin-left: 50px;">Action</label>
@@ -174,7 +174,7 @@
 			  <tbody>';
 		include("conf.php");
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' order by date desc";
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and ( (date BETWEEN '$date1' and '$date2') or (releasedate BETWEEN '$date1' and '$date2') ) and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' order by petty_id desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -183,10 +183,13 @@
 		if($result->num_rows > 0){			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
-				$query2 = "SELECT sum(liqamount) as totalliq,liqinfo,liqtype FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
+				$query2 = "SELECT sum(liqamount) as totalliq,liqinfo,liqtype,liqstate FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
 				$data2 = $conn->query($query2)->fetch_assoc();
-				if($data2['liqinfo'] == null){
+				if($data2['liqinfo'] == null || $data2['liqstate'] == 'LIQDATE'){
 					$state = '<b>Pending Liquidation</b>';
+					if($data2['liqstate'] == 'LIQDATE'){
+						$state = '₱ ' . number_format($data2['totalliq'],2).'<br><b> Pending Completion </b>';
+					}
 					if(isset($_GET['nopending'])){
 						continue;
 					}
@@ -195,7 +198,11 @@
 				}else{
 					$state = '₱ ' . number_format($data2['totalliq'],2);
 				}
-				if($data2['liqinfo'] != null){
+				if($data2['liqinfo'] == null || $data2['liqstate'] == 'LIQDATE'){
+					if(isset($_GET['nopending'])){
+						continue;
+					}
+				}else{
 					if(isset($_GET['spendliqui'])){
 						continue;	
 					} 
