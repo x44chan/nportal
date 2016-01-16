@@ -70,19 +70,27 @@
 				$cuts = 0;
 				$fif = 0;
 				$day = substr($cutoffdate, 8, 10);
-				$date = substr($cutoffdate, 5, 2);
+				$date = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 				$_POST['upduration'] *= 2;
 				for($i = 1; $i <= $_POST['upduration']; $i++){
 					if(isset($date)){
 						$datex = substr($date, 5, 2);
+						$date = date("Y-m-t", strtotime($date));
+						$dated = substr($date, 8, 2);
 					}else{
 						$datex = "";
+						$dated = "";
 					}
 					$cuts = 15 * $i;
 					$fif += 15;
 					if($datex == '02'){
-						$cuts -= 1;
-						$fif -= 1;
+						if($dated == '29'){
+							$cuts -= 3;
+							$fif -= 3;
+						}elseif($dated == '28'){
+							$cuts -= 1;
+							$fif -= 1;
+						}
 					}
 					if($day == '16'){
 						$day = '16';
@@ -104,8 +112,13 @@
 						$end = 't';
 					}
 					if($datex == '02'){
-						$cuts += 1;
-						$fif += 1;
+						if($dated == '29'){
+							$cuts += 2;
+							$fif += 2;
+						}elseif($dated == '28'){
+							$cuts += 1;
+							$fif += 1;
+						}
 					}
 				}
 			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';

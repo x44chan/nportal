@@ -90,7 +90,7 @@
 						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
-						$ssql6 = "SELECT count(loan_cutoff.account_id) as loanc,loan_cutoff.state,loan_cutoff.loan_id,loan_cutoff.enddate,loan_cutoff.full,loan.*  FROM loan_cutoff,loan where loan_cutoff.loan_id = loan.loan_id and loan.state = 'ALoan' and (loan_cutoff.enddate >= '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
+						$ssql6 = "SELECT count(loan_cutoff.account_id) as loanc,loan_cutoff.state,loan_cutoff.loan_id,loan_cutoff.enddate,loan_cutoff.full,loan.*,loan_cutoff.account_id  FROM loan_cutoff,loan where loan_cutoff.loan_id = loan.loan_id and loan.account_id = $accidd and loan_cutoff.account_id = $accidd and loan.state = 'ALoan' and (loan_cutoff.enddate >= '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
 						
 						if($_GET['rep'] == 'all'){
 							$data1 = $conn->query($ssql1)->fetch_assoc();
@@ -171,7 +171,6 @@
 		$position = $res123['position'];	
 		$department = $res123['department'];
 		$empcatergorys = $res123['empcatergory'];
-		$leave
 			
 	?>	
 	<h4 style = "margin-left: 10px;">Period: <i><strong><?php echo $cutoffdate11;?></strong></i></h4>

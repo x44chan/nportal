@@ -152,7 +152,7 @@
         <tbody>
 <?php 
     include("conf.php");
-    $sql = "SELECT * from `login`,`loan` where login.account_id = loan.account_id and level != 'Admin' and active != 0 and position != 'House Helper' $qrty and empcatergory = 'Regular' and state = 'ALoan' order by edatehired";
+    $sql = "SELECT * from `login`,`loan` where login.account_id = loan.account_id and level != 'Admin' and active != 0 and position != 'House Helper' $qrty and state = 'ALoan' order by edatehired";
     $result = $conn->query($sql);
     $datey = date("Y");
     
