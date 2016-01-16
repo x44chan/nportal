@@ -1027,7 +1027,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					$datetoday = date("Y-m-d");
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
-	
+					if($row['lealte'] > 0){
+						$lealate = '<br><font color = "red"> <b> Late Filed </b></font><br>';
+					}else{
+						$lealate = "";
+					}
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
 					}else{
@@ -1074,7 +1078,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if($row['state'] == 'UAAdmin'){
 							$datehr = "Waiting for approval. <br><i> Scheduled Vacation Leave";
 						}
-						echo '<td><b>'.$datehr. $datetech .'</td>';
+						echo '<td><b>'.$lealate.$datehr. $datetech .'</td>';
 					}else{						
 						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 						echo '<td><b>HR: '.$datehr. $datetech . '<br>' . $row['leapay'] .'</td>';
