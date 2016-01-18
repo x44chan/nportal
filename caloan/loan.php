@@ -37,6 +37,18 @@
 				<i><p style="margin-left: 10px;"><?php echo $row['fname'] . ' ' . $row['lname']; ?></p></i>
 			</div>
 			<div class="col-xs-3">
+				<label>Type</label>
+				<i><p style="margin-left: 10px;">
+					<?php 
+						if($row['penalty'] == 1){
+							echo ' Penalty Loan ';
+						}else{
+							echo ' Salary Loan';
+						}
+						echo '</h2></th></thead>';
+					?>
+			</div>
+			<div class="col-xs-3">
 				<label>Loan Amount</label>
 				<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['loanamount']); ?></p></i>
 			</div>

@@ -111,7 +111,7 @@
 		<div class="row">
 			<div class="col-xs-12" align="center">
 				<button class="btn btn-primary" name = "lsub" onclick = "return confirm('Are your sure?');">Submit Liqudation</button>
-				<a href = "?ac=penpty" class = "btn btn-danger">Back</a>
+				<a href = "<?php if(isset($_GET['ac'])){ echo '?ac=penpty'; } else { echo '?apppety';}?>" class = "btn btn-danger">Back</a>
 				<input type = "hidden" name = "counter" id = "counter" value = "0"/>
 			</div>
 		</div>

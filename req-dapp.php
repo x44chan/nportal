@@ -13,7 +13,7 @@
 	include("header.php");	
 ?>
 <div align = "center" style = "margin-bottom: 30px; ">
-	<div class="alert alert-success">
+	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
@@ -37,9 +37,15 @@
 				  	}
 				  ?>
 				</ul>
-			</div>				
-			<a  type = "button"class = "btn btn-primary"  href = "req-app.php" >My Approved Request</a>		
-			<a  type = "button"class = "btn btn-primary  active"  href = "req-dapp.php">My Dispproved Request</a>		
+			</div>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "req-app.php">My Approved Request</a></li>
+				  <li><a href = "req-dapp.php">My Disapproved Request</a></li>	
+				</ul>
+			</div>		
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div>
 		<br><br>

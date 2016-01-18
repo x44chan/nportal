@@ -629,11 +629,16 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
+			if($row['penalty'] == 1){
+				$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+			}else{
+				$row['penalty'] = '<b> Salary Loan </b>';
+			}
 	?>
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Loan<br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
+					<td><b><?php echo $row['penalty'];?><br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
 					<td><?php echo $row['loanreason'];?></td>
 					<td> - </td>
 					<td>

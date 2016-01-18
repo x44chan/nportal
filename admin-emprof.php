@@ -144,6 +144,7 @@
     <thead>
         <tr>
           <th>Name</th>
+          <th>Type</th>
           <th>Loan Date</th>
           <th>Loan Amount</th>
           <th>Action</th>
@@ -158,8 +159,14 @@
     
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){
+        if($row['penalty'] == 1){
+          $row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+        }else{
+          $row['penalty'] = '<b> Salary Loan </b>';
+        }
         echo '<tr>';
           echo '<td>' . $row['fname'] . ' ' . $row['lname'] . '</td>';
+          echo  '<td>' . $row['penalty'] . '</td>';
           echo '<td> ' . date("M j, Y", strtotime($row['loandate'])) . '</td>';
           echo '<td>₱ ' . number_format($row['appamount'],2) . '</td>';
           echo '<td><a href = "?loan='.$row['loan_id'].'&accid='.$row['account_id'].'" class = "btn btn-primary"> View Request </a></td>';

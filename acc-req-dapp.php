@@ -56,8 +56,14 @@
 				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				</ul>
 			</div>			
-			<a  type = "button"class = "btn btn-primary"  href = "acc-req-app.php" >Approved Request</a>		
-			<a  type = "button"class = "btn btn-primary  active"  href = "acc-req-dapp.php">Dispproved Request</a>		
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "acc-req-app.php">My Approved Request</a></li>
+				  <li><a href = "acc-req-dapp.php">My Approved Request</a></li>	
+				</ul>
+			</div>			
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div>
 		<br><br>

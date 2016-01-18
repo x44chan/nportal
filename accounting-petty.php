@@ -10,8 +10,8 @@
     $(document).ready( function () {
     	$('#myTable').DataTable();
     	$('#myTableliq').DataTable({
-    		"paging":   false,
-        	"order": [[ 6, "asc" ],[ 1, "desc" ],[ 5, "desc" ]]
+    		"iDisplayLength": 50,
+        	"order": [[ 1, "desc" ],[ 0, "desc" ]]
 
     	} );
     	 $('#myTablepet').DataTable( {
@@ -97,11 +97,12 @@
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
         <ul class="dropdown-menu" role="menu">
-          <li><a href="#" id = "newovertime">Overtime Request</a></li>
-          <li><a href="#" id = "newoffb">Official Business Request</a></li>
-          <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>         
-          <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
-          <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+        	<li><a href="#" id = "newovertime">Overtime Request</a></li>
+        	<li><a href="#" id = "newoffb">Official Business Request</a></li>
+        	<li><a href="#" id = "newleave">Leave Of Absence Request</a></li>         
+        	<li><a href="#" id = "newundertime">Undertime Request Form</a></li>
+        	<li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+			<li><a href="#"  data-toggle="modal" data-target="#penalty">Penalty Loan Form</a></li>
           <?php
             if($_SESSION['category'] == "Regular"){
           ?>
@@ -145,8 +146,14 @@
           <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
         </ul>
       </div>
-      <a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
-      <a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+      <div class="btn-group btn-group-lg">
+		<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+		<ul class="dropdown-menu" role="menu">
+		  <li><a href = "req-all.php?appot">All Request</a></li>
+		  <li><a href = "acc-req-app.php">My Approved Request</a></li>
+		  <li><a href = "acc-req-dapp.php">My Disapproved Request</a></li>	
+		</ul>
+	</div>	
       <?php } ?>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
     </div>
@@ -314,9 +321,12 @@
 				}else{
 					$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
 				}
+				if($data['liqtype'] == 'Others'){
+					$data['liqothers'] = ' : ' . $data['liqothers'];
+				}
 				echo '<tr>';
 				echo '<td>'. date("M j, Y", strtotime($data['liqdate'])).'</td>';
-				echo '<td>'. $data['liqtype'].'</td>';
+				echo '<td>'. $data['liqtype']. $data['liqothers'] .'</td>';
 				echo '<td>₱ '. number_format($data['liqamount'],2).'</td>';
 				echo '<td>' . $rcpt . '</td>';
 				echo '<td>'. $data['liqinfo'].'</td>';

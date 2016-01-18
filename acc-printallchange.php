@@ -70,7 +70,7 @@ include 'conf.php';
 					
 
 				echo '<td>'.$row['petty_id'].'</td>';
-				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
+				echo '<td>'.date("M j, Y", strtotime($row['date']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
 				echo '<td>₱ ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo '</td>';
 				echo $tots;

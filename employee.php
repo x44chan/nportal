@@ -17,7 +17,7 @@
 	}
 ?>
 <div align = "center" style = "margin-bottom: 30px;">
-	<div class="alert alert-success">
+	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
@@ -31,6 +31,7 @@
 					<li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 					<li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 					<li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+					<li><a href="#"  data-toggle="modal" data-target="#penalty">Penalty Loan Form</a></li>
 				  <?php
 				  	if($_SESSION['category'] == "Regular"){
 				  ?>
@@ -42,8 +43,14 @@
 				  ?>
 				</ul>
 			</div>		
-			<a  type = "button"class = "btn btn-primary" href = "req-app.php" id = "myapproveh">My Approved Request</a>		
-			<a  type = "button"class = "btn btn-primary" href = "req-dapp.php" id = "mydisapproveh">My Dispproved Request</button>		
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "req-app.php">My Approved Request</a></li>
+				  <li><a href = "req-dapp.php">My Disapproved Request</a></li>	
+				</ul>
+			</div>			
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div> <br><br>
 		<div class="btn-group btn-group" role="group">
@@ -141,6 +148,7 @@
 					<tr>
 						<th>Loan #</th>
 						<th>Date File</th>
+						<th>Type</th>
 						<th>Amount</th>
 						<th>Start Date</th>
 						<th>Approved Amount</th>
@@ -151,6 +159,11 @@
 	<?php
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
+				if($row['penalty'] == 1){
+					$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+				}else{
+					$row['penalty'] = '<b> Salary Loan </b>';
+				}
 				$loan_id = $row['loan_id'];
 				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate,state FROM `loan_cutoff` where loan_id = '$loan_id' order by cutoff_id desc";
 				$data = $conn->query($stmts)->fetch_assoc();
@@ -159,6 +172,7 @@
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>' . $row['penalty'] . '</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['startdate'])). '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
@@ -173,7 +187,9 @@
 									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
 								}elseif($row['state'] == 'ARcvLoan'){
 									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
-									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+									if($row['penalty'] ==  '<b> Salary Loan </b>'){
+										echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+									}
 								}elseif($row['state'] == 'ARcvCashCode'){
 									echo '<font color = "green"><b>Received ';
 									echo '</font></br>Code: ' . $row['rcve_code'];

@@ -83,8 +83,14 @@
 				echo '<a  type = "button"class = "btn btn-primary active"  href = "tech-sched.php" >Tech Scheduling</a>';
 			}
 			?>
-			<a type = "button" class = "btn btn-primary"  href = "<?php echo $hrf;?>" id = "showapproveda"> Approved Request</a>
-			<a type = "button" class = "btn btn-primary" href = "<?php echo $hrf2;?>"  id = "showdispproveda"> Dispproved Request</a>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "<?php echo $hrf;?>">My Approved Request</a></li>
+				  <li><a href = "<?php echo $hrf2;?>">My Approved Request</a></li>	
+				</ul>
+			</div>
 			<?php }else{ ?><br><br>
 			<div class="btn-group btn-group-lg">
 				<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	

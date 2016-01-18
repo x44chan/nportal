@@ -24,6 +24,7 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Penalty Loan Form</a></li>
 				  <?php
 				  	if($_SESSION['category'] == "Regular"){
 				  ?>
@@ -52,8 +53,14 @@
 				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				</ul>
 			</div>
-			<a type = "button" class = "btn btn-primary" href = "acc-req-app.php" id = "showapproveda">Approved Request</a>
-			<a type = "button" class = "btn btn-primary" href = "acc-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "acc-req-app.php">My Approved Request</a></li>
+				  <li><a href = "acc-req-dapp.php">My Disapproved Request</a></li>	
+				</ul>
+			</div>	
 			<a type = "button" class = "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">

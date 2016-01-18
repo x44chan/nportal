@@ -685,7 +685,14 @@ $(document).ready(function(){
 					<option value="<?php echo date("Y", strtotime("+1 year"));?>"><?php echo date("Y", strtotime("+1 year"));?></option>
 				</select>
 			</div>
-              <button type="submit" name = "loanpet" class="btn btn-success btn-block">Submit</button>
+			<div class="form-group">
+				<p style="color: red; font-size: 12px;">
+					<b>Example: <br>
+						Your Payment Start is Feb 01, 2016 <br>
+						Covered Cutoff is Feb 01 - Feb 15, 2016</b>
+				</p>
+			</div>
+              <button type="submit" name = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
           </form>
         </div>
         <div class="modal-footer">
@@ -694,6 +701,7 @@ $(document).ready(function(){
       </div>      
     </div>
   </div> 
+  
   <script type="text/javascript">
 	$(document).ready(function(){
 		$('#loanduration').change(function() {
@@ -826,3 +834,158 @@ $("#submita").click(function(){
 });
 </script>
  <?php } ?>
+ <!-- loanModal -->
+  <div class="modal fade" id="penalty" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Penalty Loan Form</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Name</label>
+              <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
+            </div>
+            <div class="form-group">
+            	 <label for="usrname"> Amount <font color = "red">*</font></label>
+            	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+          	</div>
+          	<div class="form-group">
+            	 <label for="usrname"> Reason <font color = "red">*</font></label>
+            	<input type = "text" id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+          	</div>
+          	<div class="form-group">
+            	<label for="usrname"> Duration <font color = "red">*</font></label>
+            	<select name = "loanduration" class="form-control" id = "loanduration" required>
+					<option value = ""> ----------- </option>
+					<option value = "1"> 1 Month </option>
+					<option value = "2"> 2 Months </option>
+					<option value = "3"> 3 Months </option>
+					<option value = "Others"> Others </option>
+				</select>
+            </div>
+            <div class="form-group">
+            	<label>Others</label>
+				<input type =  "text" maxlength="2" class="form-control" name = "loanothers" disabled=""/>
+            </div>
+            <div class="form-group">
+				<label>Payment Start (Month)</label>
+				<select class="form-control" name = "cutoffmonth" required >
+					<option value="">-----------</option>
+					<option value="01">Jan</option>
+					<option value="02">Feb</option>
+					<option value="03">Mar</option>
+					<option value="04">Apr</option>
+					<option value="05">May</option>
+					<option value="06">Jun</option>
+					<option value="07">Jul</option>
+					<option value="08">Aug</option>
+					<option value="09">Sep</option>
+					<option value="10">Oct</option>
+					<option value="11">Nov</option>
+					<option value="12">Dec</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label>Payment Start (Day)</label>
+				<select class="form-control" name = "cutoffday">
+					<option value=""> - - - - - - - </option>
+					<option value="01">01</option>
+					<option value="16">16</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label>Payment Start (Year)</label>
+				<select class="form-control" required name = "cutofyr">
+					<option value=""> - - - - - - - </option>
+					<option value="<?php echo date("Y");?>"><?php echo date("Y");?></option>
+					<option value="<?php echo date("Y", strtotime("+1 year"));?>"><?php echo date("Y", strtotime("+1 year"));?></option>
+				</select>
+			</div>
+			<div class="form-group">
+				<p style="color: red; font-size: 12px;">
+					<b>Example: <br>
+						Your Payment Start is Feb 01, 2016 <br>
+						Covered Cutoff is Feb 01 - Feb 15, 2016</b>
+				</p>
+			</div>
+              <button type="submit" name = "penaltysub" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div> 
+  <?php
+	if(isset($_POST['penaltysub']) && isset($_SESSION['acc_id'])){
+		$accid = $_SESSION['acc_id'];
+		$state = "UALoan";
+		$loandate = date("Y-m-d"); 
+		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = 1";
+		$resquery = $conn->query($query);
+		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
+		$resqueryxx = $conn->query($sqlxx);
+		$date = date("Y-m-d");
+		if($date > date('Y-m-16')){
+			$date = date("Y-m-01", strtotime("next month"));
+			$date2 = date("Y-m-16");
+		}else{
+			$date = date("Y-m-16");
+			$date2 = date("Y-m-01");
+		}
+		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
+		$resquery2 = $conn->query($query2);
+		if($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
+			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
+		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
+			if($_SESSION['level'] == 'EMP'){
+    			echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("employee.php?ac=penloan"); </script>';
+	 	  	}elseif ($_SESSION['level'] == 'ACC') {
+	     		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("hr.php?ac=penloan"); </script>';
+	    	}
+		}elseif($resquery2->num_rows > 0){
+			if($_SESSION['level'] == 'EMP'){
+    			echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("employee.php?ac=penca"); </script>';
+	 	  	}elseif ($_SESSION['level'] == 'ACC') {
+	     		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("accounting.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("techsupervisor.php?ac=penca"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("hr.php?ac=penca`"); </script>';
+	    	}
+		}else{
+			if($_POST['loanduration'] == 'Others'){
+				$duration = $_POST['loanothers'] . ' Months';
+			}else{
+				$duration = $_POST['loanduration'] . ' Months';
+			}	
+			$penalty = 1;
+	   		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
+			$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate, duration, startdate, penalty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			$sql->bind_param("issssssi", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $loandate, $duration, $date, $penalty);
+			if($sql->execute()){
+				if($_SESSION['level'] == 'EMP'){
+	    			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penloan"); </script>';
+		    	}
+			}
+		}
+
+	}
+
+?>

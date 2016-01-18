@@ -3,7 +3,9 @@
 	$accid = $_SESSION['acc_id'];
 	include("conf.php");
 	if(isset($_SESSION['acc_id'])){
-		if($_SESSION['level'] != 'EMP'){
+		if($_SESSION['level'] == 'EMP' || $_SESSION['level'] == 'HR'){
+			
+		}else{
 			header("location: index.php");
 		}
 	}else{
@@ -13,7 +15,7 @@
 	include("header.php");	
 ?>
 <div align = "center" style = "margin-bottom: 30px;">
-	<div class="alert alert-success">
+	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
@@ -38,8 +40,14 @@
 				  ?>
 				</ul>
 			</div>				
-			<a  type = "button"class = "btn btn-primary  active"  href = "req-app.php">My Approved Request</a>		
-			<a type = "button"class = "btn btn-primary"  href = "req-dapp.php">My Dispproved Request</a>		
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <li><a href = "req-app.php">My Approved Request</a></li>
+				  <li><a href = "req-dapp.php">My Disapproved Request</a></li>	
+				</ul>
+			</div>			
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div>
 		<br><br>
@@ -225,17 +233,29 @@
 						<td>'.$transcode.'</td>
 						<td>&#8369; '.$row['amount'].'</td>
 						<td>';
-							if($row['state'] == "UAPetty"){
-								echo '<b>Pending to Admin';
+							if($row['state'] == "CPetty"){
+								echo '<b><font color = "red">Canceled Petty</font></b>';
+							}elseif($row['state'] == "UAPetty"){
+								echo '<b>Pending to Admin <br>';
+								echo '<a href = "?editpetty='.$row['petty_id'].'" class = "btn btn-danger"> Edit Petty </a> <a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canpetty='.$row['petty_id'].'" class = "btn btn-danger"> Cancel </a>';
 							}elseif($row['state'] == 'AAAPettyReceive'){
 								echo '<a href = "petty-exec.php?o='.$row['petty_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Petty</a>';
 							}elseif($row['state'] == 'DAPetty'){
-								echo 'Disapproved request';
+								echo '<b><font color = "red">Disapproved request';
 							}elseif($row['state'] == 'AAPettyReceived'){
 								echo '<font color = "green"><b>Received ';
 								echo '</font></br>Code: ' . $row['rcve_code'];
 							}elseif($row['state'] == 'AAPetty'){
 								echo '<font color = "green"><b>Pending to Accounting</font>';
+							}elseif($row['state'] == 'UATransfer'){
+								echo '<b> Pending for Processing</b><br>';
+								echo '<a href = "?editpetty='.$row['petty_id'].'" class = "btn btn-danger"> Edit Petty </a> <a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canpetty='.$row['petty_id'].'" class = "btn btn-danger"> Cancel </a>';
+							}elseif($row['state'] == 'TransProc'){
+								echo '<b><font color = "green"> Proccessed by the Accounting </font></b><br>';
+								echo '<a href = "?getcode='.$row['petty_id'].'" class = "btn btn-success">Get Code</a>';
+							}elseif($row['state'] == 'TransProcCode'){
+								echo '<font color = "green"><b>For Admin Verification & Releasing';
+								echo '</font></br>Code: ' . $row['rcve_code'];
 							}elseif($row['state'] == 'AAPettyRep'){
 								$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 								$data = $conn->query($sql)->fetch_assoc();
@@ -247,7 +267,8 @@
 								}elseif($data['liqstate'] == 'CompleteLiqdate'){
 									echo '<font color = "green"><b>Completed</font>';
 								}elseif($data['liqstate'] == 'LIQDATE'){
-									echo '<b>Pending Completion</b>';
+									echo '<b>Pending Completion</b><br>';
+									echo '<a href = "?editliqdate='.$row['petty_id'].'" class = "btn btn-danger"> Edit Liquidation </a>';
 								}
 							}
 				echo '</td></tr>';
@@ -486,15 +507,12 @@
 					<td colspan = 9 align = center><h2> My Approved Official Business Request </h2></td>
 				</tr>
 				<tr>
-					<th>Date File</th>
-					<th>Name of Employee</th>
-					<th>Position</th>
-					<th>Department</th>
-					<th>Date of Request</th>
-					<th>Time In - Time Out</th>
-					<th>Offical Work Schedule</th>
-					<th>Reason</th>
-					<th>State</th>
+					<th width="10%">Date File</th>
+					<th width="10%">Date of Request</th>
+					<th width="15%">Time In - Time Out</th>
+					<th width="15%">Offical Work Schedule</th>
+					<th width="35%">Reason</th>
+					<th width="15%">State</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -505,9 +523,6 @@
 			echo 
 				'<tr>
 					<td>'.$newDate.'</td>
-					<td>'.$row["obename"].'</td>
-					<td>'.$row["obpost"].'</td>
-					<td >'.$row["obdept"].'</td>
 					<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
 					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
 					<td>'.$row["officialworksched"].'</td>				
@@ -601,14 +616,10 @@
 						<td colspan = 10 align = center><h2> My Approved Leave Request </h2></td>
 					</tr>
 					<tr>
-						<th width = "170">Date File</th>
-						<th width = "120">Name</th>
-						<th width = "170">Date Hired</th>
-						<th>Department</th>
-						<th>Position</th>
-						<th width = "250">Date of Leave (From - To)</th>
-						<th width = "100">No. of Day/s</th>
-						<th width = "170">Type of Leave</th>
+						<th width = "10%">Date File</th>
+						<th width = "20%">Date of Leave (From - To)</th>
+						<th width = "15%">No. of Day/s</th>
+						<th width = "10%">Type of Leave</th>
 						<th>Reason</th>
 						<th>State</th>
 					</tr>
@@ -626,11 +637,7 @@
 					echo '<tr>';
 				}		
 				echo 
-					'<td>'.$newDate.'</td>
-					<td>'.$row["nameofemployee"].'</td>
-					<td>'.date("M j, Y", strtotime($row["datehired"])).'</td>
-					<td >'.$row["deprt"].'</td>
-					<td>'.$row['posttile'].'</td>					
+					'<td>'.$newDate.'</td>					
 					<td>Fr: '.date("M j, Y", strtotime($row["dateofleavfr"])).'<br>To: '.date("M j, Y", strtotime($row["dateofleavto"])).'</td>
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
