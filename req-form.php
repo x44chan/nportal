@@ -77,8 +77,8 @@ $(document).ready(function(){
 				<tr id = "rday2" class = "form-inline" >
 					<td>Official Work Sched: <font color = "red">*</font></td>
 					<td style="float:left;">
-						<label for = "fr">From:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "reqto"class = "form-control"  name = "obofficialworkschedfr"/>
-						<label for = "to">To:</label><input placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "reqfr"  name = "obofficialworkschedto"/>
+						<label for = "fr">From:</label><input placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "reqto"class = "form-control"  name = "obofficialworkschedfr"/>
+						<label for = "to">To:</label><input placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "reqfr"  name = "obofficialworkschedto"/>
 					</td>					
 				</tr>	
 				<tr id = "warning" style="display: none;">

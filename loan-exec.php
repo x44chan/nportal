@@ -66,6 +66,7 @@
 	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
 	 	if ($conn->query($sql) === TRUE) {	 
 				$cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
+				$cutamount = number_format($cutamount,2);
 				$state = 'CutOffPaid';
 				$cuts = 0;
 				$fif = 0;

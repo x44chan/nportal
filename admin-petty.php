@@ -15,7 +15,7 @@
 ?>
 <script type="text/javascript">		
     $(document).ready( function () {
-    	$('#myTable').DataTable({"order": [ 0, "desc" ]});
+    	$('#myTable').DataTable({"order": [ 1, "desc" ]});
     	$('#myTableliq').DataTable({
         	"order": [ 0, "desc" ],
         	"iDisplayLength": 25
@@ -130,6 +130,8 @@
 				  <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
+				  <li class="divider"></li>
+				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -162,7 +164,12 @@
 	}
 ?>
 <div id = "needaproval">
+
 <?php
+if(isset($_GET['pettydate'])){
+		include 'caloan/pettydate.php';
+		echo '</div><div style = "display: none;">';
+	}
 if(isset($_GET['login_log'])){
 		include 'login_log.php';
 		echo '</div><div style = "display: none;">';
@@ -640,8 +647,12 @@ if(isset($_GET['login_log'])){
 		}else{
 			$filt = "";
 		}
-
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+		if('2015-12-22' > $date2){
+			$between = "petty_liqdate.completedate between '$date1' and '$date2'";
+		}else{
+			$between = "petty.date between '$date1' and '$date2'";
+		}
+		$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and $between and (petty.state = 'AApettyRep' or petty.state = 'AAAPettyReceive' or petty.state = 'AAPettyReceived' or petty.state = 'AAPetty') $filt GROUP BY petty_liqdate.petty_id ORDER BY petty_liqdate.completedate asc ";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -652,19 +663,24 @@ if(isset($_GET['login_log'])){
 				$petid = $row['petty_id'];
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 				$data = $conn->query($sql)->fetch_assoc();
+				if($row['completedate'] == null || '2015-12-22' <= $date2){
+					$row['completedate'] = $data['date'];
+				}else{
+					$row['completedate'] = $row['completedate'];
+				}
 				if(isset($_GET['scompleted'])){
 					if($data['liqstate'] != 'CompleteLiqdate'){
 						continue;
 					}
 				}
-				if(isset($_GET['sliqui'])){
+				elseif(isset($_GET['sliqui'])){
 					if($row['state'] == 'AAAPettyReceive' || $row['state'] == 'AAPettyReceived'){
 						
 					}else{
 						continue;
 					}
 				}
-				if(isset($_GET['spendingliq'])){
+				elseif(isset($_GET['spendingliq'])){
 					if($data['liqtype'] != ''){
 						continue;
 					}
@@ -675,13 +691,20 @@ if(isset($_GET['login_log'])){
 						continue;
 					}
 				}
-				if(isset($_GET['spendingcomp']) && $data['liqstate'] != 'LIQDATE') {
-					continue;
+				elseif(isset($_GET['spendingcomp'])){
+					if($data['liqstate'] == 'LIQDATE' || $data['liqstate'] == 'EmpVal'){
+						
+					}else{
+						continue;
+					}
 				}
+				
+				$sql33 = "SELECT * FROM `login` where account_id = '$row[account_id]'";
+				$data33 = $conn->query($sql33)->fetch_assoc();
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
-				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
-				echo '<td>' . $row['fname'] . ' '. $row['lname'] . '</td>';				
+				echo '<td>' . date("M j, Y", strtotime($row['completedate'])). '</td>';
+				echo '<td>' . $data33['fname'] . ' '. $data33['lname'] . '</td>';				
 				echo '<td>' . $row['particular'] . '</td>';
 				echo '<td>' . $row['source'] . '</td>';
 				echo '<td>';

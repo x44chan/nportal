@@ -2,7 +2,7 @@
 
 include 'header.php';
 include 'conf.php';
-		$sql = "SELECT * FROM `petty` where (source = 'Eliseo' or source = 'Sharon') and particular != 'Check' order by petty_id desc";
+		$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and (source = 'Eliseo' or source = 'Sharon') and particular != 'Check' group by petty_liqdate.petty_id order by completedate desc";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';
@@ -70,7 +70,7 @@ include 'conf.php';
 					
 
 				echo '<td>'.$row['petty_id'].'</td>';
-				echo '<td>'.date("M j, Y", strtotime($row['date']));
+				echo '<td>'.date("M j, Y", strtotime($data['completedate']));
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
 				echo '<td>₱ ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo '</td>';
 				echo $tots;

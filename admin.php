@@ -72,6 +72,8 @@
 				  <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
 				  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
+				  <li class="divider"></li>
+				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">

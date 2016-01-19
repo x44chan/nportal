@@ -313,13 +313,14 @@
 	//complete
 	if(isset($_POST['valcodesub'])){
 		$admincode = random_string(4);
-		$pet_id = $_POST['petyid'];
-		$liqcode = $_POST['valcode'];
+		$pet_id = mysqli_real_escape_string($conn, $_POST['petyid']);
+		$liqcode = mysqli_real_escape_string($conn, $_POST['valcode']);
+		$valdate = date('Y-m-d');
 		$query = "SELECT * FROM `petty_liqdate` where petty_id = '$pet_id' and liqcode = '$liqcode'";
 		$result = $conn->query($query);
 		if($result->num_rows > 0){
 			$sql ="UPDATE petty_liqdate set 
-		   		liqstate = 'CompleteLiqdate', liqcode = '$liqcode', admincode = '$admincode'
+		   		liqstate = 'CompleteLiqdate', liqcode = '$liqcode', admincode = '$admincode', valdate = '$valdate'
 		    where petty_id = '$pet_id' and liqstate = 'EmpVal' and liqcode = '$liqcode'"; 
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){

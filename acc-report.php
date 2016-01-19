@@ -147,6 +147,8 @@ $(document).ready( function () {
 				  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
 				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
+				  <li class="divider"></li>
+				  <li><a type = "button" href = "accounting-petty.php?pettydate"> Petty Date Summary </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
