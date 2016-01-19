@@ -451,7 +451,7 @@ $(document).ready(function(){
 	}
 ?>
 <?php 
-	if($_SESSION['category'] == "Regular"){?>
+	if($_SESSION['category'] == "Regular"){ ?>
   <!-- caModal -->
   <div class="modal fade" id="cashadv" role="dialog">
     <div class="modal-dialog">    
@@ -834,6 +834,20 @@ $("#submita").click(function(){
 });
 </script>
  <?php } ?>
+ <script type="text/javascript">
+	$(document).ready(function(){
+		$('#loanduration2').change(function() {
+		    var selected = $(this).val();			
+			if(selected == 'Others'){
+				$('input[ name = "loanothers" ]').attr('disabled',false);
+				$('input[ name = "loanothers" ]').attr("placeholder", "# of Months");
+			}else{
+				$('input[ name = "loanothers" ]').attr('disabled',true);
+				$('input[ name = "loanothers" ]').attr("placeholder", "");
+			}
+		});
+	});
+</script>
  <!-- loanModal -->
   <div class="modal fade" id="penalty" role="dialog">
     <div class="modal-dialog">    
@@ -859,7 +873,7 @@ $("#submita").click(function(){
           	</div>
           	<div class="form-group">
             	<label for="usrname"> Duration <font color = "red">*</font></label>
-            	<select name = "loanduration" class="form-control" id = "loanduration" required>
+            	<select name = "loanduration" class="form-control" id = "loanduration2" required>
 					<option value = ""> ----------- </option>
 					<option value = "1"> 1 Month </option>
 					<option value = "2"> 2 Months </option>
