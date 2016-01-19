@@ -63,9 +63,10 @@
 				if($_SESSION['category'] == "Regular"){
 					echo '
 						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
-						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
+						';
 				}
 			?>	
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
 		</div>
 	</div>
 </div>
@@ -568,7 +569,12 @@
 					echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
-				}		
+				}	
+				if($row['lealte'] == '1'){
+					$lates = '<b><font color = "red"> Late Filed </font></b><br>';
+				}else{
+					$lates = "";
+				}
 				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -581,7 +587,7 @@
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
 					<td >'.$data1["reason"].'</td>	
-					<td width = "200"><b>';
+					<td width = "200"><b>' . $lates;
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';
 								if($row['accadmin'] == null){
@@ -616,7 +622,7 @@
 								echo 'Pending to Admin<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
 							}
-						echo '<td></tr>';
+						echo '</td></tr>';
 		}
 		
 	}echo '</tbody></table></form>';

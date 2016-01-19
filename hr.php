@@ -99,9 +99,10 @@
 				if($_SESSION['category'] == "Regular"){
 					echo '
 						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
-						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
+						';
 				}
 			?>	
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
 		</div>
 	</div>
 </div>
@@ -1242,6 +1243,11 @@
 				}else{
 					echo '<tr>';
 				}
+				if($row['lealte'] == '1'){
+					$lates = '<b><font color = "red"> Late Filed </font></b><br>';
+				}else{
+					$lates = "";
+				}
 				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -1259,7 +1265,7 @@
 					}elseif($row['state'] == 'ReqCLea'){
 						echo '<td width = "200"> <a class = "btn btn-danger" onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?hrclea='.$row['leave_id'].'"> Approve Cancelation Req. </a></td>';
 					}else{
-						echo '<td width = "200">';
+						echo '<td width = "200">'.$lates;
 						if($row['accadmin'] > 0){ echo '<font color = "green"><b>App. Scheduled Leave<br>'; $accadmin = "&accadmin";}else{ $accadmin = "";}
 						echo'	
 							<a href = "?leaapprove='.$row['account_id'].'&leave='.$row['leave_id'].'&acc='.$_GET['ac'].  $accadmin .'"';?><?php echo'" class="btn btn-info" role="button">Checked</a>';
@@ -1284,6 +1290,11 @@
 				}else{
 					echo '<tr>';
 				}		
+				if($row['lealte'] == '1'){
+					$lates = '<b><font color = "red"> Late Filed </font></b><br>';
+				}else{
+					$lates = "";
+				}
 				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -1296,7 +1307,7 @@
 					<td>'.$row["numdays"].'</td>					
 					<td >'.$row["typeoflea"]. ' ' . $row['othersl']. '</td>	
 					<td >'.$data1["reason"].'</td>	
-					<td width = "200"><b>';
+					<td width = "200"><b>'.$lates;
 							if($row['state'] == 'AHR'){
 								echo 'Pending to Admin<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';

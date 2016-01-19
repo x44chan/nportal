@@ -62,9 +62,10 @@
 				if($_SESSION['category'] == "Regular"){
 					echo '
 						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
-						<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>';
+						';
 				}
-			?>	
+			?>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>	
 		</div>
 	</div>
 </div>
@@ -121,6 +122,7 @@
 					<tr>
 						<th>Loan #</th>
 						<th>Date File</th>
+						<th>Type</th>
 						<th>Amount</th>
 						<th>Start Date</th>
 						<th>Approved Amount</th>
@@ -131,6 +133,11 @@
 	<?php
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
+				if($row['penalty'] == 1){
+					$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+				}else{
+					$row['penalty'] = '<b> Salary Loan </b>';
+				}
 				$loan_id = $row['loan_id'];
 				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate,state FROM `loan_cutoff` where loan_id = '$loan_id' order by cutoff_id desc";
 				$data = $conn->query($stmts)->fetch_assoc();
@@ -139,6 +146,7 @@
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>' . $row['penalty'] . '</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['startdate'])). '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
@@ -153,7 +161,9 @@
 									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
 								}elseif($row['state'] == 'ARcvLoan'){
 									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
-									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+									if($row['penalty'] ==  '<b> Salary Loan </b>'){
+										echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+									}
 								}elseif($row['state'] == 'ARcvCashCode'){
 									echo '<font color = "green"><b>Received ';
 									echo '</font></br>Code: ' . $row['rcve_code'];
@@ -569,6 +579,11 @@ if(isset($_GET['upovertime'])){
 				$date2=date_create($row['dateofleavto']);
 				$diff=date_diff($date1,$date2);
 				echo $diff->format("%a");*/
+				if($row['lealte'] == '1'){
+					$lates = '<b><font color = "red"> Late Filed </font></b><br>';
+				}else{
+					$lates = "";
+				}
 				$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -581,7 +596,7 @@ if(isset($_GET['upovertime'])){
 					 <td>'.$row["numdays"]. '</td>					
 					 <td >'.$row["typeoflea"]. ' : ' . $row['othersl']. '</td>	
 					 <td >'.$data1["reason"].'</td>
-						<td width = "200"><b>';
+						<td width = "200"><b>' . $lates;
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending to HR<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
