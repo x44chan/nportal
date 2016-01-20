@@ -380,8 +380,8 @@ $(document).ready(function(){
             	<input type = "text" pattern = "[.0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
-            	 <label for="usrname"> Reason <font color = "red">*</font></label>
-            	<input type = "text" id = "petamount" required name = "petreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+            	<label for="usrname"> Reason <font color = "red">*</font></label>
+            	<textarea id = "petamount" required name = "petreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
               <button type="submit" name = "submitpet" class="btn btn-success btn-block">Submit</button>
           </form>
@@ -472,8 +472,8 @@ $(document).ready(function(){
             	<input type = "text" pattern = "[0-9]*" required name = "amountca" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
-            	 <label for="usrname"> Reason <font color = "red">*</font></label>
-            	<input type = "text" required name = "careason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+            	<label for="usrname"> Reason <font color = "red">*</font></label>
+            	<textarea required name = "careason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
               <button type="submit" name = "submitca" class="btn btn-success btn-block">Submit</button>
           </form>
@@ -502,7 +502,7 @@ $(document).ready(function(){
 			$date = date("Y-m-16");
 			$date2 = date("Y-m-01");
 		}
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and  ( CURDATE() <= enddate and (loan_cutoff.state != 'DALoan' and loan_cutoff.state != 'Full') ) and loan.state != 'DECLoan'";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
 		$resquery = $conn->query($query);
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate <= '$date' and cadate >= '$date2'";
 		$resquery2 = $conn->query($query2);
@@ -634,8 +634,8 @@ $(document).ready(function(){
             	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
-            	 <label for="usrname"> Reason <font color = "red">*</font></label>
-            	<input type = "text" id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+            	<label for="usrname"> Reason <font color = "red">*</font></label>
+            	<textarea id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
           	<div class="form-group">
             	<label for="usrname"> Duration <font color = "red">*</font></label>
@@ -869,7 +869,7 @@ $("#submita").click(function(){
           	</div>
           	<div class="form-group">
             	 <label for="usrname"> Reason <font color = "red">*</font></label>
-            	<input type = "text" id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason">
+            	<textarea id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
           	<div class="form-group">
             	<label for="usrname"> Duration <font color = "red">*</font></label>
