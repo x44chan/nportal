@@ -28,8 +28,8 @@
 		
 
 	  	@page{
-	  		margin-left: 2mm;
-	  		margin-right: 2mm;
+	  		margin-left: 4mm;
+	  		margin-right: 4mm;
 	  	}
 	  	#datepr{
 	  		margin-top: 25px;
@@ -93,7 +93,7 @@
 		<div class="row" >
 			<div class="col-xs-3" align="center">
 				<label>Total Fund</label>
-				<input type = "text" class="form-control input-sm" required <?php if(isset($_SESSION['repleamount'])){ echo ' value = "' . $_SESSION['repleamount'] . '" '; } else { echo ' value = "0" '; }?>name = "repleamount" placeholder = "Enter amount"/>
+				<input type = "text" class="form-control input-sm" required <?php if(isset($_SESSION['repleamount']) && $_SESSION['repleamount'] > 0){ echo ' value = "' . $_SESSION['repleamount'] . '" '; } else { echo ' value = "" '; }?>name = "repleamount" placeholder = "Enter amount"/>
 			</div>			
 			<div class="col-xs-2" align="center">
 				<label>Status</label>
@@ -154,6 +154,9 @@
 			$xlink = "";
 		}
 		if(isset($_GET['print'])){
+			if($_SESSION['repleamount'] <= 0){
+				echo '<script> alert("Add petty fund first before printing report"); window.location.href = "?replenish";</script>';
+			}
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
 			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?replenish&'.$xlink.'";});</script>';
 		}else{
@@ -174,7 +177,7 @@
 			  <tbody>';
 		include("conf.php");
 
-		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and ( (date BETWEEN '$date1' and '$date2') or (releasedate BETWEEN '$date1' and '$date2') ) and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' order by petty_id desc";
+		$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' group by petty_liqdate.petty_id order by completedate desc";
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -183,7 +186,7 @@
 		if($result->num_rows > 0){			
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
-				$query2 = "SELECT sum(liqamount) as totalliq,liqinfo,liqtype,liqstate FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
+				$query2 = "SELECT sum(liqamount) as totalliq,liqinfo,liqtype,liqstate,completedate FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
 				$data2 = $conn->query($query2)->fetch_assoc();
 				if($data2['liqinfo'] == null || $data2['liqstate'] == 'LIQDATE'){
 					$state = '<b>Pending Liquidation</b>';
@@ -214,11 +217,17 @@
 				}else{
 					$tchange = '₱ '. number_format($a - $data2['totalliq'], 2);
 				}
-
+				if($row['completedate'] == ""){
+					$row['completedate'] = $row['date'];
+				}else{
+					$row['completedate'] = $row['completedate'];
+				}
+				$query24 = "SELECT * FROM `login` where account_id = '$row[account_id]'";
+				$data24 = $conn->query($query24)->fetch_assoc();
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
-				echo '<td>' . date("M j, Y", strtotime($row['date'])). '</td>';
-				echo '<td>' . $row['fname'] . ' '. $row['lname'] . '</td>';				
+				echo '<td>' . date("M j, Y", strtotime($row['completedate'])). '</td>';
+				echo '<td>' . $data24['fname'] . ' '. $data24['lname'] . '</td>';				
 				echo '<td>' . $row['petreason'] . '</td>';
 				echo '<td>₱ ';if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); } ;echo '</td>';
 				echo '<td>';

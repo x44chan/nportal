@@ -14,11 +14,6 @@
         	"order": [[ 1, "desc" ],[ 0, "desc" ]]
 
     	} );
-    	$('#myTableliq').DataTable({
-    		"iDisplayLength": 50,
-        	"order": [[ 1, "desc" ]]
-
-    	} );
     	 $('#myTablepet').DataTable( {
 	        "order": [ 1, "desc" ],
 	        "iDisplayLength": 12
@@ -664,7 +659,7 @@
 		}else{
 			$filt = "";
 		}
-		if('2015-12-22' > $date2){
+		if(isset($_GET['scompleted']) && '2015-12-22' > $date2){
 			$between = "petty_liqdate.completedate between '$date1' and '$date2'";
 		}else{
 			$between = "petty.date between '$date1' and '$date2'";
