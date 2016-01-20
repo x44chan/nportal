@@ -65,6 +65,7 @@
 	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount', startdate = '$cutoffdate', duration = '$duration'
 	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
 	 	if ($conn->query($sql) === TRUE) {	 
+	 			$mo = 0;
 				$cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
 				$cutamount = number_format($cutamount,2);
 				$state = 'CutOffPaid';
@@ -73,53 +74,27 @@
 				$day = substr($cutoffdate, 8, 10);
 				$date = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 				$_POST['upduration'] *= 2;
-				for($i = 1; $i <= $_POST['upduration']; $i++){
-					if(isset($date)){
-						$datex = substr($date, 5, 2);
-						$date = date("Y-m-t", strtotime($date));
-						$dated = substr($date, 8, 2);
-					}else{
-						$datex = "";
-						$dated = "";
-					}
-					$cuts = 15 * $i;
-					$fif += 15;
-					if($datex == '02'){
-						if($dated == '29'){
-							$cuts -= 3;
-							$fif -= 3;
-						}elseif($dated == '28'){
-							$cuts -= 1;
-							$fif -= 1;
-						}
-					}
+				for($i = 1; $i <= $_POST['upduration']; $i++){					
 					if($day == '16'){
 						$day = '16';
-						$end = 't';
+						$end = 't';						
 					}else{
 						$day = '01';
-						$end = '15';
+						$end = '15';						
 					}
-					$date = date("Y-m-".$day, strtotime('+'.$fif.' days', strtotime($cutoffdate)));
-					$enddate = date("Y-m-".$end, strtotime('+'.$cuts.' days', strtotime($cutoffdate)));
+					$date = date("Y-m-".$day, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
+					$enddate = date("Y-m-".$end, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
 					$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
 					$stmt->bind_param("iisssss", $o, $accid, $cutamount, $date, $state, $duration, $enddate);
 					$stmt->execute();
 					if($day == '16'){
 						$day = '01';
 						$end = '15';
+						$mo += 1;
 					}else{
 						$day = '16';
 						$end = 't';
-					}
-					if($datex == '02'){
-						if($dated == '29'){
-							$cuts += 2;
-							$fif += 2;
-						}elseif($dated == '28'){
-							$cuts += 1;
-							$fif += 1;
-						}
+						$mo += 0;
 					}
 				}
 			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';

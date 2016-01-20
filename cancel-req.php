@@ -36,23 +36,18 @@
 			$stmtss = "SELECT * FROM `loan_cutoff` where loan_id = '$loanid' ORDER BY cutoff_id desc limit 1";
 			$datas = $conn->query($stmtss)->fetch_assoc();
 			$day = substr($datas['cutoffdate'], 8, 10);
-			$datex = substr($datas['cutoffdate'], 5, 2);
-			$cuts = 15;
-			$fif = 15;
-			if($datex == '02'){
-				$cuts -= 2;
-				$fif -= 2;
-			}			
 			if($day < '16'){
 				$day = '16';
 				$end = 't';
+				$mo = 0;
 			}else{
 				$day = '01';
 				$end = '15';
+				$mo = 1;
 			}
 			$state = 'CutOffPaid';
-			$date = date("Y-m-".$day, strtotime('+'.$cuts.' days', strtotime($datas['enddate'])));
-			$enddate = date("Y-m-".$end, strtotime('+'.$cuts.' days', strtotime($datas['enddate'])));
+			$date = date("Y-m-".$day, strtotime('+'.$mo.' month', strtotime($datas['cutoffdate'])));
+			$enddate = date("Y-m-".$end, strtotime('+'.$mo.' month', strtotime($datas['cutoffdate'])));
 			$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			$stmt->bind_param("iisssss", $loanid, $accid, $datas['cutamount'], $date, $state, $duration, $enddate);
 			$stmt->execute();
