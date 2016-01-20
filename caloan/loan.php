@@ -243,6 +243,8 @@
 		
 
 	}
-
+if($_SESSION['level'] == 'Admin'){
+	echo '</div>';
+}
 
 ?>
