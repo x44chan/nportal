@@ -693,6 +693,9 @@
 				if(!isset($row['completedate'])){
 					$row['completedate'] = $row['date'];
 				}
+				if(isset($data['completedate'])){
+					$row['completedate'] = $data['completedate'];
+				}
 				if($row['completedate'] == null || date('Y-m-d', strtotime('2015-12-22')) > $date2){
 					$row['completedate'] = $data['date'];
 				}else{
