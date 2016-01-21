@@ -20,7 +20,7 @@
 	if(isset($_POST['repfilter'])){
 		$_SESSION['dates'] = mysql_escape_string($_POST['repfr']);
 		$_SESSION['dates0'] = mysql_escape_string($_POST['repto']);
-		echo '<script type = "text/javascript">window.location.replace("accounting-petty.php??pettydate");</script>';
+		echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?pettydate");</script>';
 	}
 	if(isset($_POST['represet'])){
 		unset($_SESSION['dates']);
@@ -33,7 +33,7 @@
 	<div class="container" id = "reports" style="margin-top: -20px;">
 		<div class="row">
 			<div class="col-xs-12">
-				<h4 style="margin-left: -20px;"><u><i>Date Filtering </i></u></h4>
+				<h4 style="margin-left: -20px;"><u><i> Petty Date Filtering </i></u></h4>
 			</div>
 		</div>
 		<div class="row">
