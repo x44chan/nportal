@@ -308,6 +308,7 @@
 							echo '<p><font color = "red">Disapproved by Accounting</p>';
 						}else{
 							echo '<p><font color = "red">Disapproved by Dep. Head</p>';
+							echo '</font><br>' . $row['dareason'];
 						}
 				echo '</td></tr>';
 		}
@@ -366,6 +367,7 @@
 							echo '<p><font color = "red">Disapproved by Accounting</p>';
 						}else{
 							echo '<p><font color = "red">Disapproved by Dep. Head</p>';
+							echo '</font><br>' . $row['dareason'];
 						}
 				echo '</td></tr>';
 		}

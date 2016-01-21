@@ -285,7 +285,9 @@
 			$date17 = date("d");
 			$dated = date("F");
 			$datey = date("Y");
-			
+			if($row['datefile'] <= '2015-12-30' && $row['state'] == 'UA'){
+				continue;
+			}
 			$explo = (explode(":",$row['approvedothrs']));
 			if($explo[1] > 0){
 				$explo2 = '.5';
@@ -339,7 +341,7 @@
 					<th>Date of Request</th>
 					<th>Time In - Time Out</th>
 					<th>Offical Work Schedule</th>
-					<th>Reason</th>
+					<th width="30%">Reason</th>
 					<th>State</th>
 				</tr>
 			</thead>

@@ -15,7 +15,14 @@
 ?>
 <script type="text/javascript">		
     $(document).ready( function () {
-    	$('#myTable').DataTable({"order": [ 1, "desc" ]});
+    	$('#myTable').DataTable({
+    		"order": [ 1, "desc" ]
+    		<?php 
+		        if(isset($_GET['print'])){
+		        	echo '",paging": false,';
+		        }
+	        ?>
+    	});
     	$('#myTableliq').DataTable({
         	"order": [ 0, "desc" ],
         	"iDisplayLength": 25
@@ -51,14 +58,19 @@
 	.tbl {border-bottom:0px !important;}
 	.tbl th, .tbl td {border: 0px !important;}
 	#bords tr, #bords td{border-top: 1px black solid !important;}
+	<?php
+		if(isset($_GET['print'])){
+			echo 'body { visibility: hidden; }';
+		}
+	?>
 	@media print {		
-		body * {
+		body  {
 	    	visibility: hidden;
 	    
 	  	}
 	  	@page{
-	  		margin-left: 5mm;
-	  		margin-right: 5mm;
+	  		margin-left: 2mm;
+	  		margin-right: 2mm;
 	  	}
 	  	#datepr{
 	  		margin-top: 25px;
@@ -69,27 +81,27 @@
 	 	#report h2{
 	  		margin-bottom: 10px;
 	  		margin-top: 10px;
-	  		font-size: 20px;
+	  		font-size: 17px;
 	  		font-weight: bold;
 	    }
 	 	#report h4{
-			font-size: 15px;
+			font-size: 13px;
 		}
 		#report h3{
 	  		margin-bottom: 10px;
 		}
 		#report th{
-	  		font-size: 12px;
+	  		font-size: 10px;
 	  		width: 0;
 		} 
 		#report td{
-	  		font-size: 11px;
+	  		font-size: 9px;
 	  		bottom: 0px;
 	  		padding: 3px;
 	  		max-width: 210px;
 		}
 		#totss{
-			font-size: 14px;
+			font-size: 12px;
 		}
 		#report {
 	   		position: absolute;
@@ -100,9 +112,12 @@
 	  	#backs{
 	  		display: none;
 	  	}
+	  	#show{
+	  		display: table-cell !important;
+	  	}
 	  		.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate  {
 		display: none; 
-	}
+		}
 	}
 
 </style>
@@ -166,6 +181,10 @@
 <div id = "needaproval">
 
 <?php
+if(isset($_GET['expenses'])){
+	include 'caloan/expenses.php';
+	echo '</div><div style = "display: none;">';
+}
 if(isset($_GET['pettydate'])){
 		include 'caloan/pettydate.php';
 		echo '</div><div style = "display: none;">';
@@ -615,7 +634,7 @@ if(isset($_GET['login_log'])){
 			$link2 = "";
 		}
 		if(isset($_GET['print'])){
-			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
+			echo '<table id = "myTable"  align = "center" class = "table table-hover" style="font-size: 14px;">';
 			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?report=1'.$link.$link2.'";});</script>';
 		}else{
 			echo '<table id = "myTable" align = "center" class = "table table-hover" style="font-size: 14px;">';
@@ -647,12 +666,18 @@ if(isset($_GET['login_log'])){
 		}else{
 			$filt = "";
 		}
-		if('2015-12-22' > $date2){
+		if(isset($_GET['scompleted']) && '2015-12-22' < $date2){
 			$between = "petty_liqdate.completedate between '$date1' and '$date2'";
 		}else{
 			$between = "petty.date between '$date1' and '$date2'";
 		}
-		$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and $between and (petty.state = 'AApettyRep' or petty.state = 'AAAPettyReceive' or petty.state = 'AAPettyReceived' or petty.state = 'AAPetty') $filt GROUP BY petty_liqdate.petty_id ORDER BY petty_liqdate.completedate asc ";
+		if(isset($_GET['spendingliq']) || isset($_GET['sliqui'])){
+			$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+		}elseif(isset($_GET['scompleted'])){
+			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and $between and (petty.state = 'AApettyRep' or petty.state = 'AAAPettyReceive' or petty.state = 'AAPettyReceived' or petty.state = 'AAPetty') $filt GROUP BY petty_liqdate.petty_id ORDER BY petty_liqdate.completedate asc ";	
+		}else{
+			$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+		}
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -663,7 +688,10 @@ if(isset($_GET['login_log'])){
 				$petid = $row['petty_id'];
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 				$data = $conn->query($sql)->fetch_assoc();
-				if($row['completedate'] == null || '2015-12-22' <= $date2){
+				if(!isset($row['completedate'] )){
+					$row['completedate'] = $row['date'];
+				}
+				if($row['completedate'] == null || date('Y-m-d', strtotime('2015-12-22')) > $date2){
 					$row['completedate'] = $data['date'];
 				}else{
 					$row['completedate'] = $row['completedate'];
