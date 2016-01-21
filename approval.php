@@ -76,7 +76,8 @@
 			if($state == 'AAdmin'){
 				$state = 'UA';
 			}
-			$sql = "UPDATE overtime set state = '$state', dareason = '$dareason' $otlate where overtime_id = $id and $states";
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE overtime set state = '$state', dareason = '$dareason', datehr = '$date' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
@@ -172,7 +173,8 @@
 			if(isset($_GET['ua']) && $state = 'AAmin'){
 				$state = 'UA';
 			}
-			$sql = "UPDATE officialbusiness set state = '$state', dareason = '$dareason' where officialbusiness_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE officialbusiness set state = '$state', dareason = '$dareason', datehr = '$date' where officialbusiness_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
@@ -231,7 +233,8 @@
 			}else{
 				$dareason = "";
 			}
-			$sql = "UPDATE undertime set state = '$state', dareason = '$dareason' $undrlate where undertime_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE undertime set state = '$state', dareason = '$dareason', datehr = '$date' $undrlate where undertime_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
@@ -253,7 +256,7 @@
 			$dareason = "";
 		}
 		if($_SESSION['level'] == 'HR'){
-			$date = date('F d, Y h:i A');
+			$date = date('Y-m-d h:i A');
 			if($state == 'DAHR'){
 				$accadmin = " and accadmin is null";
 			}else{
@@ -296,7 +299,8 @@
 			}else{
 				$dareason = "";
 			}
-			$sql = "UPDATE nleave set state = '$state',dareason = '$dareason' $apadmin where leave_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE nleave set state = '$state',dareason = '$dareason', datehr = '$date' $apadmin where leave_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{
