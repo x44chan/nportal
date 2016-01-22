@@ -56,6 +56,7 @@
 				  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
 				  <li class="divider"></li>
 				  <li><a type = "button" href = "accounting-petty.php?pettydate"> Petty Date Summary </a></li>
+				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>			
 			<div class="btn-group btn-group-lg">

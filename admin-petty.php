@@ -147,6 +147,7 @@
 				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
 				  <li class="divider"></li>
 				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
+				  <li><a type = "button" href = "admin-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -389,6 +390,9 @@ if(isset($_GET['login_log'])){
 				$excess = '<a href = "petty-exec.php?excesscode='.$_GET['liqdate'].'&acc='.$_GET['acc'].'" class = "btn btn-success">Receive Change</a>';
 			}else{
 				$excess = $data['admincode'];
+			}
+			if($data['liqstate'] == 'EmpVal'){
+				$excess = '<b><font color = "red"> Pending for Employee Validation</font></b>';
 			}
 			if($data['accval'] == 'AdminRcv'){
 				$rcv = 'Pending Accounting Validation';

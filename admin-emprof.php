@@ -110,6 +110,7 @@
           <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
           <li class="divider"></li>
           <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
+          <li><a type = "button" href = "admin-petty.php?expenses"> Expenses </a></li>
         </ul>
       </div>
       <div class="btn-group btn-group-lg">
