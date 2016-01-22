@@ -74,7 +74,7 @@ $(document).ready(function(){
 						<label for="restday2" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday2"/> Rest Day</label>
 					</td>
 				</tr>	
-				<tr id = "rday2" class = "form-inline" >
+				<tr class = "form-inline" >
 					<td>Official Work Sched: <font color = "red">*</font></td>
 					<td style="float:left;">
 						<label for = "fr">From:</label><input placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "reqto"class = "form-control"  name = "obofficialworkschedfr"/>
@@ -380,6 +380,60 @@ $(document).ready(function(){
             	<input type = "text" pattern = "[.0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
+          		<label>Type </label>
+          		<select class="form-control" name = "pettype">
+          			<option value=""> Select (P.M / Internet / Project)  </option>
+          			<option value="P.M."> P.M. </option>
+          			<option value="Internet"> Internet </option>
+          			<option value="Project"> Project </option>
+          		</select>
+          	</div>
+          	<div style = "display: none;" class="form-group" id = "project">
+            	<label>Project <font color = "red">*</font></label>
+            	<select class="form-control" name = "project">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "pm">
+            	<label>P.M. <font color = "red">*</font></label>
+            	<select class="form-control" name = "pm">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "internet">
+            	<label>Internet <font color = "red">*</font></label>
+            	<select class="form-control" name = "internet">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+          	<div class="form-group">
             	<label for="usrname"> Reason <font color = "red">*</font></label>
             	<textarea id = "petamount" required name = "petreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
@@ -433,8 +487,17 @@ $(document).ready(function(){
 	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}else{
-			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`) VALUES (?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("isssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason']);
+			if(isset($_POST['pettype'])){
+				if($_POST['pettype'] == 'Project'){
+					$_POST['project'] = $_POST['project'];
+				}elseif($_POST['pettype'] == 'P.M.'){
+					$_POST['project'] = $_POST['pm'];
+				}elseif($_POST['pettype'] == 'Internet'){
+					$_POST['project'] = $_POST['internet'];
+				}	
+			}
+			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("issssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project']);
 			$stmt->execute();		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
@@ -1001,5 +1064,7 @@ $("#submita").click(function(){
 		}
 
 	}
-
+	if($_SESSION['level'] == 'ACC' && !isset($_GET['expenses'])){
+		$_SESSION['searchbox'] = "";
+	}
 ?>

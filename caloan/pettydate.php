@@ -62,7 +62,7 @@
 </form>
 <?php
 	include 'conf.php';
-	$sql = "SELECT * FROM `petty`,`login` where petty.account_id = login.account_id and date between '$date1' and '$date2' ORDER BY petty.date DESC";
+	$sql = "SELECT * FROM `petty`,`login` where petty.account_id = login.account_id and date between '$date1' and '$date2' and (state != 'DAPetty' and state != 'CPetty') ORDER BY petty.date DESC";
 	$result = $conn->query($sql);
 ?>
 	<h2 align="center" style="margin-top: -20px;"> Petty Request Date Summary </h2>

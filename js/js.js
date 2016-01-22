@@ -36,6 +36,37 @@ $(document).ready(function(){
 			$("#othersl").attr('required',false);
 		}
 	});
+	$('select[name="pettype"]').change(function() {
+	    var selected2 = $(this).val();
+		if(selected2 == 'Project'){
+			$('#project').show();
+			$('select[name="project"]').attr('required',true);
+		}else{
+			$('#project').hide();
+			$('select[name="project"]').attr('required',false);
+		}
+		if(selected2 == 'P.M.'){
+			$('#pm').show();
+			$('select[name="pm"]').attr('required',true);
+		}else{
+			$('#pm').hide();
+			$('select[name="pm"]').attr('required',false);
+		}
+		if(selected2 == 'Internet'){
+			$('#internet').show();
+			$('select[name="internet"]').attr('required',true);
+		}else{
+			$('#internet').hide();
+			$('select[name="internet"]').attr('required',false);
+		}
+		if(selected2 == 'All'){
+			$('#all').show();
+			$('select[name="internet"]').attr('required',true);
+		}else{
+			$('#all').hide();
+			$('select[name="internet"]').attr('required',false);
+		}
+	});
 	$("#petamount").keyup(function(e){
         $(this).val(format($(this).val()));
     });

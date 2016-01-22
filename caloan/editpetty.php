@@ -15,6 +15,8 @@
 	</div>
 <?php
 	while ($row = $result->fetch_assoc()) {
+		$proj = "SELECT * FROM `project` where name = '$row[project]'";
+		$resproj = $conn->query($proj)->fetch_assoc();
 ?>
 <form action = "" method="post">
 	<div class="row">
@@ -41,9 +43,86 @@
 		</div>
 	</div>
 	<div class="row">
+		<div class="col-xs-3 col-xs-offset-3">
+			<label>Type </label>
+      		<select class="form-control" name = "pettype">
+      			<option value=""> - - - - - - - </option>
+      			<option <?php if($resproj['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
+      			<option <?php if($resproj['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
+      			<option <?php if($resproj['type'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+      		</select>
+		</div>
+		<div <?php if($resproj['type'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
+			<div  class="form-group">
+            	<label>Project <font color = "red">*</font></label>
+            	<select class="form-control" name = "project">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($row['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
+		<div <?php if($resproj['type'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
+			<div class="form-group">
+            	<label>Project <font color = "red">*</font></label>
+            	<select class="form-control" name = "pm">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($row['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
+		<div <?php if($resproj['type'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
+			<div  class="form-group">
+            	<label>Project <font color = "red">*</font></label>
+            	<select class="form-control" name = "internet">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($row['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
+	</div>
+	<div class="row">
 		<div class="col-xs-12" align="center">
 			<button class="btn btn-primary" name = "uppetty"> Update Petty </button>
-			<a href = "employee.php?ac=penpty" class="btn btn-danger"> Back </a>
+			<a href = "?ac=penpty" class="btn btn-danger"> Back </a>
 		</div>
 	</div>
 </form>
@@ -58,12 +137,21 @@ echo '</div>';
 		$upparti = mysqli_real_escape_string($conn, $_POST['upparti']);
 		$upamount =  mysqli_real_escape_string($conn, $_POST['upamount']);
 		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
+		if(isset($_POST['pettype'])){
+			if($_POST['pettype'] == 'Project'){
+				$project = $_POST['project'];
+			}elseif($_POST['pettype'] == 'P.M.'){
+				$project = $_POST['pm'];
+			}elseif($_POST['pettype'] == 'Internet'){
+				$project = $_POST['internet'];
+			}	
+		}
 		if($upparti == 'Transfer'){
 			$state = 'UATransfer';	
 		}else{
 			$state = 'UAPetty';
 		}
-		$sql = "UPDATE `petty` set amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
+		$sql = "UPDATE `petty` set project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
 		if($conn->query($sql) == TRUE){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';

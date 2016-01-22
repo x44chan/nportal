@@ -17,7 +17,7 @@
 		//$obtimeout = $_POST['obtimeout'];
 		$state = 'UA';
 		if(isset($_POST['restday']) && $_POST['restday'] == 'restday'){
-			$officialworksched = "Restday";
+			$officialworksched = "Restday<br>" . $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
 		}else{
 			$officialworksched = $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
 		}

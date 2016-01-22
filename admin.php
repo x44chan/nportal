@@ -582,11 +582,17 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
+			$proj = "SELECT * FROM `project` where name = '$row[project]'";
+			$resproj = $conn->query($proj)->fetch_assoc();
+			$pettype = '<br>'.$resproj['type'].': <font color = "green">'.$row['project'].'</font>';
+			if($row['project'] == ""){
+				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
+			}
 	?>
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font></i></td>
+				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font><?php echo $pettype;?></i></td>
 				<td><?php echo $row['petreason'];?></td>
 				<td><?php if($row['acctrans'] != null){ echo '<i><b>ACC: ' .date("M j, Y g:i A", strtotime($row['acctrans'])) . '</b></i>'; } else { echo ' - '; } ?> </td>
 				<td><?php 
@@ -764,13 +770,21 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
+			if($row['project'] == 'P.M.' || $row['project'] == 'Internet'){
+				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
+			}else{
+				$pettype = '<br>Proj: <font color = "green">' . $row['project'].'</font>';
+			}
+			if($row['project'] == ""){
+				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
+			}
 	?>
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-				<td><b><?php echo $row['particular'];?><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font></i></td>
+				<td><b>Petty: <font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font><?php echo $pettype;?></i></td>
 				<td><?php echo $row['petreason'];?></td>
-				<td></td>
+				<td> - </td>
 				<td>
 					<?php echo '<a class = "btn btn-success" style = "width: 100px" href = "?release=1&petty_id='.$row['petty_id'].'">Release</a>';?>
 				</td>
