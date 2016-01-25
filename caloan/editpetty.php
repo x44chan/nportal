@@ -51,6 +51,9 @@
       			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
       			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
       			<option <?php if($row['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
+      			<?php if($_SESSION['acc_id'] == '37') {  ?>
+      				<option <?php if($row['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
+      			<?php } ?>
       		</select>
 		</div>
 		<div <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
@@ -119,6 +122,21 @@
             	</select>
             </div>
 		</div>
+		<?php if($_SESSION['acc_id'] == '37'){ ?>
+		<div <?php if($row['projtype'] != 'House'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "house">
+				<div  class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "house">
+	            		<option value = ""> - - - - - </option>
+	            		<option <?php if($row['project'] == 'GROCERIES'){ echo ' selected ';} ?>value = "GROCERIES"> GROCERIES </option>
+	            		<option <?php if($row['project'] == 'FOODS'){ echo ' selected ';} ?>value = "FOODS"> FOODS </option>
+	            		<option <?php if($row['project'] == 'REPRESENTATION'){ echo ' selected ';} ?>value = "REPRESENTATION"> REPRESENTATION </option>
+	            		<option <?php if($row['project'] == 'MEDICINES'){ echo ' selected ';} ?>value = "MEDICINES"> MEDICINES </option>
+	            		<option <?php if($row['project'] == 'ANIMALS'){ echo ' selected ';} ?>value = "ANIMALS"> ANIMALS </option>
+	            	</select>
+	            </div>
+			</div>
+		<?php } ?>
 	</div>
 	<div class="row">
 		<div class="col-xs-12" align="center">
@@ -148,9 +166,11 @@ echo '</div>';
 				$project = $_POST['internet'];
 			}elseif($_POST['pettype'] == 'Others'){
 				$project = null;
+			}elseif($_POST['pettype'] == 'House'){
+				$project = $_POST['house'];
 			}	
 		}
-		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == ""){
+		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){
 			echo '<script>alert("Empty");window.location.href="?editpetty='.$petid.'";</script>';
 			break;		
 		}

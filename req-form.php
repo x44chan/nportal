@@ -513,9 +513,11 @@ $(document).ready(function(){
 					$_POST['project'] = $_POST['internet'];
 				}elseif($_POST['pettype'] == 'Others'){
 					$project = null;
+				}elseif($_POST['pettype'] == 'House'){
+					$project = $_POST['house'];
 				}	
 			}
-			if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){
+			if($_POST['pettype'] == ""){
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
 		    	}elseif ($_SESSION['level'] == 'ACC') {
