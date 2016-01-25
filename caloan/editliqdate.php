@@ -83,7 +83,8 @@
 	            	</select>
 	            </div>
 			</div>
-			<div <?php if($data['projtype'] != 'House' && $_SESSION['acc_id'] == '37'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "house">
+			<?php if($_SESSION['acc_id'] == '37'){ ?>
+			<div <?php if($data['projtype'] != 'House'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "house">
 				<div  class="form-group">
 	            	<label>Project <font color = "red">*</font></label>
 	            	<select class="form-control" name = "house">
@@ -96,6 +97,7 @@
 	            	</select>
 	            </div>
 			</div>
+			<?php } ?>
 			<div <?php if($data['projtype'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
 				<div class="form-group">
 	            	<label>Project <font color = "red">*</font></label>
