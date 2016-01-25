@@ -45,6 +45,13 @@ $(document).ready(function(){
 			$('#project').hide();
 			$('select[name="project"]').attr('required',false);
 		}
+		if(selected2 == 'House'){
+			$('#house').show();
+			$('select[name="house"]').attr('required',true);
+		}else{
+			$('#house').hide();
+			$('select[name="house"]').attr('required',false);
+		}
 		if(selected2 == 'P.M.'){
 			$('#pm').show();
 			$('select[name="pm"]').attr('required',true);

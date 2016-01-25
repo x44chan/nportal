@@ -45,14 +45,15 @@
 	<div class="row">
 		<div class="col-xs-3 col-xs-offset-3">
 			<label>Type </label>
-      		<select class="form-control" name = "pettype">
+      		<select class="form-control" name = "pettype" required>
       			<option value=""> - - - - - - - </option>
-      			<option <?php if($resproj['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
-      			<option <?php if($resproj['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
-      			<option <?php if($resproj['type'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+      			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
+      			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
+      			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+      			<option <?php if($row['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
       		</select>
 		</div>
-		<div <?php if($resproj['type'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
+		<div <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
 			<div  class="form-group">
             	<label>Project <font color = "red">*</font></label>
             	<select class="form-control" name = "project">
@@ -74,7 +75,7 @@
             	</select>
             </div>
 		</div>
-		<div <?php if($resproj['type'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
+		<div <?php if($row['projtype'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
 			<div class="form-group">
             	<label>Project <font color = "red">*</font></label>
             	<select class="form-control" name = "pm">
@@ -96,7 +97,7 @@
             	</select>
             </div>
 		</div>
-		<div <?php if($resproj['type'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
+		<div <?php if($row['projtype'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
 			<div  class="form-group">
             	<label>Project <font color = "red">*</font></label>
             	<select class="form-control" name = "internet">
@@ -137,6 +138,7 @@ echo '</div>';
 		$upparti = mysqli_real_escape_string($conn, $_POST['upparti']);
 		$upamount =  mysqli_real_escape_string($conn, $_POST['upamount']);
 		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
+		$pettype = mysqli_real_escape_string($conn, $_POST['pettype']);
 		if(isset($_POST['pettype'])){
 			if($_POST['pettype'] == 'Project'){
 				$project = $_POST['project'];
@@ -144,14 +146,20 @@ echo '</div>';
 				$project = $_POST['pm'];
 			}elseif($_POST['pettype'] == 'Internet'){
 				$project = $_POST['internet'];
+			}elseif($_POST['pettype'] == 'Others'){
+				$project = null;
 			}	
+		}
+		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == ""){
+			echo '<script>alert("Empty");window.location.href="?editpetty='.$petid.'";</script>';
+			break;		
 		}
 		if($upparti == 'Transfer'){
 			$state = 'UATransfer';	
 		}else{
 			$state = 'UAPetty';
 		}
-		$sql = "UPDATE `petty` set project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
+		$sql = "UPDATE `petty` set projtype = '$pettype', project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
 		if($conn->query($sql) == TRUE){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';

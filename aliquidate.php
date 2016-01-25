@@ -44,6 +44,18 @@
 			</div>
 		<?php } ?>
 		</div>
+		<div class="row">
+			<div class="col-xs-4">
+				<label>Type</label>
+				<p style="margin-left: 10px;"><?php echo $data['projtype'];?></p>
+			</div>
+			<?php if(empty($data['projtype'])) { ?>
+				<div class="col-xs-4">
+					<label>Project/Company</label>
+					<p style="margin-left: 10px;"><?php echo $data['project'];?></p>
+				</div>
+			<?php } ?>
+		</div>
 		<!--<div class="row">
 			<div class="col-xs-offset-4 col-xs-2">
 				<button id = "xcompute" class="btn btn-primary">Compute</button>

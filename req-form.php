@@ -380,12 +380,16 @@ $(document).ready(function(){
             	<input type = "text" pattern = "[.0-9,]*" id = "petamount" required name = "amountpet" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
-          		<label>Type </label>
-          		<select class="form-control" name = "pettype">
-          			<option value=""> Select (P.M / Internet / Project)  </option>
+          		<label>Type <font color = "red">*</font></label>
+          		<select class="form-control" name = "pettype" required>
+          			<option value=""> Select ( P.M / Internet / Project / Others)  </option>
           			<option value="P.M."> P.M. </option>
           			<option value="Internet"> Internet </option>
           			<option value="Project"> Project </option>
+          			<option value="Others"> Others </option>
+          			<?php if($_SESSION['acc_id'] == '37') {  ?>
+	      			<option value="House"> House </option>
+	      			<?php } ?>
           		</select>
           	</div>
           	<div style = "display: none;" class="form-group" id = "project">
@@ -433,6 +437,19 @@ $(document).ready(function(){
             		?>
             	</select>
             </div>
+            <?php if($_SESSION['acc_id'] == '37') {  ?>
+            <div style = "display: none;" class="form-group" id = "house">
+            	<label>House <font color = "red">*</font></label>
+            	<select class="form-control" name = "house">
+            		<option value = ""> - - - - - </option>
+            		<option value = "GROCERIES"> GROCERIES </option>
+            		<option value = "FOODS"> FOODS </option>
+            		<option value = "REPRESENTATION"> REPRESENTATION </option>
+            		<option value = "MEDICINES"> MEDICINES </option>
+            		<option value = "ANIMALS"> ANIMALS </option>
+            	</select>
+            </div>
+            <?php } ?>
           	<div class="form-group">
             	<label for="usrname"> Reason <font color = "red">*</font></label>
             	<textarea id = "petamount" required name = "petreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
@@ -494,10 +511,23 @@ $(document).ready(function(){
 					$_POST['project'] = $_POST['pm'];
 				}elseif($_POST['pettype'] == 'Internet'){
 					$_POST['project'] = $_POST['internet'];
+				}elseif($_POST['pettype'] == 'Others'){
+					$project = null;
 				}	
 			}
-			if(empty($_POST['pettype'])){
-				$_POST['pettype'] = null;
+			if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){
+				if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("accounting.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penpty"); </script>';
+		    	}
+				break;
+			}
+			if($_POST['pettype'] == 'Others'){
 				$_POST['project'] = null;
 			}
 			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`, `projtype`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");

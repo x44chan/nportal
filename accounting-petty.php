@@ -303,15 +303,19 @@
 			$query15 = "SELECT * FROM `petty` where petty_id = '$petyid'";
 			$amount = $conn->query($query15)->fetch_assoc();
 			$amounts = $amount['amount'];
-			echo '<div class = "container-fluide" style = "padding: 5px 10px;"><div class = "row">
-				<div class = "col-xs-4">
-					<label>Name: </label>
-					<p>'.$data1['fname'] . ' ' . $data1['lname'] . '</p>
-				</div>
-				<div class = "col-xs-4">
-					<label>Amount: </label>
-					<p>P '.$amount['amount'] . '</p>
-				</div>
+			echo '<div class = "container-fluid" style = "padding: 5px 10px;"><div class = "row">
+					<div class = "col-xs-4">
+						<label>Name: </label>
+						<p>'.$data1['fname'] . ' ' . $data1['lname'] . '</p>
+					</div>
+					<div class = "col-xs-2">
+						<label>Amount: </label>
+						<p>₱ '.$amount['amount'] . '</p>
+					</div>
+					<div class = "col-xs-3">
+						<label> Type / Project </label>
+						<p>'.$amount['projtype']. ' / ' . $amount['project'].'</p>
+					</div>
 				</div>';
 			echo '<table class = "table">';
 			echo '<thead>';

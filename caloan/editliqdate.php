@@ -45,12 +45,107 @@
 			</div>
 		<?php } ?>
 		</div>
+
+		<form action = "" method="post">
+		<div class="row">
+			<div class="col-xs-3">
+				<label>Type </label>
+	      		<select class="form-control" name = "pettype" required>
+	      			<option value=""> - - - - - - - </option>
+	      			<option <?php if($data['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
+	      			<option <?php if($data['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
+	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+	      			<option <?php if($data['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
+	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
+	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
+	      			<?php } ?>
+	      		</select>
+			</div>
+			<div <?php if($data['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
+				<div  class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "project">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'House' && $_SESSION['acc_id'] == '37'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "house">
+				<div  class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "house">
+	            		<option value = ""> - - - - - </option>
+	            		<option <?php if($data['project'] == 'GROCERIES'){ echo ' selected ';} ?>value = "GROCERIES"> GROCERIES </option>
+	            		<option <?php if($data['project'] == 'FOODS'){ echo ' selected ';} ?>value = "FOODS"> FOODS </option>
+	            		<option <?php if($data['project'] == 'REPRESENTATION'){ echo ' selected ';} ?>value = "REPRESENTATION"> REPRESENTATION </option>
+	            		<option <?php if($data['project'] == 'MEDICINES'){ echo ' selected ';} ?>value = "MEDICINES"> MEDICINES </option>
+	            		<option <?php if($data['project'] == 'ANIMALS'){ echo ' selected ';} ?>value = "ANIMALS"> ANIMALS </option>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
+				<div class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "pm">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
+				<div  class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "internet">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-xs-12">
 				<hr>
 			</div>
 		</div>
-		<form action = "" method="post">
 	<div id="tab_logic"> 
 <?php
 		$i = 0;
@@ -123,6 +218,7 @@
 		$len = $i;
 		$count = 0;
 		$petid = mysqli_real_escape_string($conn, $_POST['pet_id']);
+		$_GET['editliqdate'] = mysqli_real_escape_string($conn, $_GET['editliqdate']);
 		$sql = "SELECT * FROM `petty` where petty_id = '$petid' and account_id = '$_SESSION[acc_id]'";
 		$data = $conn->query($sql)->fetch_assoc();
 		$amount = 0;
@@ -175,6 +271,30 @@
 					}
 				}
 			}
+			if(!empty($_POST['pettype'])){
+				$pettype = mysqli_real_escape_string($conn, $_POST['pettype']);
+				if(isset($_POST['pettype'])){
+					if($_POST['pettype'] == 'Project'){
+						$project = $_POST['project'];
+					}elseif($_POST['pettype'] == 'P.M.'){
+						$project = $_POST['pm'];
+					}elseif($_POST['pettype'] == 'Internet'){
+						$project = $_POST['internet'];
+					}elseif($_POST['pettype'] == 'Others'){
+						$project = null;
+					}elseif($_POST['pettype'] == 'House'){
+						$project = $_POST['house'];
+					}
+				}
+				$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");
+				$stmt2->bind_param("ssi", $project, $pettype, $_GET['editliqdate']);
+				if($stmt2->execute()){
+					$count += 1;
+				}else{
+					$conn->error();
+				}
+			}
+			echo $project . ' ' . $_POST['pettype'] . ' ' . $_GET['editliqdate'];
 			if($count>0){
 				echo '<script type="text/javascript">alert("Edit successful"); window.location.replace("?ac=penpty"); </script>';
 			}
