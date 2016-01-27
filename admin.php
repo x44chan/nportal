@@ -585,6 +585,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$proj = "SELECT * FROM `project` where name = '$row[project]'";
 			$resproj = $conn->query($proj)->fetch_assoc();
 			$pettype = '<br>'.$row['projtype'].': <font color = "green">'.$row['project'].'</font>';
+			if($row['projtype'] == 'Others'){
+				$pettype = '<br><font color = "green">' . $row['projtype'] . '</font>';
+			}
 	?>
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
