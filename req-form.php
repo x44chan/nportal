@@ -496,8 +496,12 @@ $(document).ready(function(){
 					$_POST['project'] = $_POST['internet'];
 				}	
 			}
-			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`) VALUES (?, ?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("issssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project']);
+			if(empty($_POST['pettype'])){
+				$_POST['pettype'] = null;
+				$_POST['project'] = null;
+			}
+			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`, `projtype`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("isssssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project'], $_POST['pettype']);
 			$stmt->execute();		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
