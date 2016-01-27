@@ -7,7 +7,7 @@
 		        	echo '"paging": false,';
 		        }
 	        ?>
-        	"order": [[ 4, "asc" ],[ 0, 'desc']]
+        	"order": [[ 0, "desc" ],[ 4, 'asc']]
 
     	});
     	$("#myTabledate_filter").hide();
@@ -65,9 +65,9 @@
 		$_SESSION['edate'] = "";
 	}
 	if(isset($_SESSION['searchbox']) && isset($_SESSION['type']) && $_SESSION['searchbox'] != "" && $_SESSION['type'] != ""){
-		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where  $_SESSION[edate] $_SESSION[qsearch] petty.petty_id = petty_liqdate.petty_id and (petty.state != 'DAPetty' and petty.state != 'CPetty') and completedate is not null GROUP BY petty.petty_id ORDER BY type asc, project asc, petty.petty_id desc";
+		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where  $_SESSION[edate] $_SESSION[qsearch] petty.petty_id = petty_liqdate.petty_id and (petty.state != 'DAPetty' and petty.state != 'CPetty') and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";
 	}else{
-		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and name = project and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY projtype asc, project asc, petty.petty_id desc";	
+		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and name = project and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";	
 	}
 	$result = $conn->query($sql);
 ?>
@@ -181,7 +181,7 @@
 	<table class="table" <?php if(!isset($_GET['print'])){ echo 'id = "myTabledate"'; }?>>
 		<thead style="border-bottom: 2px solid #ddd;">
 			<tr>
-				<th width="10%"> Petty# </th>
+				<th width="10%"> Date </th>
 				<th width="20%"> Name </th>
 				<th width="12%"> Amount </th>
 				<th width="12%"> Total Used </th>
@@ -208,7 +208,7 @@
 			$totalpet += $row['amount'];
 			$totalused += $data23['sumliq'];
 			echo '<tr>';
-			echo	'<td>' . $row['petty_id'] . '</td>';
+			echo	'<td>' . date("M j, Y", strtotime($row['completedate'])) . '</td>';
 			echo	'<td>' . $data['fname'] . ' ' . $data['lname'] . '</td>';
 			echo	'<td>₱ ' . number_format($row['amount'], 2) . '</td>';		
 			echo	'<td>₱ ' . number_format($data23['sumliq'], 2) . '</td>';

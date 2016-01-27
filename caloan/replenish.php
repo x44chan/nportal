@@ -91,16 +91,19 @@
 			</div>
 		</div>
 		<div class="row" >
-			<div class="col-xs-3" align="center">
-				<label>Total Fund</label>
-				<input type = "text" class="form-control input-sm" required <?php if(isset($_SESSION['repleamount']) && $_SESSION['repleamount'] > 0){ echo ' value = "' . $_SESSION['repleamount'] . '" '; } else { echo ' value = "" '; }?>name = "repleamount" placeholder = "Enter amount"/>
-			</div>			
 			<div class="col-xs-2" align="center">
+				<label>Total Fund</label>
+				<input type = "text" class="form-control input-sm" <?php if(isset($_SESSION['repleamount']) && $_SESSION['repleamount'] > 0){ echo ' value = "' . $_SESSION['repleamount'] . '" '; } else { echo ' value = "" '; }?>name = "repleamount" placeholder = "Enter amount"/>
+			</div>			
+			<div class="col-xs-3" align="center">
 				<label>Status</label>
 				<select name = "stats" class="form-control input-sm">
 					<option value = ""> All </option>
-					<option <?php if(isset($_GET['nopending'])){ echo ' selected '; } ?> value = "nopending"> Completed </option>
-					<option <?php if(isset($_GET['spendliqui'])){ echo ' selected '; } ?> value = "spendliqui"> All Pending </option>
+					<option <?php if(isset($_GET['nopending'])){ echo ' selected '; } ?> value = "nopending"> Completed Petty Cash </option>
+					<option <?php if(isset($_GET['spendliqui'])){ echo ' selected '; } ?> value = "spendliqui"> All Pending Petty Cash </option>
+					<option <?php if(isset($_GET['bdochck'])){ echo ' selected '; } ?> value = "bdochck"> BDO Cheque </option>
+					<option <?php if(isset($_GET['planterschck'])){ echo ' selected '; } ?> value = "planterschck"> Planters Cheque </option>
+					<option <?php if(isset($_GET['pendingchck'])){ echo ' selected '; } ?> value = "pendingchck"> All Pending Cheque </option>
 				</select>
 			</div>
 			<div class="col-xs-2" align="center">
@@ -134,14 +137,17 @@
 <div id = "report">
 	<div class="row" >
 		<div class="col-xs-12" align="center" style = "<?php if(!isset($_GET['print'])){ echo ' margin-top: -40px;'; }else{echo 'font-size: 8pt;'; } ?>">
-			<i><h3>Petty Replenish Report</h3></i>
-			<b ><i>
+			<i>
+				<h3>Petty Replenish Report <?php if(isset($_GET['bdochck'])){ echo "<br>(BDO Cheque)"; }elseif(isset($_GET['planterschck'])){ echo "<br>(Planters Cheque)"; }?></h3>
+			</i>
+			
+			<b><i>
 				<?php echo date("M j, Y", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2)); ?>
 			</i></b>
 		</div>
-		<div class="col-xs-12" align="right" style="<?php echo ' font-size: 9pt; ';?>">
+		<div class="col-xs-12" align="right" style="<?php if(isset($_GET['bdochck']) || isset($_GET['planterschck'])){ echo ' display: none; '; } echo ' font-size: 9pt; ';?>">
 			<i><b>
-				<?php if(!isset($_SESSION['repleamount'])){ $_SESSION['repleamount'] = 0; } echo 'Total Fund: <span class = "badge">₱ ' . number_format($_SESSION['repleamount'],2) . '</span><br>';?>
+				<?php if(!isset($_SESSION['repleamount']) || $_SESSION['repleamount'] == ""){ $_SESSION['repleamount'] = 0; } echo 'Total Fund: <span class = "badge">₱ ' . number_format($_SESSION['repleamount'],2) . '</span><br>';?>
 			</b></i>
 		</div>
 	</div>
@@ -150,12 +156,20 @@
 			$xlink = "nopending";
 		}elseif (isset($_GET['spendliqui'])){
 			$xlink = 'spendliqui';
+		}elseif(isset($_GET['bdochck'])){
+			$xlink = "bdochck";
+		}elseif(isset($_GET['planterschck'])){
+			$xlink = "planterschck";
 		}else{
 			$xlink = "";
 		}
 		if(isset($_GET['print'])){
-			if($_SESSION['repleamount'] <= 0){
-				echo '<script> alert("Add petty fund first before printing report"); window.location.href = "?replenish";</script>';
+			if($_SESSION['repleamount'] <= 0) {
+				if(isset($_GET['bdochck']) || isset($_GET['planterschck'])){
+					
+				}else{
+					echo '<script> alert("Add petty fund first before printing report"); window.location.href = "?replenish";</script>';
+				}				
 			}
 			echo '<table align = "center" class = "table table-hover" style="font-size: 14px;">';
 			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?replenish&'.$xlink.'";});</script>';
@@ -176,8 +190,20 @@
 			  </thead>
 			  <tbody>';
 		include("conf.php");
-
-		$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' group by petty_liqdate.petty_id order by completedate desc";
+		if(isset($_GET['bdochck']) || isset($_GET['planterschck']) || isset($_GET['pendingchck'])){
+			if(isset($_GET['bdochck'])){
+				$query = " (source = 'Eliseo' or source = 'Sharon') and particular = 'Check' ";
+			}
+			if(isset($_GET['planterschck'])){
+				$query = " source = 'Accounting' and particular = 'Check'";
+			}
+			if(isset($_GET['pendingchck'])){
+				$query = " particular = 'Check' ";
+			}
+			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and $query group by petty_liqdate.petty_id order by completedate desc";		
+		}else{
+			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' group by petty_liqdate.petty_id order by completedate desc";		
+		}
 		$result = $conn->query($sql);
 		$total = 0;
 		$change = 0;
@@ -209,6 +235,18 @@
 					if(isset($_GET['spendliqui'])){
 						continue;	
 					} 
+				}
+				if(isset($_GET['pendingchck'])){
+					if($row['liqstate'] != 'CompleteLiqdate'){
+						$state = '₱ ' . number_format($data2['totalliq'],2).'<br><b> Pending Completion </b>';
+					}else{
+						continue;
+					}
+				}
+				if(isset($_GET['bdochck']) || isset($_GET['planterschck'])){
+					if($row['liqstate'] != 'CompleteLiqdate'){
+						continue;
+					}
 				}
 				$a = str_replace(',', '', $row['amount']);
 				if($data2['liqinfo'] == null){

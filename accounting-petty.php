@@ -24,12 +24,19 @@
 	        "iDisplayLength": 12
 	    });
 	});
+	
 </script>
 <style type="text/css">
 	#bords tr, #bords td{border-top: 1px black solid !important;}
 	<?php
 		if(isset($_GET['print'])){
 			echo 'body { visibility: hidden; }';
+		}
+		if(isset($_GET['detailedpetty'])){
+			echo 'table { page-break-inside:auto }
+    div   { page-break-inside:avoid; } /* This is the key */
+    thead { display:table-header-group }
+    tbody { display:table-footer-group }';
 		}
 	?>
 	@media print {		
@@ -187,6 +194,10 @@
 <?php
 	if(isset($_GET['pettydate'])){
 		include 'caloan/pettydate.php';
+		echo '</div><div style = "display: none;">';
+	}
+	if(isset($_GET['detailedpetty'])){
+		include 'caloan/detailedpetty.php';
 		echo '</div><div style = "display: none;">';
 	}
 	if(isset($_GET['expenses'])){
