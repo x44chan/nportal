@@ -206,7 +206,7 @@
 <?php
 	if(isset($_GET['liqdate']) && $_GET['liqdate'] == ""){
 		include 'conf.php';
-		$sql = "SELECT * FROM `petty`";
+		$sql = "SELECT * FROM `petty` where state != 'DAPetty' and state != 'CPetty'";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<div id = "backs" style = "margin-bottom: 50px;"><a class = "btn btn-primary pull-right" href = "acc-printallchange.php"/>Print All To Return Changes</a></div>';
