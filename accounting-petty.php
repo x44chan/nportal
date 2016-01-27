@@ -37,6 +37,7 @@
 	    	visibility: hidden;
 	    
 	  	}
+	  	<?php if(isset($_GET['print'])){ ?>
 	  	@page{
 	  		margin-left: 2mm;
 	  		margin-right: 2mm;
@@ -88,7 +89,7 @@
 		display: none; 
 		}
 	}
-
+	<?php } ?>
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
 <script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>

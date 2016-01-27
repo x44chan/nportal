@@ -43,6 +43,7 @@
 	    	visibility: hidden;
 	    
 	  	}
+	  	<?php if(isset($_GET['print'])){ ?>
 	  	#reportg #red {
 	  		color: red !important;
 	  	}
@@ -87,7 +88,7 @@
 	  		font-size: 11px;
 	  	}
 	}
-
+	<?php } ?>
 	#myTablelea td, #myTablelea th{
 		font-size: 13px;
 	}

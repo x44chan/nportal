@@ -24,7 +24,7 @@
 				</tr>	
 				<tr>
 					<td>Reason: </td>
-					<td><textarea required name = "unreason"class = "form-control"></textarea></td>
+					<td><textarea required name = "unreason"class = "form-control" placeholder = "enter reason"></textarea></td>
 					
 				</tr>			
 				<tr>

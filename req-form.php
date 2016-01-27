@@ -144,8 +144,70 @@ $(document).ready(function(){
 				<tr>
 					<td>Reason (Work to be done): <font color = "red">*</font></td>
 					<td><textarea required placeholder = "Enter your work to be done" name = "reason"class = "form-control"></textarea></td>
-					
 				</tr>
+				<tr>
+					<td> Type: <font color = "red">*</font></td>
+					<td>
+						<select required class="form-control" name = "ottype">
+		          			<option value=""> Select ( P.M / Internet / Project / Others)  </option>
+		          			<option value="P.M."> P.M. </option>
+		          			<option value="Internet"> Internet </option>
+		          			<option value="Project"> Project </option>
+		          			<option value="Others"> Others </option>	
+						</select>
+					</td>
+				</tr>
+            	<tr style = "display: none;" id = "otproject">
+            		<td><label>Project <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otproject">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otpm">
+            		<td><label>P.M. <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otpm">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otinternet">
+            		<td><label>Internet <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otinternet">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
 				<tr><div class = "ui-widget-content" style = "border: none;" >
 					<td>Start (Time of OT): <font color = "red">*</font></td>
 					<td>

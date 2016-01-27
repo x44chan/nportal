@@ -295,7 +295,11 @@
 			}else{
 				$explo2 = '.0';
 			}
-			
+			if($row['projtype'] != ""){
+				$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
+			}else{
+				$project = "";
+			}
 			$originalDate = date($row['datefile']);
 			$newDate = date("M j, Y", strtotime($originalDate));
 			echo
@@ -303,7 +307,7 @@
 					<td>'.$newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 					<td>'.$row["nameofemp"].'</td>
-					<td width = 300 height = 70>'.$row["reason"].'</td>
+					<td width = 300 height = 70>'.$row["reason"]. $project.'</td>
 					<td>'.$row["startofot"] . ' - ' . $row['endofot']. ' /<strong> OT: '. $explo[0].$explo2 .'</strong></td>
 					<td>'.$row["officialworksched"].'</td>					
 					<td><b>';

@@ -146,12 +146,8 @@
 									</a>
 								</td>
 							</tr>';
-				
 			}
 		}
-
-
-
 	?>
 		</tbody>
 	</table>
@@ -204,6 +200,11 @@
 	<?php
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
+			if($row['dateofot'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
+				$adjust = '<a onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?overtime_id=' . $row['overtime_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+			}else{
+				$adjust = '';
+			}
 			$date17 = date("d");
 			$dated = date("m");
 			$datey = date("Y");		
@@ -227,17 +228,24 @@
 			}else{
 				$otbreak = "";
 			}
-			
+			if($row['projtype'] != ""){
+				$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
+			}else{
+				$project = "";
+			}
+			if($row['projtype'] == 'Others'){
+				$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
+			}
 			$originalDate = date($row['datefile']);
 			$newDate = date("M j, Y", strtotime($originalDate));			
 			echo
 				'<tr>
-					<td>'.$newDate.'</td>
+					<td>'.$adjust. ' ' . $newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 					<td style = "text-align:left;">'.  $oldot . $otbreak .'</td>	
 					<td>'.$hrot .  $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . $otbreak  .'</td>
 					<td><strong>'.$explo[0].$explo2.'</strong></td>
-					<td>'.$row["reason"].'</td>
+					<td>'.$row["reason"]. $project.'</td>
 					<td>'.$row["officialworksched"].'</td>					
 					</tr>';
 		}
@@ -342,6 +350,11 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 	<?php
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
+			if($row['obdatereq'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
+				$adjust = '<a onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?officialbusiness_id=' . $row['officialbusiness_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+			}else{
+				$adjust = '';
+			}
 			//end of computation
 			$date17 = date("d");
 			$dated = date("F");
@@ -352,7 +365,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 			$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];			
 			echo
 				'<tr>
-					<td width = 100>'.$newDate.'</td>
+					<td width = 100>'.$adjust .$newDate.'</td>
 					<td>'.date("M j, Y",strtotime($row['obdatereq'])).'</td>	
 					<td><i><b>'.$hr.'</b></td>
 					<td>'.$row["officialworksched"].'</td>				
@@ -536,10 +549,15 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 			$stmtss = "SELECT count(account_id) as asd FROM `loan_cutoff` where loan_id = '$loan_id'";
 			$datas = $conn->query($stmtss)->fetch_assoc();
 			$len = $datas['asd'];	
+			if($row['penalty'] == '1'){
+				$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b><br>';
+			}else{
+				$row['penalty'] = '<b> Salary Loan </b><br>';
+			}
 ?>	
 			<tr>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd; border-left: 1px solid #ddd; vertical-align: middle; text-align: center;">
-					<i><p style="margin-left: 10px;"><?php echo date("M j, Y", strtotime($row['loandate'])); ?></p></i>
+					<i><p style="margin-left: 10px;"><?php echo  $row['penalty']. date("M j, Y", strtotime($row['loandate'])); ?></p></i>
 				</td>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd;vertical-align: middle; text-align: center;">
 					<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['loanamount']); ?></p></i>

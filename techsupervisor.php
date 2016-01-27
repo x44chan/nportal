@@ -413,13 +413,21 @@ if(isset($_GET['upovertime'])){
 				}else{
 					$otlate = "";
 				}
+				if($row['projtype'] != "" && $row['projtype'] != 'Others'){
+					$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
+				}else{
+					$project = "";
+				}
+				if($row['projtype'] == 'Others'){
+					$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("F j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
-						<td width = 250 height = 70>'.$data1["reason"].'</td>
+						<td width = 250 height = 70>'.$data1["reason"]. $project.'</td>
 						<td>'.$row['csrnum'].$row["startofot"] . ' - ' . $row['endofot']. $otbreak.'</td>
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
@@ -475,6 +483,14 @@ if(isset($_GET['upovertime'])){
 				}else{
 					$otlate = "";
 				}
+				if($row['projtype'] != "" && $row['projtype'] != 'Others'){
+					$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
+				}else{
+					$project = "";
+				}
+				if($row['projtype'] == 'Others'){
+					$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
+				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 				$data1 = $conn->query($query1)->fetch_assoc();
 				echo 
@@ -483,7 +499,7 @@ if(isset($_GET['upovertime'])){
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$data1['reason'].'</td>
+						<td width = 300 height = 70>'.$data1['reason'].$project.'</td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){

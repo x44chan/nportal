@@ -84,9 +84,36 @@
 		}else{
 				$uplate = ', state = "UAAdmin" ';
 		}
-		
+		if(isset($_POST['ottype'])){
+			if($_POST['ottype'] == 'Project'){
+				$_POST['project'] = $_POST['otproject'];
+			}elseif($_POST['ottype'] == 'P.M.'){
+				$_POST['project'] = $_POST['otpm'];
+			}elseif($_POST['ottype'] == 'Internet'){
+				$_POST['project'] = $_POST['otinternet'];
+			}elseif($_POST['ottype'] == 'Others'){
+				$project = null;
+			}
+		}
+		if($_POST['ottype'] == ""){
+			if($_SESSION['level'] == 'EMP'){
+	    	//	echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("accounting.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penpty"); </script>';
+	    	}
+			break;
+		}
+		if($_POST['ottype'] == 'Others'){
+			$_POST['project'] = null;
+		}
+		$project = mysqli_real_escape_string($conn, $_POST['project']);
+		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
 		$stmt = "UPDATE `overtime` set 
-			csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
+			projtype = '$projtype', project = '$project', csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
 			where account_id = '$accid' and $state and overtime_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {

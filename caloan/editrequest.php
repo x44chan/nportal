@@ -39,7 +39,85 @@
 				<tr>
 					<td>CSR #: </td>
 					<td><input class = "form-control" type = "text" value = "<?php echo $row['csrnum'];?>" placeholder = "Enter CSR Number" name = "csrnum"/></td>
-				</tr>			
+				</tr>
+				<tr>
+					<td> Type: <font color = "red">*</font></td>
+					<td>
+						<select required class="form-control" name = "ottype">
+		          			<option value=""> Select ( P.M / Internet / Project / Others)  </option>
+		          			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
+		          			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
+		          			<option <?php if($row['projtype'] == 'Project'){ echo ' selected '; } ?> value="Project"> Project </option>
+		          			<option <?php if($row['projtype'] == 'Others'){ echo ' selected '; } ?> value="Others"> Others </option>	
+						</select>
+					</td>
+				</tr>
+				<tr <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" '; } ?> id = "otproject">
+            		<td><label>Project <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otproject">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] != 'P.M.'){ echo ' style = "display: none;" '; } ?> id = "otpm">
+            		<td><label>P.M. <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otpm">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] != 'Internet'){ echo ' style = "display: none;" '; } ?> id = "otinternet">
+            		<td><label>Internet <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otinternet">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>			
 				<?php
 					$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();

@@ -74,6 +74,30 @@ $(document).ready(function(){
 			$('select[name="internet"]').attr('required',false);
 		}
 	});
+	$('select[name="ottype"]').change(function() {
+		    var selected2 = $(this).val();
+			if(selected2 == 'Project'){
+				$('#otproject').show();
+				$('select[name="otproject"]').attr('required',true);
+			}else{
+				$('#otproject').hide();
+				$('select[name="otproject"]').attr('required',false);
+			}
+			if(selected2 == 'P.M.'){
+				$('#otpm').show();
+				$('select[name="otpm"]').attr('required',true);
+			}else{
+				$('#otpm').hide();
+				$('select[name="otpm"]').attr('required',false);
+			}
+			if(selected2 == 'Internet'){
+				$('#otinternet').show();
+				$('select[name="otinternet"]').attr('required',true);
+			}else{
+				$('#otinternet').hide();
+				$('select[name="otinternet"]').attr('required',false);
+			}
+		});
 	$("#petamount").keyup(function(e){
         $(this).val(format($(this).val()));
     });

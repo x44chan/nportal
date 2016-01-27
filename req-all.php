@@ -326,11 +326,11 @@
 				<tr>
 					<th width="9%">Date File</th>
 					<th width="9%">Date of Overtime</th>
-					<th width="9%">Name of Employee</th>
+					<th width="12%">Name of Employee</th>
 					<th width="30%">Reason</th>
-					<th width="11%">From - To (Overtime)</th>
+					<th width="14%">From - To (Overtime)</th>
 					<th width="11%">Offical Work Schedule</th>
-					<th width="23%">State</th>
+					<th width="15%">State</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -354,7 +354,14 @@
 			}else{
 				$explo2 = '.0';
 			}
-			
+			if($row['projtype'] != "" && $row['projtype'] != 'Others'){
+				$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
+			}else{
+				$project = "";
+			}
+			if($row['projtype'] == 'Others'){
+				$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
+			}
 			$originalDate = date($row['datefile']);
 			$newDate = date("M j, Y", strtotime($originalDate));
 			echo
@@ -362,7 +369,7 @@
 					<td>'.$newDate.'</td>
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 					<td>'.$row["nameofemp"].'</td>
-					<td width = 300 height = 70>'.$row["reason"].'</td>
+					<td width = 300 height = 70>'.$row["reason"]. $project.'</td>
 					<td>'.$row["startofot"] . ' - ' . $row['endofot']. ' <br> <strong> OT: '. $explo[0].$explo2 .'</strong></td>
 					<td>'.$row["officialworksched"].'</td>					
 					<td><b>';

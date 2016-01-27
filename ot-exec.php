@@ -74,8 +74,36 @@
 			$state = 'UALate';
 			$restric = 0;	
 		}
-		$stmt = $conn->prepare("INSERT into `overtime` (account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("issssssssssss",$accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
+		if(isset($_POST['ottype'])){
+			if($_POST['ottype'] == 'Project'){
+				$_POST['project'] = $_POST['otproject'];
+			}elseif($_POST['ottype'] == 'P.M.'){
+				$_POST['project'] = $_POST['otpm'];
+			}elseif($_POST['ottype'] == 'Internet'){
+				$_POST['project'] = $_POST['otinternet'];
+			}elseif($_POST['ottype'] == 'Others'){
+				$project = null;
+			}
+		}
+		if($_POST['ottype'] == ""){
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("accounting.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penpty"); </script>';
+	    	}
+			break;
+		}
+		if($_POST['ottype'] == 'Others'){
+			$_POST['project'] = null;
+		}
+		$project = mysqli_real_escape_string($conn, $_POST['project']);
+		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
+		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("ssissssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){
