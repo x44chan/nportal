@@ -73,6 +73,13 @@ $(document).ready(function(){
 			$('#all').hide();
 			$('select[name="internet"]').attr('required',false);
 		}
+		if(selected2 == 'Combined'){
+			$('#combined').show();
+			$('select[name="combined"]').attr('required',true);
+		}else{
+			$('#combined').hide();
+			$('select[name="combined"]').attr('required',false);
+		}
 	});
 	$('select[name="ottype"]').change(function() {
 		    var selected2 = $(this).val();

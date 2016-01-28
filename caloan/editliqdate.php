@@ -55,6 +55,7 @@
 	      			<option <?php if($data['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 	      			<option <?php if($data['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
 	      			<option <?php if($data['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
 	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
@@ -105,6 +106,28 @@
 	            		<option value = ""> - - - - - </option>
 	            		<?php
 	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'Combined'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "combined">
+				<div class="form-group">
+	            	<label>Project <font color = "red">*</font></label>
+	            	<select class="form-control" name = "combined">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
 	            			$xresult = $conn->query($xsql);
 	            			if($xresult->num_rows > 0){
 	            				while($xrow = $xresult->fetch_assoc()){
@@ -286,6 +309,8 @@
 						$project = null;
 					}elseif($_POST['pettype'] == 'House'){
 						$project = $_POST['house'];
+					}elseif($_POST['pettype'] == 'Combined'){
+						$project = $_POST['combined'];
 					}
 				}
 				$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");

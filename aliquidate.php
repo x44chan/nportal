@@ -49,7 +49,7 @@
 				<label>Type</label>
 				<p style="margin-left: 10px;"><?php echo $data['projtype'];?></p>
 			</div>
-			<?php if(empty($data['projtype'])) { ?>
+			<?php if(!empty($data['projtype'])) { ?>
 				<div class="col-xs-4">
 					<label>Project/Company</label>
 					<p style="margin-left: 10px;"><?php echo $data['project'];?></p>

@@ -40,6 +40,11 @@
 				</ul>
 			</div>
 			<a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>	
+			<?php
+				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
+					echo '<a href = "?expn" class="btn btn-primary"> Expenses </a>';
+				}
+			?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">

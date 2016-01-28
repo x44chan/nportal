@@ -42,7 +42,12 @@
 				  	}
 				  ?>
 				</ul>
-			</div>		
+			</div>
+			<?php
+				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'prog') !== false){
+					echo '<a href = "?expn" class="btn btn-primary"> Expenses </a>';
+				}
+			?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">

@@ -28,6 +28,13 @@ $(document).ready(function(){
 		include 'caloan/latefiling.php';
 		echo '</div>';
 	}
+	if(isset($_GET['expn'])){
+		include 'caloan/expn.php';
+		echo '</div>';
+		if(isset($_GET['print'])){
+			exit;
+		}
+	}
 ?>
 
 <div id = "offb" style = "margin-top: -30px; display: none; ">
@@ -448,6 +455,7 @@ $(document).ready(function(){
           			<option value="P.M."> P.M. </option>
           			<option value="Internet"> Internet </option>
           			<option value="Project"> Project </option>
+          			<option value="Combined"> P.M. & Internet </option>
           			<option value="Others"> Others </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
@@ -490,6 +498,21 @@ $(document).ready(function(){
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "combined">
+            	<label>P.M. & Internet <font color = "red">*</font></label>
+            	<select class="form-control" name = "combined">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -574,9 +597,11 @@ $(document).ready(function(){
 				}elseif($_POST['pettype'] == 'Internet'){
 					$_POST['project'] = $_POST['internet'];
 				}elseif($_POST['pettype'] == 'Others'){
-					$project = null;
+					$_POST['project'] = null;
 				}elseif($_POST['pettype'] == 'House'){
-					$project = $_POST['house'];
+					$_POST['project'] = $_POST['house'];
+				}elseif($_POST['pettype'] == 'Combined'){
+					$_POST['project'] = $_POST['combined'];
 				}	
 			}
 			if($_POST['pettype'] == ""){

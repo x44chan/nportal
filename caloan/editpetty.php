@@ -50,11 +50,34 @@
       			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
       			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
       			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
+      			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
       			<option <?php if($row['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
       			<?php if($_SESSION['acc_id'] == '37') {  ?>
       				<option <?php if($row['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
       			<?php } ?>
       		</select>
+		</div>
+		<div <?php if($row['projtype'] != 'Combined'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "combined">
+			<div  class="form-group">
+            	<label>Project <font color = "red">*</font></label>
+            	<select class="form-control" name = "combined">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($row['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
 		</div>
 		<div <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
 			<div  class="form-group">
@@ -168,6 +191,8 @@ echo '</div>';
 				$project = null;
 			}elseif($_POST['pettype'] == 'House'){
 				$project = $_POST['house'];
+			}elseif($_POST['pettype'] == 'Combined'){
+				$project = $_POST['combined'];
 			}	
 		}
 		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){

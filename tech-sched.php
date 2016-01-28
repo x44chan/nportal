@@ -125,6 +125,11 @@
 				<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
 				<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
 			<?php } ?>
+			<?php
+				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
+					echo '<a href = "?expn" class="btn btn-primary"> Expenses </a>';
+				}
+			?>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 	</div>
