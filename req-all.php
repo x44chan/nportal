@@ -89,6 +89,7 @@
 		</div>
 	</div>
 </div>
+<div id = "dash">
 <?php 
 	if(isset($_GET['lqdate'])){
 		include 'aliquidate.php';	
@@ -646,7 +647,7 @@
 		
 	}echo '</tbody></table></form>';$conn->close();
 	}?>
-
+</div>
 
 <?php include('emp-prof.php') ?>
 <?php 
