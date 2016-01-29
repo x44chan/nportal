@@ -410,7 +410,7 @@
 		}
 		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
 		$stmt = "UPDATE `officialbusiness` set 
-				obtimein = '$obtimein', obtimeout = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date' $acc
+				obtimein = '$obtimein', obtimeout = '$obtimeout', state = 'CheckedHR', edithr = '$edithr', datehr = '$date' $acc
 			where account_id = '$accid' and state = 'UA' and officialbusiness_id = '$obid'";
 		if ($conn->query($stmt) === TRUE) {
 	    	if($_SESSION['level'] == 'ACC'){
