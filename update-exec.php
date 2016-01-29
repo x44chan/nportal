@@ -226,7 +226,7 @@
 		}
 		$stmt = "UPDATE `nleave` set 
 			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason'
-			where account_id = '$accid' and state = '$state' and leave_id = '$_SESSION[otid]'";
+			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
 		if ($conn->query($stmt) === TRUE) {
 	    	if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';

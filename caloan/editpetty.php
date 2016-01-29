@@ -125,11 +125,11 @@
 		</div>
 		<div <?php if($row['projtype'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
 			<div  class="form-group">
-            	<label>Project <font color = "red">*</font></label>
+            	<label>Internet <font color = "red">*</font></label>
             	<select class="form-control" name = "internet">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
