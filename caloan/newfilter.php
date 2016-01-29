@@ -201,7 +201,7 @@
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
 			if($row['dateofot'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
-				$adjust = '<a onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?overtime_id=' . $row['overtime_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+				$adjust = '<a id = "backs" onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?overtime_id=' . $row['overtime_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
 			}else{
 				$adjust = '';
 			}
@@ -351,7 +351,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
 			if($row['obdatereq'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
-				$adjust = '<a onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?officialbusiness_id=' . $row['officialbusiness_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+				$adjust = '<a id = "backs"  onclick = "setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?officialbusiness_id=' . $row['officialbusiness_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
 			}else{
 				$adjust = '';
 			}
