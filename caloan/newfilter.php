@@ -571,13 +571,13 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 	if($result->num_rows > 0){
 		while ($row = $result->fetch_assoc()) {
 			$lineto = "";
+			$row['cutamount'] = str_replace(",", "", $row['cutamount']);
 			if(date("Y-m-d") >= $row['enddate'] && $row['state'] != 'Cancel'){ 
 				$loanamount -= $row['cutamount'];
 				$ech = '₱ '.number_format($loanamount,2); 
 			} else {
 				$ech = ' - ';
 			}
-			$row['cutamount'] = str_replace(",", "", $row['cutamount']);
 			if($row['state'] == 'Advance'){
 				$stat = '<b><p id = "gree"><font color = "green"> Advance: '. date("M j, Y", strtotime($row['full'])).' </font></p></b>';
 				$loanamount -= $row['cutamount'];
