@@ -176,7 +176,7 @@
 				<p><i><?php echo date("M j, Y", strtotime($row['cutoffdate'])) . ' - ' . date("M j, Y", strtotime($row['enddate'])); ?></i></p>
 			</div>
 			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
-				<p><i>₱ <?php echo number_format($row['cutamount'],2); ?></i></p>
+				<p><i>₱ <?php $row['cutamount'] = str_replace(",","",$row['cutamount']);echo number_format($row['cutamount'],2); ?></i></p>
 			</div>
 			<div class="col-xs-3" <?php if($row['state'] == 'Cancel'){ echo "style = 'text-decoration: line-through;'";} ?>>
 				<p><i><?php if((date("Y-m-d") > $row['enddate'] && $row['state'] != 'Cancel') || ($row['state'] == 'Advance')){ $loanamount -= $row['cutamount'];echo '₱ '.number_format($loanamount,2); }elseif($row['state'] == 'Full'){ echo '₱ 0';} else { echo ' - '; } ?></i></p>

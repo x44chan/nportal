@@ -577,6 +577,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 			} else {
 				$ech = ' - ';
 			}
+			$row['cutamount'] = str_replace(",", "", $row['cutamount']);
 			if($row['state'] == 'Advance'){
 				$stat = '<b><p id = "gree"><font color = "green"> Advance: '. date("M j, Y", strtotime($row['full'])).' </font></p></b>';
 				$loanamount -= $row['cutamount'];
