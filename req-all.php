@@ -59,6 +59,9 @@
 					  <li><a type = "button"  href = "accounting-petty.php?liqdate">Petty Liquidate</a></li>
 					  <li><a type = "button"  href = "accounting-petty.php?report=1">Petty Report</a></li>
 					  <li><a type = "button"  href = "accounting-petty.php?replenish">Petty Replenish Report</a></li>
+					  <li class="divider"></li>
+					  <li><a type = "button" href = "accounting-petty.php?pettydate"> Petty Date Summary </a></li>
+					  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 					</ul>
 				</div>
 			<?php } ?>
@@ -458,7 +461,12 @@
 						}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 							echo 'Pending to Tech Supervisor<br>';
 						}else if($row['state'] == 'CheckedHR'){
-							echo '<p><font color = "green">Checked by HR</font></p> ';
+							if($row['dateacc'] == 1){
+								$chck = 'ACC';
+							}else{
+								$chck = 'HR';
+							}
+							echo '<p><font color = "green">Checked by '.$chck.'</font></p> ';
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</font></p> ';
 						}else if($row['state'] == 'AAdmin'){

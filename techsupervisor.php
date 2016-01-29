@@ -964,7 +964,12 @@ if(isset($_GET['upovertime'])){
 							echo '<p><i><font color = "red">Late Filing</font></i><br>Waiting for Admin Approval</p>';
 							echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['officialbusiness_id'].'&late">Edit Application</a>';
 						}else if($row['state'] == 'CheckedHR'){
-							echo '<p><font color = "green">Checked by HR</font></p> ';
+							if($row['dateacc'] == 1){
+								$chck = 'ACC';
+							}else{
+								$chck = 'HR';
+							}
+							echo '<p><font color = "green">Checked by '.$chck.'</font></p> ';
 						}
 					echo '<td></tr>';
 		}

@@ -59,7 +59,7 @@
 		</div>
 		<div <?php if($row['projtype'] != 'Combined'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "combined">
 			<div  class="form-group">
-            	<label>Project <font color = "red">*</font></label>
+            	<label>P.M. & Internet <font color = "red">*</font></label>
             	<select class="form-control" name = "combined">
             		<option value = ""> - - - - - </option>
             		<?php
@@ -103,7 +103,7 @@
 		</div>
 		<div <?php if($row['projtype'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
 			<div class="form-group">
-            	<label>Project <font color = "red">*</font></label>
+            	<label>P.M. <font color = "red">*</font></label>
             	<select class="form-control" name = "pm">
             		<option value = ""> - - - - - </option>
             		<?php

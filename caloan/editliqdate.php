@@ -87,7 +87,7 @@
 			<?php if($_SESSION['acc_id'] == '37'){ ?>
 			<div <?php if($data['projtype'] != 'House'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "house">
 				<div  class="form-group">
-	            	<label>Project <font color = "red">*</font></label>
+	            	<label>House <font color = "red">*</font></label>
 	            	<select class="form-control" name = "house">
 	            		<option value = ""> - - - - - </option>
 	            		<option <?php if($data['project'] == 'GROCERIES'){ echo ' selected ';} ?>value = "GROCERIES"> GROCERIES </option>
@@ -101,7 +101,7 @@
 			<?php } ?>
 			<div <?php if($data['projtype'] != 'P.M.'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "pm">
 				<div class="form-group">
-	            	<label>Project <font color = "red">*</font></label>
+	            	<label>P.M. <font color = "red">*</font></label>
 	            	<select class="form-control" name = "pm">
 	            		<option value = ""> - - - - - </option>
 	            		<?php
@@ -123,7 +123,7 @@
 			</div>
 			<div <?php if($data['projtype'] != 'Combined'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "combined">
 				<div class="form-group">
-	            	<label>Project <font color = "red">*</font></label>
+	            	<label>P.M. & Internet <font color = "red">*</font></label>
 	            	<select class="form-control" name = "combined">
 	            		<option value = ""> - - - - - </option>
 	            		<?php
@@ -145,11 +145,11 @@
 			</div>
 			<div <?php if($data['projtype'] != 'Internet'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "internet">
 				<div  class="form-group">
-	            	<label>Project <font color = "red">*</font></label>
+	            	<label>Internet <font color = "red">*</font></label>
 	            	<select class="form-control" name = "internet">
 	            		<option value = ""> - - - - - </option>
 	            		<?php
-	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+	            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
 	            			$xresult = $conn->query($xsql);
 	            			if($xresult->num_rows > 0){
 	            				while($xrow = $xresult->fetch_assoc()){

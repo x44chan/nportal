@@ -98,6 +98,25 @@
 	    	echo "Error updating record: " . $conn->error;
 	  	}
 	}
+	if(isset($_GET['canreq'])){
+		$petid = mysqli_real_escape_string($conn, $_GET['canreq']);
+		$stmt = "UPDATE `nleave` set 
+				state = 'CLea'
+			where account_id = '$accid' and typeoflea != 'Sick Leave' and leave_id = '$petid' and (state = 'UAAdmin' or 'UA')";
+		if ($conn->query($stmt) === TRUE) {
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">window.location.replace("req-app.php?applea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">window.location.replace("acc-req-app.php?applea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">window.location.replace("techsupervisor-app.php?applea"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">window.location.replace("hr-req-app.php?applea"); </script>';
+	    	}
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+	}
 
 	if(isset($_GET['hrclea'])){
 		$petid = mysqli_real_escape_string($conn, $_GET['hrclea']);

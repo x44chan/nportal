@@ -330,7 +330,7 @@
 	<?php 
 	if(isset($_GET['appob'])){
 		include("conf.php");
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and state =  'AAdmin' order by obdate desc";
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id and (state =  'AAdmin' or state = 'CheckedHR') order by obdate desc";
 		$result = $conn->query($sql);
 		
 			
@@ -371,6 +371,13 @@
 							echo '<p><font color = "green">Approved by HR</p>';
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</p>';
+						}elseif($row['state'] == 'CheckedHR'){
+							if($row['dateacc'] == 1){
+								$chck = 'ACC';
+							}else{
+								$chck = 'HR';
+							}
+							echo '<p><font color = "green">Checked by '.$chck.'</font></p> ';
 						}else{
 							echo '<p><font color = "green">Approved by Dep. Head</p>';
 						}

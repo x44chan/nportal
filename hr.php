@@ -1642,7 +1642,12 @@ echo '</tbody></table></form>';
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'CheckedHR'){
-								echo '<p><font color = "green">Added to reports</font></p> ';
+								if($row['dateacc'] == 1){
+									$chck = 'ACC';
+								}else{
+									$chck = 'HR';
+								}
+								echo '<p><font color = "green">Checked by '.$chck.'</font></p> ';
 							}else if($row['state'] == 'DAAdmin'){
 								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'AHR'){

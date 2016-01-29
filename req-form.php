@@ -28,11 +28,13 @@ $(document).ready(function(){
 		include 'caloan/latefiling.php';
 		echo '</div>';
 	}
-	if(isset($_GET['expn'])){
-		include 'caloan/expn.php';
-		echo '</div>';
-		if(isset($_GET['print'])){
-			exit;
+	if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
+		if(isset($_GET['expn'])){
+			include 'caloan/expn.php';
+			echo '</div>';
+			if(isset($_GET['print'])){
+				exit;
+			}
 		}
 	}
 ?>
