@@ -44,7 +44,7 @@
 				</ul>
 			</div>
 			<?php
-				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'prog') !== false){
+				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
 					echo '<a href = "?expn" class="btn btn-primary"> Expenses </a>';
 				}
 			?>
