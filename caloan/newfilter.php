@@ -88,7 +88,7 @@
 			while ($row = $result->fetch_assoc()) {	
 				$accidd = $row['account_id'];
 						$ssql1 = "SELECT count(account_id) as otcount FROM overtime where overtime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofot < '$date3' ORDER BY datefile ASC";
-						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdate < '$date3' ORDER BY obdate ASC";
+						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdatereq < '$date3' ORDER BY obdate ASC";
 						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofundrtime < '$date3' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
@@ -203,7 +203,7 @@
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
 			if($row['dateofot'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
-				$adjust = '<a id = "backs" onclick = "return confirm(\'Are you sure?\');setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?overtime_id=' . $row['overtime_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+				$adjust = '<a id = "backs" onclick = "setTimeout(\'window.location.href=window.location.href\', 100); return confirm(\'Are you sure?\');"target = "_blank" href = "exec.php?overtime_id=' . $row['overtime_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
 			}else{
 				$adjust = '';
 			}
@@ -331,7 +331,7 @@
 <?php
 	}
 if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
-	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdate < '$date3' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdatereq < '$date3' ORDER BY obdate ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -353,7 +353,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 		$cutofftime2 = 0;	
 		while($row = $result->fetch_assoc()){
 			if($row['obdatereq'] < $date1 && date("Y-m-d", strtotime($row['datehr'])) == date("Y-m-d", strtotime($date1))){
-				$adjust = '<a id = "backs"  onclick = "return confirm(\'Are you sure?\');setTimeout(\'window.location.href=window.location.href\', 100); "target = "_blank" href = "exec.php?officialbusiness_id=' . $row['officialbusiness_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
+				$adjust = '<a id = "backs"  onclick = "setTimeout(\'window.location.href=window.location.href\', 100); return confirm(\'Are you sure?\');"target = "_blank" href = "exec.php?officialbusiness_id=' . $row['officialbusiness_id'] . '&account_id='.$_GET['accid'].'" class = "btn btn-sm btn-danger" onclick = "return confirm(\'Are you sure?\');"> Adjust </a> ';
 			}else{
 				$adjust = '';
 			}
