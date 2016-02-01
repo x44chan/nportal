@@ -153,11 +153,11 @@
 				</tr>
 				<tr>
 					<td>Position: </td>
-					<td><?php echo $_SESSION['post'];?></td>
+					<td><?php echo $row['position'];?></td>
 				</tr>
 				<tr>
 					<td>Department: </td>
-					<td><?php echo $_SESSION['dept'];?></td>
+					<td><?php echo $row['department'];?></td>
 				</tr>
 				<tr>
 					<td>Date Of Undertime: </td>
@@ -1776,23 +1776,24 @@ echo '</tbody></table></form>';
 						$ex1 = "";
 						$ex2 = "";
 					}else{
+						if(stristr($row['officialworksched'], '<br>') !== FALSE){
+							$explode1 = explode('<br>', $row['officialworksched']);
+							$row['officialworksched'] = $explode1[1];
+						}
 						$explode = explode(" - ", $row['officialworksched']);
 						$ex1 = $explode[0];
 						$ex2 = $explode[1];
-					}					
+					}
+					if(isset($explode[0])){
+						echo '<input type = "hidden" value = "' . $explode1[0] . '" name = "onrestday"/>';
+					}				
 				?>	
 				<tr id = "rday" class = "form-inline" >
 					<td><b>Official Work Sched: </b></td>
 					<td>
-					<?php if($row['officialworksched'] != "Restday"){ echo'
-					
-						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "'.$ex1.'"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
-						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "'. $ex2.'"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
-					';
-					}else{
-						echo 'RESTDAY';
-					}
-					?>	
+						<?php if(isset($explode1[0])){ echo '<b>'.$explode1[0].'</b><br>'; } ?>
+						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
 					</td>			
 				</tr>
 				<tr>
