@@ -89,6 +89,9 @@
 								}elseif($data['liqstate'] == 'LIQDATE'){
 									echo '<b>Pending Completion</b><br>';
 									echo '<a href = "?editliqdate='.$row['petty_id'].'" class = "btn btn-danger"> Edit Liquidation </a>';
+								}elseif($data['liqstate'] == 'AdmnApp'){
+									echo '<b>Pending Completion <br> App by Admin</b><br>';
+									echo '<a href = "?editliqdate='.$row['petty_id'].'" class = "btn btn-danger"> Edit Liquidation </a>';
 								}
 							}
 				echo '</td></tr>';

@@ -6,10 +6,18 @@ $(function(){
 });
 $(document).ready(function(){
 	$('#tbloginLog').DataTable({
-            "iDisplayLength": 50,
-            "order": [[ 1, "desc" ]],
-            "info":     false
-		});
+        "iDisplayLength": 50,
+        "order": [[ 1, "desc" ]],
+        "info":     false
+	});
+	$('#oncall').click(function(){
+	      $('#restday').attr('checked', false);
+	      $(this).attr('checked', true);
+	});
+	$('#restday').click(function(){
+	      $('#oncall').attr('checked', false);
+	      $(this).attr('checked', true);
+	});
     $("#regerr").click(function(){
         $("#regerr").attr("href", "admin.php?");
     });

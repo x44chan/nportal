@@ -30,7 +30,7 @@
 		$time2 = date('H:i', strtotime($_POST['uptimeout']));
 		$approvedothrs = gettimediff($time1,$time2);
 		//end of computation		
-		if(substr($approvedothrs,0,2) > 8){
+		if(substr($approvedothrs,0,2) >= 8){
 			$approvedothrs = date("G:i", strtotime("-1 hour", strtotime($approvedothrs)));
 		}	
 
@@ -59,10 +59,24 @@
 		if(isset($_POST['updateofot'])){
 			$date = $_POST['updateofot'];
 		}
-		if(isset($_POST['uprestday']) && $_POST['uprestday'] == 'restday'){
-			$officialworksched = "Restday";
-		}else{
-			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+		if(isset($_POST['uprestday']) || isset($_POST['uponcall'])){
+			if(isset($_POST['uprestday'])){
+				$officialworksched = 'Restday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['uponcall'])){
+				$ex = explode(":", $approvedothrs);
+				if($ex[1] > 0){
+					$ex[0] .= '.5';
+				}else{
+					$ex[0] .= '.0';
+				}
+				if($ex[0] <= 4){
+					$approvedothrs = '4:0';
+				}elseif($ex[0] > 4){
+					$approvedothrs = '8:0';
+				}
+				$officialworksched = 'Oncall<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}
+			
 		}		
 		if($_SESSION['level'] == "HR"){
 			$state = 'state = "UAAdmin"';	
@@ -154,7 +168,7 @@
 			$date = mysql_escape_string($_POST['updateofob']);
 		}
 		if(isset($_POST['uprestday']) && $_POST['uprestday'] == 'restday'){
-			$officialworksched = "Restday";
+			$officialworksched = "Restday<br>" .mysql_escape_string($_POST['upoffr']). ' - ' . mysql_escape_string($_POST['upoffto']);;
 		}else{
 			$officialworksched = mysql_escape_string($_POST['upoffr']). ' - ' . mysql_escape_string($_POST['upoffto']);
 		}
@@ -345,7 +359,7 @@
 				$hrrestric += 1;
 			}
 			$oldot = $oldotstrt . ' - ' . $oldotend;
-			if(substr($newappot,0,2) > 8){
+			if(substr($newappot,0,2) >= 8){
 				$newappot = date("G:i", strtotime("-1 hour", strtotime($newappot)));
 			}	
 			$date = date('Y-m-d h:i A');
@@ -362,6 +376,22 @@
 				}					
 			}else{
 				$otbreak = null;
+			}
+			if(isset($_POST['onrestday'])){
+				if($_POST['onrestday'] == 'Oncall'){
+					$ex = explode(":", $newappot);
+					if($ex[1] > 0){
+						$ex[0] .= '.5';
+					}else{
+						$ex[0] .= '.0';
+					}
+					echo $ex[0];
+					if($ex[0] >= 2 && $ex[0] < 4){
+						$newappot = '4:0';
+					}elseif($ex[0] >= 4){
+						$newappot = '8:0';
+					}
+				}
 			}
 			$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){

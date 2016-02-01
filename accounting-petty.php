@@ -366,9 +366,14 @@
 				echo '<td>'. $data['liqcode'].'</td>';
 				echo '</tr>';	
 				$totalliq += $data['liqamount'];
+				if($row['liqstate'] == 'AdmnApp'){
+					$litt = '<br><br> Approved Liquidation by the Admin';
+				}else{
+					$litt = "";
+				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
-			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: </b></td><td>₱ '.number_format($totalliq, 2).'<br><br>₱ '.number_format($a - $totalliq, 2).'</td><td></td><td></td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: '.$litt.'</b></td><td>₱ '.number_format($totalliq, 2).'<br><br>₱ '.number_format($a - $totalliq, 2).'</td><td></td><td></td><td></td></tr>';
 			echo '</tbody></table>';
 			echo '<hr>';
 			if(!isset($_GET['complete'])){
@@ -453,7 +458,7 @@
 		}
 	
 	}
-		$sql = "SELECT * from `petty_liqdate` where petty_liqdate.liqstate = 'LIQDATE' group by petty_id";
+		$sql = "SELECT * from `petty_liqdate` where petty_liqdate.liqstate = 'LIQDATE' or petty_liqdate.liqstate = 'AdmnApp' group by petty_id";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
@@ -844,7 +849,7 @@
 		$petid = mysql_escape_string($_GET['petty_id']);
 		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyRep'";
 		$result = $conn->query($sql);
-		$sql2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and liqstate != 'LIQDATE'";
+		$sql2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and liqstate != 'LIQDATE' and liqstate != 'AdmnApp'";
 		$result2 = $conn->query($sql2);
 		if($result2->num_rows > 0){
 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';

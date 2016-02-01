@@ -31,7 +31,7 @@
 		$time2 = date('H:i', strtotime($_POST['endofot']));
 		$approvedothrs = gettimediff($time1,$time2);	
 	
-		if(substr($approvedothrs,0,2) > 8){
+		if(substr($approvedothrs,0,2) >= 8){
 			$approvedothrs = date("G:i", strtotime("-1 hour", strtotime($approvedothrs)));
 		}			
 		//ot break on ot exec
@@ -56,11 +56,25 @@
 		$nameofemployee = $_SESSION['name'];
 		$startofot = $_POST['startofot'];
 		$endofot = $_POST['endofot'];
-		if(isset($_POST['restday']) && $_POST['restday'] == 'restday'){
-			$officialworksched = "Restday";
-		}else{
-			$officialworksched = $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
-		}		
+		if(isset($_POST['restday']) || isset($_POST['oncall'])){
+			if(isset($_POST['restday'])){
+				$officialworksched = 'Restday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
+			}elseif(isset($_POST['oncall'])){
+				$ex = explode(":", $approvedothrs);
+				if($ex[1] > 0){
+					$ex[0] .= '5';
+				}else{
+					$ex[0] .= '0';
+				}
+				if($ex[0] <= 4){
+					$approvedothrs = '4:0';
+				}elseif($ex[0] > 4){
+					$approvedothrs = '8:0';
+				}
+				$officialworksched = 'Oncall<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
+			}
+			
+		}	
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));;
 		$reason = $_POST['reason'];
 		$state = 'UAAdmin';

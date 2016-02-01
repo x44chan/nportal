@@ -1,7 +1,7 @@
 <?php
 	$petid = mysql_escape_string($_GET['editliqdate']);
 	$accid = $_SESSION['acc_id'];
-	$sql = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and account_id = '$accid' and liqstate = 'LIQDATE'";
+	$sql = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and account_id = '$accid' and (liqstate = 'LIQDATE' or liqstate = 'AdmnApp')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		$sql2 = "SELECT * FROM `petty` where petty_id = '$petid' and account_id = '$accid'";
@@ -274,7 +274,7 @@
 				}
 				$stmt = "UPDATE `petty_liqdate` set 
 							liqtype = '$liqtype', liqothers = '$liqothers', liqamount = '$liqamount', liqinfo = '$liqinfo', rcpt = '$rcpt'
-						where petty_id = '$petid' and account_id = '$accid' and liqstate = 'LIQDATE' and liqdate_id = '$liqid'";
+						where petty_id = '$petid' and account_id = '$accid' and (liqstate = 'LIQDATE' or liqstate = 'AdmnApp') and liqdate_id = '$liqid'";
 				if($conn->query($stmt) == TRUE){
 			    	$count += 1;		    	
 				}

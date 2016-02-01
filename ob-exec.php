@@ -27,7 +27,7 @@
 		}else{
 			$minus = '-1 days';
 		}
-		if(date("Y-m-d", strtotime($minus, strtotime($obdate))) > date("Y-m-d", strtotime($obdatereq)) || date("Y-m-d") < date("Y-m-d", strtotime($obdatereq))){
+		if(date("Y-m-d", strtotime($minus, strtotime($obdate))) > date("Y-m-d", strtotime($obdatereq))){
 			$oblate = 1;		
 		}else{
 			$oblate = null;

@@ -81,6 +81,9 @@
         "aaSorting": [],
         "iDisplayLength": 12
     });
+      $('#myTable').DataTable( {
+      "iDisplayLength": 12
+    });
   });
 </script>
 
@@ -100,6 +103,7 @@
           <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
           <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
           <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+          <li><a href = "admin-emprof.php?rep" type = "button">Employee Cutoff Summary</a></li>
         </ul>
       </div>
       <div class="btn-group btn-group-lg">
@@ -127,6 +131,13 @@
     </div><br><br>
   </div>
 </div>
+<?php
+  if(isset($_GET['rep']) || isset($_GET['report'])){
+    include 'caloan/newfilter.php';
+    echo '</div><div style = "display: none;">';
+  }
+
+?>
 <?php 
   if(isset($_GET['loan']) && $_GET['loan'] == ''){
     

@@ -275,20 +275,28 @@
 
 <?php
 	//release with code
-	if(isset($_POST['liqsubmit'])){
+	if(isset($_POST['liqsubmit']) || isset($_POST['admliqsubmit'])){
 		$accid = $_SESSION['acc_id'];
-		$pet_id = $_POST['pet_id'];
-		$liqcode = $_POST['liqcode'];
+		$pet_id = mysqli_real_escape_string($conn, $_POST['pet_id']);
+		if(!empty($_POST['liqcode'])){
+			$liqcode = mysqli_real_escape_string($conn, $_POST['liqcode']);	
+		}
 		$comdate = date("Y-m-d");
 		$query = "SELECT * FROM `petty_liqdate` where petty_id = '$pet_id' and liqcode is NULL";
 		$result = $conn->query($query);
 		if($result->num_rows > 0){
-			$sql ="UPDATE petty_liqdate set 
-		   		liqstate = 'EmpVal', liqcode = '$liqcode', completedate = '$comdate'
-		    where petty_id = '$pet_id' and liqstate = 'LIQDATE' and liqcode is NULL"; 
-		 	if ($conn->query($sql) === TRUE) {	 		
+			if(isset($_POST['admliqsubmit'])){
+				$sql ="UPDATE petty_liqdate set 
+		   			liqstate = 'AdmnApp'
+		    	where petty_id = '$pet_id' and liqstate = 'LIQDATE' and liqcode is NULL"; 
+			}elseif(isset($_POST['liqsubmit'])){
+				$sql ="UPDATE petty_liqdate set 
+		   			liqstate = 'EmpVal', liqcode = '$liqcode', completedate = '$comdate'
+		    	where petty_id = '$pet_id' and (liqstate = 'LIQDATE' or liqstate = 'AdmnApp') and liqcode is NULL"; 
+			}
+			if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
-		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		    		echo '<script type="text/javascript">window.location.replace("admin-petty.php"); </script>';
 		 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
 		 		}
@@ -298,14 +306,12 @@
 		}else{
 			$_SESSION['err'] = 'Incorrect Code';
 			if($_SESSION['level'] == 'Admin'){
-				echo '<script type="text/javascript">window.location.replace("admin.php?release=1&petty_id='.$pet_id.'"); </script>';
+				echo '<script type="text/javascript">window.location.replace("admin-petty.php?complete=1&petty_id='.$pet_id.'"); </script>';
 			}else if($_SESSION['level'] == 'ACC'){
-				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
+				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?complete=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
-
 	}
-
 ?>
 
 

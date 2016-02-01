@@ -239,10 +239,13 @@ $(document).ready(function(){
 				</tr>
 				<tr>					
 					<td style="float: right;">
-						<label for="restday" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day</label>
+						<label for="restday" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day </label>
+					</td>
+					<td>
+						<label for="oncall" style="font-size: 15px;"><input type="checkbox" value = "oncall" name="oncall" id = "oncall"/> Oncall </label>
 					</td>
 				</tr>	
-				<tr id = "rday" class = "form-inline" >
+				<tr class = "form-inline" >
 					<td>Official Work Sched: <font color = "red">*</font></td>
 					<td style="float:left;">
 						<label for = "fr">From:</label><input onkeydown="return false;" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  name = "officialworkschedfr"/>

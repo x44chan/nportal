@@ -137,6 +137,7 @@
 				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
 				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
 				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+				  <li><a href = "admin-emprof.php?rep" type = "button">Employee Leave Summary</a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -180,6 +181,52 @@
 	}
 ?>
 <div id = "needaproval">
+<?php
+	if(isset($_GET['complete']) && $_GET['complete'] == 1){
+		include("conf.php");
+		$petid = mysql_escape_string($_GET['petty_id']);
+		$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id = '$petid' and state = 'AAPettyRep'";
+		$result = $conn->query($sql);
+		$sql2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid' and liqstate != 'LIQDATE'";
+		$result2 = $conn->query($sql2);
+		if($result2->num_rows > 0){
+			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';
+		}
+		if($result->num_rows > 0){
+			if(isset($_SESSION['err'])){
+				$err = $_SESSION['err'];
+				unset($_SESSION['err']);
+			}else{
+				$err = "";
+			}
+			echo '<div id = "report" align = "center"><h2 align = "center">Validate Code</h2>'.$err.'<hr>';
+			echo '<form action = "petty-exec.php" method = "post"><table id = "myTable" align = "center" class = "table table-hover tbl" style="font-size: 14px; border: 0 !important; width: 50%;">
+				  <tbody>';
+			while($row = $result->fetch_assoc()){
+				echo '<tr><td><label>Petty #</label></td><td>' . $row['petty_id'] . '</td></tr>';
+				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y", strtotime($row['date'])). '</td></tr>';
+				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';				
+				echo '<tr><td><label>Particular</label></td><td>' . $row['particular'] . '</td></tr>';
+				echo '<tr><td><label>Source</label></td><td>' . $row['source'] . '</td></tr>';				
+				echo '<tr><td><label>Amount</label></td><td>₱ ';
+				if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); } ;
+				echo '</td></tr>';
+				$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$row[petty_id]'";
+				$data2 = $conn->query($query2)->fetch_assoc();
+				$a = str_replace(',', '', $row['amount']);
+				echo '<tr><td><label>Total Used Petty</label></td><td>₱ '.number_format($data2['totalliq'], 2).'</td></tr>';
+				echo '<tr><td><label>Change</label></td><td>₱ '. number_format($a - $data2['totalliq'], 2).'</td></tr>';
+				if($row['transfer_id'] != null){echo '<tr><td><label>Transfer Code/Reference #:</td><td>';echo $row['transfer_id'];echo '</td></tr>';}
+				echo '<tr><td><label>Liquidation:</label></td><td><a href = "?liqdate='.$row['petty_id'].'&acc='.$row['account_id'].'&complete" class = "btn btn-primary">View Liquidate</a></td></tr>';
+				echo '<input type = "hidden" value = "' . $row['petty_id'] . '" name = "pet_id"/>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "admliqsubmit">Approve Liquidation</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+			}	
+			echo "</tbody></table></form></div>";
+			
+		}
+		echo '</div><div style = "display: none;">';
+	}
+?>
 
 <?php
 if(isset($_GET['expenses'])){
@@ -342,17 +389,21 @@ if(isset($_GET['login_log'])){
 			$query15 = "SELECT * FROM `petty` where petty_id = '$petyid'";
 			$amount = $conn->query($query15)->fetch_assoc();
 			$amounts = $amount['amount'];
-			echo '<div class = "container-fluide" style = "padding: 5px 10px;"><div class = "row">
-				<div class = "col-xs-4">
-					<label>Name: </label>
-					<p>'.$data1['fname'] . ' ' . $data1['lname'] . '</p>
-				</div>
-				<div class = "col-xs-4">
-					<label>Amount: </label>
-					<p>P '.$amount['amount'] . '</p>
-				</div>
+			echo '<div class = "container-fluid" style = "padding: 5px 10px;"><div class = "row">
+					<div class = "col-xs-4">
+						<label>Name: </label>
+						<p>'.$data1['fname'] . ' ' . $data1['lname'] . '</p>
+					</div>
+					<div class = "col-xs-2">
+						<label>Amount: </label>
+						<p>₱ '.$amount['amount'] . '</p>
+					</div>
+					<div class = "col-xs-3">
+						<label> Type / Project </label>
+						<p>'.$amount['projtype']. ' / ' . $amount['project'].'</p>
+					</div>
 				</div>';
-			echo '<table class = "table" id = "myTableliq">';
+			echo '<table class = "table">';
 			echo '<thead>';
 				echo '<tr>';
 				echo '<th width="12%">Date</th>';
@@ -376,9 +427,12 @@ if(isset($_GET['login_log'])){
 				}else{
 					$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
 				}
+				if($data['liqtype'] == 'Others'){
+					$data['liqtype'] = $data['liqtype'] .': ' . $data['liqothers'];
+				}
 				echo '<tr>';
 				echo '<td>'. date("M j, Y", strtotime($data['liqdate'])).'</td>';
-				echo '<td>'. $data['liqtype'].'</td>';
+				echo '<td>'. $data['liqtype'] .'</td>';
 				echo '<td>₱ '. number_format($data['liqamount'],2).'</td>';
 				echo '<td>' . $rcpt . '</td>';
 				echo '<td>'. $data['liqinfo'].'</td>';
@@ -394,12 +448,17 @@ if(isset($_GET['login_log'])){
 			if($data['liqstate'] == 'EmpVal'){
 				$excess = '<b><font color = "red"> Pending for Employee Validation</font></b>';
 			}
+
 			if($data['accval'] == 'AdminRcv'){
 				$rcv = 'Pending Accounting Validation';
 			}elseif($data['accval'] == null){
 				$rcv = "";
 			}else{
 				$rcv = '<font color = "green">Completed</font>';
+			}
+			if($data['liqstate'] == 'LIQDATE'){
+				$excess = " - ";
+				$rcv = "Liquidation";
 			}
 			$a = str_replace(',', '', $amount['amount']);
 			$change = ($a - $totalliq);
@@ -409,7 +468,12 @@ if(isset($_GET['login_log'])){
 			}
 			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: <br><br>Code: <br><br>Status: </b></td><td>₱ '.number_format($totalliq,2).'<br><br>₱ '. number_format($change,2) .'<br><br>'.$excess.'<br><br><b>'.$rcv.'</b></td><td></td><td></td></tr>';
 			echo '</tbody></table></div>';
-			echo '<div align = "center"><a href = "admin-petty.php?liqdate" class = "btn btn-danger">Back</a>';
+			if(isset($_GET['complete'])){
+				echo '<div align = "center"><a href = "admin-petty.php?complete=1&petty_id='.$_GET['liqdate'].'" class = "btn btn-danger">Back</a>';
+			}else{
+				echo '<div align = "center"><a href = "admin-petty.php?liqdate" class = "btn btn-danger">Back</a>';
+			}
+			
 		}else{
 			echo '<script type="text/javascript">window.location.replace("?liqdate"); </script>';
 		}
@@ -456,6 +520,34 @@ if(isset($_GET['login_log'])){
 		}
 	
 	}
+	$sql = "SELECT * from `petty_liqdate`,`petty` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.liqstate = 'LIQDATE' and source != 'Accounting' group by petty_liqdate.petty_id";
+		$result = $conn->query($sql);
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				$query23 = "SELECT * FROM `petty_liqdate` where petty_id = '$row[petty_id]' and liqstate = 'AdmnApp'";
+				$data23 = $conn->query($query23)->fetch_assoc();
+				if(isset($data23['liqstate'])){
+					continue;
+				}
+				$petid = $row['petty_id'];
+				$accid = $row['account_id'];
+				$query2 = "SELECT * FROM `login` where account_id = '$accid'";
+				$data2 = $conn->query($query2)->fetch_assoc();
+				$query3 = "SELECT * FROM `petty` where petty_id = '$petid'";
+				$data3 = $conn->query($query3)->fetch_assoc();
+				echo '<tr>';
+				echo '<td>' . date("M j, Y", strtotime($data3['date'])). '</td>';
+				echo '<td>' . $data2['fname'] . ' '. $data2['lname'] . '</td>';				
+				echo '<td>' . $data3['particular'] . '</td>';
+				echo '<td>₱ ' . $data3['amount'] . '</td>';
+				$query2 = "SELECT * FROM `petty_liqdate` where petty_id = '$petid'";
+				$data2 = $conn->query($query2)->fetch_assoc();
+				echo '<td>';
+				echo '<a class = "btn btn-success" href = "?complete=1&petty_id='.$row['petty_id'].'">Approved Liquidation</a>';
+				echo '</td>';
+				echo '</tr>';
+			}
+		}
 	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyReceived' and (source = 'Eliseo' or source = 'Sharon')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){

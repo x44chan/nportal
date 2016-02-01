@@ -8,6 +8,11 @@
 	});
 </script>
 <?php
+	if($_SESSION['level'] == 'Admin'){
+		$link = 'admin-petty.php';
+	}elseif($_SESSION['level'] == 'ACC'){
+		$link = 'accounting-petty.php';
+	}
 	if(isset($_SESSION['dates'])){
 		$date1 = $_SESSION['dates'];
 		$date2 = $_SESSION['dates0'];
@@ -20,12 +25,12 @@
 	if(isset($_POST['repfilter'])){
 		$_SESSION['dates'] = mysql_escape_string($_POST['repfr']);
 		$_SESSION['dates0'] = mysql_escape_string($_POST['repto']);
-		echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?pettydate");</script>';
+		echo '<script type = "text/javascript">window.location.replace("'.$link.'?pettydate");</script>';
 	}
 	if(isset($_POST['represet'])){
 		unset($_SESSION['dates']);
 		unset($_SESSION['dates0']);
-		echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?pettydate");</script>';
+		echo '<script type = "text/javascript">window.location.replace("'.$link.'?pettydate");</script>';
 	}
 
 ?>

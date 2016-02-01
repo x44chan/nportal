@@ -1,5 +1,16 @@
 <?php 
 	include('conf.php');
+		if(empty($_GET['rep'])){
+			$_GET['rep'] = 'all';
+			$title = 'Over All Report';
+		}
+		if($_SESSION['level'] == 'Admin'){
+			$lk = 'admin-emprof.php?rep';
+		}elseif($_SESSION['level'] == 'ACC'){
+			$lk = 'acc-report.php?rep';
+		}else{
+			$lk = 'index.php';
+		}
 		if(isset($_SESSION['date'])){
 			$date1 = $_SESSION['date'];
 			$date2 = $_SESSION['date0'];
@@ -16,23 +27,22 @@
 		if(isset($_POST['repfilter'])){
 			$_SESSION['date'] = $_POST['repfr'];
 			$_SESSION['date0'] = $_POST['repto'];
-			echo '<script type = "text/javascript">window.location.replace("acc-report.php?rep='.$_POST['reptype'].'");</script>';
+			echo '<script type = "text/javascript">window.location.replace("'.$lk.'='.$_POST['reptype'].'");</script>';
 		}
 		if(isset($_POST['represet'])){
 			unset($_SESSION['date']);
 			unset($_SESSION['date0']);
-			echo '<script type = "text/javascript">window.location.replace("acc-report.php");</script>';
+			echo '<script type = "text/javascript">window.location.replace("'.$lk.'");</script>';
 		}
 	$date2 = date("Y-m-d 23:59:59 ", strtotime("+1 day", strtotime($date2)));
 	$date3 = date("Y-m-d ", strtotime($date2));
-	echo $date3;
 	if(!isset($_GET['report'])){
 ?>
 <form action = "" method="post">
 	<div class="container" id = "reports" style="margin-top: -30px;">
 		<div class="row">
 			<div class="col-xs-12">
-				<h4 style="margin-left: -20px;"><u><i>Report Filtering <a href = "?sumar=leasum" class="btn btn-success pull-right"> Employee Leave Summary </a></i></u></h4><br>				
+				<h4 style="margin-left: -20px;"><u><i>Report Filtering <?php	if($_SESSION['level'] == 'ACC'){ ?><a href = "?sumar=leasum" class="btn btn-success pull-right"> Employee Leave Summary </a><?php } ?></i></u></h4><br>				
 			</div>
 		</div>
 		<div class="row" >
