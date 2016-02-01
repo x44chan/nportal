@@ -418,6 +418,10 @@
 						$ex1 = "";
 						$ex2 = "";
 					}else{
+						if(stristr($row['officialworksched'], '<br>') !== FALSE){
+							$explode1 = explode('<br>', $row['officialworksched']);
+							$row['officialworksched'] = $explode1[1];
+						}
 						$explode = explode(" - ", $row['officialworksched']);
 						$ex1 = $explode[0];
 						$ex2 = $explode[1];
@@ -425,10 +429,10 @@
 				?>
 				<tr>
 					<td colspan = 2 style="float: center;">
-						<label for="restday" style="font-size: 15px; width: 500px; margin-left: -200px;"><input type="checkbox" <?php if($row['officialworksched'] == "Restday"){ echo "checked";}?> value = "restday" name="uprestday" id="restday"/> Rest Day</label>
+						<label for="restday" style="font-size: 15px; width: 500px; margin-left: -200px;"><input type="checkbox" <?php if(isset($explode1[0])){ echo "checked";}?> value = "restday" name="uprestday" id="restday"/> Rest Day</label>
 					</td>
 				</tr>	
-				<tr id = "rday" class = "form-inline" <?php if($row['officialworksched'] == "Restday"){ echo "style = 'display: none;'";}?>>
+				<tr class = "form-inline">
 					<td>Official Work Sched: </td>
 					<td>
 						<label for = "fr">From:</label><input name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
