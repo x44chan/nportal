@@ -356,12 +356,16 @@
 			$date17 = date("d");
 			$dated = date("F");
 			$datey = date("Y");
-			
-			$explo = (explode(":",$row['approvedothrs']));
-			if($explo[1] > 0){
-				$explo2 = '.5';
+			if($row['state'] == 'CheckedHR' || $row['state'] == 'AAdmin'){
+				$explo = (explode(":",$row['approvedothrs']));
+				if($explo[1] > 0){
+					$explo2 = '.5';
+				}else{
+					$explo2 = '.0';
+				}
+				$xx = '<br><strong>' . $explo[0].$explo2;
 			}else{
-				$explo2 = '.0';
+				$xx = "";
 			}
 			if($row['projtype'] != "" && $row['projtype'] != 'Others'){
 				$project = '<b><br>'.$row['projtype'] . ': <font color = "green">' . $row['project'] . '</font>';
@@ -379,7 +383,7 @@
 					<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 					<td>'.$row["nameofemp"].'</td>
 					<td width = 300 height = 70>'.$row["reason"]. $project.'</td>
-					<td>'.$row["startofot"] . ' - ' . $row['endofot']. ' <br> <strong> OT: '. $explo[0].$explo2 .'</strong></td>
+					<td>'.$row["startofot"] . ' - ' . $row['endofot']. $xx .'</strong></td>
 					<td>'.$row["officialworksched"].'</td>					
 					<td><b>';
 						if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
