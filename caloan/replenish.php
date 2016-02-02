@@ -201,7 +201,9 @@
 				$query = " particular = 'Check' ";
 			}
 			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and $query group by petty_liqdate.petty_id order by completedate desc";		
-		}else{
+		}elseif(isset($_GET['spendliqui'])){
+			$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and ( (date BETWEEN '$date1' and '$date2') or (releasedate BETWEEN '$date1' and '$date2') ) and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' order by petty_id desc";
+ 		}else{
 			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and completedate BETWEEN '$date1' and '$date2' and state = 'AApettyRep' and source = 'Accounting' and particular = 'Cash' group by petty_liqdate.petty_id order by completedate desc";		
 		}
 		$result = $conn->query($sql);
@@ -255,7 +257,7 @@
 				}else{
 					$tchange = '₱ '. number_format($a - $data2['totalliq'], 2);
 				}
-				if($row['completedate'] == ""){
+				if(!isset($row['completedate']) || $row['completedate'] == ""){
 					$row['completedate'] = $row['date'];
 				}else{
 					$row['completedate'] = $row['completedate'];
