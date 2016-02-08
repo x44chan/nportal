@@ -1,3 +1,6 @@
+<script type="text/javascript">
+	$(document).ready(function(){$("table tbody th, table tbody td").wrapInner("<div style = 'page-break-inside: avoid;'></div>");});
+</script>
 <style type="text/css">
 	#bords tr, #bords td{border-top: 1px black solid !important;}
 	<?php
@@ -5,10 +8,10 @@
 			echo 'body { visibility: hidden; }';
 		}
 		if(isset($_GET['detailedpetty'])){
-			echo 'table { page-break-inside:auto }
-    div   { page-break-inside:avoid; } /* This is the key */
-    thead { display:table-header-group }
-    tbody { display:table-footer-group }';
+			echo '	table { page-break-inside:auto }
+   					div   { page-break-inside:avoid; } /* This is the key */
+  					thead { display:table-header-group }
+   					tbody { display:table-footer-group }';
 		}
 	?>
 	@media print {		
@@ -17,7 +20,10 @@
 	    
 	  	}
 	  	<?php if(isset($_GET['print'])){ ?>
-	  
+	  	@page{
+	  		margin-left: 3mm;
+	  		margin-right: 3mm;
+	  	}
 	  	#datepr{
 	  		margin-top: 25px;
 	  	}
@@ -133,6 +139,7 @@
 				<hr>
 			</div>
 		</div>
+</div>
 		<?php
 		
 		if(isset($_GET['sproj']) || (isset($_SESSION['sproj']) && $_SESSION['sproj'] != "")) {
@@ -147,100 +154,75 @@
 	<div id = "report">
 		<div class="row">
 			<div class="col-xs-12">
-				<h3><i><u><?php if(isset($_SESSION['sproj'])){ echo $_SESSION['sproj']. '' ; } if(isset($_GET['type'])){ echo $_GET['type'];}?> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a></u></i></h3>
+				<h3 style="margin-left: 20px;"><i><u><?php if(isset($_SESSION['sproj'])){ echo $_SESSION['sproj']. '' ; } if(isset($_GET['type'])){ echo $_GET['type'];}?> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a></u></i></h3>
 			</div>
 		</div>
 		<?php
 			if(isset($_SESSION['sproj']) && $_SESSION['sproj'] != ""){
 				$project = $_SESSION['sproj'];
 			}
-			if(!empty($_GET['type'])){
-				$type = mysqli_real_escape_string($conn, $_GET['type']);
-				$query = "and liqtype = '$type' ";
-			}else{
-				$type = "";
-				$query = "";
-			}			
-			$sql = "SELECT * FROM `petty` where project = '$project' and state = 'AAPettyRep'";
-			$result = $conn->query($sql);
-			$meal = 0;
-			$gas = 0;
-			$transpo = 0;
-			$cpload = 0;
-			$water = 0;
-			$notary = 0;
-			$toll = 0;
-			$gate = 0;
-			$material = 0;
-			if($result->num_rows > 0){
-				while ($row = $result->fetch_assoc()) {
-					$sql2 = "SELECT * FROM petty_liqdate where petty_id = '$row[petty_id]' and liqstate = 'CompleteLiqdate' $query";
-					$result2 = $conn->query($sql2);
-					if($result2->num_rows > 0){
-						while ($row = $result2->fetch_assoc()) {
-							if($row['liqtype'] == 'Meal'){
-								$meal += $row['liqamount'];
-							}elseif($row['liqtype'] == "Gasoline"){
-								$gas += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Transportation'){
-								$transpo += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Cellfone Load'){
-								$cpload += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Water Fill'){
-								$water += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Notary Fee'){
-								$notary += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Toll Gate'){
-								$toll += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Gate Pass'){
-								$gate += $row['liqamount'];
-							}elseif(stristr($row['liqothers'], 'material')){
-								$material += $row['liqamount'];
+			if(isset($project) && !empty($project)){	
+				$sql = "SELECT * FROM `petty`,`login`,`petty_liqdate` where petty.account_id = petty_liqdate.account_id and petty.petty_id = petty_liqdate.petty_id and petty.account_id = login.account_id  and project = '$project' and particular != 'Check' and position != 'House Helper' and state = 'AAPettyRep' and liqstate = 'CompleteLiqdate' group by liqdate_id order by petty.date asc";
+				$result = $conn->query($sql);
+				if($result->num_rows > 0){
+					$totalliq = 0;
+					$a = 0;
+					$_SESSION['last_id'] = "";
+					echo '<table align = "center" class = "table" style="font-size: 14px;">';
+					echo '<tbody>';	
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Name</th>';
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Date</th>';
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Type</th>';
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Amount</th>';
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="25%">Info</th>';
+						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="25%">Reasons</th>';
+						while ($row = $result->fetch_assoc()) {
+							$reason = $row['petreason'];
+							if($_SESSION['last_id'] != ""){	
+								if($_SESSION['last_id'] == $row['petreason']){
+									if(stristr($row['petreason'], ' ')){
+										$ex = explode(" ", $row['petreason']);
+										$reason = $ex[0] . ' ' . $ex[1] . '......';
+									}else{
+										$reason = $row['petreason'];
+									}						
+								}else{
+									$reason = $row['petreason'];
+								}
 							}
+							$_SESSION['last_id'] = $row['petreason'];
+							$petid = $row['liqdate_id'];
+							$accid = $row['account_id'];
+							$query = "SELECT * FROM `petty_liqdate` where liqdate_id = '$petid'";
+							$data = $conn->query($query)->fetch_assoc();
+							$query1 = "SELECT * FROM `login` where account_id = '$accid'";
+							$data1 = $conn->query($query1)->fetch_assoc();
+							if($data['rcpt'] != null){
+								$rcpt = "<b><font color = 'green'>w/ </font></b> Receipt";
+							}else{
+								$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
+							}
+							if($row['liqtype'] == 'Others' && stristr($row['liqothers'], 'material') !== FALSE){
+								$row['liqothers'] = ': ' . $row['liqothers'];
+							}elseif($row['liqtype'] == 'Others' && stristr($row['liqothers'], 'material') === FALSE){
+								continue;
+							}
+							echo '<tr>';
+							echo '<td>' . ucfirst(strtolower($row['fname'])) . ' ' . ucfirst(strtolower($row['lname'])) . '</td>';
+							echo '<td>'. date("m/d/Y", strtotime($row['liqdate'])).'</td>';
+							echo '<td>'. $row['liqtype']. $row['liqothers'] .'</td>';
+							echo '<td>₱ '. number_format($row['liqamount'],2).'</td>';
+							echo '<td>'. $row['liqinfo'].'</td>';
+							echo '<td>'. $reason .'</td>';
+							echo '</tr>';	
+							$totalliq += $row['liqamount'];
+							$a += str_replace(',', '', $row['amount']);
 						}
-					} 
+					echo '</tbody>';
+					echo '</table>';
 				}
 			}
 		?>
-		<div class="col-xs-12">
-			<b><i>
-			<?php
-				if($meal > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Meal </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"> <u>₱ '.	number_format($meal,2) .'</u></div></div>'; 
-				}
-				if($gas > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Gasoline </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($gas,2) .'</u></div></div>'; 
-				}
-				if($transpo > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Transportation </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($transpo,2) .'</u></div></div>';  
-				}
-				if($cpload > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Cellphone Load </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($cpload,2) .'</u></div></div>'; 
-				}
-				if($water > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Water Fill </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($water,2) .'</u></div></div>'; 
-				}
-				if($notary > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Notary Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($notary,2) .'</u></div></div>';  
-				}
-				if($toll > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Toll Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($toll,2) .'</u></div></div>'; 
-				}
-				if($gate > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Gate Pass </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($gate,2) .'</u></div></div>'; 
-				}
-				if($material > 0) {
-					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Materials </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($material,2) .'</u></div></div>'; 
-				}
-				$total = $meal + $gas + $transpo + $cpload + $water + $notary + $toll + $gate + $material;
-				if($total > 0){
-					echo '<div class="row"><div class = "col-xs-6"><hr></div></div>';
-					echo '<div class="row" style = "margin-top: 1px solid;"><div class = "col-xs-2 col-xs-offset-1">Total </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.number_format($total,2).'</u></div></div>';
-				}
-			?>
-			</i></b>
-		</div>
 	</div>
 		<?php } ?>
 	</form>
-</div>
