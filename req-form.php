@@ -910,23 +910,6 @@ $(document).ready(function(){
  <?php } ?>
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#restday').change(function(){
-	    if($('#restday').is(":checked")){ 	        
-	    	$("#rday").hide();
-	    	$("#toasd").attr('required',false);
-	    	$("#frasd").attr('required',false);
-	    	$("#upoffr").attr('required',false);
-	    	$("#upoffto").attr('required',false);
-	    }else{
-	    	$("#toasd").attr('required',true);
-	    	$("#frasd").attr('required',true);
-	    	$("#upoffto").attr('required',true);
-	    	$("#upoffr").attr('required',true);
-	        $("#rday").show();
-	    }
-	});
-});
-$(document).ready(function(){
 	    $('#restday2').change(function(){
 	    if($('#restday2').is(":checked")){ 	        
 	    	$("#rday2").hide();
@@ -962,7 +945,7 @@ $(document).ready(function(){
   webshims.setOptions('forms-ext', {types: 'date'});
   webshims.polyfill('forms forms-ext');
 </script>
-<?php if($_SESSION['level'] == 'HR'){
+<?php if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'ACC'){
 	?>
   <!-- Modal -->
   <div class="modal fade" id = "newAcc" role="dialog">

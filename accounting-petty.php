@@ -3,7 +3,7 @@
 	include('header.php');	
 	date_default_timezone_set('Asia/Manila');
 ?>
-<?php if($_SESSION['level'] != 'HR' && $_SESSION['level'] != 'ACC'){	?>		
+<?php if($_SESSION['level'] != 'ACC'){	?>		
 	<script type="text/javascript">	window.location.replace("index.php");</script>	
 <?php	} ?>
 <script type="text/javascript">		
@@ -148,6 +148,7 @@
             <li><a href = "acc-report.php">Cut Off Summary</a></li>
             <li><a href="hr-emprof.php">Employee Profile</a></li>
             <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+            <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
           </ul>
       </div>
       <div class="btn-group btn-group-lg">
@@ -756,6 +757,10 @@
 				
 				$sql33 = "SELECT * FROM `login` where account_id = '$row[account_id]'";
 				$data33 = $conn->query($sql33)->fetch_assoc();
+				if($data33['fname'] == strtoupper($data33['fname'])){
+					$data33['fname'] = ucfirst(strtolower($data33['fname']));
+					$data33['lname'] = ucfirst(strtolower($data33['lname']));
+				}
 				echo '<tr>';
 				echo '<td>' . $row['petty_id'] . '</td>';
 				echo '<td>' . date("M j, Y", strtotime($row['completedate'])). '</td>';

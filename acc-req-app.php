@@ -44,6 +44,7 @@
 		        		<li><a href = "acc-report.php">Cut Off Summary</a></li>
 		        		<li><a href="hr-emprof.php">Employee Profile</a></li>
 		        		<li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+		        		 <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
 		        	</ul>
 		    </div>
 			<div class="btn-group btn-group-lg">
@@ -675,7 +676,7 @@
 							echo '<p><font color = "green">Approved by Accounting</p>';
 						}elseif($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by <br>Dep. Head</p>';
-							if($row['typeoflea'] != 'Sick Leave'){
+							if($row['typeoflea'] != 'Sick Leave' &&  date("Y-m-d") <= $row['dateofleavfr']){
 								echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
 							}
 						}elseif($row['state'] == 'CLea'){
