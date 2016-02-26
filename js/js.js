@@ -11,11 +11,27 @@ $(document).ready(function(){
         "info":     false
 	});
 	$('#oncall').click(function(){
+	      $('#lg').attr('checked', false);
 	      $('#restday').attr('checked', false);
+	      $('#sw').attr('checked', false);
 	      $(this).attr('checked', true);
 	});
 	$('#restday').click(function(){
 	      $('#oncall').attr('checked', false);
+	      $('#lg').attr('checked', false);
+	      $('#sw').attr('checked', false);
+	      $(this).attr('checked', true);
+	});
+	$('#sw').click(function(){
+	      $('#oncall').attr('checked', false);
+	      $('#restday').attr('checked', false);
+	      $('#lg').attr('checked', false);
+	      $(this).attr('checked', true);
+	});
+	$('#lg').click(function(){
+	      $('#oncall').attr('checked', false);
+	      $('#restday').attr('checked', false);
+	      $('#sw').attr('checked', false);
 	      $(this).attr('checked', true);
 	});
     $("#regerr").click(function(){

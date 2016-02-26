@@ -59,7 +59,7 @@
 		if(isset($_POST['updateofot'])){
 			$date = $_POST['updateofot'];
 		}
-		if(isset($_POST['uprestday']) || isset($_POST['uponcall'])){
+		if(isset($_POST['uprestday']) || isset($_POST['uponcall']) || isset($_POST['sw']) || isset($_POST['lg'])){
 			if(isset($_POST['uprestday'])){
 				$officialworksched = 'Restday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}elseif(isset($_POST['uponcall'])){
@@ -75,9 +75,14 @@
 					$approvedothrs = '8:0';
 				}
 				$officialworksched = 'Oncall<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['sw'])){
+				$officialworksched = 'Special N-W Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['lg'])){
+				$officialworksched = 'Legal Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}
-			
-		}		
+		}else{
+			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+		}	
 		if($_SESSION['level'] == "HR"){
 			$state = 'state = "UAAdmin"';	
 		}else{

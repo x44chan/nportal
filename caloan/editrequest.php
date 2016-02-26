@@ -163,18 +163,18 @@
 					}					
 				?>
 				<tr>					
-					<td style="text-align: right;">
+					<td colspan="2">
 						<label for="restday" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Restday'){ echo ' checked '; } ?> value = "restday" name="uprestday" id="restday"/> Rest Day </label>
-					</td>
-					<td>
 						<label for="oncall" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Oncall'){ echo ' checked '; } ?> value = "oncall" name="uponcall" id = "oncall"/> Oncall </label>
+						<label for="sw" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Special N-W Holliday'){ echo ' checked '; } ?> value = "sw" name="sw" id = "sw"/> Special N-W Holliday </label>
+						<label for="lg" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Legal Holliday'){ echo ' checked '; } ?> value = "sw" name="lg" id = "lg"/> Legal Holliday </label>
 					</td>
 				</tr>	
 				<tr class = "form-inline">>
 					<td>Official Work Sched: </td>
 					<td>
-						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
-						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
+						<label for = "fr">From:</label><input onkeydown="return false;" required name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;" required name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
 					</td>					
 				</tr>
 				<tr>

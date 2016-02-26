@@ -238,11 +238,11 @@ $(document).ready(function(){
 					</td>					
 				</tr>
 				<tr>					
-					<td style="float: right;">
-						<label for="restday" style="font-size: 15px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day </label>
-					</td>
-					<td>
-						<label for="oncall" style="font-size: 15px;"><input type="checkbox" value = "oncall" name="oncall" id = "oncall"/> Oncall </label>
+					<td colspan="2">
+						<label for="restday" style="font-size: 15px; margin-left: 20px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day </label>
+						<label for="oncall" style="font-size: 15px; margin-left: 20px;"><input type="checkbox" value = "oncall" name="oncall" id = "oncall"/> Oncall </label>
+						<label for="sw" style="font-size: 15px; margin-left: 20px;"><input type="checkbox" value = "sw" name="sw" id = "sw"/> Special N-W Holliday </label>
+						<label for="lg" style="font-size: 15px; margin-left: 20px;"><input type="checkbox" value = "lg" name="lg" id = "lg"/> Legal Holliday </label>
 					</td>
 				</tr>	
 				<tr class = "form-inline" >

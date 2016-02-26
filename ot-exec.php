@@ -56,15 +56,15 @@
 		$nameofemployee = $_SESSION['name'];
 		$startofot = $_POST['startofot'];
 		$endofot = $_POST['endofot'];
-		if(isset($_POST['restday']) || isset($_POST['oncall'])){
+		if(isset($_POST['restday']) || isset($_POST['oncall']) || isset($_POST['sw']) || isset($_POST['lg'])){
 			if(isset($_POST['restday'])){
 				$officialworksched = 'Restday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
 			}elseif(isset($_POST['oncall'])){
 				$ex = explode(":", $approvedothrs);
 				if($ex[1] > 0){
-					$ex[0] .= '5';
+					$ex[0] .= '.5';
 				}else{
-					$ex[0] .= '0';
+					$ex[0] .= '.0';
 				}
 				if($ex[0] <= 4){
 					$approvedothrs = '4:0';
@@ -72,9 +72,15 @@
 					$approvedothrs = '8:0';
 				}
 				$officialworksched = 'Oncall<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
+			}elseif(isset($_POST['sw'])){
+				$officialworksched = 'Special N-W Holliday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
+			}elseif(isset($_POST['lg'])){
+				$officialworksched = 'Legal Holliday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
 			}
 			
-		}	
+		}else{
+			$officialworksched = $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
+		}
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));;
 		$reason = $_POST['reason'];
 		$state = 'UAAdmin';
