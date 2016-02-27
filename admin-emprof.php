@@ -103,7 +103,7 @@
           <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
           <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
           <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
-          <li><a href = "admin-emprof.php?rep" type = "button">Employee Cutoff Summary</a></li>
+          <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
         </ul>
       </div>
       <div class="btn-group btn-group-lg">
@@ -132,8 +132,8 @@
   </div>
 </div>
 <?php
-  if(isset($_GET['rep']) || isset($_GET['report'])){
-    include 'caloan/newfilter.php';
+  if(isset($_GET['leaverep'])){
+    include 'caloan/leaverep.php';
     echo '</div><div style = "display: none;">';
   }
 

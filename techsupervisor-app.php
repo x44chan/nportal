@@ -662,7 +662,7 @@
 							echo '<p><font color = "green">Approved by Accounting</p>';
 						}elseif($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by <br>Dep. Head</p>';
-							if($row['typeoflea'] != 'Sick Leave'){
+							if($row['typeoflea'] != 'Sick Leave' &&  date("Y-m-d") <= $row['dateofleavfr']){
 								echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
 							}
 						}elseif($row['state'] == 'CLea'){

@@ -88,11 +88,11 @@
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-1 days';
+			$minus = '-3 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($datefile))) > date("Y-m-d", strtotime($dateofot)) || date("Y-m-d", strtotime($datefile)) < date("Y-m-d", strtotime($dateofot))){
 			$state = 'UALate';
-			$restric = 0;	
+			$restric = 1;	
 		}
 		if(isset($_POST['ottype'])){
 			if($_POST['ottype'] == 'Project'){
@@ -138,7 +138,7 @@
 			$conn->close();
 		}else{
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date."); window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
 	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {

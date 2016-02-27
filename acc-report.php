@@ -112,7 +112,8 @@ $(document).ready( function () {
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
-			<a  type = "button"class = "btn btn-primary" href = "accounting.php?ac=penot">Home</a>		
+			<a  type = "button"class = "btn btn-primary" href = "accounting.php?ac=penot">Home</a>	
+			<?php if($_SESSION['acc_id'] == '4'){ ?>	
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -132,7 +133,9 @@ $(document).ready( function () {
 				  	}
 				  ?>
 				</ul>
-			</div>			
+			</div>	
+			
+		    <?php } ?>		
 			<div class="btn-group btn-group-lg">
 		    	<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 		        	<ul class="dropdown-menu" role="menu">
@@ -154,6 +157,8 @@ $(document).ready( function () {
 				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>
+			<?php if($_SESSION['acc_id'] == '4'){ ?>	
+			
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -161,7 +166,8 @@ $(document).ready( function () {
 				  <li><a href = "req-app.php">My Approved Request</a></li>
 				  <li><a href = "req-dapp.php">My Disapproved Request</a></li>	
 				</ul>
-			</div>			
+			</div>
+			<?php } ?>			
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div>
 	</div>

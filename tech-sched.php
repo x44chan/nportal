@@ -41,6 +41,7 @@
 		<?php echo date('l jS \of F Y h:i A'); if($_SESSION['level'] != 'Admin'){?> <br><br>
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary"  href = "index.php">Home</a>
+			<?php if($_SESSION['acc_id'] == '3'){ ?>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -61,7 +62,7 @@
 				  ?>
 				</ul>
 			</div>
-			<?php if($_SESSION['level'] == "HR") {?>
+			<?php } if($_SESSION['level'] == "HR") {?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -69,7 +70,6 @@
 				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
 				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
-				  <li><a href = "accounting-petty.php">Petty List</a></li>
 				</ul>
 			</div>	
 			<?php 
@@ -86,7 +86,9 @@
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
+					<?php if($_SESSION['acc_id'] == '3'){ ?>
 				  <li><a href = "req-all.php?appot">All Request</a></li>
+				  <?php } ?>
 				  <li><a href = "<?php echo $hrf;?>">My Approved Request</a></li>
 				  <li><a href = "<?php echo $hrf2;?>">My Approved Request</a></li>	
 				</ul>

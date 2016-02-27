@@ -72,7 +72,8 @@
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong><br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
-			<a  type = "button"class = "btn btn-primary" href = "hr.php?ac=penot">Home</a>	
+			<a  type = "button"class = "btn btn-primary" href = "hr.php?ac=penot">Home</a>
+			<?php if($_SESSION['acc_id'] == '3'){ ?>	
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -93,6 +94,7 @@
 				  ?>
 				</ul>
 			</div>
+			<?php } ?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -100,12 +102,10 @@
 				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
 				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
-				  <li class="divider"></li>
-				  <li><a href = "accounting-petty.php">Petty List</a></li>
 				</ul>
 			</div>
-			<a  type = "button"class = "btn btn-primary active"  href = "hr-req-app.php" >My Approved Request</a>		
-			<a  type = "button"class = "btn btn-primary  "  href = "hr-req-dapp.php">My Dispproved Request</a>		
+			<a  type = "button"class = "btn btn-primary active"  href = "hr-req-app.php" >Approved Request</a>		
+			<a  type = "button"class = "btn btn-primary  "  href = "hr-req-dapp.php"> Dispproved Request</a>		
 			<a href = "logout.php" class="btn btn-danger" onclick="return confirm('Do you really want to log out?');"  role="button">Logout</a>
 		</div>
 		<br><br>

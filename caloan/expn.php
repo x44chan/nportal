@@ -202,11 +202,7 @@
 							}else{
 								$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
 							}
-							if($row['liqtype'] == 'Others' && stristr($row['liqothers'], 'material') !== FALSE){
-								$row['liqothers'] = ': ' . $row['liqothers'];
-							}elseif($row['liqtype'] == 'Others' && stristr($row['liqothers'], 'material') === FALSE){
-								continue;
-							}
+							
 							echo '<tr>';
 							echo '<td>' . ucfirst(strtolower($row['fname'])) . ' ' . ucfirst(strtolower($row['lname'])) . '</td>';
 							echo '<td>'. date("m/d/Y", strtotime($row['liqdate'])).'</td>';

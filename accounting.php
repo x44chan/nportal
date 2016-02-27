@@ -15,6 +15,7 @@
 		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary"  href = "?ac=penot">Home</a>
+			<?php if($_SESSION['acc_id'] == '4'){ ?>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -36,6 +37,7 @@
 				  ?>
 				</ul>
 			</div>
+			<?php } ?>
 			<div class="btn-group btn-group-lg">
 		        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 		        	<ul class="dropdown-menu" role="menu">
@@ -57,6 +59,7 @@
 				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>
+			<?php if($_SESSION['acc_id'] == '4'){ ?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -65,6 +68,7 @@
 				  <li><a href = "acc-req-dapp.php">My Disapproved Request</a></li>	
 				</ul>
 			</div>	
+			<?php } ?>
 			<a type = "button" class = "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">
@@ -72,6 +76,7 @@
 			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
 			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
 			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
+			<?php if($_SESSION['acc_id'] == '4'){ ?>
 			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
 			<?php
 				if($_SESSION['category'] == "Regular"){
@@ -81,6 +86,7 @@
 				}
 			?>	
 			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
+			<?php } ?>
 		</div>
 	</div>
 </div>

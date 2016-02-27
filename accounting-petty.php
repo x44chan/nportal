@@ -106,6 +106,7 @@
     <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
     <div class="btn-group btn-group-lg">
       <a  type = "button"class = "btn btn-primary" href = "index.php">Home</a>
+      <?php if($_SESSION['acc_id'] == '4'){ ?>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -127,6 +128,7 @@
           ?>
         </ul>
       </div>
+      <?php } ?>
       <?php if($_SESSION['level'] == 'HR') { ?>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
@@ -163,6 +165,7 @@
 		  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
         </ul>
       </div>
+      <?php if($_SESSION['acc_id'] == '4'){ ?>
       <div class="btn-group btn-group-lg">
 		<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 		<ul class="dropdown-menu" role="menu">
@@ -171,7 +174,7 @@
 		  <li><a href = "acc-req-dapp.php">My Disapproved Request</a></li>	
 		</ul>
 	</div>	
-      <?php } ?>
+      <?php } }?>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
     </div>
   </div>
@@ -701,7 +704,8 @@
 		}elseif(isset($_GET['scompleted'])){
 			$sql = "SELECT * from `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.account_id = petty.account_id and $between and (petty.state = 'AApettyRep' or petty.state = 'AAAPettyReceive' or petty.state = 'AAPettyReceived' or petty.state = 'AAPetty') $filt GROUP BY petty_liqdate.petty_id ORDER BY petty_liqdate.completedate asc ";	
 		}else{
-			$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and date between '$date1' and '$date2' and (state = 'AApettyRep' or state = 'AAAPettyReceive' or state = 'AAPettyReceived' or state = 'AAPetty') $filt order by petty_id desc";
+			$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and petty_id IN ('6', '9', '20', '37', '38', '53', '86', '87', '96', '98', '127', '128', '129', '130','133','159', '161', '178', '218', '219', '220', '313', '322', '327', '328', '329', '353', '369', '383',
+																												 '389', '402', '403', '432', '433', '435', '436', '441', 449, 465, 490, 494, 500, 506, 519, 523, 526, 536, 537, 556, 559, 560, 567, 569, 571) order by petty_id desc";
 		}
 		$result = $conn->query($sql);
 		$total = 0;

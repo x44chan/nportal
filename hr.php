@@ -54,6 +54,7 @@
 		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary"  href = "hr.php?ac=penot">Home</a>
+			<?php if($_SESSION['acc_id'] == '3'){ ?>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -74,6 +75,7 @@
 				  ?>
 				</ul>
 			</div>
+			<?php } ?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -81,12 +83,10 @@
 				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
 				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
-				  <li class="divider"></li>
-				  <li><a href = "accounting-petty.php">Petty List</a></li>
 				</ul>
 			</div>		
-			<a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
-			<a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda">My Dispproved Request</a>
+			<a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda"> Approved Request</a>
+			<a type = "button" class = "btn btn-primary" href = "hr-req-dapp.php"  id = "showdispproveda"> Dispproved Request</a>
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">
@@ -94,6 +94,7 @@
 			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
 			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
 			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
+			<?php if($_SESSION['acc_id'] == '3'){ ?>
 			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
 			<?php
 				if($_SESSION['category'] == "Regular"){
@@ -103,6 +104,7 @@
 				}
 			?>	
 			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
+			<?php } ?>
 		</div>
 	</div>
 </div>
@@ -231,15 +233,15 @@
 				</tr>
 				<tr>
 					<td>ID No: </td>
-					<td><?php echo $_SESSION['acc_id'];?></td>
+					<td><?php echo $row['account_id'];?></td>
 				</tr>
 				<tr>
 					<td>Position: </td>
-					<td><?php echo $_SESSION['post'];?></td>
+					<td><?php echo $row['position'];?></td>
 				</tr>
 				<tr>
 					<td>Department: </td>
-					<td><?php echo $_SESSION['dept'];?></td>
+					<td><?php echo $row['department'];?></td>
 				</tr>
 				<tr>
 					<td>Date Of Official Business: </td>

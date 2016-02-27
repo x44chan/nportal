@@ -183,7 +183,7 @@
 				<th width="28%"> Reason </th>
 			</tr>
 		</thead>
-		<tbody>		
+		<tbody>	
 <?php
 	$totalpet = 0;
 	$totalused = 0;
@@ -221,11 +221,10 @@
 		if(isset($_GET['print'])){
 			echo '<tr id = "bords"><td></td><td><b> Total </b></td><td><b>₱ ' . number_format($totalpet,2) . '</td><td><b>₱ ' . number_format($totalused,2) . '</td><td></td><td></td></tr>';
 		}
-		echo '</tbody>';
 	}
 
 ?>
-		
+		</tbody>
 	</table>
 </div>
 	<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?expenses&print"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a></div>

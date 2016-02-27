@@ -137,7 +137,7 @@
 				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
 				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
 				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
-				  <li><a href = "admin-emprof.php?rep" type = "button">Employee Leave Summary</a></li>
+				  <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -520,7 +520,7 @@ if(isset($_GET['login_log'])){
 		}
 	
 	}
-	$sql = "SELECT * from `petty_liqdate`,`petty` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.liqstate = 'LIQDATE' and source != 'Accounting' group by petty_liqdate.petty_id";
+	$sql = "SELECT * from `petty_liqdate`,`petty` where petty.petty_id = petty_liqdate.petty_id and petty_liqdate.liqstate = 'LIQDATE' group by petty_liqdate.petty_id";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){

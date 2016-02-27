@@ -31,6 +31,7 @@
     <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
     <div class="btn-group btn-group-lg">
       <a  type = "button"class = "btn btn-primary" href = "index.php">Home</a>
+      <?php if($_SESSION['acc_id'] == '4'){ ?>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
@@ -51,6 +52,7 @@
           ?>
         </ul>
       </div>
+      <?php } ?>
       <?php if($_SESSION['level'] == 'HR') { ?>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
@@ -59,8 +61,6 @@
           <li><a href = "tech-sched.php">Tech Scheduling</a></li>
           <li><a href = "hr-emprof.php">Employee Profile</a></li>
           <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
-          <li class="divider"></li>
-          <li><a href = "accounting-petty.php">Petty List</a></li>
         </ul>
       </div>
       <a type = "button" class = "btn btn-primary"  href = "hr-req-app.php" id = "showapproveda">My Approved Request</a>
@@ -72,6 +72,7 @@
             <li><a href = "acc-report.php">Cut Off Summary</a></li>
             <li><a href="hr-emprof.php">Employee Profile</a></li>
             <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+            <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
           </ul>
       </div>
       <div class="btn-group btn-group-lg">
@@ -86,6 +87,7 @@
           <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
         </ul>
       </div>
+      <?php if($_SESSION['acc_id'] == '4'){ ?>
       <div class="btn-group btn-group-lg">
         <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
         <ul class="dropdown-menu" role="menu">
@@ -94,7 +96,7 @@
           <li><a href = "acc-req-dapp.php">My Disapproved Request</a></li>  
         </ul>
       </div>
-      <?php } ?>
+      <?php }} ?>
       <a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
     </div>
   </div>
@@ -366,11 +368,7 @@
       <?php if($dataxx['sleave'] <= 0 && $dataxx['sleave'] <= 0) { ?>
       <div class="col-xs-3">
         <label>Balance For <font color = "red"> * </font></label>
-        <select class="form-control" name = "startdate" required>
-          <option value=""> - - - - - - - </option>
-          <option value="<?php echo date('Y-m-01', strtotime('January Y'));?>"><?php echo date('F', strtotime('January'));?> - <?php echo date('F Y', strtotime('December Y'));?></option>
-          <option value="<?php echo date('Y-m-01', strtotime('next year', strtotime('January Y')));?>"><?php echo date('F', strtotime('January'));?> - <?php echo date('F Y', strtotime('next year', strtotime('December Y')));?></option>
-        </select>
+        <input type = "date" class="form-control" name = "startdate" placeholder = "Enter Start Date">
       </div>
       <?php } ?>
     </div>
@@ -395,7 +393,7 @@ if(isset($_POST['updateleave'])){
   $sleave = mysql_escape_string($_POST['sickleave']);
   $vleave = mysql_escape_string($_POST['vacleave']);
   $startdate = mysql_escape_string($_POST['startdate']);
-  $enddate = date('Y-12-t', strtotime($_POST['startdate']));
+  $enddate = date('Y-12-31', strtotime($_POST['startdate']));
   $accid = mysql_escape_string($_GET['modify']);
   $state = 'UA';
   $datefile = date("Y-m-d");
