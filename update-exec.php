@@ -93,12 +93,12 @@
 		if(date("D", strtotime($dxata['datefile'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-1 days';
+			$minus = '-3 days';
 		}
 		$restric = 0;
 		
 		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date))){
-				$restric = 0;
+				$restric = 1;
 				$uplate = ', state = "UALate" ';		
 		}else{
 				$uplate = ', state = "UAAdmin" ';

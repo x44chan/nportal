@@ -331,7 +331,7 @@
 			}
 			if(date("d") >= 2 && date("d") < 17){
 				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-t', strtotime("previous month"));
+				$endque = date('Y-m-31', strtotime("previous month"));
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}else{
@@ -382,6 +382,8 @@
 							echo '<p><font color = "green">Approved by HR</p>';
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</p>';
+						}elseif($row['state']){
+							echo '<p><font color = "green">Checked by HR</p>';
 						}else{
 							echo '<p><font color = "green">Approved by Dep. Head</p>';
 						}
