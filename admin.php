@@ -956,7 +956,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							$datehr = '<b><i> Bypass </i></b>';
 						}
 						if($row['state'] == 'UALate'){
-							$datehr = '<b><i><font color = "red"> Late Filed O.B. Request<br> Waiting for Approval</font></b>';
+							$datehr = '<b><i><font color = "red"> Late Filed Undertime Request<br> Waiting for Approval</font></b>';
 						}else{
 							$datehr = "<b><i>Waiting for Approval";
 						}

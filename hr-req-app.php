@@ -121,7 +121,7 @@
 <div id = "dappot" style = "margin-top: -30px; display: none;">
 	<?php 
 		include("conf.php");
-		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id  and (state like 'A%' or state = 'CheckedHR') ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime,login where login.account_id = overtime.account_id  and (state like 'A%' or state = 'CheckedHR') ORDER BY datefile desc";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -161,6 +161,8 @@
 							echo '<p><font color = "green">Approved by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'CheckedHR'){
+							echo '<p><font color = "green">Checked by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by Dep. Head</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'DAHR'){
@@ -179,7 +181,7 @@
 <div id = "dappob" style = "margin-top: -30px; display: none;">
 	<?php 
 		include("conf.php");
-		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id  and (state like 'A%' or state = 'CheckedHR') ORDER BY obdate ASC";
+		$sql = "SELECT * FROM officialbusiness,login where login.account_id = officialbusiness.account_id  and (state like 'A%' or state = 'CheckedHR') ORDER BY obdate DESC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -221,6 +223,8 @@
 							echo 'Pending';
 						}else if($row['state'] == 'AHR'){
 							echo '<p><font color = "green">Approved by HR</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'CheckedHR'){
+							echo '<p><font color = "green">Checked by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AAdmin'){
@@ -252,7 +256,7 @@
 			$endque = 16;
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state like 'A%'  ORDER BY datefile ASC";
+		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state like 'A%'  ORDER BY datefile DESC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -293,6 +297,8 @@
 							echo '<p><font color = "green">Approved by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</font></p> '.$row['dareason'];
+						}else if($row['state'] == 'CheckedHR'){
+							echo '<p><font color = "green">Checked by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by Dep. Head</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'DAHR'){
@@ -312,7 +318,7 @@
 <div id = "disappleave" style = "display: none; margin-top: -30px;">
 	<?php 
 	include("conf.php");
-	$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and (state like  'A%' or state like '%Lea%' or state = 'CLea') ORDER BY datefile ASC";
+	$sql = "SELECT * FROM nleave,login where login.account_id = nleave.account_id and (state like  'A%' or state like '%Lea%' or state = 'CLea') ORDER BY datefile desc";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 	?>	
@@ -366,9 +372,9 @@
 							echo '<p><font color = "green">Approved by Accounting</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'AAdmin'){
 							echo '<p><font color = "green">Approved by Dep. Head</font></p> '.$row['dareason'];
-							if($row['typeoflea'] != 'Sick Leave'){
-								echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
-							}
+						//	if($row['typeoflea'] != 'Sick Leave'){
+						//		echo '<a onclick = "return confirm(\'Are you sure?\');" href = "cancel-req.php?canlea='.$row['leave_id'].'" class = "btn btn-danger"> Cancel Leave </a>';
+						//	}
 						}else if($row['state'] == 'DAHR'){
 							echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
 						}else if($row['state'] == 'DAACC'){
