@@ -172,7 +172,7 @@ $(document).ready(function(){
             			<select class="form-control" name = "otproject">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -189,7 +189,7 @@ $(document).ready(function(){
             			<select class="form-control" name = "otpm">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+		            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -206,7 +206,7 @@ $(document).ready(function(){
             			<select class="form-control" name = "otinternet">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+		            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -472,7 +472,7 @@ $(document).ready(function(){
             	<select class="form-control" name = "project">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -487,7 +487,7 @@ $(document).ready(function(){
             	<select class="form-control" name = "pm">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -502,7 +502,7 @@ $(document).ready(function(){
             	<select class="form-control" name = "internet">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1'";
+            			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -517,7 +517,7 @@ $(document).ready(function(){
             	<select class="form-control" name = "combined">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
+            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -582,6 +582,9 @@ $(document).ready(function(){
 					$count += 1;
 				}
 		   }
+		}
+		if($acc_id == '23'){
+			$count = 0;
 		}
 		if($count > 0){
 			if($_SESSION['level'] == 'EMP'){
