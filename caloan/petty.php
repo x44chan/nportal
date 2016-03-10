@@ -39,8 +39,10 @@
 				}
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid' and petty_liqdate.liqstate = 'CompleteLiqdate'";
 				$data = $conn->query($sql)->fetch_assoc();	
-				if(date("Y-m-d") > date("Y-m-d", strtotime("+12 days", strtotime($row['date']))) && $data['liqstate'] == 'CompleteLiqdate'){
-					continue;
+				if(date("Y-m-d") > date("Y-m-d", strtotime("+12 days", strtotime($row['date'])))){
+					if($data['liqstate'] == 'CompleteLiqdate' || $row['state'] == 'CPetty' || $row['state'] == 'DAPetty'){
+						continue;
+					}
 				}
 				echo 
 					'<tr>
