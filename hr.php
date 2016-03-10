@@ -1376,7 +1376,7 @@ echo '</tbody></table></form>';
 			$endque = date('Y-m-d');
 		}
 		include("conf.php");
-		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state like 'UA' and datefile BETWEEN '$forque1' and '$endque1' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM undertime,login where login.account_id = undertime.account_id and state = 'UA' and dateofundrtime > '2016-02-05' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		
 	?>
