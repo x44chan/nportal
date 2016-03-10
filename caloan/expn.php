@@ -206,7 +206,7 @@
 							echo '<tr>';
 							echo '<td>' . ucfirst(strtolower($row['fname'])) . ' ' . ucfirst(strtolower($row['lname'])) . '</td>';
 							echo '<td>'. date("m/d/Y", strtotime($row['liqdate'])).'</td>';
-							echo '<td>'. $row['liqtype']. $row['liqothers'] .'</td>';
+							echo '<td>'. $row['liqtype'] . ': ' . $row['liqothers'] .'</td>';
 							echo '<td>₱ '. number_format($row['liqamount'],2).'</td>';
 							echo '<td>'. $row['liqinfo'].'</td>';
 							echo '<td>'. $reason .'</td>';
