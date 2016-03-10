@@ -102,6 +102,9 @@
 	if(isset($_GET['lqdate'])){
 		include 'aliquidate.php';	
 	}
+	if(isset($_GET['editliqdate']) && $_GET['editliqdate'] > 0){
+		include("caloan/editliqdate.php");
+	}
 ?>
 <?php
 	if(isset($_GET['validate'])){
