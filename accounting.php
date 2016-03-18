@@ -25,13 +25,13 @@
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Penalty Loan Form</a></li>
+				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Loan Form (For All Employee)</a></li>
 				  <?php
 				  	if($_SESSION['category'] == "Regular"){
 				  ?>
 				  	<li class="divider"></li>
 				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Salary Loan Form</a></li>
 				  <?php
 				  	}
 				  ?>
@@ -271,6 +271,8 @@
 			while($row = $result->fetch_assoc()){
 				if($row['penalty'] == 1){
 					$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+				}elseif($row['penalty'] == 2){
+					$row['penalty'] = '<b><font color = "green"> Personal Loan </font></b>';
 				}else{
 					$row['penalty'] = '<b> Salary Loan </b>';
 				}

@@ -123,12 +123,13 @@ $(document).ready( function () {
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
+				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Loan Form (For All Employee)</a></li>
 				  <?php
 				  	if($_SESSION['category'] == "Regular"){
 				  ?>
 				  	<li class="divider"></li>
 				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
+				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Salary Loan Form</a></li>
 				  <?php
 				  	}
 				  ?>

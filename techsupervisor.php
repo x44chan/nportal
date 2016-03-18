@@ -22,25 +22,9 @@
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary"  href = "techsupervisor.php?ac=penot">Home</a>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a href="#" id = "newovertime">Overtime Request</a></li>
-				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
-				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
-				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
-				  <?php
-				  	if($_SESSION['category'] == "Regular"){
-				  ?>
-				  	<li class="divider"></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Loan Form</a></li>
-				  <?php
-				  	}
-				  ?>
-				</ul>
-			</div>
+			<?php
+				include 'caloan/reqbut.php';
+			?>
 			<a  type = "button"class = "btn btn-primary"  href = "tech-sched.php" >Tech Scheduling</a>	
 			<?php
 				if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
@@ -140,6 +124,8 @@
 			while($row = $result->fetch_assoc()){
 				if($row['penalty'] == 1){
 					$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+				}elseif($row['penalty'] == 2){
+					$row['penalty'] = '<b><font color = "green"> Personal Loan </font></b>';
 				}else{
 					$row['penalty'] = '<b> Salary Loan </b>';
 				}

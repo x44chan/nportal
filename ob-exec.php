@@ -28,14 +28,16 @@
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-1 days';
+			$minus = '-3 days';
 		}
+		
+		$restric = 0;
 		if(date("Y-m-d", strtotime($minus, strtotime($obdate))) > date("Y-m-d", strtotime($obdatereq))){
-			$oblate = 1;		
+			$oblate = 1;
+			$restric = 1;		
 		}else{
 			$oblate = null;
 		}
-		$restric = 0;
 		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state, oblate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $officialworksched, $state, $oblate);
 		if($restric == 0){

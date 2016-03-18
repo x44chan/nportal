@@ -191,10 +191,11 @@
 		if(date("D", strtotime($dxatax['obdate'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-1 days';
+			$minus = '-3 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date))){
-			$uplate = ',oblate = 1';		
+			$uplate = ',oblate = 1';	
+			$restric = 1;	
 		}else{
 			$uplate = ',oblate = null';	
 		}

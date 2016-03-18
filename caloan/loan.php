@@ -42,6 +42,8 @@
 					<?php 
 						if($row['penalty'] == 1){
 							echo ' Penalty Loan ';
+						}elseif($row['penalty'] == 2){
+							echo ' Personal Loan ';
 						}else{
 							echo ' Salary Loan';
 						}

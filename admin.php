@@ -641,6 +641,8 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		while($row = $result->fetch_assoc()){
 			if($row['penalty'] == 1){
 				$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+			}elseif($row['penalty'] == 2){
+				$row['penalty'] = '<b><font color = "green"> Personal Loan </font></b>';
 			}else{
 				$row['penalty'] = '<b> Salary Loan </b>';
 			}

@@ -1045,7 +1045,7 @@ $("#submita").click(function(){
       <div class="modal-content">
         <div class="modal-header" style="padding:35px 50px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4>Penalty Loan Form</h4>
+          <h4>Loan Form<br><h5>(For All Employees)</h5></h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
           <form role="form" action = "" method = "post">
@@ -1058,7 +1058,15 @@ $("#submita").click(function(){
             	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
-            	 <label for="usrname"> Reason <font color = "red">*</font></label>
+          		<label for="usrname"> Type <font color = "red">*</font></label>
+            	<select class="form-control" name = "type">
+            		<option value=""> ---------- </option>
+            		<option value="2"> Personal Loan </option>
+            		<option value="1"> Penalty Loan </option>
+            	</select>
+          	</div>
+          	<div class="form-group">
+            	<label for="usrname"> Reason <font color = "red">*</font></label>
             	<textarea id = "petamount" required name = "loanreason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
           	</div>
           	<div class="form-group">
@@ -1130,8 +1138,9 @@ $("#submita").click(function(){
 		$accid = $_SESSION['acc_id'];
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
+		$type = mysqli_real_escape_string($conn,$_POST['type']);
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = 1";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = '$type'";
 		$resquery = $conn->query($query);
 		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
 		$resqueryxx = $conn->query($sqlxx);
@@ -1148,14 +1157,19 @@ $("#submita").click(function(){
 		if($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
 			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
 		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
+			if($type == '1'){
+				$alert = "penalty";
+			}elseif($type == '2'){
+				$alert = "personal";
+			}
 			if($_SESSION['level'] == 'EMP'){
-    			echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("employee.php?ac=penloan"); </script>';
+    			echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("employee.php?ac=penloan"); </script>';
 	 	  	}elseif ($_SESSION['level'] == 'ACC') {
-	     		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
+	     		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("You still have pending penalty loan.");window.location.replace("hr.php?ac=penloan"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("hr.php?ac=penloan"); </script>';
 	    	}
 		}elseif($resquery2->num_rows > 0){
 			if($_SESSION['level'] == 'EMP'){
@@ -1173,10 +1187,9 @@ $("#submita").click(function(){
 			}else{
 				$duration = $_POST['loanduration'] . ' Months';
 			}	
-			$penalty = 1;
 	   		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 			$sql = $conn->prepare("INSERT INTO `loan` (account_id, loanamount, loanreason, state, loandate, duration, startdate, penalty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-			$sql->bind_param("issssssi", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $loandate, $duration, $date, $penalty);
+			$sql->bind_param("issssssi", $accid, $_POST['loanamount'], $_POST['loanreason'], $state, $loandate, $duration, $date, $type);
 			if($sql->execute()){
 				if($_SESSION['level'] == 'EMP'){
 	    			echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
