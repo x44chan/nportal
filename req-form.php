@@ -104,6 +104,19 @@ $(document).ready(function(){
 						$('input[name="obofficialworkschedto"]').ptTimeSelect();
 						$('input[name="obofficialworkschedfr"]').ptTimeSelect();							
 					//	$('input[name="obtimeout"]').ptTimeSelect();
+						$("#submits").click(function(){
+							if($("#reqto").val() == "" && $("#reqfr").val() == ""){
+								$("#warning").show();
+								return false;							
+							}
+						});
+						$("#reqto").click(function(){
+							$("#warning").hide();
+						});
+						$("#reqfr").click(function(){
+							$("#warning").hide();
+						});
+
 					});
 				</script>
 				</div>

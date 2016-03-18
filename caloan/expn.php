@@ -162,7 +162,7 @@
 				$project = $_SESSION['sproj'];
 			}
 			if(isset($project) && !empty($project)){	
-				$sql = "SELECT * FROM `petty`,`login`,`petty_liqdate` where petty.account_id = petty_liqdate.account_id and petty.petty_id = petty_liqdate.petty_id and petty.account_id = login.account_id  and project = '$project' and particular != 'Check' and position != 'House Helper' and state = 'AAPettyRep' and liqstate = 'CompleteLiqdate' group by liqdate_id order by petty.date asc";
+				$sql = "SELECT * FROM `petty`,`login`,`petty_liqdate` where petty.account_id = petty_liqdate.account_id and petty.petty_id = petty_liqdate.petty_id and petty.account_id = login.account_id  and project = '$project' and particular != 'Check' and position != 'House Helper' and state = 'AAPettyRep' and liqstate = 'CompleteLiqdate' group by liqdate_id order by petty.date desc";
 				$result = $conn->query($sql);
 				if($result->num_rows > 0){
 					$totalliq = 0;

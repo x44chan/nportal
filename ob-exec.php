@@ -21,6 +21,9 @@
 		}else{
 			$officialworksched = $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
 		}
+		if($_POST['obofficialworkschedfr'] == "" && $_POST['obofficialworkschedto'] == ""){
+			$restric = 1;
+		}
 		$restric = 0;
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';

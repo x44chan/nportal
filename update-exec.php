@@ -177,6 +177,9 @@
 		}else{
 			$officialworksched = mysql_escape_string($_POST['upoffr']). ' - ' . mysql_escape_string($_POST['upoffto']);
 		}
+		if($_POST['upoffr'] == "" && $_POST['upoffto'] == ""){
+			$restric = 1;
+		}
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else{

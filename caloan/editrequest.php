@@ -460,6 +460,12 @@
 						$('input[name="upoffr"]').ptTimeSelect();
 						$('input[name="upoffto"]').ptTimeSelect();							
 					//	$('input[name="obtimeout"]').ptTimeSelect();
+						$("#submituped").click(function(){
+							if($("#toasd").val() == "" && $("#frasd").val() == ""){
+								$("#warning").show();
+								return false;							
+							}
+						});
 					});
 				</script>
 				</div>
