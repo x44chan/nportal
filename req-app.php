@@ -314,28 +314,28 @@
 			$date17 = date("d");
 			if($date17 >= 17){
 				$forque = date('Y-m-01');
-				$endque = date('Y-m-15');
+				$endque = date('Y-m-15 11:59 PM');
 			}else{
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31', strtotime("previous month"));
+				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
 			}
 			if(date("d") >= 2 && date("d") < 17){
 				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-31', strtotime("previous month"));
+				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}else{
 			$date17 = date("d");
 			if($date17 >= 17){
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31');
+				$endque = date('Y-m-31 11:59 PM');
 			}else{
 				$forque = date('Y-m-01');
-				$endque = date('Y-m-15');
+				$endque = date('Y-m-15 11:59 PM');
 			}
 			if(date("d") < 2){
 				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-d');
+				$endque = date('Y-m-d 11:59 PM');
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}
@@ -392,28 +392,28 @@
 			$date17 = date("d");
 			if($date17 >= 17){
 				$forque = date('Y-m-01');
-				$endque = date('Y-m-15');
+				$endque = date('Y-m-15 11:59 PM');
 			}else{
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31', strtotime("previous month"));
+				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
 			}
 			if(date("d") == 2){
 				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-t', strtotime("previous month"));
+				$endque = date('Y-m-t 11:59 PM', strtotime("previous month"));
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}else{
 			$date17 = date("d");
 			if($date17 >= 17){
 				$forque = date('Y-m-16');
-				$endque = date('Y-m-31');
+				$endque = date('Y-m-31 11:59 PM');
 			}else{
 				$forque = date('Y-m-01');
-				$endque = date('Y-m-15');
+				$endque = date('Y-m-15 11:59 PM');
 			}
 			if(date("d") < 2){
 				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-d');
+				$endque = date('Y-m-d 11:59 PM');
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}
@@ -474,7 +474,7 @@
 		}else{
 			$datade = date("F") ;
 		}
-		$cutoffdate = date("M j, Y", strtotime($forque)) . ' - ' . date("M j, Y", strtotime($endque));
+		$cutoffdate = date("M j, Y", strtotime($forque)) . ' - ' . date("M j, Y", strtotime(substr($endque, 0,10)));
 		$hours12 = $hours12;
 		$minutetosec = $minutes12;
 		$totalmin = $hours12 + $minutes12;

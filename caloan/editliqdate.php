@@ -279,50 +279,51 @@
 			    	$count += 1;		    	
 				}
 			}
-			$len += 1;
-			if($_POST['counter'] > $len){
-				$liqstate = 'LIQDATE';
-				$counter = $_POST['counter'];
-				$date = date("Y-m-d");			
-				for($i = $len; $i < $counter; $i++){
-					$stmt = $conn->prepare("INSERT INTO `petty_liqdate` (petty_id, account_id, liqdate, liqtype, liqamount, liqinfo, liqstate, rcpt, liqothers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-					$stmt->bind_param("iisssssss", $_GET['editliqdate'], $_SESSION['acc_id'], $date, $_POST['type'.$i], $_POST['amount'.$i], $_POST['trans'.$i], $liqstate, $_POST['wthrcpt'.$i], $_POST['others'.$i]);
-					if($_POST['type'.$i]!= null){
-						if($stmt->execute()){
-							$count += 1;
-						}else{
-							$conn->error();
+			
+			echo $project . ' ' . $_POST['pettype'] . ' ' . $_GET['editliqdate'];
+			if($count>0){
+				$len += 1;
+				if($_POST['counter'] > $len){
+					$liqstate = 'LIQDATE';
+					$counter = $_POST['counter'];
+					$date = date("Y-m-d");			
+					for($i = $len; $i < $counter; $i++){
+						$stmt = $conn->prepare("INSERT INTO `petty_liqdate` (petty_id, account_id, liqdate, liqtype, liqamount, liqinfo, liqstate, rcpt, liqothers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+						$stmt->bind_param("iisssssss", $_GET['editliqdate'], $_SESSION['acc_id'], $date, $_POST['type'.$i], $_POST['amount'.$i], $_POST['trans'.$i], $liqstate, $_POST['wthrcpt'.$i], $_POST['others'.$i]);
+						if($_POST['type'.$i]!= null){
+							if($stmt->execute()){
+								$count += 1;
+							}else{
+								$conn->error();
+							}
 						}
 					}
 				}
-			}
-			if(!empty($_POST['pettype'])){
-				$pettype = mysqli_real_escape_string($conn, $_POST['pettype']);
-				if(isset($_POST['pettype'])){
-					if($_POST['pettype'] == 'Project'){
-						$project = $_POST['project'];
-					}elseif($_POST['pettype'] == 'P.M.'){
-						$project = $_POST['pm'];
-					}elseif($_POST['pettype'] == 'Internet'){
-						$project = $_POST['internet'];
-					}elseif($_POST['pettype'] == 'Others'){
-						$project = null;
-					}elseif($_POST['pettype'] == 'House'){
-						$project = $_POST['house'];
-					}elseif($_POST['pettype'] == 'Combined'){
-						$project = $_POST['combined'];
+				if(!empty($_POST['pettype'])){
+					$pettype = mysqli_real_escape_string($conn, $_POST['pettype']);
+					if(isset($_POST['pettype'])){
+						if($_POST['pettype'] == 'Project'){
+							$project = $_POST['project'];
+						}elseif($_POST['pettype'] == 'P.M.'){
+							$project = $_POST['pm'];
+						}elseif($_POST['pettype'] == 'Internet'){
+							$project = $_POST['internet'];
+						}elseif($_POST['pettype'] == 'Others'){
+							$project = null;
+						}elseif($_POST['pettype'] == 'House'){
+							$project = $_POST['house'];
+						}elseif($_POST['pettype'] == 'Combined'){
+							$project = $_POST['combined'];
+						}
+					}
+					$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");
+					$stmt2->bind_param("ssi", $project, $pettype, $_GET['editliqdate']);
+					if($stmt2->execute()){
+						$count += 1;
+					}else{
+						$conn->error();
 					}
 				}
-				$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");
-				$stmt2->bind_param("ssi", $project, $pettype, $_GET['editliqdate']);
-				if($stmt2->execute()){
-					$count += 1;
-				}else{
-					$conn->error();
-				}
-			}
-			echo $project . ' ' . $_POST['pettype'] . ' ' . $_GET['editliqdate'];
-			if($count>0){
 				echo '<script type="text/javascript">alert("Edit successful"); window.location.replace("?ac=penpty"); </script>';
 			}
 		}
@@ -350,8 +351,8 @@ $(window).load(function(){
         	amount2 = amount2 - amount1;
         	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
         	sum = parseFloat(amount1) + parseFloat(sum);
-        	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-        	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+        	$("#xchange").text(number_format(amount2,2));
+	    	$("#xused").text(number_format(sum, 2));
         	if(amount.replace(',', "") < sum){			    	    		
 	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
 	    		$("#alertss").show();
@@ -380,8 +381,8 @@ $(document).ready(function(){
     	    	amount2 = amount2 - amount1;
     	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     	    	sum = parseFloat(amount1) + parseFloat(sum);
-    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+    	    	$("#xchange").text(number_format(amount2,2));
+    	    	$("#xused").text(number_format(sum, 2));
     	    	if(amount.replace(',', "") < sum){			    	    		
     	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
     	    		$("#alertss").show();
@@ -428,8 +429,8 @@ $(document).ready(function(){
 				        	}
 			    	    	amount2 = amount2 - amount1;
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
-			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xchange").text(number_format(amount2,2));
+	    	    			$("#xused").text(number_format(sum, 2));
 			    	    	if(amount.replace(',', "") < sum){			    	    		
 			    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
 			    	    		$("#alertss").show();
@@ -461,8 +462,8 @@ $(document).ready(function(){
 	    	    	amount2 = amount2 - amount1;
 	    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 	    	    	sum = parseFloat(amount1) + parseFloat(sum);
-	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+	    	    	$("#xchange").text(number_format(amount2,2));
+	    	    	$("#xused").text(number_format(sum, 2));
 	    	    	if(amount.replace(',', "") < sum){			    	    		
 	    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
 	    	    		$("#alertss").show();
@@ -508,8 +509,8 @@ $(document).ready(function(){
 				        	}
 			    	    	amount2 = amount2 - amount1;
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
-			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xchange").text(number_format(amount2,2));
+	    	    			$("#xused").text(number_format(sum, 2));
 			    	    	if(amount.replace(',', "") < sum){			    	    		
 			    	    		$("button[name = 'upliqdate']").attr("disabled","disabled");
 			    	    		$("#alertss").show();
@@ -535,7 +536,7 @@ $(document).ready(function(){
 				        		amount1 = 0;
 				        	}
 			    	    	amount2 = amount2 - amount1;			    	    	
-			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xchange").text(number_format(amount2,2));
 			     		})(b);
 			   	 	}			   	 	
 				});

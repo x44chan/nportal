@@ -196,8 +196,8 @@ $(document).ready(function(){
 			    	    	var amount1 = $('#amount' + b).val();
 			    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
-			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xchange").text(number_format(amount2,2));
+	    	    			$("#xused").text(number_format(sum, 2));
 			    	    	if(amount.replace(',', "") < sum){			    	    		
 			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
 			    	    		alert("Not enought petty fund.");
@@ -225,8 +225,8 @@ $(document).ready(function(){
 	    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 	    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 	    	    	sum = parseFloat(amount1) + parseFloat(sum);
-	    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-	    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+	    	    	$("#xchange").text(number_format(amount2,2));
+	    	    	$("#xused").text(number_format(sum, 2));
 	    	    	if(amount.replace(',', "") < sum){
 	    	    		$("button[name = 'lsub']").attr("disabled","disabled");
 			    	    alert("Not enought petty fund.");
@@ -266,9 +266,8 @@ $(document).ready(function(){
 			    	    	var amount1 = $('#amount' + b).val();
 			    	    	amount2 = parseFloat(amount2) - parseFloat(amount1);
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);
-			    	    	(amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-			    	    	$("#xchange").text((amount2 + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
-			    	    	$("#xused").text((sum + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+			    	    	$("#xchange").text(number_format(amount2,2));
+	    	    			$("#xused").text(number_format(sum, 2));
 			    	    	if(amount.replace(',', "") < sum){
 			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
 			    	    		alert("Not enought petty fund.");  

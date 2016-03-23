@@ -39,7 +39,7 @@ $(document).ready(function(){
 	}
 ?>
 
-<div id = "offb" style = "margin-top: -30px; display: none; ">
+<div id = "offb" style = "margin-top: -30px; display: none; height:550px;">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
 			<table width = "60%" align = "center">
@@ -130,10 +130,10 @@ $(document).ready(function(){
 		</div>
 	</form>
 </div>
-<div id = "undertime"style = "margin-top: -30px; display: none;">
+<div id = "undertime"style = "margin-top: -30px; display: none; height:480px;">
 	<?php include('undertime.php'); ?>
 </div>
-<div id = "formhidden"style = "margin-top: -30px;display: none;">
+<div id = "formhidden"style = "margin-top: -30px;display: none; height:600px;" >
 	<form role = "form"  align = "center"action = "ot-exec.php" method = "post">
 		<div class = "form-group">
 			<table align = "center" width="50%">
@@ -880,8 +880,8 @@ $(document).ready(function(){
 				<label>Payment Start (Day)</label>
 				<select class="form-control" name = "cutoffday">
 					<option value=""> - - - - - - - </option>
-					<option value="01">01</option>
-					<option value="16">16</option>
+					<option value="01">1-15</option>
+					<option value="16">16-31</option>
 				</select>
 			</div>
 			<div class="form-group">
@@ -1105,8 +1105,8 @@ $("#submita").click(function(){
 				<label>Payment Start (Day)</label>
 				<select class="form-control" name = "cutoffday">
 					<option value=""> - - - - - - - </option>
-					<option value="01">01</option>
-					<option value="16">16</option>
+					<option value="01">01 - 15</option>
+					<option value="16">16 - 31</option>
 				</select>
 			</div>
 			<div class="form-group">
