@@ -346,7 +346,7 @@ if(isset($_GET['login_log'])){
 				}
 				
 				if($data['liqdate'] == ""){
-					echo '<tr style = "display: none;">';
+					continue;
 				}elseif($data['liqstate'] != 'CompleteLiqdate'){
 					echo $red;
 				}elseif($change == " - "){
@@ -370,7 +370,7 @@ if(isset($_GET['login_log'])){
 					echo '<td><b> Pending Completion</b><br><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($row['source'] == ""){
 					echo '<td><b>Pending for Approval</td>';
-				}elseif($data['liqstate'] == ""){
+				}else{
 					echo '<td><b> Pending Liquidate</td>';
 				}
 				echo '<td id = "show" style = "display: none;"></td>';
