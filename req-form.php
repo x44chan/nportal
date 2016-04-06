@@ -657,8 +657,7 @@ $(document).ready(function(){
 
 	}
 ?>
-<?php 
-	if($_SESSION['category'] == "Regular"){ ?>
+
   <!-- caModal -->
   <div class="modal fade" id="cashadv" role="dialog">
     <div class="modal-dialog">    
@@ -693,14 +692,14 @@ $(document).ready(function(){
   </div> 
  <script type="text/javascript">
   $("button[name='submitca']").click(function(){
-     if($("input[name='amountca'").val() > 3000){
-               alert("You can't request more than ₱ 3,000.");
+     if($("input[name='amountca']").val() > <?php if($_SESSION['category'] == 'Regular'){ echo ' 3000 '; }else{ echo ' 1500 '; } ?> ){
+               alert("You can't request more than ₱ <?php if($_SESSION['category'] == 'Regular'){ echo '3,000'; }else{ echo '1,500'; } ?>.");
                return false;
      }
 });
  </script>
 <?php
-	if(isset($_POST['submitca']) && isset($_SESSION['acc_id'])){
+	if(isset($_POST['submitca']) && isset($_SESSION['acc_id']) && !empty($_POST['amountca'])){
 		$date = date("Y-m-d");
 		if($date > date('Y-m-16')){
 			$date = date("Y-m-01", strtotime("next month"));
@@ -709,7 +708,7 @@ $(document).ready(function(){
 			$date = date("Y-m-16");
 			$date2 = date("Y-m-01");
 		}
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
 		$resquery = $conn->query($query);
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate <= '$date' and cadate >= '$date2'";
 		$resquery2 = $conn->query($query2);
@@ -753,14 +752,15 @@ $(document).ready(function(){
 	}
 
 ?>
-
+<?php 
+	if($_SESSION['category'] == "Regular"){ ?>
 <?php
 	if(isset($_POST['loanpet']) && isset($_SESSION['acc_id'])){
 		$accid = $_SESSION['acc_id'];
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
 		$resquery = $conn->query($query);
 		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
 		$resqueryxx = $conn->query($sqlxx);
@@ -772,9 +772,28 @@ $(document).ready(function(){
 			$date = date("Y-m-16");
 			$date2 = date("Y-m-01");
 		}
+		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
+		$limita = $conn->query($xsql)->fetch_assoc();
+		if(date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
+			$limit = '5000';
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
+			$limit = '10000';
+		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
+			$limit = '15000';
+		}
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
 		$resquery2 = $conn->query($query2);
-		if($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
+		if($limit < $_POST['loanamount']){
+			if($_SESSION['level'] == 'EMP'){
+    			echo '<script type="text/javascript">alert("You can\'t request more than ₱ ' . number_format($limit). '");window.location.replace("employee.php?ac=penloan"); </script>';
+	 	  	}elseif ($_SESSION['level'] == 'ACC') {
+	     		echo '<script type="text/javascript">alert("You can\'t request more than ₱ ' . number_format($limit). '");window.location.replace("accounting.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("You can\'t request more than ₱ ' . number_format($limit). '");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("You can\'t request more than ₱ ' . number_format($limit). '");window.location.replace("hr.php?ac=penloan"); </script>';
+	    	} 
+		}elseif($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
 			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
 		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
 			if($_SESSION['level'] == 'EMP'){
@@ -899,7 +918,7 @@ $(document).ready(function(){
 						Covered Cutoff is Feb 01 - Feb 15, 2016</b>
 				</p>
 			</div>
-              <button type="submit" name = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
+              <button type="submit" name = "loanpet" id = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
           </form>
         </div>
         <div class="modal-footer">
@@ -920,6 +939,23 @@ $(document).ready(function(){
 				$('input[ name = "loanothers" ]').attr('disabled',true);
 				$('input[ name = "loanothers" ]').attr("placeholder", "");
 			}
+		});
+		$('#loanpet').click(function(){
+			<?php
+				$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
+				$limita = $conn->query($xsql)->fetch_assoc();
+				if(date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
+					$limit = '5000';
+				}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
+					$limit = '10000';
+				}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
+					$limit = '15000';
+				}
+			?>
+			if($("input[name='loanamount']").val() > <?php echo $limit; ?> ){
+               alert("You can't request more than ₱ <?php echo number_format($limit);?>.");
+               return false;
+    		}
 		});
 	});
 </script>
@@ -1045,7 +1081,7 @@ $("#submita").click(function(){
       <div class="modal-content">
         <div class="modal-header" style="padding:35px 50px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4>Loan Form<br><h5>(For All Employees)</h5></h4>
+          <h4>Penalty Loan Form</h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
           <form role="form" action = "" method = "post">
@@ -1056,14 +1092,6 @@ $("#submita").click(function(){
             <div class="form-group">
             	 <label for="usrname"> Amount <font color = "red">*</font></label>
             	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
-          	</div>
-          	<div class="form-group">
-          		<label for="usrname"> Type <font color = "red">*</font></label>
-            	<select class="form-control" name = "type">
-            		<option value=""> ---------- </option>
-            		<option value="2"> Personal Loan </option>
-            		<option value="1"> Penalty Loan </option>
-            	</select>
           	</div>
           	<div class="form-group">
             	<label for="usrname"> Reason <font color = "red">*</font></label>
@@ -1138,9 +1166,9 @@ $("#submita").click(function(){
 		$accid = $_SESSION['acc_id'];
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
-		$type = mysqli_real_escape_string($conn,$_POST['type']);
+		$type = '1';
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DECLoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = '$type'";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = '$type'";
 		$resquery = $conn->query($query);
 		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
 		$resqueryxx = $conn->query($sqlxx);
