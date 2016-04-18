@@ -14,11 +14,15 @@
 	<?php
 	}
 ?>
+<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.11/sorting/date-uk.js"></script>
 <script type="text/javascript">		
     $(document).ready( function () {
     	$('#myTable').DataTable({
 		    "iDisplayLength": 50 ,
-		    "order": [[ 0, "desc" ]]  	
+		    //"order": [[ 0, "desc" ]],  
+		   	 columnDefs: [
+		      { type: 'date-uk-asc', targets: 0 }
+		     ]
 		});
 		
 		$('input[name = "transct"]').hide();
@@ -609,7 +613,104 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	<?php
 		}
 	
-	}	$sql = "SELECT * from `cashadv`,`login` where login.account_id = cashadv.account_id and (state = 'UACA' or state = 'ARcvCash')";
+	}
+	$sql = "SELECT * from `login` where empcatergory is null and active = 1 and level != 'Admin' and uname != 'accounting' and uname != 'hradmin' and uname != 'mitchortiz' order by lname ASC";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+				<td><b>Categorization</b></td>			
+				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
+				<td> - </td>
+				<td> - </td>
+				<td> <b> Pending for H.R Categorization </b> </td>
+				<td> - </td>
+				</tr>
+
+	<?php
+		}
+	
+	}	
+	$sql = "SELECT * from `login` where active = 1 and level != 'Admin' and uname != 'accounting' and uname != 'hradmin' and uname != 'mitchortiz'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+		if($row['empcatergory'] == 'Probationary'){
+        	$edate = $row['probidate'];
+        	$tonull = $row['probidate'];
+        }elseif($row['empcatergory'] == 'Contractual'){
+        	$edate = $row['edatehired'];
+        	$tonull = $row['edatehired'];
+        }else{
+        	$edate = "";
+        	$tonull = 'asd';
+        }
+		if($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+5 months", strtotime($edate)))){
+            $flagcolor = " style = 'color: red; font-weight: bold;' ";
+        }elseif($row['empcatergory'] != 'Regular' && $row['empcatergory'] != null && $tonull != null && date("Y-m-d") >= date("Y-m-d", strtotime("+4 months", strtotime($edate))) ){
+        	$flagcolor = " style = 'color: green; font-weight: bold;'";
+        }else{
+        	continue;
+        }  
+	?>
+				<tr <?php echo $flagcolor; ?>>
+				<td><b>Categorization</b></td>			
+				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
+				<td> - </td>
+				<td> <?php echo '<b>'. $row['empcatergory'] . '<br>' . date("M j, Y",strtotime($edate)); ?> </td>
+				<td>  Pending for H.R Categorization </b> </td>
+				<td> - </td>
+				</tr>
+
+	<?php
+		}
+	
+	}
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyRep'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			$petid = $row['petty_id'];
+			$accid = $row['account_id'];
+			$query = "SELECT * FROM `petty_liqdate` where petty_id = '$petid'";
+			$data = $conn->query($query)->fetch_assoc();
+			$query1 = "SELECT * FROM `login` where account_id = '$accid'";
+			$data1 = $conn->query($query1)->fetch_assoc();				
+			$query2 = "SELECT sum(liqamount) as totalliq FROM `petty_liqdate` where petty_id = '$petid'";
+			$data2 = $conn->query($query2)->fetch_assoc();
+
+			if($data['liqstate'] == 'CompleteLiqdate' || $data['liqstate'] == 'EmpVal'){
+				continue;
+			}
+
+			$date1 = date("Y-m-d");
+			if($data['liqdate'] != ""){
+				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($data['liqdate'])));
+			}else{
+				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
+			}
+			if($date1 >= $date2){
+				$red = ' style = "color: red;" ';
+			}else{
+				continue;
+			}
+
+	?>
+				<tr <?php echo $red; ?>>
+				<td><?php echo date("M j, Y",strtotime($row['date']));?></td>			
+				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
+				<td> <b><font color = "green">Petty Cash</font><br><i>Amount: ₱ <?php echo $row['amount']; ?> </td>
+				<td> - </td>
+				<td> <b><?php if($data['liqstate'] == ""){ echo ' Pending Liquidation ';} elseif($data['liqstate'] == 'LIQDATE') { echo ' Pending for Completion ';}?> </b> </td>
+				<td> - </td>
+				</tr>
+
+	<?php
+		}
+	
+	}	
+	$sql = "SELECT * from `cashadv`,`login` where login.account_id = cashadv.account_id and (state = 'UACA' or state = 'ARcvCash')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){

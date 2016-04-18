@@ -93,7 +93,7 @@
 		if(date("D", strtotime($dxata['datefile'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-3 days';
+			$minus = '-1 days';
 		}
 		$restric = 0;
 		
@@ -191,13 +191,18 @@
 		if(date("D", strtotime($dxatax['obdate'])) == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-3 days';
+			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($dxatax['obdate']))) > date("Y-m-d", strtotime($date))){
 			$uplate = ',oblate = 1';	
 			$restric = 1;	
 		}else{
 			$uplate = ',oblate = null';	
+		}
+		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$date'";
+		$xx = $conn->query($sql);
+		if($xx->num_rows > 0){
+			$restric = 2;
 		}
 		$stmt = "UPDATE `officialbusiness` set 
 			obreason = '$obreason', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
@@ -218,14 +223,19 @@
 		  	}
 			$conn->close();
 		}else{
+			if($restric == 1){
+				$alert = "Wrong Date";
+			}else{
+				$alert = "You already filed " . date("M j, Y",strtotime($date)) .'.'; 
+			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penob"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penob"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penob"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penob"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac=penob"); </script>';
 	    	}
 		}
 	}
@@ -244,25 +254,154 @@
 		}else{
 			$state = 'UA';	
 		}
-		if($_SESSION['level'] == 'HR'){
-			$state = 'AHR';
+		$stmts2xx = "SELECT * FROM `nleave` where leave_id = '$_SESSION[otid]' and  account_id = '$accid'";
+  		$dxatax = $conn->query($stmts2xx)->fetch_assoc();
+  		$restric = 0;
+		if($dxatax['typeoflea'] == 'Vacation Leave'){
+			if(date("Y-m-d", strtotime("+7 days", strtotime($dxatax['datefile']))) > date("Y-m-d", strtotime($dateofleavfr))){
+				$restric = 1;
+			}
+		}
+		$accid = $_SESSION['acc_id'];
+		$sql = "SELECT * from `login` where account_id = '$accid' and empcatergory = 'Regular'";
+		$result = $conn->query($sql);
+		$datey = date("Y");
+		$availsick = 0;
+		$totavailvac = 0;
+		if($result->num_rows > 0){		
+			while($row = $result->fetch_assoc()){
+				$cstatus = $row['ecstatus'];
+				$accidd = $row['account_id'];
+				$egender = $row['egender'];
+				if(date("Y") == 2015){	
+					$sl = $row['sickleave'] - $row['usedsl'];
+					$vl = $row['vacleave'] - $row['usedvl'];
+					$usedsl = $row['usedsl'];
+					$usedvl = $row['usedvl'];
+				}else{				
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+					$datalea = $conn->query($leaveexec)->fetch_assoc();
+					$sl = $datalea['sleave'];
+					$vl = $datalea['vleave'];
+					$usedsl = 0;
+					$usedvl = 0;
+				}
+						
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$availvac = $vl - $row1['count'];
+						$count = $row1['count'];
+						}
+				}		
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$totavailvac = $availvac - $row1['count'];
+						$count = $row1['count'];
+						}
+				}			
+			}
+		}
+		if($dxatax['typeoflea'] == 'Vacation Leave'){
+			$quarterdate = array();
+			$date1=date_create($datalea['startdate']);
+			$date2=date_create($datalea['enddate']);
+			$diff=date_diff($date1,$date2);
+			$months = $diff->format("%m");
+			if($months > 9 && $months <= 12){
+				$months = ceil($vl / 4);
+				$quarter = 4;
+			}elseif($months > 6 && $months <= 9){
+				$months = ceil($vl / 3);
+				$quarter = 3;
+			}elseif($months > 3 && $months <= 6) {
+				$months = ceil($vl / 2);
+				$quarter = 2;
+			}elseif($months > 0 && $months <= 3){
+				$months = $vl;
+				$quarter = 1;
+			}
+			$plus = 0;
+			for($i = 1; $i <= $quarter; $i++){
+				if($i > 1){
+					$plus += 3;
+				}else{
+					$plus = 0;
+				}
+				$quarterdate[] = date("Y-m-d",strtotime('+'.$plus.' month', strtotime($datalea['startdate'])));
+			}
+			$xcount = array();
+			for($i = 0; $i < $quarter; $i++){
+				if($i == ($quarter - 1)){
+					$two = date("Y-12-31");
+				}else{
+					$plus1 = $i+1;
+					$two = date("Y-m-t",strtotime("-1 month",strtotime($quarterdate[$plus1])));
+				}
+				$one = $quarterdate[$i];
+				if($dxatax['datefile'] >= $one && $dxatax['datefile'] <= $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					$xcount[] = $counter['count'];
+				}else{
+					continue;
+				}
+			}
+			for($i = 0; $i < $quarter; $i++){
+				if(!isset($xcount[$i])){
+					continue;
+				}				
+				if($xcount[$i] >= $months) {
+					$restric = 4;
+				}else{
+					$restric = 0;
+				}
+				if(stristr($sql, '2016-12-31') == true){
+					$restric = 0;
+				}
+
+			}
+		}
+		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $numdays)){
+			$state = 'UAAdmin';
+		}
+		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
+			$restric = 3;
 		}
 		$stmt = "UPDATE `nleave` set 
-			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason'
+			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state'
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
-		if ($conn->query($stmt) === TRUE) {
-	    	if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		if($restric == 0){
+			if ($conn->query($stmt) === TRUE) {
+		    	if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	}
+		  	}
+		}else{
+			if($restric == 3){
+				$alert = "No more Vacation Leave Balance.";
+			}else{
+				$alert = "Wrong Date";
+			}
+			if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
 	    	}
-	  	}else {
-	    	echo "Error updating record: " . $conn->error;
-	  	}
+		}
 		$conn->close();		
 	}
 

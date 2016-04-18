@@ -22,9 +22,6 @@
 		 if(strlen($secs) < 2){
 		 	$secs = "0" . $secs;
 		 }
-		// if($hours == 00  && $minutes != 00){
-		// 	$hours += 24;	
-		// }
 		 return $hours . ':' . $mins;
 		}
 		$time1 = date('H:i', strtotime($_POST['startofot']));
@@ -88,7 +85,7 @@
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-3 days';
+			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($datefile))) > date("Y-m-d", strtotime($dateofot)) || date("Y-m-d", strtotime($datefile)) < date("Y-m-d", strtotime($dateofot))){
 			$state = 'UALate';

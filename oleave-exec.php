@@ -77,6 +77,66 @@
 				}			
 			}
 		}
+		if($typeoflea == 'Vacation Leave'){
+			$quarterdate = array();
+			$date1=date_create($datalea['startdate']);
+			$date2=date_create($datalea['enddate']);
+			$diff=date_diff($date1,$date2);
+			$months = $diff->format("%m");
+			if($months > 9 && $months <= 12){
+				$months = ceil($vl / 4);
+				$quarter = 4;
+			}elseif($months > 6 && $months <= 9){
+				$months = ceil($vl / 3);
+				$quarter = 3;
+			}elseif($months > 3 && $months <= 6) {
+				$months = ceil($vl / 2);
+				$quarter = 2;
+			}elseif($months > 0 && $months <= 3){
+				$months = $vl;
+				$quarter = 1;
+			}
+			$plus = 0;
+			for($i = 1; $i <= $quarter; $i++){
+				if($i > 1){
+					$plus += 3;
+				}else{
+					$plus = 0;
+				}
+				$quarterdate[] = date("Y-m-d",strtotime('+'.$plus.' month', strtotime($datalea['startdate'])));
+			}
+			$xcount = array();
+			for($i = 0; $i < $quarter; $i++){
+				if($i == ($quarter - 1)){
+					$two = date("Y-12-31");
+				}else{
+					$plus1 = $i+1;
+					$two = date("Y-m-t",strtotime("-1 month",strtotime($quarterdate[$plus1])));
+				}
+				$one = $quarterdate[$i];
+				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					$xcount[] = $counter['count'];
+				}else{
+					continue;
+				}
+			}
+			for($i = 0; $i < $quarter; $i++){
+				if(!isset($xcount[$i])){
+					continue;
+				}				
+				if($xcount[$i] >= $months) {
+					$restric = 4;
+				}else{
+					$restric = 0;
+				}
+				if(stristr($sql, '2016-12-31') == true){
+					$restric = 0;
+				}
+
+			}
+		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $_POST['numdays'])){
 			$state = 'UAAdmin';
 		}
@@ -101,6 +161,8 @@
 		}else{
 			if($restric == 3){
 				$alert = "No more Vacation Leave Balance.";
+			}elseif($restric == 4){
+				$alert = 'You can only request ' . $months . ' day/s per quarter ';
 			}else{
 				$alert = "Wrong Date";
 			}

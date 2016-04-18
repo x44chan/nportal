@@ -28,15 +28,18 @@
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
 		}else{
-			$minus = '-3 days';
+			$minus = '-1 days';
 		}
-		
-		$restric = 0;
 		if(date("Y-m-d", strtotime($minus, strtotime($obdate))) > date("Y-m-d", strtotime($obdatereq))){
 			$oblate = 1;
 			$restric = 1;		
 		}else{
 			$oblate = null;
+		}
+		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$obdatereq'";
+		$xx = $conn->query($sql);
+		if($xx->num_rows > 0){
+			$restric = 2;
 		}
 		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state, oblate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $officialworksched, $state, $oblate);
@@ -53,14 +56,19 @@
 	    	}
 			$conn->close();
 		}else{
+			if($restric == 1){
+				$alert = "Wrong Date";
+			}else{
+				$alert = "You already filed " . date("M j, Y",strtotime($obdatereq)) .'.'; 
+			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("employee.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac=penob"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac=penob"); </script>';
 	    	}
 		}
 	}
