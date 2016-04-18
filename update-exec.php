@@ -258,7 +258,7 @@
   		$dxatax = $conn->query($stmts2xx)->fetch_assoc();
   		$restric = 0;
 		if($dxatax['typeoflea'] == 'Vacation Leave'){
-			if(date("Y-m-d", strtotime("+7 days", strtotime($dxatax['datefile']))) > date("Y-m-d", strtotime($dateofleavfr))){
+			if(date("Y-m-d", strtotime("+9 days", strtotime($dxatax['datefile']))) > date("Y-m-d", strtotime($dateofleavfr))){
 				$restric = 1;
 			}
 		}
@@ -305,7 +305,7 @@
 				}			
 			}
 		}
-		if($dxatax['typeoflea'] == 'Vacation Leave'){
+		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular'){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -350,29 +350,30 @@
 					continue;
 				}
 			}
+			$wthpay = null;
 			for($i = 0; $i < $quarter; $i++){
 				if(!isset($xcount[$i])){
 					continue;
 				}				
 				if($xcount[$i] >= $months) {
-					$restric = 4;
+					$wthpay = 'withoutpay';
 				}else{
-					$restric = 0;
+					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
-					$restric = 0;
+					$wthpay = null;
 				}
 
 			}
 		}
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $numdays)){
-			$state = 'UAAdmin';
+			$state = 'UA';
 		}
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
 			$restric = 3;
 		}
 		$stmt = "UPDATE `nleave` set 
-			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state'
+			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state', leapay = '$wthpay'
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {

@@ -24,7 +24,7 @@
 		}
 		$restric = 0;
 		if($typeoflea == 'Vacation Leave'){
-			if(date("Y-m-d", strtotime("+7 days", strtotime($datefile))) > date("Y-m-d", strtotime($dateofleavfr))){
+			if(date("Y-m-d", strtotime("+9 days", strtotime($datefile))) > date("Y-m-d", strtotime($dateofleavfr))){
 				$restric = 1;
 			}
 		}
@@ -77,7 +77,7 @@
 				}			
 			}
 		}
-		if($typeoflea == 'Vacation Leave'){
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular'){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -127,25 +127,25 @@
 					continue;
 				}				
 				if($xcount[$i] >= $months) {
-					$restric = 4;
+					$wthpay = 'withoutpay';
 				}else{
-					$restric = 0;
+					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
-					$restric = 0;
+					$wthpay = null;
 				}
 
 			}
 		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $_POST['numdays'])){
-			$state = 'UAAdmin';
+			$state = 'UA';
 		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state) 
-								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state);
+		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
+								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("issssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state , $wthpay);
 		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){
