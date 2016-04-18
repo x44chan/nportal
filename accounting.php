@@ -769,6 +769,7 @@
 								echo 'Pending to Tech Supervisor<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AHR'){
+								echo 'Pending to Admin<br>';
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';

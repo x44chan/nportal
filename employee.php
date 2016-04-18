@@ -171,7 +171,7 @@
 								if($row['state'] == 'UALoan'){
 									echo '<b>Pending to Admin</b>';
 								}elseif($row['state'] == 'DALoan'){
-									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
+									echo '<b><font color = "red">Disapproved by the Admin</font></b>';
 								}elseif($row['state'] == 'DECLoan'){
 									echo '<b><font color = "red">Declined</font></b>';
 								}elseif($row['appamount'] != null && $row['appamount'] != $row['loanamount']){
@@ -312,11 +312,11 @@
 							}else if($row['state'] == 'AHR'){
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UALate'){
@@ -394,11 +394,11 @@
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UALate'){
@@ -505,11 +505,11 @@
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UAAdmin'){
@@ -602,17 +602,18 @@
 								echo 'Pending to Tech Supervisor<br>';
 								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['leave_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'AHR'){
-								echo '<p><font color = "green">Approved by HR</font></p> ';
+								echo 'Pending to Admin<br>';
+								echo '<p><font color = "green">Checked by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'CLea'){
