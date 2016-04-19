@@ -262,19 +262,26 @@
 					$change =  " - ";
 				}
 				$date1 = date("Y-m-d");
-				$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+				if($data['liqdate'] != ""){
+					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+				}else{
+					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($row['date'])));
+				}
 				if($date1 >= $date2){
 					$red = '<tr style = "color: red;">';
 				}else{
 					$red = '<tr>';
 				}
 				$liqdatess = date("M j, Y", strtotime($data['liqdate']));
+				if($data['liqstate'] == 'LIQDATE'){
+					$liqdatess = ' Pending <br>'. date("M j, Y", strtotime($data['liqdate']));
+				}
 				if($row['state'] == 'UAPetty'){
 					continue;
 				}elseif($data['liqdate'] == ""){
 					$liqdatess = ' Pending ';
 					$data['liqstate'] = "";
-					echo '<tr>';
+					echo $red;
 				}elseif($data['liqstate'] != 'CompleteLiqdate'){
 					echo $red;
 				}elseif($change == " - "){
