@@ -914,8 +914,8 @@ $(document).ready(function(){
 			<div class="form-group">
 				<p style="color: red; font-size: 12px;">
 					<b>Example: <br>
-						Your Payment Start is Feb 01, 2016 <br>
-						Covered Cutoff is Feb 01 - Feb 15, 2016</b>
+						Your Payment Start is Feb 01 - 15 2016 <br>
+						Cutoff Date Feb 16, 2016</b>
 				</p>
 			</div>
               <button type="submit" name = "loanpet" id = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
