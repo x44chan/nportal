@@ -14,15 +14,16 @@
 	<?php
 	}
 ?>
-<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.11/sorting/date-uk.js"></script>
+<style type="text/css">
+	#tohide{
+		display: none;
+	}
+</style>
 <script type="text/javascript">		
     $(document).ready( function () {
     	$('#myTable').DataTable({
 		    "iDisplayLength": 50 ,
-		    //"order": [[ 0, "desc" ]],  
-		   	 columnDefs: [
-		      { type: 'date-uk-asc', targets: 0 }
-		     ]
+		    "order": [[ 6, "desc" ]],  		   	 
 		});
 		
 		$('input[name = "transct"]').hide();
@@ -578,6 +579,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					<th width = "23%" ><i>Reason</i></th>
 					<th width = "16%" ><i>Checked By.</i></th>
 					<th width = "18%" ><i>Action</i></th>
+					<th id = "tohide"> to hide </th>
 				</tr>
 			</thead>
 			<tbody id="people">
@@ -608,6 +610,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<a class = "btn btn-success" style = "width: 100px" href = "?transrelease=1&petty_id='.$row['petty_id'].'">Release</a> ';
 					}					
 					?></td>
+				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
 				</tr>
 
 	<?php
@@ -626,6 +629,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td> - </td>
 				<td> <b> Pending for H.R Categorization </b> </td>
 				<td> - </td>
+				<td id="tohide"></td>
 				</tr>
 
 	<?php
@@ -661,12 +665,33 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td> <?php echo '<b>'. $row['empcatergory'] . '<br>' . date("M j, Y",strtotime($edate)); ?> </td>
 				<td>  Pending for H.R Categorization </b> </td>
 				<td> - </td>
+				<td id="tohide"></td>
 				</tr>
 
 	<?php
 		}
 	
 	}
+
+	$sql = "SELECT *,DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) as enddatex from `loan_cutoff`,`login` where login.account_id = loan_cutoff.account_id and state = 'CutOffPaid' and CURDATE() BETWEEN cutoffdate and DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) and full is null and active = 1";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+				<td><?php echo date("M j, Y",strtotime($row['enddatex']));?></td>			
+				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
+				<td> <b><font color = "green">Loan</font><br><i>Amount: ₱ <?php $row['cutamount'] = str_replace(',', '', $row['cutamount']); echo number_format($row['cutamount'],2); ?> </td>
+				<td> - </td>
+				<td> <b><?php if(date("Y-m-d") >= $row['enddatex']){ echo '<font color = "green"> Deducted </font>'; }else { ?><font color = "red"> Pending </font></b> <?php } ?></td>
+				<td> - </td>
+				<td id = "tohide"><?php //echo date("Y/m/d", strtotime($row['enddatex']));?></td>
+				</tr>
+
+	<?php
+		}
+	
+	}	
 	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyRep'";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
@@ -704,6 +729,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td> - </td>
 				<td> <b><?php if($data['liqstate'] == ""){ echo ' Pending Liquidation ';} elseif($data['liqstate'] == 'LIQDATE') { echo ' Pending for Completion ';}?> </b> </td>
 				<td> - </td>
+				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
 				</tr>
 
 	<?php
@@ -731,6 +757,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							}
 						?>
 					</td>
+					<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['cadate']));?></td>
 				</tr>
 	<?php
 		}
@@ -764,6 +791,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							}
 						?>
 					</td>
+					<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['loandate']));?></td>
 				</tr>
 	<?php
 		}
@@ -784,6 +812,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							echo '<a class = "btn btn-primary" href = "oleave-exec.php?adleave=d&leavebal_id='.$row['leavebal_id'].'"">Disapprove</a>';
 						?>
 					</td>
+					<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['datefile']));?></td>
 				</tr>
 	<?php
 		}
@@ -838,6 +867,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							}
 						?>
 					</td>
+					<td id="tohide"></td>
 				</tr>
 	<?php
 		}
@@ -892,6 +922,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td>
 					<?php echo '<a class = "btn btn-success" style = "width: 100px" href = "?release=1&petty_id='.$row['petty_id'].'">Release</a>';?>
 				</td>
+				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
 				</tr>
 	<?php
 		}
@@ -988,7 +1019,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
 							$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
 						}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
-							$datetech = "<br>TECH: HR Bypass";
+							$datetech = "";
 						}
 
 						if(strtolower($row['position']) <> 'service technician'){
@@ -1017,7 +1048,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&overtime='.$row['overtime_id']. $otbypass . $ualate . $hrlevel .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dovertime='.$row['overtime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
-						</td></tr>';
+						</td><td id = "tohide">'.date("Y/m/d", strtotime($row['datefile'])).'</td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
@@ -1072,7 +1103,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id']. $otbypass .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dundertime='.$row['undertime_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
-						</td></tr>';
+						</td><td id = "tohide">'.date("Y/m/d", strtotime($row['datefile'])).'/td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
@@ -1111,7 +1142,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
 						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
 					}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
-						$datetech = "<br>TECH: HR Bypass";
+						$datetech = "";
 					}
 
 					if(strtolower($row['position']) <> 'service technician'){
@@ -1145,7 +1176,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td width = "200">
 							<a href = "approval.php?approve=A'.$_SESSION['level'].'&officialbusiness_id='.$row['officialbusiness_id']. $otbypass . $late . $ss .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 							<a href = "?approve=DA'.$_SESSION['level'].'&dofficialbusiness_id='.$row['officialbusiness_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
-						</td></tr>';
+						</td><td id = "tohide">'.date("Y/m/d", strtotime($row['datefile'])) .'</td></tr>';
 				}
 			}
 			if(isset($_GET['bypass'])){
@@ -1226,12 +1257,15 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<td width = "200">
 								<a href = "approval.php?approve=A'.$_SESSION['level'].'&leave='.$row['leave_id']. $otbypass . $sched .'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 								<a href = "?approve=DA'.$_SESSION['level'].'&dleave='.$row['leave_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
-							</td></tr>';
+							</td>';
 					}else{
 						echo '<td width = "200">
 								<a href = "cancel-req.php?adlea=' . $row['leave_id'] . '" class = "btn btn-danger"> Approve </a>								
-							</td></tr>';
+							</td>';
 					}
+					?>
+					<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['datefile']));?></td></tr>
+					<?php
 				}
 			}
 		?>

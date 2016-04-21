@@ -36,7 +36,11 @@
 		}else{
 			$oblate = null;
 		}
-		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$obdatereq'";
+		if($_POST['onleave'] != ""){
+			$obreason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$restric = 0;
+		}
+		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$obdatereq' and account_id = '$accid'";
 		$xx = $conn->query($sql);
 		if($xx->num_rows > 0){
 			$restric = 2;

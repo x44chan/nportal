@@ -4,7 +4,7 @@
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
 				
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and overtime_id = '$oid' and (state = 'UAAdmin' or state = 'UALate')";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and overtime_id = '$oid' and (state = 'UA')";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<form role = "form"  align = "center"action = "update-exec.php" method = "post">
@@ -124,7 +124,7 @@
 				?>
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php echo $data1['reason'];?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -146,6 +146,16 @@
 							<option <?php if($row['otbreak'] == "-1 Hour"){ echo ' selected ';}?> value = "1 Hour">1 Hour</option>
 						</select>
 					</td>					
+				</tr>				
+				<tr>
+					<td> On-Leave (For Late Filing)</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
+						</select>
+					</td>
 				</tr>
 				<?php 
 					$count = strlen($row['officialworksched']);
@@ -170,7 +180,7 @@
 						<label for="lg" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Legal Holliday'){ echo ' checked '; } ?> value = "sw" name="lg" id = "lg"/> Legal Holliday </label>
 					</td>
 				</tr>	
-				<tr class = "form-inline">>
+				<tr class = "form-inline">
 					<td>Official Work Sched: </td>
 					<td>
 						<label for = "fr">From:</label><input onkeydown="return false;" required name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
@@ -390,7 +400,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>Date File: </td>
+					<td width="30%">Date File: </td>
 					<td><?php echo date('F j, Y', strtotime($row['obdate']));?></td>
 				</tr>
 				<tr>
@@ -415,8 +425,18 @@
 				</tr>				
 				<tr>
 					<td>Description of Work Order: </td>
-					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php echo $row['obreason'];?></textarea></td>
+					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $row['obreason']); }else{ echo $row['obreason'];}?></textarea></td>
 					
+				</tr>
+				<tr>
+					<td> On-Leave (For Late Filing)</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option <?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
+							<option <?php if(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
+						</select>
+					</td>
 				</tr>
 				<div class = "ui-widget-content" style = "border: none;">	
 				<?php 

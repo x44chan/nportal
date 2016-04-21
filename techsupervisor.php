@@ -495,6 +495,7 @@ if(isset($_GET['upovertime'])){
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){								
 								echo 'Pending for Time Checking HR<br>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
@@ -505,12 +506,14 @@ if(isset($_GET['upovertime'])){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
+							}else if($row['state'] == 'AHR'){
+								echo '<p><font color = "green">Pending to Admin</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UALate'){

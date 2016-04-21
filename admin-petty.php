@@ -24,8 +24,9 @@
 	        ?>
     	});
     	$('#myTableliq').DataTable({
-        	"order": [ 0, "desc" ],
-        	"iDisplayLength": 25
+    		"iDisplayLength": 50,
+        	"order": [[ 6, "asc" ],[ 0, "desc" ]]
+
     	} );
     	$('input[name = "transct"]').hide();
 		$('select[name = "source"]').change(function() {
@@ -338,15 +339,20 @@ if(isset($_GET['login_log'])){
 					$change =  " - ";
 				}
 				$date1 = date("Y-m-d");
-				$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+				if($data['liqdate'] != ""){
+					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+				}else{
+					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($row['date'])));
+				}
 				if($date1 >= $date2){
 					$red = '<tr style = "color: red;">';
 				}else{
 					$red = '<tr>';
 				}
-				
+				$liqdate = date("M j, Y", strtotime($data['liqdate']));
 				if($data['liqdate'] == ""){
-					continue;
+					echo $red;
+					$liqdate = ' Pending ';
 				}elseif($data['liqstate'] != 'CompleteLiqdate'){
 					echo $red;
 				}elseif($change == " - "){
@@ -355,7 +361,7 @@ if(isset($_GET['login_log'])){
 					echo '<tr>';
 				}				
 				echo '<td>'.$row['petty_id'].'</td>';
-				echo '<td>'.date("M j, Y", strtotime($data['liqdate']));
+				echo '<td>'.$liqdate;
 				echo '<td>'.$data1['fname'] . ' ' . $data1['lname'].'</td>';
 				echo '<td>₱ ' . $row['amount'] . '</td>';
 				echo $tots;

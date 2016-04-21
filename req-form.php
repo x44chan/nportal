@@ -77,6 +77,16 @@ $(document).ready(function(){
 					<td><textarea required name = "obreason" placeholder = "Enter your work order" class = "form-control col-sm-10"></textarea></td>
 					<td></td>
 				</tr>
+				<tr>
+					<td> On-Leave (For Late Filing)</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option value="Sick Leave"> Sick Leave </option>
+							<option value="Emergency Leave"> Emergency Leave </option>
+						</select>
+					</td>
+				</tr>
 				<div class = "ui-widget-content" style = "border: none;">			
 				<tr>					
 					<td style="float: right;">
@@ -250,6 +260,16 @@ $(document).ready(function(){
 						</select>
 					</td>					
 				</tr>
+				<tr>
+					<td> On-Leave (For Late Filing)</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option value="Sick Leave"> Sick Leave </option>
+							<option value="Emergency Leave"> Emergency Leave </option>
+						</select>
+					</td>
+				</tr>
 				<tr>					
 					<td colspan="2">
 						<label for="restday" style="font-size: 15px; margin-left: 20px;"><input type="checkbox" value = "restday" name="restday" id="restday"/> Rest Day </label>
@@ -264,7 +284,8 @@ $(document).ready(function(){
 						<label for = "fr">From:</label><input onkeydown="return false;" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  name = "officialworkschedfr"/>
 						<label for = "to" style="margin-left: 5px;">To:</label><input onkeydown="return false;" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  name = "officialworkschedto"/>
 					</td>					
-				</tr>							
+				</tr>	
+										
 				<script type="text/javascript">
 					$(document).ready(function(){
 						$('input[name="startofot"]').ptTimeSelect();
@@ -774,12 +795,14 @@ $(document).ready(function(){
 		}
 		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
 		$limita = $conn->query($xsql)->fetch_assoc();
-		if(date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
+		if(date("Y-m-d") < date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
 			$limit = '5000';
-		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
+		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
+			$limit = '10000';
+		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
 			$limit = '10000';
 		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
-			$limit = '15000';
+			$limit = '20000';
 		}
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
 		$resquery2 = $conn->query($query2);

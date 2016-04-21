@@ -22,15 +22,12 @@
 			$dareason = "";
 		}
 		
-		if($_SESSION['level'] == 'HR' && $state == 'AHR'){
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state = 'DAHR')){
 			$date = date('Y-m-d h:i A');
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';
 			}else{
 				$xstate = ' state = "UA" ';
-			}
-			if($state == 'AHR'){
-				$state = "CheckedHR";	
 			}
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and $xstate";			
@@ -74,7 +71,7 @@
 				$dareason = "";
 			}
 			if($state == 'AAdmin'){
-				$state = 'UA';
+				$state = 'AAdmin';
 			}
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE overtime set state = '$state', dareason = '$dareason', datehr = '$date' $otlate where overtime_id = $id and $states";
@@ -135,7 +132,7 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'HR' && $state == 'AHR' ){
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';

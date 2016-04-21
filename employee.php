@@ -299,8 +299,10 @@
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
 								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){								
-								echo 'Pending for Time Checking HR<br>';
+								echo 'Pending for Time Checking HR<br>';								
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['overtime_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 								echo 'Pending to Tech Supervisor<br>';
 							}else if($row['state'] == 'CheckedHR'){
@@ -310,7 +312,7 @@
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'AHR'){
-								echo '<p><font color = "green">Approved by HR</font></p> ';
+								echo '<p><font color = "green">Pending to Admin</font></p> ';
 							}else if($row['state'] == 'DAHR'){
 								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAACC'){

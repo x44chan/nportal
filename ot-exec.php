@@ -80,7 +80,7 @@
 		}
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));;
 		$reason = $_POST['reason'];
-		$state = 'UAAdmin';
+		$state = 'UA';
 		$restric = 0;
 		if(date("D") == 'Mon'){
 			$minus = '-3 days';
@@ -88,7 +88,6 @@
 			$minus = '-1 days';
 		}
 		if(date("Y-m-d", strtotime($minus, strtotime($datefile))) > date("Y-m-d", strtotime($dateofot)) || date("Y-m-d", strtotime($datefile)) < date("Y-m-d", strtotime($dateofot))){
-			$state = 'UALate';
 			$restric = 1;	
 		}
 		if(isset($_POST['ottype'])){
@@ -116,6 +115,10 @@
 		}
 		if($_POST['ottype'] == 'Others'){
 			$_POST['project'] = null;
+		}
+		if($_POST['onleave'] != ""){
+			$reason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$restric = 0;
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
