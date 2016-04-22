@@ -124,7 +124,7 @@
 				?>
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo str_replace("<br><b><i>(On-Project [No Internet])</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -154,6 +154,7 @@
 							<option value="">--------</option>
 							<option <?php if(stristr($row['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
 							<option <?php if(stristr($row['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo ' selected '; } ?> value="On-Project [No Internet]"> On-Project [No Internet] </option>
 						</select>
 					</td>
 				</tr>
@@ -425,7 +426,7 @@
 				</tr>				
 				<tr>
 					<td>Description of Work Order: </td>
-					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $row['obreason']); }else{ echo $row['obreason'];}?></textarea></td>
+					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo str_replace("<br><b><i>(On-Project [No Internet])</i></b>", "", $row['obreason']); }else{ echo $row['obreason'];}?></textarea></td>
 					
 				</tr>
 				<tr>
@@ -435,6 +436,7 @@
 							<option value="">--------</option>
 							<option <?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
 							<option <?php if(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
+							<option <?php if(stristr($row['obreason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo ' selected '; } ?> value="On-Project [No Internet]"> On-Project [No Internet] </option>
 						</select>
 					</td>
 				</tr>

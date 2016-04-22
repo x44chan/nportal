@@ -84,6 +84,7 @@ $(document).ready(function(){
 							<option value="">--------</option>
 							<option value="Sick Leave"> Sick Leave </option>
 							<option value="Emergency Leave"> Emergency Leave </option>
+							<option value="On-Project [No Internet]"> On-Project [No Internet] </option>
 						</select>
 					</td>
 				</tr>
@@ -267,6 +268,7 @@ $(document).ready(function(){
 							<option value="">--------</option>
 							<option value="Sick Leave"> Sick Leave </option>
 							<option value="Emergency Leave"> Emergency Leave </option>
+							<option value="On-Project [No Internet]"> On-Project [No Internet] </option>
 						</select>
 					</td>
 				</tr>
