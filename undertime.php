@@ -32,14 +32,24 @@
 					<td>
 						<input required class = "form-control" type = "date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "click to set date"	min = "<?php echo date('m/d/Y'); ?>" name = "undatereq"/>
 					</td>						
-				</tr>					
+				</tr>	
+				<tr>
+					<td> For Late Filing</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option value="Sick Leave"> Sick Leave </option>
+							<option value="Emergency Leave"> Emergency Leave </option>
+							<option value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
+						</select>
+					</td>
+				</tr>				
 				<div class = "ui-widget-content" style = "border: none;">		
 					<tr class = "form-inline">
 						<td>Time of Undertime: </td>
 						<td>
-							<label for = "fr"> From: </label><input placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
-							<label for = "to"> To:  </label><input placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
-							<label for = "numhrs">Num. of Hrs/Mins </label><input required placeholder = "_hrs : __mins" id = "numhrs" class = "form-control" style = "width: 200px" name = "unumofhrs"/>
+							<label for = "fr"> From: </label><input placeholder = "Click to Set time" required  autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
+							<label for = "to"> To:  </label><input placeholder = "Click to Set time" required  autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
 						</td>	
 					</tr>			
 					<script type="text/javascript">
@@ -49,7 +59,6 @@
 						});
 					</script>
 				</div>						
-				
 				<tr>
 					<td style = "padding: 3px;"colspan = "2" align = center>
 						<input type = "submit" onclick = "return confirm('Are you sure? You can still review your application.');"  name = "unsubmit" class = "btn btn-default"/>

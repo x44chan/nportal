@@ -100,6 +100,7 @@
 				  <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
 				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
+				  <li><a href = "hr-emprof.php?correctionrep">Correction Reports</a></li>
 				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
 				  <li class="divider"></li>
 				  <li><a href = "accounting-petty.php">Petty List</a></li>

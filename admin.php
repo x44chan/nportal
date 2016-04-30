@@ -279,6 +279,44 @@
 					</table>
 				</form>';echo '<div style = "display: none;">';	
 			}
+			if(isset($_GET['dhol'])){	
+			$id = mysqli_real_escape_string($conn, $_GET['dhol']);
+			$state = mysqli_real_escape_string($conn, $_GET['approve']);
+			$query1 = "SELECT * FROM `holidayre`,`login` where holidayre.account_id = login.account_id and holidayre_id = '$id'";
+			$data1 = $conn->query($query1)->fetch_assoc();
+			echo '<form action = "approval.php" method = "get" class = "form-group">
+					<table class = "table table-hover" align = "center">
+						<thead>
+							<tr>
+								<th colspan  = 3><h3> Disapproval Reason </h3></th>
+							</tr>
+						</thead>
+						<tr>
+							<td> Name: </td>
+							<td>' . $data1['fname'] . ' ' . $data1['lname'] . '</td>
+						</tr>
+						<tr>
+							<td> Date of Request: </td>
+							<td>' . date("M j, Y", strtotime($data1['holiday'])) . '</td>
+						</tr>
+						<tr>
+							<td> Reason: </td>
+							<td>' . $data1['reason'] . '</td>
+						</tr>
+						<tr>
+							<td align = "right"><label for = "dareason">Input Disapproval reason</label></td>
+							<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+						</tr>
+						<tr>
+							<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penot" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a></td>
+						</tr>
+						<tr>
+							<td><input type = "hidden" name = "hol" value = "'.$id.'"/></td>
+							<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+						</tr>
+					</table>
+				</form>';echo '<div style = "display: none;">';	
+			}
 ?>
 <?php	
 	if(isset($_GET['suc'])){
@@ -692,7 +730,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	
 	}	
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and state = 'AAPettyRep'";
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (petty.state != 'DAPetty' and petty.state != 'CPetty')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -708,10 +746,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($data['liqstate'] == 'CompleteLiqdate' || $data['liqstate'] == 'EmpVal'){
 				continue;
 			}
-
 			$date1 = date("Y-m-d");
-			if($data['liqdate'] != ""){
-				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($data['liqdate'])));
+			if($row['releasedate']){
+				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['releasedate'])));
 			}else{
 				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
 			}
@@ -925,11 +962,28 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
 				</tr>
 	<?php
+		}	
+	}
+	$sql = "SELECT * FROM holidayre,login where login.account_id = holidayre.account_id and state = 1 order by state ASC";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			echo '<tr>';
+			echo '<td>' . date("M j, Y", strtotime($row['datefile'])) . '</td>';
+			echo '<td>'.$row['fname']. ' '.$row['lname'].'</td>';
+			echo '<td><i><b>'.$row['type'].'<br> Date: <font color = "green">'.date("M j, Y",strtotime($row['holiday'])).'</font></b></td>';
+			echo '<td>'.$row['reason'].'</td>';
+			echo '<td style = "text-align: left;"><b>HR: '.date("M j, Y h:i A",strtotime($row['datehr'])).'</td>';
+			echo '<td>
+					<a href = "approval.php?approve=A'.$_SESSION['level'].'&hol='.$row['holidayre_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
+					<a href = "?approve=DA'.$_SESSION['level'].'&dhol='.$row['holidayre_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
+				</td>';
+			echo '<td style = "display: none;">'.date("Y/m/d",strtotime($row['datefile'])) .'</td>';
+			echo '</tr>';
 		}
-	
-	
-}
-	?>	
+	}
+
+?>	
 		<?php
 			include('conf.php');		
 						

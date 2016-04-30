@@ -6,7 +6,7 @@
 	}elseif(isset($_POST['submit'])){
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
-		$obdate = date("Y-m-d");
+		$obdate = date('Y-m-d H:i:s');
 		$obename = $_POST['obename'];
 		$obpost = $_POST['obpost'];
 		$obdept = $_POST['obdept'];

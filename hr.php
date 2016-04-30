@@ -82,6 +82,7 @@
 				  <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
 				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
+				  <li><a href = "hr-emprof.php?correctionrep">Correction Reports</a></li>
 				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
 				</ul>
 			</div>		
@@ -90,21 +91,14 @@
 			<a type = "button" class= "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">
-			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
-			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
-			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
-			<?php if($_SESSION['acc_id'] == '3'){ ?>
-			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
-			<?php
-				if($_SESSION['category'] == "Regular"){
-					echo '
-						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
-						';
-				}
-			?>	
-			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
-			<?php } ?>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Req. Status </a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official B. Req. Status</a>			
+			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Req. Status</a>		
+			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Req. Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penhol"> Holiday Req. Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Req. Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Req. Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Req. Status</a>
 		</div>
 	</div>
 </div>
@@ -170,7 +164,7 @@
 					$data1 = $conn->query($query1)->fetch_assoc();
 				?>					
 				<tr>
-					<td width="10%">Reason: </td>
+					<td width="40%">Reason: </td>
 					<td width="60%"><?php echo $data1['reason'];?></td>
 				</tr>							
 				<div class = "ui-widget-content" style = "border: none;">		
@@ -179,7 +173,6 @@
 						<td>
 							<label for = "fr"> From: </label><input value = "<?php echo $row['undertimefr'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
 							<label for = "to"> To:  </label><input value = "<?php echo $row['undertimeto'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
-							<label for = "numhrs">Num. of Hrs/Mins </label><input required placeholder = "_hrs : __mins" value = "<?php echo $row['numofhrs'];?>" id = "numhrs" class = "form-control" style = "width: 200px" name = "unumofhrs"/>
 						</td>	
 					</tr>			
 					<script type="text/javascript">
@@ -925,7 +918,53 @@
 	
 ?>	
 
-
+<?php 
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penhol'){
+		include("conf.php");
+		$sql = "SELECT * FROM holidayre,login where login.account_id = holidayre.account_id and state = '0' order by state ASC";
+		$result = $conn->query($sql);
+		
+	?>	
+		<form role = "form" action = "approval.php"    method = "get">
+			<table class = "table table-hover" align = "center">
+				<thead>
+					<tr>
+						<td colspan = 9 align = center><h2> Holiday Request Status </h2></td>
+					</tr>
+					<tr>
+						<th width="12%">Date File</th>
+						<th width="12%">Name</th>
+						<th width="11%">Date of Request</th>
+						<th width="20%">Type</th>
+						<th width="30%">Reason</th>
+						<th width="15%">Status</th>
+					</tr>
+				</thead>
+				<tbody>
+	<?php
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+?>
+			<tr>
+				<td><?php echo date("M j, Y", strtotime($row['datefile'])); ?></td>
+				<td><?php echo $row['fname'] . ' '. $row['lname']; ?></td>
+				<td><?php echo date("M j, Y", strtotime($row['holiday'])); ?></td>
+				<td><?php echo $row['type']; ?></td>
+				<td><?php echo $row['reason']; ?></td>
+				<td><b>
+				<?php
+					if($row['state'] == 0){
+						echo '<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&hol='.$row['holidayre_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
+							<a href = "?approve=DA'.$_SESSION['level'].'&dhol='.$row['holidayre_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" style = "margin-top: 2px; role="button"><span class="glyphicon glyphicon-remove-sign"></span> Disapprove</a>';
+					}
+				?>
+				</b></td>
+<?php
+		}
+		
+	}echo '</tbody></table></form>';$conn->close();
+}
+?>
 	<?php 
 		if(isset($_GET['ac']) && $_GET['ac'] == 'penot'){
 		$date17 = date("d");
@@ -1427,6 +1466,7 @@ echo '</tbody></table></form>';
 					<td width = "200">
 						<a onclick = "return confirm(\'Are you sure?\');" href = "approval.php?approve=A'.$_SESSION['level'].'&undertime='.$row['undertime_id'].'&ac='.$_GET['ac'].'"';?><?php echo'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-check"></span> Ok</a>
 						<a href = "?approve=DA'.$_SESSION['level'].'&upundr='.$row['undertime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+						<a href = "?approve=DA'.$_SESSION['level'].'&dundertime='.$row['undertime_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button">Disapprove</a>
 					</td>
 				</tr>';
 			}
@@ -1701,7 +1741,85 @@ echo '</tbody></table></form>';
 			</form>';
 			
 	}
-
+	if(isset($_GET['dhol'])){	
+		$id = mysqli_real_escape_string($conn, $_GET['dhol']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+						</tr>
+					</thead>
+					<tr>
+						<td align = "right"><labe for = "dareason">Input Disapproval reason</labe></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penhol" class = "btn btn-danger">Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "hol" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+						<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+					</tr>
+				</table>
+			</form>';
+			
+	}
+	if(isset($_GET['uphol'])){
+		$id = mysqli_real_escape_string($conn, $_GET['uphol']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$sql = "SELECT * FROM holidayre,login where login.account_id = holidayre.account_id and holidayre_id = '$id' and state = 0";
+		$result = $conn->query($sql);		
+		if($result->num_rows > 0){
+			while($row = $result->fetch_assoc()){
+				echo '<form action = "update-exec.php" method = "post" class = "form-group">
+					<table class = "table table-hover" style = "width: 720px;" align = "center">
+						<thead>
+							<tr>
+								<th colspan  = 2><h3> Update Holiday  </h3></th>
+							</tr>
+						</thead>';
+				echo '<tbody>';
+				echo '<tr><td>Name: </td><td>' . $row['fname'] . ' ' . $row['lname'] . '</td></tr>';
+				echo '<tr><td>Time In / Out: </td><td>' . $row['timein'] . ' / ' . $row['timeout'] . '</td></tr>';
+				echo '<tr><td>Reason: </td><td>' . $row['reason'] . '</td></tr>';
+				echo '<tr><td>Holiday</td><td><b>'. date("M j, Y",strtotime($row['holiday'])) . '<br>' . $row['type'] . '</td></tr>';
+				echo '<tr><td>New Time In</td><td><input type = "text" value = "' . $row['timein'] . '" class = "form-control" name = "hruptimein"/></tr>';
+				echo '<tr><td>New Time Out</td><td><input type = "text" value = "' . $row['timeout'] . '" class = "form-control" name = "hruptimeout"/></td></tr>';
+				echo '<tr><td>Based On</td><td><select class = "form-control" required name = "dareason" id = "dareason">
+							<option value = "">-------</option>
+							<option value = "Biometrics">Biometrics</option>
+							<option value="C.S.R">C.S.R.</option>	
+						</select></td></tr>';
+				echo '<input value = "'. $row['account_id'] .'" type = "hidden" name = "accid"/>';
+				echo '
+					<input type = "hidden" name = "oldobtimein" value = "' . $row['timein'] . '"/>
+					<input type = "hidden" name = "oldobtimeout" value = "' . $row['timeout'] . '"/>
+				  	<tr>
+						<td><input type = "hidden" name = "hol" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+				  	</tr>
+				  	<tr>
+						<td colspan = 2>
+							<button onclick = "return confirm(\'Are you sure? (Edit Time)\');" type = "submit" class = "btn btn-primary" name = "hruphol" value = "Submit Edit"><span class="glyphicon glyphicon-ok-sign"></span> Submit</button>
+							<a href = "?ac=penhol" class = "btn btn-danger"><span class="glyphicon glyphicon-menu-left"></span> Back</a>
+						</td>
+					</tr>
+				</tbody> 
+				</table>
+			</form>';
+			}
+		}
+		echo "
+				<script type=\"text/javascript\">
+					$(document).ready(function(){
+						$('input[name=\"hruptimein\"]').ptTimeSelect();
+						$('input[name=\"hruptimeout\"]').ptTimeSelect();
+					});
+				</script>";
+	}
 	if(isset($_GET['upovertime'])){	
 		$id = mysqli_real_escape_string($conn, $_GET['upovertime']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
@@ -1940,6 +2058,31 @@ echo '</tbody></table></form>';
 				</table>
 			</form>';		
 	}
+	if(isset($_GET['dundertime'])){
+		$id = mysqli_real_escape_string($conn, $_GET['dundertime']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+						</tr>
+					</thead>
+					<tr>
+						<td align = "right"><labe for = "dareason">Input Disapproval reason</labe></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penundr" class = "btn btn-danger">Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "undertime" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+						<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+					</tr>
+				</table>
+			</form>';
+		}
 ?>
 </div>
 <?php include('emp-prof.php') ?>

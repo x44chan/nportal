@@ -176,6 +176,42 @@ echo '</div>';
 	echo '<script type="text/javascript">window.location.replace("?ac=penpty"); </script>';
 }
 	if(isset($_POST['uppetty'])){
+		$sql = "SELECT * FROM petty,login where login.account_id = '$_SESSION[acc_id]' and login.position != 'House Helper' and petty.account_id = '$_SESSION[acc_id]' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
+		$result = $conn->query($sql);
+		$count = 0;
+		$day5 = 0;
+		if($result->num_rows > 0){	
+			while($row = $result->fetch_assoc()){
+			$petid = $row['petty_id'];
+			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
+			$data = $conn->query($sql)->fetch_assoc();
+				if($data['petty_id'] == null){
+					$count += 1;
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 0;
+					}
+				}
+				if($data['liqstate'] == 'LIQDATE'){
+					$count += 1;
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 0;
+					}
+				}
+				if($data['liqstate'] == 'EmpVal'){
+					$count += 1;
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 0;
+					}
+				}
+		   }
+		}
+
 		$upparti = mysqli_real_escape_string($conn, $_POST['upparti']);
 		$upamount =  mysqli_real_escape_string($conn, $_POST['upamount']);
 		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
@@ -185,13 +221,28 @@ echo '</div>';
 				$project = $_POST['project'];
 			}elseif($_POST['pettype'] == 'P.M.'){
 				$project = $_POST['pm'];
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}elseif($_POST['pettype'] == 'Internet'){
 				$project = $_POST['internet'];
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}elseif($_POST['pettype'] == 'Others'){
 				$project = null;
 			}elseif($_POST['pettype'] == 'House'){
 				$project = $_POST['house'];
 			}elseif($_POST['pettype'] == 'Combined'){
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 				$project = $_POST['combined'];
 			}	
 		}
@@ -205,15 +256,27 @@ echo '</div>';
 			$state = 'UAPetty';
 		}
 		$sql = "UPDATE `petty` set projtype = '$pettype', project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
-		if($conn->query($sql) == TRUE){
+		if($count == 0){
+			if($conn->query($sql) == TRUE){
+				if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+		    	}
+			}
+		}else{
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("employee.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("accounting.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}
 	}

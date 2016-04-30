@@ -190,7 +190,7 @@
 	if(isset($_SESSION['searchbox']) && isset($_SESSION['type']) && $_SESSION['searchbox'] != "" && $_SESSION['type'] != ""){
 		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where  $_SESSION[edate] $_SESSION[qsearch] petty.petty_id = petty_liqdate.petty_id and (petty.state != 'DAPetty' and petty.state != 'CPetty') and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";
 	}else{
-		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and name = project and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";	
+		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and (name = project or projtype = 'Others') and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";	
 	}
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){	

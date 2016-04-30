@@ -208,7 +208,7 @@
 			</div>
 			<div class="col-xs-3">
 				<label>Transaction</label>
-				<input required  autocomplete = 'off' class="form-control input-md" value = "<?php echo $row['liqinfo'];?>" name = "trans<?php echo $i;?>" placeholder = "Transaction Info"/>
+				<textarea required  autocomplete = 'off' class="form-control input-md" value = "<?php echo $row['liqinfo'];?>" name = "trans<?php echo $i;?>" placeholder = "Transaction Info"><?php echo $row['liqinfo'];?></textarea>
 			</div>			
 		</div>
 		<div class="row" id = "rcpt<?php echo $i;?>">
@@ -367,7 +367,7 @@ $(window).load(function(){
 $(document).ready(function(){
 	var i = <?php echo $i+1;?>;
 	$("#add_row").click(function(){
-		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-3'><label>Transaction</label><input required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></div>");
+		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-3'><label>Transaction</label><textarea required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></textarea></div>");
 		$('#rcpt'+i).html('<div class="col-xs-4"><label><input type = "checkbox" name = "wthrcpt'+i+'" id = "wthrcpt'+i+'"/> Check if With Receipt</label></div>');
 		var amount = "<?php echo  str_replace(',', '', $data['amount']);?>";
 		var amount2 = amount.replace(",", "");

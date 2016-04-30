@@ -6,7 +6,7 @@
 	}elseif(isset($_POST['leasubmit'])){
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
-		$datefile = date("Y-m-d");
+		$datefile = date('Y-m-d H:i:s');
 		$twodaysred = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')));
 		$nameofemployee = $_POST['nameofemployee'];
 		$datehired = $_SESSION['datehired'];
@@ -115,7 +115,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -128,7 +128,9 @@
 				}				
 				if($xcount[$i] >= $months) {
 					$wthpay = 'withoutpay';
-				}else{
+				}elseif(($months - $xcount[$i]) < $numdays){
+					$wthpay = 'withoutpay';
+				}else {
 					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
@@ -148,14 +150,19 @@
 		$stmt->bind_param("issssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state , $wthpay);
 		if($restric == 0){
 			$stmt->execute();
+			if($wthpay != null){
+				$al = "alert('You already used your allowed V.L. for this quarter, your request is automatically flaged as without pay.');";
+			}else{
+				$al = "";
+			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">'.$al.'window.location.replace("accounting.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">'.$al.'window.location.replace("techsupervisor.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penlea"); </script>';
+	    		echo '<script type="text/javascript">'.$al.'window.location.replace("hr.php?ac=penlea"); </script>';
 	    	}
 			$conn->close();	
 		}else{

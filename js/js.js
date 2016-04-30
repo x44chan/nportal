@@ -66,6 +66,18 @@ $(document).ready(function(){
         	$('input[name = "catdate"]').attr('required',false);
       	}
     });
+    $('select[name = "servicecomp"]').change(function() {
+    	var selected = $(this).val();
+    	if(selected == 'new'){
+    		$('#sernew').show();
+    		$('input[name = "email"]').attr('required',true); 
+    		$('input[name = "cname"]').attr('required',true); 
+      	}else{
+      		$('#sernew').hide();
+      		$('input[name = "email"]').attr('required',false); 
+      		$('input[name = "cname"]').attr('required',false); 
+      	}
+    });
 	$('#typeoflea').change(function() {
 	    var selected = $(this).val();
 		

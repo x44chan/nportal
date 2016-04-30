@@ -72,20 +72,21 @@
 			<a type = "button" class = "btn btn-danger" href = "logout.php"  role="button">Logout</a>
 		</div><br><br>
 		<div class="btn-group btn-group" role="group">
-			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Request Status </a>
-			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official Business Request Status</a>			
-			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Request Status</a>		
-			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Request Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penot"> Overtime Req. Status </a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official B. Req. Status</a>			
+			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Req. Status</a>		
+			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Req. Status</a>
 			<?php if($_SESSION['acc_id'] == '4'){ ?>
-			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Request Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penhol"> Holiday Req. Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Req. Status</a>
 			<?php
 				if($_SESSION['category'] == "Regular"){
 					echo '
-						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Request Status</a>
+						<a role = "button"class = "btn btn-success"  href = "?ac=penca"> Cash Adv. Req. Status</a>
 						';
 				}
 			?>	
-			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Request Status</a>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Req. Status</a>
 			<?php } ?>
 		</div>
 	</div>
@@ -96,7 +97,10 @@
 	include 'caloan/editrequest.php';
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penca'){
 		include("caloan/cashadv.php");
-		}
+	}
+	if(isset($_GET['ac']) && $_GET['ac'] == 'penhol'){
+		include("caloan/penhol.php");
+	}
 ?>
 <?php 
 	if(isset($_GET['loan']) && $_GET['loan'] > 0){
@@ -434,7 +438,9 @@
 							}else if($row['state'] == 'AHR'){
 								echo '<p><font color = "green">Pending to Admin</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Disapproved by HR</font></p> '.$row['dareason'];
+								echo '<font color = "red"> Disapproved by HR </font>';
+								echo '<br>' . $row['dareason'];
+								echo '<br>Date: <i>' . $row['datehr'];
 							}else if($row['state'] == 'DAACC'){
 								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
@@ -503,23 +509,28 @@
 					<td>'.$row["numofhrs"].'</td>
 					<td><b>';
 						if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
-								echo 'Pending to HR for Checking<br>';								
+								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['undertime_id'].'">Edit Application</a>';							
 							}else if($row['state'] == 'UA' && strtolower($row['position']) == 'service technician'){
-								echo 'Pending to HR for Checking';
+								echo 'Pending for Time Checking <br>';
+								echo '<a class = "btn btn-danger"href = "?acc='.$_GET['ac'].'&update=1&o='.$row['undertime_id'].'">Edit Application</a>';
 							}else if($row['state'] == 'UATech' && strtolower($row['position']) == 'service technician'){
 								echo 'Pending to Tech Supervisor<br>';								
 							}else if($row['state'] == 'AHR'){
+								echo '<b>Pending to Admin</b>';
 								echo '<p><font color = "green">Approved by HR</font></p> ';
 							}else if($row['state'] == 'AACC'){
 								echo '<p><font color = "green">Approved by Accounting</font></p> ';
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<font color = "red"> Disapproved by HR </font>';
+								echo '<br>' . $row['dareason'];
+								echo '<br>Date: <i>' . $row['datehr'];
 							}else if($row['state'] == 'DAACC'){
-								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
-								echo '<p><font color = "red">Dispproved by Dep. Head</font></p> '.$row['dareason'];
+								echo '<p><font color = "red">Disapproved by Dep. Head</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DATECH'){
 								echo '<p><font color = "red">Disapproved by Technician Supervisor</font></p>'.$row['dareason'];
 							}elseif($row['state'] == 'UALate'){
@@ -673,7 +684,9 @@
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<font color = "red"> Disapproved by HR </font>';
+								echo '<br>' . $row['dareason'];
+								echo '<br>Date: <i>' . $row['datehr'];
 							}else if($row['state'] == 'DAACC'){
 								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){
@@ -779,7 +792,9 @@
 							}else if($row['state'] == 'AAdmin'){
 								echo '<p><font color = "green">Approved by Dep. Head</font></p> ';
 							}else if($row['state'] == 'DAHR'){
-								echo '<p><font color = "red">Dispproved by HR</font></p> '.$row['dareason'];
+								echo '<font color = "red"> Disapproved by HR </font>';
+								echo '<br>' . $row['dareason'];
+								echo '<br>Date: <i>' . $row['datehr'];
 							}else if($row['state'] == 'DAACC'){
 								echo '<p><font color = "red">Dispproved by Accounting</font></p> '.$row['dareason'];
 							}else if($row['state'] == 'DAAdmin'){

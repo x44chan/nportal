@@ -48,7 +48,7 @@
 		
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
-		$datefile = date("Y-m-d");
+		$datefile = date('Y-m-d H:i:s');
 		$dateofot = $_POST['dateofot'];
 		$nameofemployee = $_SESSION['name'];
 		$startofot = $_POST['startofot'];

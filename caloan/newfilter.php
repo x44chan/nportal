@@ -34,8 +34,9 @@
 			unset($_SESSION['date0']);
 			echo '<script type = "text/javascript">window.location.replace("'.$lk.'");</script>';
 		}
+
+	$date3 = date("Y-m-d", strtotime($date2));
 	$date2 = date("Y-m-d 23:59:59 ", strtotime("+1 day", strtotime($date2)));
-	$date3 = date("Y-m-d ", strtotime($date2));
 	if(!isset($_GET['report'])){
 ?>
 <form action = "" method="post">
@@ -52,7 +53,8 @@
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'all'){ echo ' selected '; } ?> value="all">Overall Reports</option>				
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'lea'){ echo ' selected '; } ?> value="lea">Leave Reports</option>					
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'ot'){ echo ' selected '; } ?> value="ot">Overtime Reports</option>
-					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'undr'){ echo ' selected '; } ?> value="undr">Undertime Reports</option>					
+					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'undr'){ echo ' selected '; } ?> value="undr">Undertime Reports</option>
+					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'hol'){ echo ' selected '; } ?> value="hol">Holiday Reports</option>					
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'ob'){ echo ' selected '; } ?> value="ob">Official Business Reports</option>
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'ca'){ echo ' selected '; } ?> value="ca">Cash Advance Reports</option>
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'loan'){ echo ' selected '; } ?> value="loan">Loan Reports</option>	
@@ -71,6 +73,8 @@
 				<div class="form-group" align="left">
 					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
 					<button type="submit" class="btn btn-danger btn-sm" name ="represet"><span class="glyphicon glyphicon-refresh"></span> Reset</button>
+					<a type="submit" class="btn btn-warning btn-sm" href = "export.php?exot&date1=<?php echo $date1.'&date2=' .$date2;?>"><span class="glyphicon glyphicon-download-alt"></span> Export OT </a>
+					<a type="submit" class="btn btn-warning btn-sm" href = "export.php?exob&date1=<?php echo $date1.'&date2=' .$date2;?>"><span class="glyphicon glyphicon-download-alt"></span> Export OB </a>
 				</div>
 			</div>
 		</div>
@@ -103,6 +107,7 @@
 						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofundrtime < '$date3' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
 						$ssql6 = "SELECT count(loan_cutoff.account_id) as loanc,loan_cutoff.state,loan_cutoff.loan_id,loan_cutoff.enddate,loan_cutoff.full,loan.*,loan_cutoff.account_id  FROM loan_cutoff,loan where loan_cutoff.loan_id = loan.loan_id and loan.account_id = $accidd and loan_cutoff.account_id = $accidd and loan.state = 'ALoan' and (loan_cutoff.enddate between '$date1' and '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
+						$ssql8 = "SELECT count(account_id) as holcount FROM holidayre where holidayre.account_id = $accidd and state = '2' and holiday BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						
 						if($_GET['rep'] == 'all'){
 							$data1 = $conn->query($ssql1)->fetch_assoc();
@@ -111,6 +116,7 @@
 							$data4 = $conn->query($ssql4)->fetch_assoc();
 							$data5 = $conn->query($ssql5)->fetch_assoc();
 							$data6 = $conn->query($ssql6)->fetch_assoc();
+							$data8 = $conn->query($ssql8)->fetch_assoc();
 							if($data6['loanc'] > 0){
 								$data6['loanc'] = 1;
 							}
@@ -143,6 +149,10 @@
 							}
 							$acounts = $data6['loanc'];
 							$title = "Loan Report";
+						}elseif($_GET['rep'] == 'hol'){
+							$data8 = $conn->query($ssql8)->fetch_assoc();
+							$acounts = $data8['holcount'];
+							$title = "Holiday Report";
 						}
 						$_SESSION['acounts'] = $acounts;
 						if($acounts > 0 ){
@@ -527,6 +537,47 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ca'){
 					<td>'.$newDate.'</td>						
 					<td>₱ '.number_format($row["caamount"]).'</td>
 					<td>'.$row["careason"].'</td>
+				</tr>';
+		}
+		?>
+		</tbody>
+	</table>
+<?php
+}
+
+}
+if($_GET['report'] == 'all' || $_GET['report'] == 'hol'){
+	$sql = "SELECT * FROM holidayre where holidayre.account_id = $accids and state = 2 and holiday BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+?>	
+<h4 style="margin-left: 20px;"><i><u> Holiday Report </u></i></h4>
+	<table class = "table table-hover" align = "center">
+			<thead>
+				<tr>
+					<th width="10%">Date File</th>
+					<th width="10%">Date of Request</th>
+					<th width="17%">Time</th>
+					<th width="17%">Type</th>
+					<th width="20%">Reason</th>
+				</tr>
+			</thead>
+			<tbody>
+	<?php
+		while($row = $result->fetch_assoc()){	
+			if($row['oldtime'] != ""){
+				$hrcheck = 'App Time: <i><font color = "green">' . $row['timein'] . ' - ' .$row['timeout'] . '</i></font><br>';
+				$hrcheck .= 'Based On: <i><font color = "red">' . $row['dareason'] . '</font></i><br> Filed Time: <i><font color = "red">' . $row['oldtime'] . '</font></i>';
+			}else{
+				$hrcheck = $row['timein'] . ' - ' . $row['timeout'];
+			}
+			echo 
+				'<tr>
+					<td>'.date("M j, Y", strtotime($row['datefile'])).'</td>						
+					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
+					<td><b>'.$hrcheck.'</td>
+					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
+					<td>'.$row['reason'].'</td>
 				</tr>';
 		}
 		?>

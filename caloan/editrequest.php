@@ -124,7 +124,7 @@
 				?>
 				<tr>
 					<td>Reason (Work to be done): </td>
-					<td><textarea required name = "reason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo str_replace("<br><b><i>(On-Project [No Internet])</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>	
+					<td><textarea required name = "reason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo str_replace("<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>	
 				</tr>
 			<div class = "ui-widget-content" style = "border: none;">
 				<tr>
@@ -148,13 +148,13 @@
 					</td>					
 				</tr>				
 				<tr>
-					<td> On-Leave (For Late Filing)</td>
+					<td> For Late Filing</td>
 					<td>
 						<select name="onleave" class="form-control">
 							<option value="">--------</option>
 							<option <?php if(stristr($row['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
 							<option <?php if(stristr($row['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
-							<option <?php if(stristr($row['reason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo ' selected '; } ?> value="On-Project [No Internet]"> On-Project [No Internet] </option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo ' selected '; } ?> value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
 						</select>
 					</td>
 				</tr>
@@ -214,12 +214,120 @@
 	}
 ?>
 <?php
+	if(isset($_GET['acc']) && isset($_GET['update']) && $_GET['acc'] == 'penhol'){
+		$o = mysqli_real_escape_string($conn, $_GET['o']);
+		$sql = "SELECT * FROM holidayre where account_id = '$_SESSION[acc_id]' and holidayre_id = '$o' and state = 0";
+		if($conn->query($sql)->num_rows <= 0){
+			echo '<script type="text/javascript">alert("No record found");window.location.replace("?ac=penhol"); </script>';
+		}
+		$data = $conn->query($sql)->fetch_assoc();
+?>
+	<div class="modal fade" id="upholiday" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <a type="button" class="close" href = "?ac=penhol">&times;</a>
+          <h4>Update Holiday</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Name</label>
+              <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
+            </div>
+            <div class="form-group">
+            	<label for="usrname"> Description of Work Order <font color = "red">*</font></label>
+            	<textarea class="form-control"  name = "reason" placeholder = "Enter reason" required><?php if(stristr($data['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data['reason']); }elseif(stristr($data['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data['reason']); }elseif(stristr($data['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo str_replace("<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>", "", $data['reason']); }else{ echo $data['reason'];}?></textarea>
+          	</div>
+          	<div class="form-group">
+          		<label>Date</label>
+          		<input required class = "form-control" <?php if(isset($data['holiday'])){ echo ' value = "' . $data['holiday'] . '" '; } ?>  type = "date" placeholder = "Click to set date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' min = "<?php echo date('m/d/Y'); ?>" name = "holiday"/>
+          	</div>
+          	<div class="form-group">
+          		<label>Type <font color = "red">*</font></label>
+          		<select class="form-control" required name = "type">
+          			<option value="">----------</option>
+          			<option value="Legal Holiday" <?php if(isset($data['type']) && $data['type'] == 'Legal Holiday'){ echo ' selected'; } ?>> Legal Holiday </option>
+          			<option value="Special N-W Holiday" <?php if(isset($data['type']) && $data['type'] == 'Special N-W Holiday'){ echo ' selected'; } ?>> Special N-W Holiday </option>
+          		</select>
+          	</div>
+          	<div class="form-group">
+          		<label>Late Filing</label>
+          		<select name="onleave" class="form-control">
+					<option value="">--------</option>
+					<option <?php if(stristr($data['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
+					<option <?php if(stristr($data['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo ' selected '; } ?> value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
+				</select>
+          	</div>
+            <button type="submit" name = "updatehol" class="btn btn-success btn-block">Update</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div>
+<script type="text/javascript">
+	$(document).ready(function(){	      
+	  $('#upholiday').modal({
+	    backdrop: 'static',
+	    keyboard: false
+	  });
+	});
+</script>
+<?php
+	if(isset($_POST['updatehol']) && $_POST['reason'] != "" && $_POST['holiday'] != "" && $_POST['type']){
+		$id = mysqli_real_escape_string($conn,$_GET['o']);
+		$select = "SELECT * FROM holidayre where holidayre_id = '$id'";
+		$data = $conn->query($select)->fetch_assoc();
+		if($data['datefile'] == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || $data['datefile'] == $_POST['holiday'] || $data['datefile'] == date("Y-m-d",strtotime("+1 day",strtotime($_POST['holiday'])))){
+  			$restrict = 0;
+  		}else{
+  			$restrict = 1;
+  		}
+  		if($_POST['onleave'] != ""){
+  			$restrict = 0;
+  			$_POST['reason'] .= '<br><b><i>('. $_POST['onleave'] . ')</i></b>';
+  		}
+		$stmt = $conn->prepare("UPDATE holidayre set holiday = ?, type = ?, reason = ? where holidayre_id = ? and account_id = ? and state = 0");
+		$stmt->bind_param("sssii", $_POST['holiday'], $_POST['type'], $_POST['reason'], $_GET['o'], $_SESSION['acc_id']);
+		if($restrict == 0){
+	  		if($stmt->execute()){
+	  			if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penhol"); </script>';
+		    	}
+	  		}
+	  	}else{
+	  		if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("employee.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("accounting.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("techsupervisor.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("hr.php?ac=penhol"); </script>';
+	    	}
+	  	}
+	}
+?>
+<?php
+	}
+?>
+<?php
 	if(isset($_GET['acc']) && isset($_GET['update']) && $_GET['acc'] == 'penundr'){
 		$oid = mysql_escape_string($_GET['o']);
 		$_SESSION['otid'] = $oid;
 		$_SESSION['acc'] = $_GET['acc'];
 		
-		$sql = "SELECT * FROM undertime,login where undertime.account_id = $accid and login.account_id = $accid and undertime_id = '$oid' and (state = 'UAAdmin' or state = 'UALate')";
+		$sql = "SELECT * FROM undertime,login where undertime.account_id = $accid and login.account_id = $accid and undertime_id = '$oid' and state = 'UA'";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			echo '<form role = "form"  align = "center"action = "update-exec.php" method = "post">
@@ -247,20 +355,38 @@
 					<td>Department: </td>
 					<td><?php echo $_SESSION['dept'];?></td>
 				</tr>
+				<?php
+					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
+					$data1 = $conn->query($query1)->fetch_assoc();
+				?>					
+				<tr>
+					<td>Reason: </td>
+					<td><textarea required name = "unreason"class = "form-control"><?php if(stristr($data1['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $data1['reason']); }elseif(stristr($data1['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo str_replace("<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>", "", $data1['reason']); }else{ echo $data1['reason'];}?></textarea></td>
+				</tr>
 				<tr>
 					<td>Date Of Undertime: </td>
 					<td>
 						<input required class = "form-control" type = "date" value = "<?php echo $row['dateofundrtime'];?>" data-date='{"startView": 2, "openOnMouseFocus": true}' placeholder = "click to set date"min = "<?php echo date('m/d/Y'); ?>" name = "undatereq"/>
 					</td>						
-				</tr>									
+				</tr>	
+				<tr>
+					<td> For Late Filing</td>
+					<td>
+						<select name="onleave" class="form-control">
+							<option value="">--------</option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
+							<option <?php if(stristr($row['reason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo ' selected '; } ?> value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
+						</select>
+					</td>
+				</tr>								
 				<div class = "ui-widget-content" style = "border: none;">		
 					<tr class = "form-inline">
 						<td>Time of Undertime: </td>
 						<td>
-							<label for = "fr"> From: </label><input value = "<?php echo $row['undertimefr'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
-							<label for = "to"> To:  </label><input value = "<?php echo $row['undertimeto'];?>" placeholder = "Click to Set time" required style = "width: 150px;" autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
-							<label for = "numhrs">Num. of Hrs/Mins </label><input required placeholder = "_hrs : __mins" value = "<?php echo $row['numofhrs'];?>" id = "numhrs" class = "form-control" style = "width: 200px" name = "unumofhrs"/>
-						</td>	
+							<label for = "fr"> From: </label><input value = "<?php echo $row['undertimefr'];?>" placeholder = "Click to Set time" required  autocomplete ="off" id = "to" class = "form-control"  name = "untimefr"/>
+							<label for = "to"> To:  </label><input value = "<?php echo $row['undertimeto'];?>" placeholder = "Click to Set time" required  autocomplete ="off" id = "fr" class = "form-control" name = "untimeto"/>
+							</td>	
 					</tr>			
 					<script type="text/javascript">
 						$(document).ready(function(){
@@ -269,14 +395,7 @@
 						});
 					</script>
 				</div>	
-				<?php
-					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
-					$data1 = $conn->query($query1)->fetch_assoc();
-				?>					
-				<tr>
-					<td>Reason: </td>
-					<td><textarea required name = "unreason"class = "form-control"><?php echo $data1['reason'];?></textarea></td>
-				</tr>
+				
 				<tr>
 					<td style = "padding: 3px;"colspan = "2" align = center>
 						<input type = "submit" name = "upunsubmit" onclick = "return confirm('Are you sure? You can still review your application.');" class = "btn btn-primary"/>					
@@ -426,17 +545,16 @@
 				</tr>				
 				<tr>
 					<td>Description of Work Order: </td>
-					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo str_replace("<br><b><i>(On-Project [No Internet])</i></b>", "", $row['obreason']); }else{ echo $row['obreason'];}?></textarea></td>
-					
+					<td><textarea required name = "obreason" class = "form-control col-sm-10"><?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Sick Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo str_replace("<br><b><i>(Emergency Leave)</i></b>", "", $row['obreason']); }elseif(stristr($row['obreason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo str_replace("<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>", "", $row['obreason']); }else{ echo $row['obreason'];}?></textarea></td>
 				</tr>
 				<tr>
-					<td> On-Leave (For Late Filing)</td>
+					<td> For Late Filing</td>
 					<td>
 						<select name="onleave" class="form-control">
 							<option value="">--------</option>
 							<option <?php if(stristr($row['obreason'], '<br><b><i>(Sick Leave)</i></b>') == true) { echo ' selected '; } ?> value="Sick Leave"> Sick Leave </option>
 							<option <?php if(stristr($row['obreason'], '<br><b><i>(Emergency Leave)</i></b>') == true) { echo ' selected '; } ?> value="Emergency Leave"> Emergency Leave </option>
-							<option <?php if(stristr($row['obreason'], '<br><b><i>(On-Project [No Internet])</i></b>') == true) { echo ' selected '; } ?> value="On-Project [No Internet]"> On-Project [No Internet] </option>
+							<option <?php if(stristr($row['obreason'], '<br><b><i>(On Service/Project Stay-in with no Internet Access)</i></b>') == true) { echo ' selected '; } ?> value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
 						</select>
 					</td>
 				</tr>

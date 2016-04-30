@@ -82,6 +82,17 @@
 						$day = '01';
 						$end = '15';						
 					}
+					$stmtss = "SELECT sum(cutamount) as sum FROM `loan_cutoff` where loan_id = '$o'";
+					$datas = $conn->query($stmtss)->fetch_assoc();
+					if(number_format($datas['sum'],2) < number_format($appamount)){
+						$appamount = str_replace(",", "", $appamount);
+						$add = number_format($appamount - $datas['sum'],2);
+ 					}else{
+						$add = 0;
+					}
+					if($i == $_POST['upduration']){
+						$cutamount = number_format($add,2);
+					}
 					$date = date("Y-m-".$day, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
 					$enddate = date("Y-m-".$end, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
 					$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");

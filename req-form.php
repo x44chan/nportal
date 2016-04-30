@@ -78,13 +78,13 @@ $(document).ready(function(){
 					<td></td>
 				</tr>
 				<tr>
-					<td> On-Leave (For Late Filing)</td>
+					<td> For Late Filing</td>
 					<td>
 						<select name="onleave" class="form-control">
 							<option value="">--------</option>
 							<option value="Sick Leave"> Sick Leave </option>
 							<option value="Emergency Leave"> Emergency Leave </option>
-							<option value="On-Project [No Internet]"> On-Project [No Internet] </option>
+							<option value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
 						</select>
 					</td>
 				</tr>
@@ -262,13 +262,13 @@ $(document).ready(function(){
 					</td>					
 				</tr>
 				<tr>
-					<td> On-Leave (For Late Filing)</td>
+					<td> For Late Filing</td>
 					<td>
 						<select name="onleave" class="form-control">
 							<option value="">--------</option>
 							<option value="Sick Leave"> Sick Leave </option>
 							<option value="Emergency Leave"> Emergency Leave </option>
-							<option value="On-Project [No Internet]"> On-Project [No Internet] </option>
+							<option value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
 						</select>
 					</td>
 				</tr>
@@ -603,24 +603,83 @@ $(document).ready(function(){
 		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
+		$day5 = 0;
+		$projectcount = 0;
 		if($result->num_rows > 0){	
 			while($row = $result->fetch_assoc()){
 			$petid = $row['petty_id'];
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					$count += 1;
+					if($row['projtype'] == 'Project'){
+						$projectcount += 1;
+					}
+					
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}
 				}
 				if($data['liqstate'] == 'LIQDATE'){
-					$count += 1;
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}
+					if($row['projtype'] == 'Project'){
+						$projectcount += 1;
+					}
 				}
 				if($data['liqstate'] == 'EmpVal'){
-					$count += 1;
+					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+						$day5 += 1;
+					}
+					if($row['projtype'] == 'Project'){
+						$projectcount += 1;
+					}
 				}
 		   }
 		}
 		if($acc_id == '23'){
 			$count = 0;
+		}
+		if(isset($_POST['pettype'])){
+			if($_POST['pettype'] == 'Project'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['project'];
+			}elseif($_POST['pettype'] == 'P.M.'){
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['pm'];
+			}elseif($_POST['pettype'] == 'Internet'){
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['internet'];
+			}elseif($_POST['pettype'] == 'Others'){
+				$_POST['project'] = null;
+			}elseif($_POST['pettype'] == 'House'){
+				$_POST['project'] = $_POST['house'];
+			}elseif($_POST['pettype'] == 'Combined'){
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['combined'];
+			}	
 		}
 		if($count > 0){
 			if($_SESSION['level'] == 'EMP'){
@@ -633,21 +692,6 @@ $(document).ready(function(){
 	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}else{
-			if(isset($_POST['pettype'])){
-				if($_POST['pettype'] == 'Project'){
-					$_POST['project'] = $_POST['project'];
-				}elseif($_POST['pettype'] == 'P.M.'){
-					$_POST['project'] = $_POST['pm'];
-				}elseif($_POST['pettype'] == 'Internet'){
-					$_POST['project'] = $_POST['internet'];
-				}elseif($_POST['pettype'] == 'Others'){
-					$_POST['project'] = null;
-				}elseif($_POST['pettype'] == 'House'){
-					$_POST['project'] = $_POST['house'];
-				}elseif($_POST['pettype'] == 'Combined'){
-					$_POST['project'] = $_POST['combined'];
-				}	
-			}
 			if($_POST['pettype'] == ""){
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
@@ -713,6 +757,92 @@ $(document).ready(function(){
       </div>      
     </div>
   </div> 
+  <!-- caModal -->
+  <div class="modal fade" id="holiday" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Holiday Form</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Name</label>
+              <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
+            </div>
+            <div class="form-group">
+            	<label for="usrname"> Description of Work Order</label>
+            	<textarea class="form-control" name = "reason" placeholder = "Enter reason"></textarea>
+          	</div>
+          	<div class="form-group">
+          		<label>Date</label>
+          		<input required class = "form-control" type = "date" placeholder = "Click to set date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' min = "<?php echo date('m/d/Y'); ?>" name = "holiday"/>
+          	</div>
+          	<div class="form-group">
+          		<label>Type <font color = "red">*</font></label>
+          		<select class="form-control" required name = "type">
+          			<option value="">----------</option>
+          			<option value="Legal Holiday"> Legal Holiday </option>
+          			<option value="Special N-W Holiday"> Special N-W Holiday </option>
+          		</select>
+          	</div>
+          	<div class="form-group">
+          		<label>Late Filing</label>
+          		<select name="onleave" class="form-control">
+					<option value="">--------</option>
+					<option value="Sick Leave"> Sick Leave </option>
+					<option value="On Service/Project Stay-in with no Internet Access"> On Service/Project Stay-in with no Internet Access </option>
+				</select>
+          	</div>
+            <button type="submit" name = "submithol" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div> 
+  <?php
+  	if(isset($_POST['submithol']) && $_POST['holiday'] != "" && $_POST['type']){
+  		if(date("Y-m-d") == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date("Y-m-d") == $_POST['holiday'] || date("Y-m-d") == date("Y-m-d",strtotime("+1 day",strtotime($_POST['holiday'])))){
+  			$restrict = 0;
+  		}else{
+  			$restrict = 1;
+  		}
+  		if($_POST['onleave'] != ""){
+  			$restrict = 0;
+  			$_POST['reason'] .= '<br><b><i>('. $_POST['onleave'] . ')</i></b>';
+  		}
+  		$stmt = $conn->prepare("INSERT INTO holidayre (account_id, datefile, holiday, type, reason) VALUES (?, now(), ?, ?, ?)");
+  		$stmt->bind_param("isss", $_SESSION['acc_id'], $_POST['holiday'], $_POST['type'], $_POST['reason']);
+	  	if($restrict == 0){
+	  		if($stmt->execute()){
+	  			if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'ACC') {
+		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'TECH') {
+		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac=penhol"); </script>';
+		    	}elseif ($_SESSION['level'] == 'HR') {
+		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penhol"); </script>';
+		    	}
+	  		}
+	  	}else{
+	  		if($_SESSION['level'] == 'EMP'){
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("employee.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'ACC') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("accounting.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'TECH') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("techsupervisor.php?ac=penhol"); </script>';
+	    	}elseif ($_SESSION['level'] == 'HR') {
+	    		echo '<script type="text/javascript">alert("Wrong date");window.location.replace("hr.php?ac=penhol"); </script>';
+	    	}
+	  	}
+  	}
+  ?>
  <script type="text/javascript">
   $("button[name='submitca']").click(function(){
      if($("input[name='amountca']").val() > <?php if($_SESSION['category'] == 'Regular'){ echo ' 3000 '; }else{ echo ' 1500 '; } ?> ){

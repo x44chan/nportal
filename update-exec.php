@@ -86,7 +86,7 @@
 		if($_SESSION['level'] == "HR"){
 			$state = 'state = "UAAdmin"';	
 		}else{
-			$state = '(state = "UAAdmin" or state = "UALate")';	
+			$state = '(state = "UA")';	
 		}
 		$stmts2x = "SELECT * FROM `overtime` where overtime_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxata = $conn->query($stmts2x)->fetch_assoc();
@@ -99,9 +99,9 @@
 		
 		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($date))){
 				$restric = 1;
-				$uplate = ', state = "UALate" ';		
+				$uplate = ', state = "UA" ';		
 		}else{
-				$uplate = ', state = "UAAdmin" ';
+				$uplate = ', state = "UA" ';
 		}
 		if(isset($_POST['ottype'])){
 			if($_POST['ottype'] == 'Project'){
@@ -131,6 +131,10 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
+		if($_POST['onleave'] != ""){
+			$reason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$restric = 0;
+		}
 		$stmt = "UPDATE `overtime` set 
 			projtype = '$projtype', project = '$project', csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
 			where account_id = '$accid' and $state and overtime_id = '$_SESSION[otid]'";
@@ -199,7 +203,11 @@
 		}else{
 			$uplate = ',oblate = null';	
 		}
-		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$date'";
+		if($_POST['onleave'] != ""){
+			$obreason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$restric = 0;
+		}
+		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$date' and account_id = '$accid' and officialbusiness_id != '$_SESSION[otid]'";
 		$xx = $conn->query($sql);
 		if($xx->num_rows > 0){
 			$restric = 2;
@@ -250,7 +258,7 @@
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else if($post == "service technician"){
-			$state = 'UATech';	
+			$state = 'UA';	
 		}else{
 			$state = 'UA';	
 		}
@@ -343,7 +351,7 @@
 				}
 				$one = $quarterdate[$i];
 				if($dxatax['datefile'] >= $one && $dxatax['datefile'] <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -357,13 +365,14 @@
 				}				
 				if($xcount[$i] >= $months) {
 					$wthpay = 'withoutpay';
-				}else{
+				}elseif(($months - $xcount[$i]) < $numdays){
+					$wthpay = 'withoutpay';
+				}else {
 					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
 					$wthpay = null;
 				}
-
 			}
 		}
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $numdays)){
@@ -377,30 +386,38 @@
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
-		    	if($_SESSION['level'] == 'EMP'){
-		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+		    	if($wthpay != null){
+					$al = "alert('You already used your allowed V.L. for this quarter, your request is automatically flaged as without pay.');";
+				}else{
+					$al = "";
+				}
+				if($_SESSION['level'] == 'EMP'){
+		    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';
 		    	}elseif ($_SESSION['level'] == 'ACC') {
-		    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+		    		echo '<script type="text/javascript">'.$al.'window.location.replace("accounting.php?ac=penlea"); </script>';
 		    	}elseif ($_SESSION['level'] == 'TECH') {
-		    		echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+		    		echo '<script type="text/javascript">'.$al.'window.location.replace("techsupervisor.php?ac=penlea"); </script>';
 		    	}elseif ($_SESSION['level'] == 'HR') {
-		    		echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+		    		echo '<script type="text/javascript">'.$al.'window.location.replace("hr.php?ac=penlea"); </script>';
 		    	}
+				$conn->close();	
 		  	}
 		}else{
 			if($restric == 3){
 				$alert = "No more Vacation Leave Balance.";
+			}elseif($restric == 4){
+				$alert = 'You can only request ' . $months . ' day/s per quarter ';
 			}else{
 				$alert = "Wrong Date";
 			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("accounting.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("techsupervisor.php?ac=penlea"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac='.$_SESSION['acc'].'"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("hr.php?ac=penlea"); </script>';
 	    	}
 		}
 		$conn->close();		
@@ -414,12 +431,36 @@
 		$undertimeto = mysql_escape_string($_POST['untimeto']);
 		$unreason = mysql_escape_string($_POST['unreason']);
 		
-		$unumofhrs = mysql_escape_string($_POST['unumofhrs']);
-		
+		//$unumofhrs = mysql_escape_string($_POST['unumofhrs']);
+		function gettimediff($dtime,$atime){ 
+		 $nextday = $dtime > $atime?1:0;
+		 $dep = explode(':',$dtime);
+		 $arr = explode(':',$atime);
+		 $diff = abs(mktime($dep[0], $dep[1], 0, date('n'), date('j'), date('y')) - mktime($arr[0], $arr[1], 0, date('n'), date('j') + $nextday, date('y')));
+		 $hours = floor($diff / (60*60));
+		 $mins = floor(($diff - ($hours*60*60))/(60));
+		 $secs = floor(($diff - (($hours*60*60)+($mins*60))));
+		 if(strlen($hours) < 2){
+		 	$hours = $hours;
+		 }
+		 if(strlen($mins) < 2){
+		 	$mins =  $mins;
+		 }
+		 if(strlen($secs) < 2){
+		 	$secs = "0" . $secs;
+		 }
+		// if($hours == 00  && $minutes != 00){
+		// 	$hours += 24;	
+		// }
+		 return $hours . ':' . $mins;
+		}
+		$time1 = date('H:i', strtotime($undertimefr));
+		$time2 = date('H:i', strtotime($undertimeto));
+		$unumofhrs = gettimediff($time1,$time2);
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else{
-			$state = ' (state = "UAAdmin" or state = "UALate")';	
+			$state = ' state = "UA"';	
 		}
 		$stmts2x = "SELECT * FROM `undertime` where undertime_id = '$_SESSION[otid]' and  account_id = '$accid'";
   		$dxata = $conn->query($stmts2x)->fetch_assoc();
@@ -431,10 +472,14 @@
 		$restric = 0;
 		
 		if(date("Y-m-d", strtotime($minus, strtotime($dxata['datefile']))) > date("Y-m-d", strtotime($undatereq))) {
-			$restric = 0;
-			$uplate = ', state = "UALate" ';		
+			$restric = 1;
+			$uplate = ', state = "UA" ';		
 		}else{
-			$uplate = ', state = "UAAdmin" ';	
+			$uplate = ', state = "UA" ';	
+		}
+		if($_POST['onleave'] != ""){
+			$unreason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$restric = 0;
 		}
 		$stmt = "UPDATE `undertime` set 
 			dateofundrtime = '$undatereq', undertimefr = '$undertimefr', undertimeto = '$undertimeto', reason = '$unreason', numofhrs = '$unumofhrs' $uplate
@@ -544,7 +589,7 @@
 			}
 			$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){
-			$upstate = 'CheckedHR';
+			$upstate = 'AHR';
 			$state = 'UA';
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';
@@ -554,12 +599,12 @@
 			$redirec = 'hr.php?ac='.$ac;
 			$dates = "datehr = '$datex',";
 		}elseif($_SESSION['level'] == 'TECH'){
-			$upstate = 'CheckedHR';
+			$upstate = 'AHR';
 			$xstate = 'state = "UATech"';
 			$dates = "dateacc = '$datex',";
 			$redirec = 'techsupervisor.php?ac='.$ac;
 		}
-		$upstate = 'CheckedHR';
+		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
 			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
@@ -604,21 +649,70 @@
 
 	}
 
+	if(isset($_POST['hruphol'])){	
+		$obtimein = mysql_escape_string($_POST['hruptimein']);
+		$obtimeout = mysql_escape_string($_POST['hruptimeout']);			
+		$accid = mysql_escape_string($_POST['accid']);
+		$obid = mysqli_real_escape_string($conn, $_POST['hol']);
+		if(isset($_POST['dareason']) && $_POST['dareason'] == ""){
+			$basedon = null;
+		}else{
+			$basedon = mysqli_real_escape_string($conn, $_POST['dareason']);
+		}
+		$date = date('Y-m-d h:i A');
+		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
+		$stmt = "UPDATE `holidayre` set 
+				timein = '$obtimein', timeout = '$obtimeout', state = '1', oldtime = '$edithr', datehr = '$date' , dareason = '$basedon'
+			where account_id = '$accid' and state = '0' and holidayre_id = '$obid'";
+		if ($conn->query($stmt) === TRUE) {
+	    	if($_SESSION['level'] == 'ACC'){
+	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penhol"); </script>';
+			}else{
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac=penhol"); </script>';
+			}
+	  	}else {
+	    	echo "Error updating record: " . $conn->error;
+	  	}
+		$conn->close();
+
+	}
+
 	if(isset($_POST['hrupunsubmit'])){	
 		$obtimein = mysql_escape_string($_POST['untimefr']);
 		$obtimeout = mysql_escape_string($_POST['untimeto']);			
 		$accid = mysql_escape_string($_SESSION['acc']);
-		$numofhrs = mysql_escape_string($_POST['unumofhrs']);
+		//$numofhrs = mysql_escape_string($_POST['unumofhrs']);
 		$obid = $_SESSION['otid'];
 		$date = date('Y-m-d h:i A');
 		$upstate = 'CheckedHR';
 		$edithr = $_SESSION['oldunr'];
+		function gettimediff($dtime,$atime){ 
+		 $nextday = $dtime > $atime?1:0;
+		 $dep = explode(':',$dtime);
+		 $arr = explode(':',$atime);
+		 $diff = abs(mktime($dep[0], $dep[1], 0, date('n'), date('j'), date('y')) - mktime($arr[0], $arr[1], 0, date('n'), date('j') + $nextday, date('y')));
+		 $hours = floor($diff / (60*60));
+		 $mins = floor(($diff - ($hours*60*60))/(60));
+		 $secs = floor(($diff - (($hours*60*60)+($mins*60))));
+		 if(strlen($hours) < 2){
+		 	$hours = $hours;
+		 }
+		 if(strlen($mins) < 2){
+		 	$mins =  $mins;
+		 }
+		 if(strlen($secs) < 2){
+		 	$secs = "0" . $secs;
+		 }
+		 return $hours . ':' . $mins;
+		}
+		$time1 = date('H:i', strtotime($obtimein));
+		$time2 = date('H:i', strtotime($obtimeout));
+		$numofhrs = gettimediff($time1,$time2);;
 		$stmt = "UPDATE `undertime` set 
 				undertimefr = '$obtimein', undertimeto = '$obtimeout', state = '$upstate', edithr = '$edithr', datehr = '$date', numofhrs = '$numofhrs'
 			where account_id = '$accid' and state = 'UA' and undertime_id = '$obid'";
 		if ($conn->query($stmt) === TRUE) {
-	    	echo '<script type="text/javascript">window.location.replace("hr.php?ac=penundr"); </script>';
-			
+	  		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penundr"); </script>';	
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}

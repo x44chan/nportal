@@ -90,6 +90,57 @@
 			}
 		}
 	}
+	if(isset($_GET['hol'])){	
+		$id = mysqli_real_escape_string($conn, $_GET['hol']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		if(isset($_GET['dareason'])){
+			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
+		}else{
+			$dareason = null;
+		}
+		
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state = 'DAHR')){
+			$date = date('Y-m-d h:i A');
+			if($state == 'AHR'){
+				$state = 1;
+			}else{
+				$state = -1;
+			}
+			unset($_SESSION['bypass']);
+			$sql = "UPDATE holidayre set state = '$state',datehr = '$date',dareason = '$dareason' where holidayre_id = $id and state = 0";			
+			if($conn->query($sql) == TRUE){
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
+			}else{
+				die("Connection error:". $conn->connect_error);
+			}
+		}elseif($_SESSION['level'] == 'Admin' && ($state == 'AAdmin' || $state == 'DAAdmin')){
+			if($state == 'DAAdmin'){
+				$dareason = $_GET['dareason'];
+			}else{
+				$dareason = null;
+			}
+			if($state == 'AAdmin'){
+				$state = 2;
+			}else{
+				$state = -2;
+			}
+			$date = date('Y-m-d h:i A');
+			$sql = "UPDATE holidayre set state = '$state',datehr = '$date',dareason = '$dareason' where holidayre_id = $id and state = 1";
+			if($conn->query($sql) == TRUE){
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}else{
+				die("Connection error:". $conn->connect_error);
+			}		
+		}else{
+			if($_SESSION['level'] == 'Admin'){
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}elseif ($_SESSION['level'] == 'TECH') {
+				echo '<script type="text/javascript">window.location.replace("techsupervisor.php?ac='.$_GET['ac'].'"); </script>';
+			}elseif ($_SESSION['level'] == 'HR') {
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
+			}
+		}
+	}
 ?>
 <?php
 	if(isset($_POST['leaveapp'])){
@@ -192,9 +243,8 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'HR' && $state == 'AHR'){
+		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
-			$state = 'CheckedHR';
 			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
@@ -209,7 +259,7 @@
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
-		}else{
+		}else if($_SESSION['level'] == 'Admin'){
 			if(isset($_GET['bypass']) && $_GET['bypass'] == '1'){
 				$states = "(state  = 'AHR' or state like 'UA%')";
 				$link = "?bypass";
@@ -223,7 +273,7 @@
 				$undrlate = "";
 			}
 			if($state == 'AAdmin'){
-				$state = 'UA';
+				$state = 'AAdmin';
 			}
 			if($state == 'DAAdmin'){
 				$dareason = $_GET['dareason'];

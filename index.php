@@ -75,39 +75,26 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				}else{
 					$_SESSION['category'] = $row['empcatergory'];
 				}
-				echo  '<div class="alert alert-success" align = "center">						
-						<strong>Logging in ~!</strong>
+				echo	'<div class="alert alert-success" align = "center">						
+							<strong>Logging in ~!</strong>
 						</div>';
-				?>
-			<?php
+				if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'TECH'){	
+					$datetime = date("M j, Y g:i:s A");
+					$in = "in";
+					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
+					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);	
+					$stmt->execute();
+				}
 				if($_SESSION['level'] == 'Admin'){
-			?>
-				<script type="text/javascript">setTimeout(function() {window.location.href = "admin.php"},600);</script>
-			<?php
+					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "admin.php"},600);</script>';
 				}else if($_SESSION['level'] == 'EMP'){
-			?>
-				<script type="text/javascript">setTimeout(function() {window.location.href = "employee.php?ac=penot"},600);</script>
-			<?php
+					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "employee.php?ac=penot"},600);</script>';
 				}else if($_SESSION['level'] == 'HR'){
-					$datetime = date("M j, Y g:i:s A");
-					$in = "in";
-					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
-					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
-					$stmt->execute();
-			?>
-				<script type="text/javascript">setTimeout(function() {window.location.href = "hr.php?ac=penot"},600);</script>
-			<?php
+					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "hr.php?ac=penot"},600);</script>';
 				}else if($row['level'] == 'TECH'){
-					$datetime = date("M j, Y g:i:s A");
-					$in = "in";
-					$stmt = $conn->prepare("INSERT INTO `login_log` (account_id, `datetime`, logintype) VALUES (?, ?, ?)");
-					$stmt->bind_param("iss", $_SESSION['acc_id'], $datetime, $in);
-					$stmt->execute();
 					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "techsupervisor.php?ac=penot"},600);</script>';
 				}else{
-			?>
-				<script type="text/javascript">setTimeout(function() {window.location.href = "accounting.php?ac=penot"},600);</script>
-			<?php
+					echo '<script type="text/javascript">setTimeout(function() {window.location.href = "accounting.php?ac=penot"},600);</script>';
 				}				
 			}
 		}else{
