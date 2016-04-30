@@ -122,6 +122,7 @@ $(document).ready( function () {
 				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
 				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
 				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
+				  <li><a href="#"  data-toggle="modal" data-target="#holiday">Holiday Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
 				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Loan Form (For All Employee)</a></li>
 				  <?php
