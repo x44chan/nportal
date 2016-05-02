@@ -773,11 +773,11 @@ $(document).ready(function(){
               <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
             </div>
             <div class="form-group">
-            	<label for="usrname"> Description of Work Order</label>
+            	<label for="usrname"> Description of Work Order (optional)</label>
             	<textarea class="form-control" name = "reason" placeholder = "Enter reason"></textarea>
           	</div>
           	<div class="form-group">
-          		<label>Date</label>
+          		<label>Date <font color = "red">*</font></label>
           		<input required class = "form-control" type = "date" placeholder = "Click to set date" required="" data-date='{"startView": 2, "openOnMouseFocus": true}' min = "<?php echo date('m/d/Y'); ?>" name = "holiday"/>
           	</div>
           	<div class="form-group">

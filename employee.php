@@ -242,7 +242,7 @@
 			while($row = $result->fetch_assoc()){
 				$datetoday = date("Y-m-d");
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = $newDate = date("M j, Y h:i A", strtotime($originalDate));
 				$newDate2 = date("M j, Y", strtotime($row['dateofot']));
 					
 				if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
@@ -364,7 +364,7 @@
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = $newDate = date("M j, Y h:i A", strtotime($originalDate));
 				
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
@@ -465,7 +465,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['obdate']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = $newDate = date("M j, Y h:i A", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 					echo '<tr style = "color: red">';
@@ -574,7 +574,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = $newDate = date("M j, Y h:i A", strtotime($originalDate));
 				$newDate2 = date("M j, Y", strtotime($row["edatehired"]));
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){

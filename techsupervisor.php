@@ -381,7 +381,7 @@ if(isset($_GET['upovertime'])){
 	<?php
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A", strtotime($originalDate));
 
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['2daysred'] ){
@@ -438,7 +438,7 @@ if(isset($_GET['upovertime'])){
 			while($row = $result->fetch_assoc()){
 				$datetoday = date("Y-m-d");
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A", strtotime($originalDate));
 				$newDate2 = date("M j, Y", strtotime($row['dateofot']));
 					
 				if($datetoday >= $row['2daysred'] && $row['state'] == 'UA'){
@@ -577,7 +577,7 @@ if(isset($_GET['upovertime'])){
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A", strtotime($originalDate));
 
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] ){
@@ -648,7 +648,7 @@ if(isset($_GET['upovertime'])){
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A", strtotime($originalDate));
 
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] ){
@@ -725,7 +725,7 @@ if(isset($_GET['upovertime'])){
 	<?php
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("F j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A", strtotime($originalDate));
 				
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UATech' ){
@@ -760,7 +760,7 @@ if(isset($_GET['upovertime'])){
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 					$originalDate = date($row['datefile']);
-					$newDate = date("F j, Y", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A", strtotime($originalDate));
 					
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
@@ -863,7 +863,7 @@ if(isset($_GET['upovertime'])){
 		while($row = $result->fetch_assoc()){
 			
 			$originalDate = date($row['obdate']);
-			$newDate = date("F j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A", strtotime($originalDate));
 			$datetoday = date("Y-m-d");
 			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UATech' ){
 				echo '<tr style = "color: red">';
@@ -899,7 +899,7 @@ if(isset($_GET['upovertime'])){
 		while($row = $result->fetch_assoc()){
 			
 			$originalDate = date($row['obdate']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A", strtotime($originalDate));
 			$datetoday = date("Y-m-d");
 			if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 				echo '<tr style = "color: red">';
