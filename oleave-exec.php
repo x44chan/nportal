@@ -147,7 +147,6 @@
 				if(stristr($sql, '2016-12-31') == true){
 					$wthpay = null;
 				}
-
 			}
 		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $_POST['numdays'])){

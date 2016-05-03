@@ -176,37 +176,45 @@ echo '</div>';
 	echo '<script type="text/javascript">window.location.replace("?ac=penpty"); </script>';
 }
 	if(isset($_POST['uppetty'])){
-		$sql = "SELECT * FROM petty,login where login.account_id = '$_SESSION[acc_id]' and login.position != 'House Helper' and petty.account_id = '$_SESSION[acc_id]' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$_SESSION[acc_id]' and login.position != 'House Helper' and petty.account_id = '$_SESSION[acc_id]' and (petty.state != 'DAPetty' and petty.state != 'CPetty') and petty_id != '$petid' order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
 		$day5 = 0;
+		$projectcount = 0;
 		if($result->num_rows > 0){	
 			while($row = $result->fetch_assoc()){
 			$petid = $row['petty_id'];
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					$count += 1;
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+						$projectcount += 1;
+					}
+					
 					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
-						$day5 += 0;
+						$day5 += 1;
 					}
 				}
 				if($data['liqstate'] == 'LIQDATE'){
-					$count += 1;
 					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
-						$day5 += 0;
+						$day5 += 1;
+					}
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+						$projectcount += 1;
 					}
 				}
 				if($data['liqstate'] == 'EmpVal'){
-					$count += 1;
 					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
-						$day5 += 0;
+						$day5 += 1;
+					}
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+						$projectcount += 1;
 					}
 				}
 		   }
@@ -219,13 +227,18 @@ echo '</div>';
 		if(isset($_POST['pettype'])){
 			if($_POST['pettype'] == 'Project'){
 				$project = $_POST['project'];
-			}elseif($_POST['pettype'] == 'P.M.'){
-				$project = $_POST['pm'];
-				if($day5 > 0){
+				if($projectcount > 0){
 					$count = 1;
 				}else{
 					$count = 0;
 				}
+			}elseif($_POST['pettype'] == 'P.M.'){
+				$project = $_POST['pm'];	
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}			
 			}elseif($_POST['pettype'] == 'Internet'){
 				$project = $_POST['internet'];
 				if($day5 > 0){
@@ -235,6 +248,11 @@ echo '</div>';
 				}
 			}elseif($_POST['pettype'] == 'Others'){
 				$project = null;
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}elseif($_POST['pettype'] == 'House'){
 				$project = $_POST['house'];
 			}elseif($_POST['pettype'] == 'Combined'){
@@ -255,6 +273,8 @@ echo '</div>';
 		}else{
 			$state = 'UAPetty';
 		}
+
+		$petid = mysql_escape_string($_GET['editpetty']);
 		$sql = "UPDATE `petty` set projtype = '$pettype', project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
 		if($count == 0){
 			if($conn->query($sql) == TRUE){

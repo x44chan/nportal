@@ -688,7 +688,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
 						$projectcount += 1;
 					}
 					
@@ -704,7 +704,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
 						$projectcount += 1;
 					}
 				}
@@ -714,7 +714,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
 						$projectcount += 1;
 					}
 				}
@@ -747,6 +747,11 @@ $(document).ready(function(){
 				$_POST['project'] = $_POST['internet'];
 			}elseif($_POST['pettype'] == 'Others'){
 				$_POST['project'] = null;
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}elseif($_POST['pettype'] == 'House'){
 				$_POST['project'] = $_POST['house'];
 			}elseif($_POST['pettype'] == 'Combined'){

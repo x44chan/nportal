@@ -611,7 +611,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		<table id="myTable" style = "width: 100%;"class = "table table-hover " align = "center">
 			<thead>
 				<tr>
-					<th width = "12%" ><i>Date File</i></th>					
+					<th width = "12%" style="text-align: left !important;"><i>Date File</i></th>					
 					<th width = "16%" ><i>Name of Employee</i></th>
 					<th width = "16%" ><i>Type</i></th>
 					<th width = "23%" ><i>Reason</i></th>
@@ -839,7 +839,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-					<td><?php echo date("M j, Y", strtotime($row['datefile']));?></td>			
+					<td><?php echo date("M j, Y h:s A", strtotime($row['datefile']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b>Leave Balance<br>Vacation Leave: <font color = "green"> <?php echo $row['vleave'];?></font><br>Sick Leave: <font color = "green"> <?php echo $row['sleave'];?><br></font><b>For: <font color = "green"><?php echo date("M", strtotime($row['startdate']));?> - <?php echo date("M Y", strtotime($row['enddate']));?></font></td>
 					<td> - </td>
@@ -969,7 +969,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo '<tr>';
-			echo '<td>' . date("M j, Y", strtotime($row['datefile'])) . '</td>';
+			echo '<td>' . date("M j, Y h:s A", strtotime($row['datefile'])) . '</td>';
 			echo '<td>'.$row['fname']. ' '.$row['lname'].'</td>';
 			echo '<td><i><b>'.$row['type'].'<br> Date: <font color = "green">'.date("M j, Y",strtotime($row['holiday'])).'</font></b></td>';
 			echo '<td>'.$row['reason'].'</td>';
@@ -1014,7 +1014,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 					}
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y", strtotime($originalDate));					
+					$newDate = date("M j, Y h:s A", strtotime($originalDate));					
 					$explo = (explode(":",$row['approvedothrs']));
 					if($explo[1] > 0){
 						$explo[1] = '.5';
@@ -1041,10 +1041,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					if($row['projtype'] == 'Others'){
 						$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 					}
-					echo '<td>'.$newDate.'</td>';
+					echo '<td style="align: left !important;">'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>'.$late.'Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$row['startofot'] . ' - ' . $row['endofot'].'</font><br>Sched: <font color = "green">'.$row['officialworksched'] .'</font>'.$otlate . $project.'</td>';
-					echo '<td>'.$data1['reason'].'</td>';	
+					echo '<td>'.nl2br($data1['reason']).'</td>';	
 						if($row['datehr'] == ""){
 							$datehr = '<b><i>Waiting for approval</i></b>';
 							if(isset($_GET['bypass'])){
@@ -1114,7 +1114,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y", strtotime($originalDate));
+					$newDate = date("M j, Y h:s A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -1129,7 +1129,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$late = "";
 					}
-					echo '<td>'.$newDate .'</td>';
+					echo '<td style="align: left !important;">'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>'.$late.'Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font><br>Time: <font color = "green">'.$row['undertimefr'] . ' - ' . $row['undertimeto'] .'</td>';
 					echo '<td>'.$data1['reason'].'</td>';
@@ -1169,7 +1169,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['obdate']);
-					$newDate = date("M j, Y", strtotime($originalDate));
+					$newDate = date("M j, Y h:s A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -1188,7 +1188,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$ss = "&ua";
 					}
-					echo '<td>'.$newDate .'</td>';;
+					echo '<td style="align: left !important;">'.$newDate .'</td>';;
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>'.$late.'Official Business<br>Date: <font color = "green">'. date("M j, Y", strtotime($row['obdatereq'])). '</font><br>Sched: <font color = "green">'.$row['officialworksched'].'</font><br> In-Out: <font color = "green">'. $row['obtimein'] . ' - ' . $row['obtimeout'] . '</td>';
 					echo '<td>'.$row['obreason'].'</td>';
@@ -1242,7 +1242,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y", strtotime($originalDate));
+					$newDate = date("M j, Y h:s A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
@@ -1273,7 +1273,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					$query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();	
-					echo '<td>'.$newDate .'</td>';
+					echo '<td style="align: left !important;">'.$newDate .'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';	
 					echo '<td><b>'.$cancel.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$data1['reason'].'</td>';
