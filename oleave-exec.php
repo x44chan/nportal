@@ -106,6 +106,8 @@
 				$quarterdate[] = date("Y-m-d",strtotime('+'.$plus.' month', strtotime($datalea['startdate'])));
 			}
 			$xcount = array();
+			$chan = array();
+			$quar = array();
 			for($i = 0; $i < $quarter; $i++){
 				if($i == ($quarter - 1)){
 					$two = date("Y-12-31");
@@ -114,6 +116,15 @@
 					$two = date("Y-m-t",strtotime("-1 month",strtotime($quarterdate[$plus1])));
 				}
 				$one = $quarterdate[$i];
+				if(date("Y-m-d") > $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					if($counter['count'] == ""){
+						$months += ($months-1);
+					}elseif($counter['count'] < $months){
+						$months += ($months-$counter['count']);
+					}
+				}
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
 					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
@@ -127,9 +138,9 @@
 					continue;
 				}				
 				if($xcount[$i] >= $months) {
-					$wthpay = 'withoutpay';
+					$wthpay = 'withoutpay1';
 				}elseif(($months - $xcount[$i]) < $numdays){
-					$wthpay = 'withoutpay';
+					$wthpay = 'withoutpay2';
 				}else {
 					$wthpay = null;
 				}
@@ -144,6 +155,9 @@
 		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
+		}
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'])){
+			$restric = 5;
 		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -170,6 +184,8 @@
 				$alert = "No more Vacation Leave Balance.";
 			}elseif($restric == 4){
 				$alert = 'You can only request ' . $months . ' day/s per quarter ';
+			}elseif($restric == 5){
+				$alert = "Make it 2 request. 1.) ". $months ." day/s for with pay 2.) " . ($_POST['numdays'] - $months) . " day/s";
 			}else{
 				$alert = "Wrong Date";
 			}
