@@ -350,6 +350,15 @@
 					$two = date("Y-m-t",strtotime("-1 month",strtotime($quarterdate[$plus1])));
 				}
 				$one = $quarterdate[$i];
+				if(date("Y-m-d") > $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					if($counter['count'] == ""){
+						$months += ($months-1);
+					}elseif($counter['count'] < $months){
+						$months += ($months-$counter['count']);
+					}
+				}
 				if($dxatax['datefile'] >= $one && $dxatax['datefile'] <= $two){
 					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
@@ -381,6 +390,9 @@
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
 			$restric = 3;
 		}
+		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
+			$restric = 5;
+		}
 		$stmt = "UPDATE `nleave` set 
 			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state', leapay = '$wthpay'
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
@@ -407,6 +419,8 @@
 				$alert = "No more Vacation Leave Balance.";
 			}elseif($restric == 4){
 				$alert = 'You can only request ' . $months . ' day/s per quarter ';
+			}elseif($restric == 5){
+				$alert = "Make it 2 request. 1.) ". ($months-$xcount[0]) ." day/s for with pay 2.) " . ($_POST['numdays'] - (($months-$xcount[0]))) . " day/s";
 			}else{
 				$alert = "Wrong Date";
 			}

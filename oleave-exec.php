@@ -138,9 +138,9 @@
 					continue;
 				}				
 				if($xcount[$i] >= $months) {
-					$wthpay = 'withoutpay1';
+					$wthpay = 'withoutpay';
 				}elseif(($months - $xcount[$i]) < $numdays){
-					$wthpay = 'withoutpay2';
+					$wthpay = 'withoutpay';
 				}else {
 					$wthpay = null;
 				}
@@ -156,7 +156,7 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'])){
+		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
 			$restric = 5;
 		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
@@ -185,7 +185,7 @@
 			}elseif($restric == 4){
 				$alert = 'You can only request ' . $months . ' day/s per quarter ';
 			}elseif($restric == 5){
-				$alert = "Make it 2 request. 1.) ". $months ." day/s for with pay 2.) " . ($_POST['numdays'] - $months) . " day/s";
+				$alert = "Make it 2 request. 1.) ". ($months-$xcount[0]) ." day/s for with pay 2.) " . ($_POST['numdays'] - (($months-$xcount[0]))) . " day/s";
 			}else{
 				$alert = "Wrong Date";
 			}
