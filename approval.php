@@ -66,7 +66,7 @@
 				}
 			}
 			if($state == 'DAAdmin'){
-				$dareason = $_GET['dareason'];
+				$dareason = "dareason = '$dareason',";
 			}else{
 				$dareason = "";
 			}
@@ -74,7 +74,7 @@
 				$state = 'AAdmin';
 			}
 			$date = date('Y-m-d h:i A');
-			$sql = "UPDATE overtime set state = '$state', dareason = '$dareason', datehr = '$date' $otlate where overtime_id = $id and $states";
+			$sql = "UPDATE overtime set state = '$state', $dareason datehr = '$date' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
 			}else{

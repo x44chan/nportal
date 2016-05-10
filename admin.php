@@ -990,8 +990,8 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$date17 = date("d");
 			$dated = date("m");
 			$datey = date("Y");
-			$forque = date('Y-m-01', strtotime("previous month"));
-			$endque = date('Y-m-d');	
+			$forque = date('Y-m-01 00:00:00', strtotime("previous month"));
+			$endque = date('Y-m-d 23:59:59');	
 			
 			if(isset($_GET['bypass'])){
 				$sql = "SELECT * from overtime,login where login.account_id = overtime.account_id and (state = 'AHR' or state like 'UA%') and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC";
