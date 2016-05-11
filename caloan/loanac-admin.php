@@ -45,8 +45,8 @@
 				$date = date("Y-m-d");
 			?>
 				<option value=""> - - - - - - - </option>
-				<option value="01" <?php if($datsss3 == '01'){ echo ' selected '; }?>> 01 - 15 </option>
-				<option value="16" <?php if($datsss3 == '16'){ echo ' selected '; } ?>> 16 - 31 </option>
+				<option value="23" <?php if($datsss3 == '23'){ echo ' selected '; }?>> 23 - 07 </option>
+				<option value="08" <?php if($datsss3 == '08'){ echo ' selected '; } ?>> 08 - 22 </option>
 
 			<?php
 				echo '</select>';
