@@ -35,19 +35,21 @@
 		if ($conn->query($stmt) === TRUE) {
 			$stmtss = "SELECT * FROM `loan_cutoff` where loan_id = '$loanid' ORDER BY cutoff_id desc limit 1";
 			$datas = $conn->query($stmtss)->fetch_assoc();
-			$day = substr($datas['cutoffdate'], 8, 10);
-			if($day < '16'){
-				$day = '16';
-				$end = 't';
+			$day = substr($datas['enddate'], 8, 10);
+			if($day == '22'){
+				$day = '23';
+				$end = '07';
 				$mo = 0;
+				$moe = 1;
 			}else{
-				$day = '01';
-				$end = '15';
-				$mo = 1;
+				$day = '08';
+				$end = '22';
+				$mo = 0;
+				$moe = 0;
 			}
 			$state = 'CutOffPaid';
-			$date = date("Y-m-".$day, strtotime('+'.$mo.' month', strtotime($datas['cutoffdate'])));
-			$enddate = date("Y-m-".$end, strtotime('+'.$mo.' month', strtotime($datas['cutoffdate'])));
+			$date = date("Y-m-".$day, strtotime('+'.$mo.' month', strtotime($datas['enddate'])));
+			$enddate = date("Y-m-".$end, strtotime('+'.$mo+$moe.' month', strtotime($datas['enddate'])));
 			$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			$stmt->bind_param("iisssss", $loanid, $accid, $datas['cutamount'], $date, $state, $duration, $enddate);
 			$stmt->execute();

@@ -1136,8 +1136,8 @@ $(document).ready(function(){
 				<label>Payment Start (Day)</label>
 				<select class="form-control" name = "cutoffday">
 					<option value=""> - - - - - - - </option>
-					<option value="01">1-15</option>
-					<option value="16">16-31</option>
+					<option value="23">23-07</option>
+					<option value="08">08-22</option>
 				</select>
 			</div>
 			<div class="form-group">
@@ -1151,8 +1151,8 @@ $(document).ready(function(){
 			<div class="form-group">
 				<p style="color: red; font-size: 12px;">
 					<b>Example: <br>
-						Your Payment Start is Feb 01 - 15 2016 <br>
-						Cutoff Date Feb 16, 2016</b>
+						Your Payment Start is Feb 23 - 07(next mont) <br>
+						Cutoff Date Feb 08, 2016</b>
 				</p>
 			</div>
               <button type="submit" name = "loanpet" id = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>

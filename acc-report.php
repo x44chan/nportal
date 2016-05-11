@@ -320,7 +320,7 @@ $(document).ready( function () {
 ?>
 
 </div>
-<?php if(!isset($_GET['print'])){ include('emp-prof.php') ?>
+<?php include("req-form.php"); if(!isset($_GET['print'])){ include('emp-prof.php') ?>
 <?php 
 	if($_SESSION['pass'] == 'defaultpass'){
 		include('up-pass.php');
@@ -334,5 +334,5 @@ $(document).ready(function(){
   });
 });
 </script>
-<?php } include("req-form.php");?>
+<?php } ?>
 <?php include("footer.php"); }?>

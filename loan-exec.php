@@ -66,6 +66,7 @@
 	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
 	 	if ($conn->query($sql) === TRUE) {	 
 	 			$mo = 0;
+	 			$moe = 0;
 				$cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
 				$cutamount = number_format($cutamount,2);
 				$state = 'CutOffPaid';
@@ -75,12 +76,14 @@
 				$date = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 				$_POST['upduration'] *= 2;
 				for($i = 1; $i <= $_POST['upduration']; $i++){					
-					if($day == '16'){
-						$day = '16';
-						$end = 't';						
+					if($day == '23'){
+						$day = '23';
+						$end = '07';
+						$moe = 1;					
 					}else{
-						$day = '01';
-						$end = '15';						
+						$day = '08';
+						$end = '22';	
+						$moe = 0;					
 					}
 					/*$stmtss = "SELECT sum(cutamount) as sum FROM `loan_cutoff` where loan_id = '$o'";
 					$datas = $conn->query($stmtss)->fetch_assoc();
@@ -94,17 +97,17 @@
 						$cutamount = number_format($add,2);
 					}*/
 					$date = date("Y-m-".$day, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
-					$enddate = date("Y-m-".$end, strtotime("+" . $mo . ' months',strtotime($cutoffdate)));
+					$enddate = date("Y-m-".$end, strtotime("+" . $mo + $moe . ' months',strtotime($cutoffdate)));
 					$stmt = $conn->prepare("INSERT INTO `loan_cutoff` (loan_id, account_id, cutamount, cutoffdate, state, duration, enddate) VALUES (?, ?, ?, ?, ?, ?, ?)");
 					$stmt->bind_param("iisssss", $o, $accid, $cutamount, $date, $state, $duration, $enddate);
 					$stmt->execute();
-					if($day == '16'){
-						$day = '01';
-						$end = '15';
+					if($day == '23'){
+						$day = '08';
+						$end = '22';
 						$mo += 1;
 					}else{
-						$day = '16';
-						$end = 't';
+						$day = '23';
+						$end = '07';
 						$mo += 0;
 					}
 				}

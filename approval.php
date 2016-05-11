@@ -183,7 +183,7 @@
 		}else{
 			$dareason = "";
 		}
-		if($_SESSION['level'] == 'HR' && ($state == 'AHR' || $state == 'DAHR')){
+		if(($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'ACC') && ($state == 'AHR' || $state == 'DAHR')){
 			$date = date('Y-m-d h:i A');
 			if(isset($_SESSION['bypass'])){
 				$xstate = '(state = "UA"  or state = "UATech")';

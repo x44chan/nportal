@@ -628,6 +628,8 @@
 							echo'
 								<td width = "200">'.$late.'
 									<a href = "?approve=DA'.$_SESSION['level'].'&upob='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-edit"></span> Add Time In / Out</a>
+									<a href = "?approve=DAHR&dofficialbusiness_id='.$row['officialbusiness_id'].'&acc='.$_GET['ac'].'"';?><?php echo'" class="btn btn-danger" role="button" id = "DAHR">Disapprove</a>
+						
 								</td>
 							</tr>';
 							}
@@ -817,7 +819,33 @@
 		
 	}echo '</tbody></table></form>';
 	$conn->close();
+
 }
+if(isset($_GET['dofficialbusiness_id'])){
+		$id = mysqli_real_escape_string($conn, $_GET['dofficialbusiness_id']);
+		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		echo '<form action = "approval.php" method = "get" class = "form-group">
+				<table class = "table table-hover" align = "center">
+					<thead>
+						<tr>
+							<th colspan  = 3><h3> Disapproval Reason </h3></th>
+						</tr>
+					</thead>
+					<tr>
+						<td align = "right"><labe for = "dareason">Input Disapproval reason</labe></td>
+						<td><textarea id = "dareason" class = "form-control" type = "text" name = "dareason" required ></textarea></td>
+					</tr>
+					<tr>
+						<td colspan = 2><input type = "submit" class = "btn btn-primary" name = "subda"/>   <a href = "?ac=penob" class = "btn btn-danger">Back</a></td>
+					</tr>
+					<tr>
+						<td><input type = "hidden" name = "officialbusiness_id" value = "'.$id.'"/></td>
+						<td><input type = "hidden" name = "approve" value = "'.$state.'"/></td>
+						<td><input type = "hidden" name = "ac" value = "'.$_GET['acc'].'"/></td>
+					</tr>
+				</table>
+			</form>';		
+	}
 ?>
 </div>
 <?php include('emp-prof.php') ?>
