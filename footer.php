@@ -31,3 +31,59 @@ $(document).ready(function(){
 });
 </script>
 <?php } ?>
+<script type="text/javascript">
+	function showUser(str) {
+		if (str == "") {
+		    document.getElementById("loc").innerHTML = "";
+		    return;
+		} else { 
+		    if (window.XMLHttpRequest) {
+		        // code for IE7+, Firefox, Chrome, Opera, Safari
+		        xmlhttp = new XMLHttpRequest();
+		    } else {
+		        // code for IE6, IE5
+		        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function() {
+		        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+		            document.getElementById("loc").innerHTML = xmlhttp.responseText;		  
+		        }
+		    };
+		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str,true);
+		    xmlhttp.send();
+		}
+	}
+	function showUserx(str) {
+		if (str == "" || str == 'all') {
+		    document.getElementById("locx").innerHTML = "";
+		    return;
+		} else { 
+		    if (window.XMLHttpRequest) {
+		        // code for IE7+, Firefox, Chrome, Opera, Safari
+		        xmlhttp = new XMLHttpRequest();
+		    } else {
+		        // code for IE6, IE5
+		        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function() {
+		        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+		            document.getElementById("locx").innerHTML = xmlhttp.responseText;
+		            <?php 
+			        	if(isset($_GET['expenses']) || isset($_GET['expn'])){
+			        		echo "$('#otproject').addClass('input-sm');"; 
+			        	}
+		        	?>
+		        }
+		    };
+		    <?php
+		    	if(isset($_GET['expenses']) || isset($_GET['expn'])){
+		    		$x = "x=1";
+		    	}else{
+		    		$x = "b";
+		    	}
+		    ?>
+		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str,true);
+		    xmlhttp.send();
+		}
+	}
+</script>

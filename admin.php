@@ -630,6 +630,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$proj = "SELECT * FROM `project` where name = '$row[project]'";
 			$resproj = $conn->query($proj)->fetch_assoc();
 			$pettype = '<br>'.$row['projtype'].': <font color = "green">'.$row['project'].'</font>';
+			if(isset($resproj['loc'] )){
+				$pettype = '<br>Loc: <font color = "green">'. $resproj['loc']. '</font>'.$pettype;
+			}
 			if($row['projtype'] == 'Others'){
 				$pettype = '<br><font color = "green">' . $row['projtype'] . '</font>';
 			}
@@ -944,11 +947,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($row['project'] == 'P.M.' || $row['project'] == 'Internet'){
 				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
 			}else{
-				$pettype = '<br>Proj: <font color = "green">' . $row['project'].'</font>';
+				$xx = "SELECT * FROM project where name = '$row[project]'";
+				$xxx = $conn->query($xx)->fetch_assoc();
+				$pettype = '<br>Loc: <font color ="green">' . $xxx['loc'] .'</font><br>Proj: <font color = "green">' . $row['project'].'</font>';
 			}
 			if($row['project'] == ""){
 				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
 			}
+
 	?>
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			

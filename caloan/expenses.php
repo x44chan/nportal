@@ -27,12 +27,19 @@
 		$_SESSION['edate'] = "";
 		$_SESSION['datefr'] = "";
 		$_SESSION['dateto'] = "";
+		$_SESSION['loc'] = "";
 		//echo '<script>window.location.replace("accounting-petty.php?expenses");</script>';
 	}
 	if(isset($_GET['pettype']) && $_GET['pettype'] == 'all'){
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
 		$_SESSION['type'] = "";
+	}elseif(isset($_GET['loc']) && $_GET['loc'] == 'all' && $_GET['pettype'] == 'Project'){
+		$_SESSION['qsearch']= "projtype = 'Project' and ";
+		$_SESSION['searchbox'] = "all";
+		$_SESSION['type'] = "Project";
+		$_GET['pettype'] = "all";
+		$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
 	}
 	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
@@ -41,7 +48,8 @@
 		}elseif($_SESSION['type'] == 'Internet'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['internet']);
 		}else{
-			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['project']);
+			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['otproject']);
+			$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
 		}
 		
 		if($_SESSION['searchbox'] == 'all'){
@@ -77,7 +85,7 @@
 					<label>Date To: </label>
 					<input <?php if(isset($_SESSION['dateto'])){ echo 'value = "' . $_SESSION['dateto'] . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "dateto" class="form-control input-sm">
 				</div>
-				<div class="col-xs-3"  style="margin-top: -15px;">
+				<div class="col-xs-2"  style="margin-top: -15px;">
 					<label>Type </label>
 		      		<select class="form-control input-sm" name = "pettype">
 		      			<option value="all"> All </option>
@@ -86,21 +94,21 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
 		      		</select>
 				</div>
-				<div class="col-xs-4" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Project'){echo 'display: none;';}?>" id = "project">
-					<label>Project List</label>
-					<select class="form-control input-sm" name = "project">
+				<div class="col-xs-2" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Project'){echo 'display: none;';}?>" id = "project">
+					<label>Location</label>
+					<select class="form-control input-sm" name = "loc" onchange="showUserx(this.value)">
 						<option value = "all"> All </option>
 	            		<?php
-	            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' order by name";
+	            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
 	            			$xresult = $conn->query($xsql);
 	            			if($xresult->num_rows > 0){
 	            				while($xrow = $xresult->fetch_assoc()){
-	            					if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] == $xrow['name']){
+	            					if((isset($_GET['loc']) && $_GET['loc'] == $xrow['loc']) || (isset($_SESSION['loc']) && $_SESSION['loc'] == $xrow['loc'])){
 	            						$select = ' selected ';
 	            					}else{
 	            						$select = "";
 	            					}
-	            					echo '<option '.$select.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            					echo '<option '.$select.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
 	            				}
 	            			}
 	            		?>			
@@ -145,6 +153,39 @@
 	            			}
 	            		?>			
 					</select>
+				</div>				
+				<div class="col-xs-4" id = "locx" style="margin-top: -12px;">
+					<?php
+						if((isset($_GET['otproject']) && $_GET['otproject'] != "" && $_GET['otproject'] != 'all') || (isset($_SESSION['loc']) && $_SESSION['loc'] != "" && $_SESSION['loc'] != 'all')){
+							echo '<b>PO <font color = "red"> * </font></b>';
+							if(!isset($_GET['loc'])){
+								$_GET['loc'] = $_SESSION['loc'];
+							}
+							if(!isset($_GET['otproject'])){
+								$_GET['otproject'] = $_SESSION['searchbox'];
+							}
+							$otproject = mysqli_real_escape_string($conn, $_GET['loc']);
+							$xx = "SELECT * FROM project where loc = '$otproject'";
+							$xxx = $conn->query($xx);
+							echo '<select name = "otproject" id = "otproject" class = "form-control input-sm">';
+							if($_GET['otproject'] == 'all'){
+								echo '<option selected value = "all">All</option>';		
+							}else{
+								echo '<option value = "all">All</option>';
+							}	
+							if($xxx->num_rows > 0){
+								while ($srow = $xxx->fetch_assoc()) {
+									if($_GET['otproject'] == $srow['name']){
+	            						$select = ' selected ';
+	            					}else{
+	            						$select = "";
+	            					}
+	            					echo '<option '.$select.' value = "' . $srow['name'] . '"> ' . $srow['name'] . '</option>';
+								}
+							}
+							echo '</select>';
+						}
+					?>
 				</div>
 			</div>
 			<div class="row">
@@ -158,8 +199,8 @@
 	<div style="margin-bottom: 40px;"></div>
 <?php if(isset($_GET['expenses'])){ ?>
 <div id = "report">
-	<h2 align="center" style="text-transform: uppercase;" id = "green"><?php if(isset($_SESSION['searchbox'])){echo $_SESSION['searchbox']; if($_SESSION['searchbox'] == 'all'){ echo ' ' . $_SESSION['type'] . ': '; }} if(isset($_SESSION['alls'] )){ echo $_SESSION['alls'] ;} ?> Expenses </h2>
-	<i><h4 align="center" style="margin-top: -20px;"><?php if(isset($_SESSION['datefr']) && $_SESSION['datefr'] != ""){ echo '<br>'; if(substr($_SESSION['datefr'], 0 , 4) == substr($_SESSION['dateto'], 0 , 4)){ echo date("M j", strtotime($_SESSION['datefr'])); }else{echo date("M j, Y", strtotime($_SESSION['datefr']));} echo ' - ' . date("M j, Y",strtotime($_SESSION['dateto'])); } ?></h4></i>
+	<h2 align="center" style="text-transform: uppercase;" id = "green"><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc'];}?> Expenses </h2><h4 align="center" style="text-transform: capitalize;"><i><?php if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] != ""){ echo 'Project: ' .$_SESSION['searchbox'];}?></h4></i>
+	<i><h5 align="center" style="margin-top: -20px; font-size: 12px;"><?php if(isset($_SESSION['datefr']) && $_SESSION['datefr'] != ""){ echo '<br>'; if(substr($_SESSION['datefr'], 0 , 4) == substr($_SESSION['dateto'], 0 , 4)){ echo date("M j", strtotime($_SESSION['datefr'])); }else{echo date("M j, Y", strtotime($_SESSION['datefr']));} echo ' - ' . date("M j, Y",strtotime($_SESSION['dateto'])); } ?></h5></i>
 	<div class="row">
 		<div class="col-xs-12" align="right" <?php if(isset($_GET['print'])){ echo 'style="font-size: 11px;"'; }?>>
 			<i><b>
@@ -200,10 +241,18 @@
 			$sql23 = "SELECT sum(liqamount) as sumliq,petty_liqdate.* from petty_liqdate where petty_id = '$row[petty_id]'";
 			$data23 = $conn->query($sql23)->fetch_assoc();
 			
+			$sql234 = "SELECT * from project where name = '$row[project]'";
+			$data234 = $conn->query($sql234)->fetch_assoc();
+			
 			if(!is_numeric($row['amount'])){
 				$row['amount'] = str_replace(',', "", $row['amount']);
 			}else{
 				$row['amount'] = $row['amount'];
+			}
+			if($data234['loc'] == null){
+				$asd = null;
+			}else{
+				$asd = '<br><b>Location: </b>'.$data234['loc'];
 			}
 			$totalpet += $row['amount'];
 			$totalused += $data23['sumliq'];
@@ -212,7 +261,7 @@
 			echo	'<td>' . $data['fname'] . ' ' . $data['lname'] . '</td>';
 			echo	'<td>₱ ' . number_format($row['amount'], 2) . '</td>';		
 			echo	'<td>₱ ' . number_format($data23['sumliq'], 2) . '</td>';
-			echo	'<td style= "text-align: left;"><b>' . $row['projtype'] .': </b>'. $row['project'] . '</td>';
+			echo	'<td style= "text-align: left;"><b>' . $row['projtype'] .': </b>'. $row['project'] . $asd.'</td>';
 			echo	'<td>' . $row['petreason'] . '</td>';
 			echo '</tr>';
 		}

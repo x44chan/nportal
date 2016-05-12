@@ -39,7 +39,7 @@ $(document).ready(function(){
 	}
 ?>
 
-<div id = "offb" style = "margin-top: -30px; display: none; height:550px;">
+<div id = "offb" style = "margin-top: -30px; display: none; height:600px;">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
 			<table width = "60%" align = "center">
@@ -141,10 +141,10 @@ $(document).ready(function(){
 		</div>
 	</form>
 </div>
-<div id = "undertime"style = "margin-top: -30px; display: none; height:480px;">
+<div id = "undertime"style = "margin-top: -30px; display: none; height:550px;">
 	<?php include('undertime.php'); ?>
 </div>
-<div id = "formhidden"style = "margin-top: -30px;display: none; height:600px;" >
+<div id = "formhidden"style = "margin-top: -30px;display: none; height:700px;" >
 	<form role = "form"  align = "center"action = "ot-exec.php" method = "post">
 		<div class = "form-group">
 			<table align = "center" width="50%">
@@ -191,21 +191,24 @@ $(document).ready(function(){
 					</td>
 				</tr>
             	<tr style = "display: none;" id = "otproject">
-            		<td><label>Project <font color = "red">*</font></label></td>
+            		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "otproject">
+            			<select class="form-control" name = "loc" onchange="showUser(this.value)">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xsql = "SELECT loc FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
-		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            					echo '<option value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
 		            				}
 		            			}
 		            		?>
 		            	</select>
 		            </td>
+		        </tr>
+		        <tr id = "loc">
+		        	
 		        </tr>
 		        <tr style = "display: none;" id = "otpm">
             		<td><label>P.M. <font color = "red">*</font></label></td>
@@ -582,19 +585,31 @@ $(document).ready(function(){
           	</div>
           	<div style = "display: none;" class="form-group" id = "project">
             	<label>Project <font color = "red">*</font></label>
-            	<select class="form-control" name = "project">
+            	<select class="form-control" name = "loc" onchange="showUserx(this.value)">
             		<option value = ""> - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' order by CHAR_LENGTH(name)";
+            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
+            			$loc = "";
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
-            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
+            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
+            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
+            						$selecteds = ' selected ';		            						
+            						$loc = $xresult2['loc'];
+            					}else{
+            						$selecteds = "";
+            					}
+
+            					echo '<option '.$selecteds.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
             				}
             			}
             		?>
             	</select>
             </div>
+            <div class="form-group" id = "locx">
+	        </div>
             <div style = "display: none;" class="form-group" id = "pm">
             	<label>P.M. <font color = "red">*</font></label>
             	<select class="form-control" name = "pm">
@@ -730,7 +745,7 @@ $(document).ready(function(){
 				}else{
 					$count = 0;
 				}
-				$_POST['project'] = $_POST['project'];
+				$_POST['project'] = $_POST['otproject'];
 			}elseif($_POST['pettype'] == 'P.M.'){
 				if($day5 > 0){
 					$count = 1;
@@ -1370,8 +1385,8 @@ $("#submita").click(function(){
 				<label>Payment Start (Day)</label>
 				<select class="form-control" name = "cutoffday">
 					<option value=""> - - - - - - - </option>
-					<option value="01">01 - 15</option>
-					<option value="16">16 - 31</option>
+					<option value="23">23 - 07</option>
+					<option value="08">08 - 22</option>
 				</select>
 			</div>
 			<div class="form-group">
@@ -1385,8 +1400,8 @@ $("#submita").click(function(){
 			<div class="form-group">
 				<p style="color: red; font-size: 12px;">
 					<b>Example: <br>
-						Your Payment Start is Feb 01, 2016 <br>
-						Covered Cutoff is Feb 01 - Feb 15, 2016</b>
+						Your Payment Start is Feb 23 - 07(next mont) <br>
+						Cutoff Date Feb 08, 2016</b>
 				</p>
 			</div>
               <button type="submit" name = "penaltysub" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>

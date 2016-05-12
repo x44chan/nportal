@@ -144,6 +144,7 @@ $(document).ready(function(){
 				$('select[name="otproject"]').attr('required',true);
 			}else{
 				$('#otproject').hide();
+				document.getElementById("loc").innerHTML = "";
 				$('select[name="otproject"]').attr('required',false);
 			}
 			if(selected2 == 'P.M.'){

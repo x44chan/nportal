@@ -55,10 +55,37 @@
 				<tr <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" '; } ?> id = "otproject">
             		<td><label>Project <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "otproject">
+            			<select class="form-control" name = "loc" onchange="showUser(this.value)">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1'";
+		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
+		            			$xresult = $conn->query($xsql);
+		            			$loc = "";
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
+		            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
+		            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
+		            						$selecteds = ' selected ';		            						
+		            						$loc = $xresult2['loc'];
+		            					}else{
+		            						$selecteds = "";
+		            					}
+
+		            					echo '<option '.$selecteds.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>		        
+		        <tr id = "loc" >
+		        	<?php if($row['projtype'] == 'Project'){ ?>
+		        	<td><b>PO <font color = "red"> * </font></b></td>
+		        	<td>
+		        		<select name = "otproject" class = "form-control">
+		        			<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' and loc = '$loc' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -71,8 +98,9 @@
 		            				}
 		            			}
 		            		?>
-		            	</select>
-		            </td>
+		        		</select>
+		        	</td>
+		        	<?php } ?>
 		        </tr>
 		        <tr <?php if($row['projtype'] != 'P.M.'){ echo ' style = "display: none;" '; } ?> id = "otpm">
             		<td><label>P.M. <font color = "red">*</font></label></td>
