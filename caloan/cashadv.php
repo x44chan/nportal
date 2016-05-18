@@ -9,8 +9,9 @@
 				<td colspan = 8 align = center><h2> Cash Advance Request Status </h2></td>
 			</tr>
 			<tr>
-				<th width="20%">Date File</th>
-				<th width="20%">Amount</th>
+				<th width="15%">Date File</th>
+				<th width="10%">Source</th>
+				<th width="15%">Amount</th>
 				<th width="40%">Reason</th>
 				<th width="20%">State</th>
 			</tr>
@@ -20,6 +21,7 @@
 	if($result->num_rows > 0){
 		while ($row = $result->fetch_assoc()) {
 			echo '<tr><td>' . date("M j, Y", strtotime($row['cadate'])) . '</td>';
+			echo '<td><b>Admin/Dep. Head</td>';
 			echo '<td>₱ ' . number_format($row['caamount']) . '</td>';
 			echo '<td>' . $row['careason'] . '</td>';
 			echo '<td><b>';

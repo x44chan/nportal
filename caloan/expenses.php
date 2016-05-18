@@ -53,7 +53,7 @@
 		}
 		
 		if($_SESSION['searchbox'] == 'all'){
-			$qsearch = "projtype like '%$_SESSION[type]%' and petty.project = name and ";
+			$qsearch = "projtype like '%$_SESSION[type]%' and petty.project = name and loc = '$_SESSION[loc]' and ";
 		}else{
 			$qsearch = "projtype = '$_SESSION[type]' and project like '%$_SESSION[searchbox]%' and";
 		}
@@ -216,6 +216,7 @@
 	<table class="table" <?php if(!isset($_GET['print'])){ echo 'id = "myTabledate"'; }?>>
 		<thead style="border-bottom: 2px solid #ddd;">
 			<tr>
+				<th width="5%"> # </th>
 				<th width="10%"> Date </th>
 				<th width="20%"> Name </th>
 				<th width="12%"> Amount </th>
@@ -257,6 +258,7 @@
 			$totalpet += $row['amount'];
 			$totalused += $data23['sumliq'];
 			echo '<tr>';
+			echo	'<td>' . $row['petty_id'] . '</td>';
 			echo	'<td>' . date("M j, Y", strtotime($row['completedate'])) . '</td>';
 			echo	'<td>' . $data['fname'] . ' ' . $data['lname'] . '</td>';
 			echo	'<td>₱ ' . number_format($row['amount'], 2) . '</td>';		
