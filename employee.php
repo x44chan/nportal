@@ -135,6 +135,7 @@
 					<tr>
 						<th>Loan #</th>
 						<th>Date File</th>
+						<th>Source</th>
 						<th>Type</th>
 						<th>Amount</th>
 						<th>Start Date</th>
@@ -161,6 +162,7 @@
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td><b> Admin/Dep. Head </td>';
 					echo	'<td>' . $row['penalty'] . '</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['startdate'])). '</td>';
