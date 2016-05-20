@@ -312,32 +312,29 @@
 		include("conf.php");
 		if(isset($_GET['prev'])){
 			$date17 = date("d");
-			if($date17 >= 17){
-				$forque = date('Y-m-01');
-				$endque = date('Y-m-15 11:59 PM');
+			if($date17 <= 8){
+				$forque = date('Y-m-08 00:00:00');
+				$endque = date('Y-m-22 23:59:59');
 			}else{
-				$forque = date('Y-m-16');
-				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
+				$forque = date('Y-m-23 00:00:00',strtotime("previous month"));
+				$endque = date('Y-m-07 23:59:59');
 			}
+			/*
 			if(date("d") >= 2 && date("d") < 17){
 				$forque = date('Y-m-16', strtotime("previous month"));
 				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
-			}
-			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
+			}*/
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}else{
 			$date17 = date("d");
-			if($date17 >= 17){
-				$forque = date('Y-m-16');
-				$endque = date('Y-m-31 11:59 PM');
+			if($date17 <= 8){
+				$forque = date('Y-m-23 00:00:00',strtotime("previous month"));
+				$endque = date('Y-m-07 23:59:59');
 			}else{
-				$forque = date('Y-m-01');
-				$endque = date('Y-m-15 11:59 PM');
+				$forque = date('Y-m-08 00:00:00');
+				$endque = date('Y-m-22 23:59:59');
 			}
-			if(date("d") < 2){
-				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-d 11:59 PM');
-			}
-			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
+			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and dateofot BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
@@ -372,7 +369,7 @@
 							echo '<p><font color = "green">Approved by HR</p>';
 						}else if($row['state'] == 'AACC'){
 							echo '<p><font color = "green">Approved by Accounting</p>';
-						}elseif($row['state']){
+						}elseif($row['state'] == 'CheckedHR'){
 							echo '<p><font color = "green">Checked by HR</p>';
 						}else{
 							echo '<p><font color = "green">Approved by Dep. Head</p>';
@@ -390,30 +387,22 @@
 	include("conf.php");
 		if(isset($_GET['prev'])){
 			$date17 = date("d");
-			if($date17 >= 17){
-				$forque = date('Y-m-01');
-				$endque = date('Y-m-15 11:59 PM');
+			if($date17 <= 8){
+				$forque = date('Y-m-08 00:00:00');
+				$endque = date('Y-m-22 23:59:59');
 			}else{
-				$forque = date('Y-m-16');
-				$endque = date('Y-m-31 11:59 PM', strtotime("previous month"));
-			}
-			if(date("d") == 2){
-				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-t 11:59 PM', strtotime("previous month"));
+				$forque = date('Y-m-23 00:00:00',strtotime("previous month"));
+				$endque = date('Y-m-07 23:59:59');
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}else{
 			$date17 = date("d");
-			if($date17 >= 17){
-				$forque = date('Y-m-16');
-				$endque = date('Y-m-31 11:59 PM');
+			if($date17 <= 8){
+				$forque = date('Y-m-23 00:00:00',strtotime("previous month"));
+				$endque = date('Y-m-07 23:59:59');
 			}else{
-				$forque = date('Y-m-01');
-				$endque = date('Y-m-15 11:59 PM');
-			}
-			if(date("d") < 2){
-				$forque = date('Y-m-16', strtotime("previous month"));
-				$endque = date('Y-m-d 11:59 PM');
+				$forque = date('Y-m-08 00:00:00');
+				$endque = date('Y-m-22 23:59:59');
 			}
 			$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datehr BETWEEN '$forque' and '$endque' and (state = 'AAdmin' or state = 'CheckedHR')";
 		}

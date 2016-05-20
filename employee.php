@@ -203,20 +203,16 @@
 	$date17 = date("d");
 	$dated = date("m");
 	$datey = date("Y");
-	if($date17 >= 17){
-		$forque = date('Y-m-16');
-		$endque = date('Y-m-31');
+	if($date17 <= 8){
+		$forque = date('Y-m-23 00:00:00',strtotime("previous month"));
+		$endque = date('Y-m-d 23:59:59');
 	}else{
-		$forque = date('Y-m-01');
-		$endque = date('Y-m-16');
-	}
-	if(date("d") < 2){
-		$forque = date('Y-m-16', strtotime("previous month"));
-		$endque = date('Y-m-d');
+		$forque = date('Y-m-08 00:00:00');
+		$endque = date('Y-m-d 23:59:59');
 	}
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penot'){
 
-		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datefile BETWEEN '$forque' and '$endque' ORDER BY state ASC,datefile ASC";
+		$sql = "SELECT * FROM overtime,login where overtime.account_id = $accid and login.account_id = $accid and datefile BETWEEN '$forque' and '$endque' ORDER BY datefile ASC,state ASC";
 		$result = $conn->query($sql);
 		
 	?>
