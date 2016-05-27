@@ -77,7 +77,7 @@
 				}			
 			}
 		}
-		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular'){
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular'){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -117,7 +117,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -126,7 +126,7 @@
 					}
 				}
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -155,7 +155,7 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
 			$restric = 5;
 		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 

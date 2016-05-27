@@ -439,6 +439,80 @@
 				
 			}
 		}
+			$quarterdate = array();
+			$date1=date_create($datalea['startdate']);
+			$date2=date_create($datalea['enddate']);
+			$diff=date_diff($date1,$date2);
+			$months = $diff->format("%m");
+			if($months > 9 && $months <= 12){
+				$months = ceil($vl / 4);
+				$quarter = 4;
+			}elseif($months > 6 && $months <= 9){
+				$months = ceil($vl / 3);
+				$quarter = 3;
+			}elseif($months > 3 && $months <= 6) {
+				$months = ceil($vl / 2);
+				$quarter = 2;
+			}elseif($months > 0 && $months <= 3){
+				$months = $vl;
+				$quarter = 1;
+			}
+			$plus = 0;
+			for($i = 1; $i <= $quarter; $i++){
+				if($i > 1){
+					$plus += 3;
+				}else{
+					$plus = 0;
+				}
+				$quarterdate[] = date("Y-m-d",strtotime('+'.$plus.' month', strtotime($datalea['startdate'])));
+			}
+			$xcount = array();
+			$chan = array();
+			$quar = array();
+			for($i = 0; $i < $quarter; $i++){
+				if($i == ($quarter - 1)){
+					$two = date("Y-12-31");
+				}else{
+					$plus1 = $i+1;
+					$two = date("Y-m-t",strtotime("-1 month",strtotime($quarterdate[$plus1])));
+				}
+				$one = $quarterdate[$i];
+				if(date("Y-m-d") > $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					if($counter['count'] == ""){
+						$months += ($months-1);
+					}elseif($counter['count'] < $months){
+						$months += ($months-$counter['count']);
+					}
+				}
+				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$counter = $conn->query($sql)->fetch_assoc();
+					$xcount[] = $counter['count'];
+				}else{
+					continue;
+				}
+			}
+			for($i = 0; $i < $quarter; $i++){
+				if(!isset($xcount[$i])){
+					continue;
+				}				
+				if($xcount[$i] >= $months) {
+					$wthpay = 'withoutpay1';
+				}elseif(($months - $xcount[$i]) < $numdays){
+					$wthpay = 'withoutpay2';
+				}else {
+					$wthpay = null;
+				}
+				if(stristr($sql, '2016-12-31') == true){
+					$wthpay = null;
+				}
+
+			}
+		if(!isset($xcount[0])){
+			$xcount = 0;
+		}
 		$sql = "SELECT * FROM nleave,login where login.account_id = $accids and leave_id = '$oid' and state = 'UA'";
 		$result = $conn->query($sql);
 
@@ -453,6 +527,7 @@
 			<tr><td width="30%"><b>Date Hired:</td><td width="30%"><?php echo date("M j, Y", strtotime($row['edatehired'])); ?></td></tr> 
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
 			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
+			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?></td></tr> 
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
 			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";

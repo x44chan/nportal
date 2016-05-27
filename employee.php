@@ -162,14 +162,18 @@
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
-					echo	'<td><b> Admin/Dep. Head </td>';
+					if($row['state'] != 'UALoan'){
+						echo	'<td><b> Admin/Dep. Head </td>';
+					}else{
+						echo	'<td> - </td>';
+					}
 					echo	'<td>' . $row['penalty'] . '</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($row['startdate'])). '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
 					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
-									echo '<b>Pending to Admin</b>';
+									echo '<b>Pending to Accounting</b>';
 								}elseif($row['state'] == 'DALoan'){
 									echo '<b><font color = "red">Disapproved by the Admin</font></b>';
 								}elseif($row['state'] == 'DECLoan'){

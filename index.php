@@ -57,7 +57,7 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 		$uname = mysqli_real_escape_string($conn, $_POST['uname']);
 		$password =  mysqli_real_escape_string($conn, $_POST['password']);
 		
-		$sql = "SELECT * FROM `login` where uname = '$uname' and pword = '$password' and active != '0'";
+		$sql = "SELECT * FROM `login` where uname = '$uname' or pword = '$password' and active != '0'";
 		$result = $conn->query($sql);
 		
 		if($result->num_rows > 0){

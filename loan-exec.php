@@ -57,12 +57,18 @@
 	if(isset($_POST['caapp'])){
 		$o = mysql_escape_string($_POST['loanid']);
 		$accid = mysql_escape_string($_POST['accid']);
-		$appamount = mysql_escape_string($_POST['loanamount']);		
+		$appamount = mysql_escape_string($_POST['loanamount']);	
+		$oldamnt = mysql_escape_string($_POST['oldamnt']);		
 	    $cutoffdate = $_POST['cutoffyear'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 	    $cutamount = $_POST['loanamount'] / ($_POST['upduration'] * 2);
 	    $duration = $_POST['upduration'] . ' Months';
+	    if($_SESSION['level'] == 'ACC'){
+	    	$dateacc = ", dateacc = NOW() ";
+	    }else{
+	    	$dateacc = "";
+	    }
 	    $sql ="UPDATE loan set 
-	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount', startdate = '$cutoffdate', duration = '$duration'
+	   		state = 'ARcvLoan', appamount = '$appamount', loanamount = '$appamount', startdate = '$cutoffdate', duration = '$duration', oldamnt = '$oldamnt', acctid = '$_SESSION[acc_id]' $dateacc
 	    where loan_id = '$o' and account_id = '$accid' and state = 'UALoan'"; 
 	 	if ($conn->query($sql) === TRUE) {	 
 	 			$mo = 0;
@@ -111,7 +117,11 @@
 						$mo += 0;
 					}
 				}
-			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			if($_SESSION['level'] == 'Admin'){
+				echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+			}else{
+				echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
+			}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	} 

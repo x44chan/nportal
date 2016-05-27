@@ -421,7 +421,7 @@ $(document).ready(function(){
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -430,7 +430,7 @@ $(document).ready(function(){
 					}
 				}
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -443,9 +443,7 @@ $(document).ready(function(){
 				}				
 				if($xcount[$i] >= $months) {
 					$wthpay = 'withoutpay1';
-				}elseif(($months - $xcount[$i]) < $numdays){
-					$wthpay = 'withoutpay2';
-				}else {
+				}else{
 					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
@@ -514,11 +512,11 @@ $(document).ready(function(){
 				</tr>	
 				<tr>
 					<td align = center>	Vacation Leave Balance: </td>
-					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>" type = "number" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>"class = "form-control"/></td>
 				</tr>
 				<tr>
 					<td abbr="center">V.L. Balance for this Quarter</td>
-					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>" type = "number" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>" class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>
@@ -665,6 +663,9 @@ $(document).ready(function(){
             		<option value = "REPRESENTATION"> REPRESENTATION </option>
             		<option value = "MEDICINES"> MEDICINES </option>
             		<option value = "ANIMALS"> ANIMALS </option>
+            		<option value = "HARDWARE"> HARDWARE </option>
+            		<option value = "DEPARTMENT STORE"> DEPARTMENT STORE </option>
+            		<option value = "PARKING"> PARKING </option>
             	</select>
             </div>
             <?php } ?>
@@ -1245,9 +1246,27 @@ $(document).ready(function(){
 <!-- polyfiller file to detect and load polyfills -->
 <script src="http://cdn.jsdelivr.net/webshim/1.12.4/polyfiller.js"></script>
 <script>
-  webshims.setOptions('waitReady', false);
-  webshims.setOptions('forms-ext', {types: 'date'});
-  webshims.polyfill('forms forms-ext');
+	/*
+	webshims.setOptions('waitReady', false);
+	webshims.setOptions('forms-ext', {types: 'date'});
+	webshims.polyfill('forms forms-ext');
+	*/
+	webshim.setOptions('forms-ext', {
+	    replaceUI: 'auto'
+	});
+
+	//set language/UI dateformat || or use lang attribute on html element
+	//webshims.activeLang('hu'); // hu == hungary
+
+	webshim.polyfill('forms forms-ext');
+
+
+	$(function () {
+	    $('.check-validity').on('click', function () {
+	        $(this).jProp('form').checkValidity();
+	        return false;
+	    });
+	});
 </script>
 <?php if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'ACC'){
 	?>

@@ -803,7 +803,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	}
 
-	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and (state = 'UALoan' or state = 'ARcvCashCode')";
+	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and (state = 'ARcvCashCode')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -814,13 +814,15 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}else{
 				$row['penalty'] = '<b> Salary Loan </b>';
 			}
+			$sq = "SELECT * FROM login where account_id = '$row[acctid]'";
+			$tas = $conn->query($sq)->fetch_assoc();
 	?>
 				<tr>
 					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b><?php echo $row['penalty'];?><br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
 					<td><?php echo $row['loanreason'];?></td>
-					<td> - </td>
+					<td><b><?php echo $row['fname'] . ' ' . $row['lname'].'<br>Date: <i><font color = "green">' .date("M j, Y h:i A", strtotime($row['dateacc']));?></font></i><br>Req. Amount: <i><font color="green">₱ <?php echo number_format($row['oldamnt']);?></font> </td>
 					<td>
 						<?php 
 							if($row['state'] == 'UALoan'){

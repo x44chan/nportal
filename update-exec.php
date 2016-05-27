@@ -313,7 +313,7 @@
 				}			
 			}
 		}
-		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular'){
+		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular'){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -351,7 +351,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -360,7 +360,7 @@
 					}
 				}
 				if($dxatax['datefile'] >= $one && $dxatax['datefile'] <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -390,7 +390,7 @@
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
 			$restric = 3;
 		}
-		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
+		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
 			$restric = 5;
 		}
 		$stmt = "UPDATE `nleave` set 

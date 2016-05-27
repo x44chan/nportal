@@ -17,27 +17,9 @@
 			<a  type = "button"class = "btn btn-primary"  href = "?ac=penot">Home</a>
 			<?php if($_SESSION['acc_id'] == '4'){ ?>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
-			<div class="btn-group btn-group-lg">
-				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">New Request <span class="caret"></span></button>
-				<ul class="dropdown-menu" role="menu">
-				  <li><a href="#" id = "newovertime">Overtime Request</a></li>
-				  <li><a href="#" id = "newoffb">Official Business Request</a></li>
-				  <li><a href="#" id = "newleave">Leave Of Absence Request</a></li>				  
-				  <li><a href="#" id = "newundertime">Undertime Request Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#holiday">Holiday Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
-				  <li><a href="#"  data-toggle="modal" data-target="#penalty">Loan Form (For All Employee)</a></li>
-				  <?php
-				  	if($_SESSION['category'] == "Regular"){
-				  ?>
-				  	<li class="divider"></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-				  	<li><a href="#"  data-toggle="modal" data-target="#loan">Salary Loan Form</a></li>
-				  <?php
-				  	}
-				  ?>
-				</ul>
-			</div>
+			<?php
+				include 'caloan/reqbut.php';
+			?>
 			<?php } ?>
 			<div class="btn-group btn-group-lg">
 		        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
@@ -87,8 +69,8 @@
 						';
 				}
 			?>	
-			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Req. Status</a>
 			<?php } ?>
+			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Req. Status</a>
 		</div>
 	</div>
 </div>
@@ -101,6 +83,9 @@
 	}
 	if(isset($_GET['ac']) && $_GET['ac'] == 'penhol'){
 		include("caloan/penhol.php");
+	}
+	if(isset($_GET['loanac']) && $_GET['loanac'] == 'a'){
+		include 'caloan/loanac-admin.php';
 	}
 ?>
 <?php 
@@ -263,7 +248,7 @@
 					<tr>
 						<th>Loan #</th>
 						<th>Date File</th>
-						<th>Source</th>
+						<th>Source / Emp. Name</th>
 						<th>Type</th>
 						<th>Amount</th>
 						<th>Start Date</th>
@@ -297,7 +282,7 @@
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
 					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
-									echo '<b>Pending to Admin</b>';
+									echo '<b>Pending to Accounting</b>';
 								}elseif($row['state'] == 'DALoan'){
 									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
 								}elseif($row['state'] == 'DECLoan'){
@@ -322,6 +307,40 @@
 				echo '</tr>';
 			}
 		}
+	$sql = "SELECT * from `loan`,`login` where login.account_id = loan.account_id and (state = 'UALoan')";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			if($row['penalty'] == 1){
+				$row['penalty'] = '<b><font color = "red"> Penalty Loan </font></b>';
+			}elseif($row['penalty'] == 2){
+				$row['penalty'] = '<b><font color = "green"> Personal Loan </font></b>';
+			}else{
+				$row['penalty'] = '<b> Salary Loan </b>';
+			}
+	?>
+				<tr>
+					<td><?php echo $row['loan_id'];?></td>		
+					<td><?php echo date("M j, Y", strtotime($row['loandate']))?></td>
+					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
+					<td><b><?php echo $row['penalty'];?></td>
+					<td>₱ <?php echo number_format($row['loanamount']);?></td>
+					<td> <?php echo date("M j, Y", strtotime($row['startdate']));?> </td>
+					<td> - </td>
+					<td>
+						<?php 
+							if($row['state'] == 'UALoan'){
+								echo '<a class = "btn btn-primary" href = "?loanac=a&loan_id='.$row['loan_id'].'">Approve</a> ';
+								echo '<a class = "btn btn-primary" href = "loan-exec.php?loadact=d&loan_id='.$row['loan_id'].'"">Disapprove</a>';
+							}elseif($row['state'] == 'ARcvCashCode'){
+								echo '<a class = "btn btn-success" style = "width: 100px" href = "?loanrelease=1&petty_id='.$row['loan_id'].'">Release</a>';
+							}
+						?>
+					</td>
+				</tr>
+	<?php
+		}
+	}
 		echo '</tbody></table>';
 	}
 ?>

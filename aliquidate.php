@@ -198,9 +198,10 @@ $(document).ready(function(){
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);			    	    	
 			    	    	$("#xchange").text(number_format(amount2,2));
 	    	    			$("#xused").text(number_format(sum, 2));
-			    	    	if(amount.replace(',', "") < sum){			    	    		
+	    	    			n = sum.toFixed(2);
+			    	    	if(amount.replace(',', "") < parseFloat(n)){			    	    		
 			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
-			    	    		alert("Not enought petty fund.");
+			    	    		alert("Not enough petty fund.");
 			    	    	}else{
 			    	    		$("button[name = 'lsub']").attr("disabled",false);
 			    	    	}
@@ -227,9 +228,10 @@ $(document).ready(function(){
 	    	    	sum = parseFloat(amount1) + parseFloat(sum);
 	    	    	$("#xchange").text(number_format(amount2,2));
 	    	    	$("#xused").text(number_format(sum, 2));
-	    	    	if(amount.replace(',', "") < sum){
+	    	    	n = sum.toFixed(2);
+	    	    	if(amount.replace(',', "") < parseFloat(n)){
 	    	    		$("button[name = 'lsub']").attr("disabled","disabled");
-			    	    alert("Not enought petty fund.");
+			    	    alert("Not enough petty fund.");
 	    	    	}else{
 	    	    		$("button[name = 'lsub']").attr("disabled",false);
 	    	    	}
@@ -268,9 +270,10 @@ $(document).ready(function(){
 			    	    	sum = parseFloat(amount1) + parseFloat(sum);
 			    	    	$("#xchange").text(number_format(amount2,2));
 	    	    			$("#xused").text(number_format(sum, 2));
-			    	    	if(amount.replace(',', "") < sum){
+			    	    	n = sum.toFixed(2);
+			    	    	if(amount.replace(',', "") < parseFloat(n)){
 			    	    		$("button[name = 'lsub']").attr("disabled","disabled");
-			    	    		alert("Not enought petty fund.");  
+			    	    		alert("Not enough petty fund.");  
 			    	    	}else{
 			    	    		$("button[name = 'lsub']").attr("disabled",false);
 			    	    	}

@@ -143,7 +143,7 @@
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
 					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
-									echo '<b>Pending to Admin</b>';
+									echo '<b>Pending to Accounting</b>';
 								}elseif($row['state'] == 'DALoan'){
 									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
 								}elseif($row['state'] == 'DECLoan'){

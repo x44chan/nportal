@@ -62,6 +62,7 @@
 				echo '<tr><td style = "width: 30%;"><b>Duration (Months): </b></td><td style = "width: 50%;"><input maxlength = "2" autocomplete = "off" name = "upduration" type = "text" value = "' . substr($row['duration'], 0,2) . '" class = "form-control"/>';
 				echo '<input type = "hidden" name = "loanid" value = '.$pettyid.'/>';
 				echo '<input type = "hidden" name = "accid" value = '.$row['account_id'].'/>';
+				echo '<input type = "hidden" name = "oldamnt" value = "'. $row['loanamount'].'"/>';
 				echo '<tr><td colspan = "2"><button class = "btn btn-primary" name = "caapp">Approve Loan</button> <a href = "admin.php" class = "btn btn-danger"> Back </a></td></tr>';
 			}
 			echo "</table></form>";
