@@ -1444,42 +1444,17 @@ $("#submita").click(function(){
 		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
 		$resqueryxx = $conn->query($sqlxx);
 		$date = date("Y-m-d");
-		if($date > date('Y-m-16')){
-			$date = date("Y-m-01", strtotime("next month"));
-			$date2 = date("Y-m-16");
+		if($date <= date('Y-m-08')){
+			$date = date("Y-m-23");
+			$date2 = date("Y-m-07");
 		}else{
-			$date = date("Y-m-16");
-			$date2 = date("Y-m-01");
+			$date = date("Y-m-08");
+			$date2 = date("Y-m-22");
 		}
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
 		$resquery2 = $conn->query($query2);
 		if($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
 			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
-		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
-			if($type == '1'){
-				$alert = "penalty";
-			}elseif($type == '2'){
-				$alert = "personal";
-			}
-			if($_SESSION['level'] == 'EMP'){
-    			echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("employee.php?ac=penloan"); </script>';
-	 	  	}elseif ($_SESSION['level'] == 'ACC') {
-	     		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("accounting.php?ac=penloan"); </script>';
-	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("techsupervisor.php?ac=penloan"); </script>';
-	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("You still have pending '.$alert.' loan.");window.location.replace("hr.php?ac=penloan"); </script>';
-	    	}
-		}elseif($resquery2->num_rows > 0){
-			if($_SESSION['level'] == 'EMP'){
-    			echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("employee.php?ac=penca"); </script>';
-	 	  	}elseif ($_SESSION['level'] == 'ACC') {
-	     		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("accounting.php?ac=penca"); </script>';
-	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("techsupervisor.php?ac=penca"); </script>';
-	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("You still have pending Cash Advance.");window.location.replace("hr.php?ac=penca`"); </script>';
-	    	}
 		}else{
 			if($_POST['loanduration'] == 'Others'){
 				$duration = $_POST['loanothers'] . ' Months';

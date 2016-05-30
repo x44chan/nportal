@@ -99,10 +99,11 @@
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee Management <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
-				  <li><a href = "tech-sched.php">Tech Scheduling</a></li>
+				  <!--<li><a href = "tech-sched.php">Tech Scheduling</a></li>-->
 				  <li><a href = "hr-emprof.php">Employee Profile</a></li>
-				  <li><a href = "hr-emprof.php?correctionrep">Correction Reports</a></li>
-				  <li><a href = "hr-timecheck.php">In/Out Reference</a></li>
+				  <li><a href = "hr-emprof.php?correctionrep">Correction Reports</a></li>				  
+				  <li><a href = "hr-emprof.php?export">O.T. & O.B Exporting</a></li>
+				  <!--<li><a href = "hr-timecheck.php">In/Out Reference</a></li>-->
 				</ul>
 			</div>
 			<a  type = "button"class = "btn btn-primary active"  href = "hr-req-app.php" >Approved Request</a>		
