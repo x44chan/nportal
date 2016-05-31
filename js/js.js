@@ -99,6 +99,7 @@ $(document).ready(function(){
 			$('select[name="project"]').attr('required',true);
 		}else{
 			$('#project').hide();
+			document.getElementById("locx").innerHTML = "";
 			$('select[name="project"]').attr('required',false);
 		}
 		if(selected2 == 'House'){
