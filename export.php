@@ -175,14 +175,30 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
         </tr>
         <?php
             include 'conf.php';
-            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') and typeoflea != 'Sick Leave' ORDER BY datefile ASC";
-            $sql2 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (datehr BETWEEN '$date1' and '$date2') and typeoflea = 'Sick Leave' ORDER BY datefile ASC";
+            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') ORDER BY datefile ASC";
+            $sql2 = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
             $result1 = $conn->query($sql1);
             $result2 = $conn->query($sql2);
             if($result1->num_rows > 0 || $result2->num_rows > 0){
+                while($row1 = $result2->fetch_assoc()){              
+                    echo '<tr>';
+                    echo '<td>' . $row1['phoenix_empid'] . '</td>';
+                    echo '<td>' . $row1['dateofot'] . '</td>';
+                    echo '<td>1</td>';
+                    if(stristr($row1['approvedothrs'], ':30') == true){
+                        $row1['approvedothrs'] = str_replace(':30', '.5', $row1['approvedothrs']);
+                    }elseif(stristr($row1['approvedothrs'], ':00') == true){
+                        $row1['approvedothrs'] = str_replace(':00', '', $row1['approvedothrs']);
+                    }elseif(stristr($row1['approvedothrs'], ':0') == true){
+                        $row1['approvedothrs'] = str_replace(':0', '', $row1['approvedothrs']);
+                    }
+                    echo '<td>' . $row1['approvedothrs'] . '</td>';
+                    echo '<td></td><td></td><td></td><td></td>';
+                    echo '</tr>';
+                }
                 while($row1 = $result1->fetch_assoc()){               
                     $i = 0;
-                    while($row1['dateofleavfr'] <= $row1['dateofleavto']){
+                    while($row1['dateofleavfr'] <= $row1['dateofleavto'] && $row1['numdays'] >= 1){
                         if($i >= 1){
                             $plus = 1;
                         }else{
@@ -198,53 +214,49 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         echo '<tr>';
                         echo '<td>' . $row1['phoenix_empid'] . '</td>';
                         echo '<td>' . $row1['dateofleavfr'] . '</td>';
-                        if($row1['typeoflea'] == 'Vacation Leave'){
+                        if($row1['leapay'] == 'wthoutpay'){
+                            echo '<td>25</td>';
+                        }elseif($row1['typeoflea'] == 'Vacation Leave'){
                             echo '<td>21</td>';  
                         }elseif($row1['typeoflea'] == 'Others'){
                             echo '<td>24</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
                         }
-                        if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
+                        /*if($row1['leapay'] == 'wthoutpay'){
+                            echo '<td>0</td>';
+                        }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
                             echo '<td>8</td>';
                         }else{
                             echo '<td>9</td>';
                         }
+                        echo '<td></td><td></td><td></td><td></td>';
+                        echo '</tr>';
                         $i++;
                     }
-                }
-                while($row1 = $result2->fetch_assoc()){              
-                    $i = 0;
-                    while($row1['dateofleavfr'] <= $row1['dateofleavto']){
-                        if($i >= 1){
-                            $plus = 1;
-                        }else{
-                            $plus = 0;
-                        }
-                        if($i == $row1['numdays']){
-                            break;
-                        }
-                        $row1['dateofleavfr'] = date("Y-m-d", strtotime("+" . $plus . " days", strtotime($row1['dateofleavfr'])));
-                        if(date("D", strtotime($row1['dateofleavfr'])) == 'Sun'){
-                            $row1['dateofleavfr'] = date("Y-m-d", strtotime("+2 days", strtotime($row1['dateofleavfr'])));
-                        }
+                    if($row1['numdays'] < 1){
                         echo '<tr>';
                         echo '<td>' . $row1['phoenix_empid'] . '</td>';
                         echo '<td>' . $row1['dateofleavfr'] . '</td>';
-                        if($row1['typeoflea'] == 'Vacation Leave'){
+                        if($row1['leapay'] == 'wthoutpay'){
+                            echo '<td>25</td>';
+                        }elseif($row1['typeoflea'] == 'Vacation Leave'){
                             echo '<td>21</td>';  
                         }elseif($row1['typeoflea'] == 'Others'){
                             echo '<td>24</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
                         }
-                        if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
-                            echo '<td>8</td>';
+                        /*if($row1['leapay'] == 'wthoutpay'){
+                            echo '<td>0</td>';
+                        }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
+                            echo '<td>4</td>';
                         }else{
-                            echo '<td>9</td>';
+                            echo '<td>4.5</td>';
                         }
-                        $i++;
-                    }   
+                        echo '<td></td><td></td><td></td><td></td>';
+                        echo '</tr>';
+                    }
                 }
             }
         ?>

@@ -309,7 +309,12 @@
 			$query15 = "SELECT * FROM `petty` where petty_id = '$petyid'";
 			$amount = $conn->query($query15)->fetch_assoc();
 			$amounts = $amount['amount'];
-			echo '<div class = "container-fluid" style = "padding: 5px 10px;"><div class = "row">
+			if(isset($_GET['print'])){
+				$aa = " style = 'font-size: 12px;' ";
+			}else{
+				$aa = "";
+			}
+			echo '<div id = "report" class = "container-fluid" style = "padding: 5px 10px; "><div class = "row" '. $aa .'>
 					<div class = "col-xs-4">
 						<label>Name: </label>
 						<p>'.$data1['fname'] . ' ' . $data1['lname'] . '</p>
@@ -321,6 +326,10 @@
 					<div class = "col-xs-3">
 						<label> Type / Project </label>
 						<p>'.$amount['projtype']. ' / ' . $amount['project'].'</p>
+					</div>
+					<div class = "col-xs-3">
+						<label> Petty # / Source </label>
+						<p>'.$amount['petty_id']. ' / ' . $amount['source'] . '</p>
 					</div>
 				</div>';
 			echo '<table class = "table">';
@@ -369,12 +378,18 @@
 			$a = str_replace(',', '', $amount['amount']);
 			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: '.$litt.'</b></td><td>₱ '.number_format($totalliq, 2).'<br><br>₱ '.number_format($a - $totalliq, 2).'</td><td></td><td></td><td></td></tr>';
 			echo '</tbody></table>';
-			echo '<hr>';
+			echo '<hr></div><div align="center">';			
+			$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+			echo '<a href = "'.$actual_link.'&print" class = "btn btn-primary"> Print </a> ';
 			if(!isset($_GET['complete'])){
-				echo '<div align="center"><a class = "btn btn-danger" href = "?liqdate">Back</a>';
+				echo '<a class = "btn btn-danger" href = "?liqdate">Back</a>';
 			}else{
-				echo '<div align="center"><a href = "?complete=1&petty_id='.$_GET['liqdate'].'" class = "btn btn-danger">Back</a>';
+				echo '<a href = "?complete=1&petty_id='.$_GET['liqdate'].'" class = "btn btn-danger">Back</a>';
 			}
+			echo '</div>';
+			if(isset($_GET['print'])){
+			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?liqdate='.$_GET['liqdate'].'&acc='.$_GET['acc'].'&complete";});</script>';
+		}
 		}
 	}
 ?>

@@ -47,7 +47,7 @@
 			</div>
 		</div>
 		<div class="row" >
-			<div class="col-xs-3 col-xs-offset-1" align="center">
+			<div class="col-xs-3" align="center">
 				<label>Type of Reports</label>
 				<select class="form-control input-sm" name ="reptype">
 					<option <?php if(isset($_GET['rep']) && $_GET['rep'] == 'all'){ echo ' selected '; } ?> value="all">Overall Reports</option>				
@@ -68,18 +68,22 @@
 				<label>Date To</label>
 				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }elseif(date("d") < 16){ echo ' value = "'. date("Y-m-15") . '"';} else { echo ' value = "'. date("Y-m-t") . '"';}?> />
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-5">
 				<label style="margin-left: 50px;">Action</label>
 				<div class="form-group" align="left">
 					<button type="submit" name = "repfilter" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span> Submit</button>
 					<button type="submit" class="btn btn-danger btn-sm" name ="represet"><span class="glyphicon glyphicon-refresh"></span> Reset</button>
-					<a type="submit" class="btn btn-warning btn-sm" href = "export.php?exot&date1=<?php echo $date1.'&date2=' .$date2;?>"><span class="glyphicon glyphicon-download-alt"></span> Export OT </a>
+					<a type="submit" class="btn btn-warning btn-sm" href = "export.php?exlea&date1=<?php echo $date1.'&date2=' .$date2;?>"><span class="glyphicon glyphicon-download-alt"></span> Export OT & Leave </a>
 					<a type="submit" class="btn btn-warning btn-sm" href = "export.php?exob&date1=<?php echo $date1.'&date2=' .$date2;?>"><span class="glyphicon glyphicon-download-alt"></span> Export OB </a>
 				</div>
 			</div>
 		</div>
 	</div>
 </form>
+<?php if($_SESSION['level'] == 'HR'){
+	echo '</div><div style = "display: none;">';
+}
+?>
 <div class="container-fluid" style="margin-top: -10px;">
 	<div class="row">
 		<div class="col-xs-12">
