@@ -25,6 +25,30 @@
 			
 		}
 	}
+	if(isset($_GET['requnlock']) && $_GET['requnlock'] != "" && $_SESSION['level'] == 'HR'){
+		$accid = mysqli_real_escape_string($conn, $_GET['requnlock']);
+		$stmt = "UPDATE `login` set 
+				 islock = '2'
+			where account_id = '$accid' and islock = '1'";
+		if ($conn->query($stmt) === TRUE) {
+			echo '<script type="text/javascript">window.location.replace("hr-emprof.php"); </script>';
+		}
+	}
+	if(isset($_GET['unlock']) && $_SESSION['level'] == 'Admin'){
+		if(isset($_GET['dapp'])){
+			$islock = '1';
+			$accid = mysqli_real_escape_string($conn, $_GET['dapp']);
+		}elseif(isset($_GET['app'])){
+			$accid = mysqli_real_escape_string($conn, $_GET['app']);
+			$islock = '0';
+		}
+		$stmt = "UPDATE `login` set 
+				 islock = '$islock'
+			where account_id = '$accid' and islock = '2'";
+		if ($conn->query($stmt) === TRUE) {
+			echo '<script type="text/javascript">window.location.replace("admin-emprof.php"); </script>';
+		}
+	}
 	if(isset($_GET['canloan']) && $_SESSION['level'] == 'Admin'){
 		$cutid = mysqli_real_escape_string($conn, $_GET['canloan']);
 		$accid = mysqli_real_escape_string($conn, $_GET['accid']);

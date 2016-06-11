@@ -53,8 +53,6 @@
 		});
 	});
 </script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css"/> 
-<script type="text/javascript" src="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.js"></script>
 <div align = "center">
 	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
@@ -62,7 +60,6 @@
 		<div class="btn-group btn-group-lg">
 			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
 			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
-     			
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -770,6 +767,30 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				<td> <b><?php if($data['liqstate'] == ""){ echo ' Pending Liquidation ';} elseif($data['liqstate'] == 'LIQDATE') { echo ' Pending for Completion ';}?> </b> </td>
 				<td> - </td>
 				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
+				</tr>
+
+	<?php
+		}
+	
+	}
+	$sql = "SELECT * from `login` where islock = '2'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+	?>
+				<tr>
+				<td> - </td>			
+				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
+				<td> <b> Request to unlock Employee Profile </td>
+				<td> - </td>
+				<td> <b> H.R. </b> </td>
+				<td> 
+					<?php
+						echo '<a class = "btn btn-primary" href = "cancel-req.php?unlock&app='.$row['account_id'].'">Approve</a> ';
+						echo '<a class = "btn btn-primary" href = "cancel-req.php?unlock&dapp='.$row['account_id'].'"">Disapprove</a>';
+					?>
+				</td>
+				<td id = "tohide"></td>
 				</tr>
 
 	<?php

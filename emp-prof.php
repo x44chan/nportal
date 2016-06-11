@@ -8,336 +8,316 @@
       while($row = $result->fetch_assoc()){
 ?>
 <div class="modal fade" id="myModal2" role="dialog">
-  <div class="modal-dialog modal-lg">    
+  <div class="modal-dialog modal-lg" >    
     <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header" style="padding:25px 50px; ">
-        <?php if($row['201date'] != null && $row['201date'] != '0000-00-00'){ echo '<button type="button" class="close" data-dismiss="modal">&times;</button>';}?>
-        <h4><span class="glyphicon glyphicon-user"></span> Employee Profile</h4>
-        <?php if($row['201date'] == null){ echo '<i><font color = "#FF1919">Update your profile first to activate your account </font></i><br><a href = "logout.php" class="btn btn-danger" onclick="return confirm(\'Do you really want to log out?\');"  role="button">Logout</a>';}?>
+    <div class="modal-content" >
+      <div class="modal-header" style="padding:25px 50px; font-size: 20px; text-align: left;">
+       <button type="button" class="close" data-dismiss="modal"><font color = "#CC0000">&times;</font></button>
+          <div class="row" style="margin-left: 30px;">           
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <label for="esname"> Name: </label>
+                <i><p style = "margin-left: 10px;" id = "esname"><?php echo $row['fname'] . ' ' . $row['mname'] . ' ' . $row['lname']; ?></p></i>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <label for="usrname"> Contact # </label>
+                <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['econt']?></p></i>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                   <label for="emname"> Position </label>
+                   <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['position']?></p></i>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <label for="usrname"> Dep./Sec. </label>
+                <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['department']?></p></i>
+              </div>
+            </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <img style = "margin: auto;"src="images/<?php echo $acc_id;?>.jpg" onerror="if (this.src != 'images/default.jpg') this.src = 'images/default.jpg';" class="img-rounded" alt="Cinque Terre" width="250" height="200"><br><br>
+             		<a href = "takephoto.php" class="btn btn-primary" style="margin-left: 60px;"><span class="glyphicon glyphicon-camera"></span> Take Photo </a>
+              </div>
+            </div>
+    </div>
       </div>
-      <div class="modal-body" style="padding:20px 50px;">
-        <form role="form" action = "" method = "post">
-         <div class = "row">
-         
-        </div>
-        <h3>Personal Information</h3>
-        <div style="border-bottom: 1px solid #eee;"></div>
-        <div class = "row">
-
-        </div>
-        <div class="row">
-        <div class = "col-lg-5 col-md-5 col-sm-5 col-xs-5" align="center">
-            <img style = "margin: auto;"src="<?php if(file_exists('images/'.$_SESSION['acc_id'] .'.jpg"')){ echo 'images/'.$_SESSION['acc_id'] .'.jpg';} else { echo "images/default.jpg"; }?>" class="img-rounded" onerror="if (this.src != 'images/default.jpg') this.src = 'images/default.jpg';"alt="Cinque Terre" width="200" height="180"><br><br>
-            <a href = "takephoto.php" class="btn btn-primary"><span class="glyphicon glyphicon-camera"></span> Take Photo </a>
+      <div class="modal-body" style="padding:20px 50px; font-size: 17px; overflow-y: auto;">
+      <?php
+            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() <= enddate and state = 'AAdmin'";
+            $datalea = $conn->query($leaveexec)->fetch_assoc();
+            $sl = $datalea['sleave'];
+            $vl = $datalea['vleave'];
+            if($sl <= 0){
+              $sl = 0;
+            }
+            if($vl <= 0){
+              $vl = 0;
+            }
+      ?>
+      <div class="row">
+         <div class="col-xs-4">
+           <label>Employee ID</label>
+           <p style="margin-left: 10px"><i><?php echo $row['phoenix_empid'];?></i></p>
          </div>
-          <div class="col-md-7">
-            <label for="esname"> Surname <font color = "red">*</font></label>
-            <input type="text" pattern="[a-zA-ZñÑ\s]+"autofocus value = "<?php echo $row['lname']; ?>"name = "esname" id = "esname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter surname">
-          </div>
-          <div class="col-md-7">
-            <label for="efname"> First Name <font color = "red">*</font></label>
-            <input type="text" pattern="[a-zA-ZñÑ\s]+"name = "efname" value = "<?php echo $row['fname']; ?>" id = "efname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter first name">
-          </div>
-          <div class="col-md-7">
-            <label for="emname"> Middle Name <font color = "red">*</font></label>
-            <input type="text" pattern="[a-zA-ZñÑ\s]+"name = "emname" value = "<?php echo $row['mname']; ?>" id = "emname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter middle name">
-          </div>
-        </div>
-        <div class="row">
+         <div class="col-xs-4">
+           <label>Chrono #</label>
+           <p style="margin-left: 10px"><i><?php echo $row['phoenix_chrono'];?></i></p>
+         </div>
+      </div>
+      <div class="row">
          <div class="col-md-8">
-            <label for="usrname"> Home Address <font color = "red">*</font></label>
-            <textarea type="textarea" name = "eaddress" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Enter complete address"><?php echo $row['eaddress']; ?></textarea>
+            <label for="usrname"> Home Address </label>
+        <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['eaddress']?></p></i>  
           </div>
           <div class="col-md-4">
-            <label for="usrname"> Contact # <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['econt']; ?>"name = "econt" pattern = '[0-9-]+' required style = "font-weight:normal;text-transform:capitalize;" class="form-control" placeholder="091234567890">
-          </div>
+            <label for="usrname"> Tel. #</label>
+              <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['etel']?></p></i>
+            </div>
         </div>
         <div class="row">
-          <div class="col-md-4">
-            <label for="esname"> Position <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['position']; ?>"name = "epost"id = "esname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter position">
+            <div class="col-md-4">
+              <label for="efname"> Date Hired </label>
+             <i><p style = "margin-left: 10px;" id = "usrname"><?php echo date('F j, Y', strtotime($row['edatehired']));?></p></i>
           </div>
           <div class="col-md-4">
-            <label for="efname"> Category <font color = "red">*</font></label>
-            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory']?></p></i>
-            <input type="hidden" value = "<?php echo $row['eduration']; ?>"name = "eduration" id = "efname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter duration">
+            <label for="efname"> Category </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empcatergory'] . ' / ' . $row['payment'];?></p></i>
           </div>
-         <div class="col-md-4">
-            <label for="usrname"> Tel. #</label>
-            <input type="text" value = "<?php echo $row['etel']; ?>"name = "etel" pattern = '[0-9-]+' style = "font-weight:normal;text-transform:capitalize;"  class="form-control" placeholder="091234567890">
+          <div class="col-md-4">
+            <label for="efname"> Expiry </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php $expiry = date('F j, Y', strtotime($row['eduration'], strtotime($row['edatehired']))); if($expiry != 'January 1, 1970'){echo $expiry; }else{echo "";}?></p></i>
           </div>
         </div>
        <div class="row">
         <div class="col-md-4">
-          <label for="esname"> Civil Status <font color = "red">*</font></label>
-           <select class = "form-control" id = "cstatus" name  = "ecstatus" required>
-            <option value = "">-------------</option>
-            <option <?php if($row['ecstatus'] == 'Single'){echo ' selected="selected"';}?>value="Single">Single</option>
-            <option <?php if($row['ecstatus'] == 'Married'){echo ' selected="selected"';}?>value="Married">Married</option>
-          </select>
+          <label for="esname"> Civil Status </label>
+           <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['ecstatus']?></p></i>
           </div>
+
         <div class="col-md-4">
-          <label for="efname"> Date Hired <font color = "red">*</font></label>
-          <input type="date" data-date='{"startView": 1, "openOnMouseFocus": true}'  value = "<?php echo $row['edatehired']; ?>" name = "edatehired" style = "font-weight:normal;" class="form-control" required autocomplete="off"placeholder="Enter middle name">
+          <label for="usrname"> Gender </label>
+          <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['egender']?></p></i>
         </div>
         <div class="col-md-4">
-          <label for="usrname"> Gender <font color = "red">*</font></label>
-          <select class = "form-control" required name = "egender">
-            <option value = "">-------------</option>
-            <option <?php if($row['egender'] == 'Male'){echo ' selected="selected"';}?> value="Male">Male</option>
-            <option <?php if($row['egender'] == 'Female'){echo ' selected="selected"';}?> value="Female">Female</option>
-          </select>
+            <label for="esname"> Blood Type </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['eblood']?></p></i>
         </div>
       </div>
-      <div id = "marriedform" style="<?php if($row['ecstatus'] == 'Married'){ echo 'display: inline';} else{ echo 'display: none;';}?>">
+              <div class="row">
+          <div class="col-md-4">
+            <label for="esname"> Birth Date </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo date('F j, Y', strtotime($row['ebday']));?></p></i>
+           </div>
+          <div class="col-md-4">
+            <label for="efname"> Birth Place </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['ebirth']?></p></i>
+           </div>
+         <div class="col-md-4">
+            <label for="usrname"> Nationality </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['enationality']?></p></i>
+          </div>
+        </div>
+      <div id = "marriedform" style="<?php if($row['ecstatus'] == 'Married'){ echo 'display: inline';} else{ echo 'display: none;"';}?>">
           <div>
             <div style="border-bottom: 1px solid #eee;"></div>
             <h3>For Married</h3>          
           </div>
           <div class = "row">
             <div class="col-md-6">
-              <label for="esname"> Spouse Name <font color = "red">*</font></label>
+              <label for="esname"> Spouse Name </label>
+              <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['espouse']?></p></i>
             </div> 
             <div class="col-md-6">
-              <label for="efname"> Number of Children <font color = "red">*</font></label>
+              <label for="efname"> Number of Children </label>
+              <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['enumchild']?></p></i>
             </div>  
-          </div>
-          <div class="row">
-            <div class="col-md-6">            
-              <input type="text"value = "<?php echo $row['espouse']; ?>" id = "spousename" name = "espouse" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter Spouse Name">
-            </div>
-            <div class="col-md-6">            
-              <input type="number" value = "<?php echo $row['enumchild']; ?>" id = "numofchildren" name = "enumchild" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter number of children">
-            </div>
           </div>
           <div class = "row">
             <div class="col-md-6">
-              <label for="esname"> Name of Children <font color = "red">*</font></label>
+              <label for="esname"> Name of Children </label>
             </div> 
             <div class="col-md-6">
-              <label for="esname"> Birthdate <font color = "red">*</font></label>
+              <label for="esname"> Birthdate </label>
             </div>  
           </div>
           <div class="row">
             <div class="col-md-6">            
-              <input type="text" value = "<?php echo $row['childname1']; ?>"id = "childname" name = "childname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
+              <?php if($row['childname1'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. $row['childname1'] .'</p></i>';}?>
+              <?php if($row['childname2'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. $row['childname2'] .'</p></i>';}?>
+              <?php if($row['childname3'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. $row['childname3'] .'</p></i>';}?>
+              <?php if($row['childname4'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. $row['childname4'] .'</p></i>';}?>
+              <?php if($row['childname5'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. $row['childname5'] .'</p></i>';}?>
             </div>
-            <div class = "col-md-3" >
-              <input type="date"  data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo date('Y-m-d', strtotime($row['childbday1']));?>" id = "childbday" name = "childbday" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
+            <div class="col-md-4">           
+              <?php if($row['childbday1'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. date("F j, Y", strtotime($row['childbday1'])) .'</p></i>';}?>
+              <?php if($row['childbday2'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. date("F j, Y", strtotime($row['childbday2'])) .'</p></i>';}?>
+              <?php if($row['childbday3'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. date("F j, Y", strtotime($row['childbday3'])) .'</p></i>';}?>
+              <?php if($row['childbday4'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. date("F j, Y", strtotime($row['childbday4'])) .'</p></i>';}?>
+              <?php if($row['childbday5'] != null){ echo '<i><p style = "margin-left: 10px;" id = "usrname">'. date("F j, Y", strtotime($row['childbday5'])) .'</p></i>';}?>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">            
-              <input type="text" value = "<?php echo $row['childname2']; ?>"id = "childname" name = "childname2" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
             </div>
-            <div class = "col-md-3">
-              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo date('Y-m-d', strtotime($row['childbday2']));?>" id = "childbday" name = "childbday2" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">            
-              <input type="text" value = "<?php echo $row['childname3']; ?>"id = "childname" name = "childname3" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
-            </div>
-            <div class = "col-md-3">
-              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo $row['childbday3'];?>" id = "childbday" name = "childbday3" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">            
-              <input type="text" value = "<?php echo $row['childname4']; ?>"id = "childname" name = "childname4" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
-            </div>
-            <div class = "col-md-3">
-              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}'value="<?php echo $row['childbday4'];?>" id = "childbday" name = "childbday4" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">            
-              <input type="text" value = "<?php echo $row['childname5']; ?>"id = "childname" name = "childname5" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of child">
-            </div>
-            <div class = "col-md-3">
-              <input type="date" data-date='{"startView": 2, "openOnMouseFocus": true, "calculateWidth": false}' value="<?php echo $row['childbday5'];?>" id = "childbday" name = "childbday5" style = "font-weight:normal;" class="form-control" autocomplete="off"placeholder="Enter birthdate of child">
-            </div>
-          </div>
+            <div style="border-bottom: 1px solid #eee;"></div>
         </div>
       <div class="row">
           <div class="col-md-4">
-            <label for="esname"> Blood Type <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['eblood']; ?>" id = "esname" name = "eblood" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter Blood Type">
-          </div>
-          <div class="col-md-4">
-            <label for="efname"> Religion <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['ereligion']; ?>" id = "efname" name = "ereligion" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter religion">
-          </div>
+            <label for="efname"> Religion </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['ereligion']?></p></i> 
+           </div>
          <div class="col-md-4">
-            <label for="usrname"> Dep./Sec. <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['department']; ?>" name = "edept" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Enter Dept./Sec.">
+            
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <label for="esname"> Birth Date <font color = "red">*</font></label>
-            <input type="date" value = "<?php echo $row['ebday']; ?>" name = "ebday" id = "esname" style = "font-weight:normal;" class="form-control" required autocomplete="off"placeholder="Enter birthdate">
-          </div>
-          <div class="col-md-4">
-            <label for="efname"> Birth Place <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['ebirth']; ?>" name = "ebirth" id = "efname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required autocomplete="off"placeholder="Enter birthplace">
-          </div>
-         <div class="col-md-4">
-            <label for="usrname"> Nationality <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['enationality']; ?>" name = "enationality" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Nationality">
-          </div>
-        </div>
+
         <div class = "row">
           <div class="col-md-6">
-            <label for="esname"> Mother's Name <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['emothern']; ?>" name = "emothern" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Mother's Name">
+            <label for="esname"> Mother's Name </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['emothern'];?></p></i> 
           </div> 
           <div class="col-md-6">
-            <label for="efname"> Birthdate <font color = "red">*</font></label>
-            <input type="date" value = "<?php echo $row['emontherb']; ?>" name = "emontherb" style = "font-weight:normal;" class="form-control" required placeholder="Birthdate">
+            <label for="efname"> Birthdate </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo date("F j, Y", strtotime($row['emontherb']));?></p></i> 
           </div>  
         </div>
         <div class = "row">
           <div class="col-md-6">
-            <label for="esname"> Father's Name <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['efathern']; ?>" name = "efathern" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Father's Name">
+            <label for="esname"> Father's Name </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['efathern']?></p></i> 
           </div> 
           <div class="col-md-6">
-            <label for="efname"> Birthdate <font color = "red">*</font></label>
-            <input type="date" value = "<?php echo $row['efatherb']; ?>" name = "efatherb" style = "font-weight:normal;" class="form-control" required placeholder="Birthdate">
+            <label for="efname"> Birthdate </label>
+           <i><p style = "margin-left: 10px;" id = "usrname"><?php echo date("F j, Y", strtotime($row['efatherb']));?></p></i> 
           </div>  
         </div>
         <div class = "row">
           <div class="col-md-4">
-            <label for="esname"> SSS # <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['esss']; ?>" name = "esss" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="SSS">
+            <label for="esname"> SSS # </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['esss']?></p></i> 
           </div> 
           <div class="col-md-4">
-            <label for="efname"> Philhealth # <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['ephilhealth']; ?>" name = "ephilhealth" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Philhealth">
+            <label for="efname"> Philhealth # </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['ephilhealth']?></p></i> 
           </div>
           <div class="col-md-4">
-            <label for="efname"> T.I.N # <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['etin']; ?>" name = "etin" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="T.I.N">
+            <label for="efname"> T.I.N # </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['etin']?></p></i> 
           </div>  
         </div>
         <div class="row">
           <div class="col-md-4">
-            <label for="epagibig"> Pagibig # <font color = "red">*</font></label>
-            <input type="text" value = "<?php echo $row['epagibig']; ?>" name = "epagibig" style = "font-weight:normal;text-transform:capitalize;" class="form-control" required placeholder="Pagibig">
+            <label for="efname"> Pagibig # </label>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['epagibig']?></p></i> 
           </div>  
         </div>
         <div>
-          <div style="border-bottom: 1px solid #eee;"></div>
+          <div style="border-bottom: 2px solid #eee;"></div>
           <h3>Educational Background</h3>          
         </div>
          <div class="row">
+
           <div class="col-md-12"> 
-            <label for="esname"> Name of School <font color = "red">*</font></label>           
-            <input type="text" value = "<?php echo $row['enameofschool']; ?>" name = "enameofschool" required id = "childname" style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter name of school">
+            <label for="esname"> Name of School </label>           
+             <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['enameofschool']?></p></i>
+         </div>
+        </div>
+                <div class="row">
+          <div class="col-md-12"> 
+            <label for="esname"> School Address </label>           
+             <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['eschooladd']?></p></i>
          </div>
         </div>
         <div class="row">
-          <div class="col-md-12"> 
-            <label for="esname"> School Address <font color = "red">*</font></label>           
-            <textarea id = "childname" name = "eschooladd" required style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Enter school address"><?php echo $row['eschooladd']; ?></textarea>
-         </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4"> 
-            <label for="esname"> Highest Attainment <font color = "red">*</font></label>           
-            <select class = "form-control" required name = "egrad">
-              <option value = "">----------</option>
-              <option <?php if($row['egrad'] == 'High School Graduate'){echo ' selected="selected"';}?>value = "High School Graduate">High School Graduate</option>
-              <option <?php if($row['egrad'] == 'College Undergraduate'){echo ' selected="selected"';}?>value = "College Undergraduate">College Undergraduate</option>
-              <option <?php if($row['egrad'] == 'Vocational Degree'){echo ' selected="selected"';}?>value = "Vocational Degree">Vocational Degree</option>
-              <option <?php if($row['egrad'] == 'Bachelor\'s Degree'){echo ' selected="selected"';}?>value = "Bachelor's Degree">Bachelor's Degree</option>
-              <option <?php if($row['egrad'] == 'Masteral/Doctoral Degree'){echo ' selected="selected"';}?>value = "Masteral/Doctoral Degree">Masteral/Doctoral Degree</option>
-            </select>
+        <div class="col-md-3"> 
+            <label for="esname"> Highest Attainment </label>           
+             <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['egrad']?></p></i>
           </div>
-          <div class="col-md-5"> 
-           <label for="esname"> Course <font color = "red">*</font></label>   
-           <input type="text" value = "<?php echo $row['ecourse']; ?>"id = "childname" name = "ecourse" required style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Course">
+          <div class="col-md-6"> 
+           <label for="esname"> Course </label>   
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['ecourse']?></p></i>
           </div>
           <div class="col-xs-3"> 
-           <label for="esname"> Year Graduated <font color = "red">*</font></label>   
-           <input type="text" value = "<?php echo $row['eyrgrad']; ?>"id = "childname" name = "eyrgrad" required  style = "font-weight:normal;text-transform:capitalize;" class="form-control" autocomplete="off"placeholder="Year Graduated">
+           <label for="esname"> Year Graduated </label>   
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['eyrgrad']?></p></i>
           </div>
         </div>
+
         <div>
           <div style="border-bottom: 1px solid #eee;"></div>
           <h3>Employment History</h3>          
         </div>
         <div class="row">
           <div class="col-md-3">
-            <label for="esname"> Position <font color = "red">*</font></label>   
+            <label for="esname"> Position </label>   
           </div>
           <div class="col-md-3">
-            <label for="esname"> Company Name <font color = "red">*</font></label>   
+            <label for="esname"> Company Name </label>   
           </div>
           <div class="col-md-3">
-            <label for="esname"> Start <font color = "red">*</font></label>   
+            <label for="esname"> Start </label>   
           </div>
           <div class="col-md-3">
-            <label for="esname"> End <font color = "red">*</font></label>   
+            <label for="esname"> End </label>   
           </div>
         </div>
         <div class="row" >
           <div class="col-md-3">
-            <input  pattern="[a-zA-Z\s]+" class = "form-control" type = "text" value = "<?php echo $row['empost']; ?>"name = "empost" placeholder = "Position"/>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empost']?></p></i>
           </div>
           <div class="col-md-3">
-            <textarea pattern="[a-zA-Z\s]+" id = "textareaaa" class = "form-control" name = "emcompany" placeholder = "Company Name"><?php echo $row['emcompany']; ?></textarea>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['emcompany']?></p></i>
           </div>
           <div class="col-md-3">
-            <input  class = "form-control" data-date='{"startView": 2, "openOnMouseFocus": true}' value = "<?php echo $row['empdatefr']; ?>"type = "date" name = "empdatefr" placeholder = "Start"/> 
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdatefr']!= null){echo date("F j, Y", strtotime($row['empdatefr']));}?></p></i>
           </div>
           <div class="col-md-3">
-            <input  class = "form-control" data-date='{"startView": 2, "openOnMouseFocus": true}' value = "<?php echo $row['empdateto']; ?>"type = "date" name = "empdateto" placeholder = "End"/>             
-          </div>
-        </div>
-        <div class="row" >
-          <div class="col-md-3">            
-            <input  pattern="[a-zA-Z\s]+" class = "form-control" type = "text" value = "<?php echo $row['empost2']; ?>"name = "empost2" placeholder = "Position"/>
-          </div>
-          <div class="col-md-3"> 
-            <textarea pattern="[a-zA-Z\s]+" id = "textareaaa" class = "form-control" name = "emcompany2" placeholder = "Company Name"><?php echo $row['emcompany2']; ?></textarea>
-          </div>
-          <div class="col-md-3"> 
-            <input  class = "form-control" data-date='{"startView": 2, "openOnMouseFocus": true}' value = "<?php echo $row['empdatefr2']; ?>"type = "date" name = "empdatefr2" placeholder = "Start"/>
-          </div>
-          <div class="col-md-3"> 
-            <input  class = "form-control" data-date='{"startView": 2, "openOnMouseFocus": true}' value = "<?php echo $row['empdateto2']; ?>"type = "date" name = "empdateto2" placeholder = "End"/>           
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdateto']!= null){echo date("F j, Y", strtotime($row['empdateto']));}?></p></i>            
           </div>
         </div>
         <div class="row" >
           <div class="col-md-3">
-            <input  pattern="[a-zA-Z\s]+" class = "form-control" type = "text" value = "<?php echo $row['empost3']; ?>"name = "empost3" placeholder = "Position"/> 
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empost2']?></p></i>
           </div>
           <div class="col-md-3">
-            <textarea pattern="[a-zA-Z\s]+" id = "textareaaa" class = "form-control" name = "emcompany3" placeholder = "Company Name"><?php echo $row['emcompany3']; ?></textarea>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['emcompany2']?></p></i>
           </div>
           <div class="col-md-3">
-            <input  class = "form-control" data-date='{"startView": 1, "openOnMouseFocus": true}' value = "<?php echo $row['empdatefr3']; ?>"type = "date" name = "empdatefr3" placeholder = "Start"/>  
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdatefr2']!= null){echo date("F j, Y", strtotime($row['empdatefr2']));}?></p></i>
           </div>
           <div class="col-md-3">
-            <input  class = "form-control"data-date='{"startView": 1, "openOnMouseFocus": true}'  value = "<?php echo $row['empdateto3']; ?>"type = "date" name = "empdateto3" placeholder = "End"/>
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdateto2']!= null){echo date("F j, Y", strtotime($row['empdateto2']));}?></p></i>            
           </div>
-        </div> 
-        <div style="margin-top: 15px;">
-          <button type="submit" style = "width: 50%; margin: auto;"name = "submitprof" class="btn btn-success btn-block"><span class="glyphicon glyphicon-off"></span> Update</button>
         </div>
-        </form>
+                <div class="row" >
+          <div class="col-md-3">
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['empost3']?></p></i>
+          </div>
+          <div class="col-md-3">
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php echo $row['emcompany3']?></p></i>
+          </div>
+          <div class="col-md-3">
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdatefr3']!= null){echo date("F j, Y", strtotime($row['empdatefr3']));}?></p></i>
+          </div>
+          <div class="col-md-3">
+            <i><p style = "margin-left: 10px;" id = "usrname"><?php if($row['empdateto3']!= null){echo date("F j, Y", strtotime($row['empdateto3']));}?></p></i>            
+          </div>
+        </div>
+
+       </div>
       </div>
     </div>
   </div>
 </div>
-<?php
+<style>
+#myModal2 .row {
+  margin-bottom: 10px;
 }
+#myModal2 .modal-header, #myModal2 h4, #myModal2 .close {
+  background-color: #5cb85c;
+  color:#E6E6E6 !important;
+  font-size: 18px;
 }
-?>
+#myModal2 .modal-footer {
+  background-color: #f9f9f9;
+}
+</style>
 <script type="text/javascript">
   $('#textareaaa').keyup(validateTextarea);
 
@@ -380,20 +360,12 @@ function validateTextarea() {
   });
 
 </script>
-<style>
-.row {
-  margin-bottom: 10px;
+
+<?php
 }
-.modal-header h4, .modal-header, .close {
-  background-color: #5cb85c;
-  color:white !important;
-  text-align: center;
-  font-size: 30px;
 }
-.modal-footer {
-  background-color: #f9f9f9;
-}
-</style>
+?>
+
 
 <?php
 if(isset($_POST['submitprof'])){
