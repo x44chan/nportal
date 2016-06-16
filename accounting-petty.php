@@ -339,8 +339,10 @@
 				echo '<th width="12%">Type</th>';
 				echo '<th width="12%">Amount</th>';
 				echo '<th width="12%">Receipt</th>';
-				echo '<th width="40%">Info</th>';
-				echo '<th width="12%">Code</th>';
+				echo '<th width="40%">Particulars</th>';
+				if(!isset($_GET['print'])){
+					echo '<th width="12%">Code</th>';
+				}
 				echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
@@ -368,7 +370,9 @@
 				echo '<td>₱ '. number_format($data['liqamount'],2).'</td>';
 				echo '<td>' . $rcpt . '</td>';
 				echo '<td>'. $data['liqinfo'].'</td>';
-				echo '<td>'. $data['liqcode'].'</td>';
+				if(!isset($_GET['print'])){
+					echo '<td>'. $data['liqcode'].'</td>';
+				}
 				echo '</tr>';	
 				$totalliq += $data['liqamount'];
 				if($row['liqstate'] == 'AdmnApp'){
@@ -406,44 +410,53 @@
 			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: '.$litt.'</b></td><td>₱ '.number_format($totalliq, 2).'<br><br>₱ '.number_format($a - $totalliq, 2).'</td><td></td><td></td><td></td></tr>';
 			echo '</tbody></table>';
 			echo '<hr>';
-			echo '<div style = "margin-left: 10px;">';
+			if(isset($_GET['print'])){
+				echo '<div style = "margin-left: 10px; font-size: 11px;">';
+			}else{
+				echo '<div style = "margin-left: 10px; font-size: 13.5px;">';
+			}
+				echo '<label> <u>Summary of Expenses </u></label><br><br>';
+			
 				if($meal > 0){
-					echo '<label> Meal: </label><label>' . number_format($meal,2) . '</label>';
+					echo '<label> Meal: <i>₱ ' . number_format($meal,2) . '</label>';
 				}
 				if($gasoline > 0){
-					echo '<br><label> Gasoline: ' . number_format($gasoline,2) . '</label>';
+					echo '<br><label> Gasoline: <i>₱ ' . number_format($gasoline,2) . '</i></label>';
 				}
 				if($transpo > 0){
-					echo '<br><label> Transportation: ' . number_format($transpo,2) . '</label>';
+					echo '<br><label> Transportation: <i>₱ ' . number_format($transpo,2) . '</i></label>';
 				}
 				if($officesupp > 0){
-					echo '<br><label> Office Supplies: ' . number_format($officesupp,2) . '</label>';
+					echo '<br><label> Office Supplies: <i>₱ ' . number_format($officesupp,2) . '</i></label>';
 				}
 				if($cpload > 0){
-					echo '<br><label> Cellphone Load: ' . number_format($cpload,2) . '</label>';
+					echo '<br><label> Cellphone Load: <i>₱ ' . number_format($cpload,2) . '</i></label>';
 				}
 				if($waterf > 0){
-					echo '<br><label> Water Refill: ' . number_format($waterf,2) . '</label>';
+					echo '<br><label> Water Refill: <i>₱ ' . number_format($waterf,2) . '</i></label>';
 				}
 				if($notary > 0){
-					echo '<br><label> Notary Fee: ' . number_format($notary,2) . '</label>';
+					echo '<br><label> Notary Fee: <i>₱ ' . number_format($notary,2) . '</i></label>';
 				}
 				if($toll > 0){
-					echo '<br><label> Toll Gate: ' . number_format($toll,2) . '</label>';
+					echo '<br><label> Toll Gate: <i>₱ ' . number_format($toll,2) . '</i></label>';
 				}
 				if($gatepass > 0){
-					echo '<br><label> Gate Pass: ' . number_format($gatepass,2) . '</label>';
+					echo '<br><label> Gate Pass: <i>₱ ' . number_format($gatepass,2) . '</i></label>';
 				}
 				if($housegood > 0){
-					echo '<br><label> House Goods: ' . number_format($housegood,2) . '</label>';
+					echo '<br><label> House Goods: <i>₱ ' . number_format($housegood,2) . '</i></label>';
 				}
 				if($materials > 0){
-					echo '<br><label> Materials: ' . number_format($materials,2) . '</label>';
+					echo '<br><label> Materials: <i>₱ ' . number_format($materials,2) . '</i></label>';
 				}
 				if($otherss > 0){
-					echo '<br><label> Others: ' . number_format($otherss,2) . '</label>';
+					echo '<br><label> Others: <i>₱ ' . number_format($otherss,2) . '</i></label>';
 				}
 			echo '</div>';
+			if(isset($_GET['print'])){
+				echo '<div class = "pull-right" style = "text-align: center; font-size: 11px; margin-right: 50px;">_________________________________<br> Checked/Verified By</div>';
+			}
 			echo '</div><div align="center">';			
 			$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 			echo '<a href = "'.$actual_link.'&print" class = "btn btn-primary"> Print </a> ';
