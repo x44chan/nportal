@@ -345,6 +345,8 @@
 			echo '</thead>';
 			echo '<tbody>';
 			$totalliq = 0;
+			$meal = 0; $gasoline = 0; $transpo = 0; $officesupp = 0; $cpload = 0;
+			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -374,11 +376,75 @@
 				}else{
 					$litt = "";
 				}
+				if($data['liqtype'] == 'Meal'){
+					$meal += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Gasoline'){
+					$gasoline += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Transportation'){
+					$transpo += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Office Supplies'){
+					$officesupp += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Cellfone Load'){
+					$cpload += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Water Fill'){
+					$waterf += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Notary Fee'){
+					$notary += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Toll Gate'){
+					$toll += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Gate Pass'){
+					$gatepass += $data['liqamount'];
+				}elseif($data['liqtype'] == 'House Goods'){
+					$housegood += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Materials'){
+					$materials += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Others'){
+					$otherss += $data['liqamount'];
+				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
 			echo '<tr id = "bords"><td></td><td align = "right"><b>Total: <br><br>Change: '.$litt.'</b></td><td>₱ '.number_format($totalliq, 2).'<br><br>₱ '.number_format($a - $totalliq, 2).'</td><td></td><td></td><td></td></tr>';
 			echo '</tbody></table>';
-			echo '<hr></div><div align="center">';			
+			echo '<hr>';
+			echo '<div style = "margin-left: 10px;">';
+				if($meal > 0){
+					echo '<label> Meal: </label><label>' . number_format($meal,2) . '</label>';
+				}
+				if($gasoline > 0){
+					echo '<br><label> Gasoline: ' . number_format($gasoline,2) . '</label>';
+				}
+				if($transpo > 0){
+					echo '<br><label> Transportation: ' . number_format($transpo,2) . '</label>';
+				}
+				if($officesupp > 0){
+					echo '<br><label> Office Supplies: ' . number_format($officesupp,2) . '</label>';
+				}
+				if($cpload > 0){
+					echo '<br><label> Cellphone Load: ' . number_format($cpload,2) . '</label>';
+				}
+				if($waterf > 0){
+					echo '<br><label> Water Refill: ' . number_format($waterf,2) . '</label>';
+				}
+				if($notary > 0){
+					echo '<br><label> Notary Fee: ' . number_format($notary,2) . '</label>';
+				}
+				if($toll > 0){
+					echo '<br><label> Toll Gate: ' . number_format($toll,2) . '</label>';
+				}
+				if($gatepass > 0){
+					echo '<br><label> Gate Pass: ' . number_format($gatepass,2) . '</label>';
+				}
+				if($housegood > 0){
+					echo '<br><label> House Goods: ' . number_format($housegood,2) . '</label>';
+				}
+				if($materials > 0){
+					echo '<br><label> Materials: ' . number_format($materials,2) . '</label>';
+				}
+				if($otherss > 0){
+					echo '<br><label> Others: ' . number_format($otherss,2) . '</label>';
+				}
+			echo '</div>';
+			echo '</div><div align="center">';			
 			$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 			echo '<a href = "'.$actual_link.'&print" class = "btn btn-primary"> Print </a> ';
 			if(!isset($_GET['complete'])){
