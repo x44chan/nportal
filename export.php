@@ -5,6 +5,8 @@ $DB_Server = "127.0.0.1"; //MySQL Server
 $DB_Username = "root"; //MySQL Username     
 $DB_Password = "";             //MySQL Password     
 $DB_DBName = "testnew";         //MySQL Database Name  
+
+include('savelogs.php');
 /*******EDIT LINES 3-8*******/
 session_start();
 if(isset($_GET['exot']) && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR')){
@@ -67,7 +69,8 @@ if(isset($_GET['exot']) && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] ==
             $schema_insert .= "\t";
             print(trim($schema_insert));
             print "\n";
-        }   
+        }
+        savelogs("Export Overtime", "For the Cutoff " . date("M j, Y", strtotime($date1)) . ' to ' . date("M j, Y", strtotime($date2)));
     }
 ?>
 <?php
@@ -152,6 +155,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
             print(trim($schema_insert));
             print "\n";
         }  
+        savelogs("Export Official Business", "For the Cutoff " . date("M j, Y", strtotime($date1)) . ' to ' . date("M j, Y", strtotime($date2)));
     }
 ?>
 <?php
@@ -180,6 +184,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
             $result1 = $conn->query($sql1);
             $result2 = $conn->query($sql2);
             if($result1->num_rows > 0 || $result2->num_rows > 0){
+                savelogs("Export Leave and Overtime", "For the Cutoff " . date("M j, Y", strtotime($date1)) . ' to ' . date("M j, Y", strtotime($date2)));
                 while($row1 = $result2->fetch_assoc()){              
                     echo '<tr>';
                     echo '<td>' . $row1['phoenix_empid'] . '</td>';

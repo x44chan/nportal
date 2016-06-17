@@ -15,7 +15,7 @@
 		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary"  href = "?ac=penot">Home</a>
-			<?php if($_SESSION['acc_id'] == '4'){ ?>
+			<?php if($_SESSION['acc_id'] != '48'){ ?>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<?php
 				include 'caloan/reqbut.php';
@@ -42,7 +42,7 @@
 				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>
-			<?php if($_SESSION['acc_id'] == '4'){ ?>
+			<?php if($_SESSION['acc_id'] != '48'){ ?>
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
@@ -59,7 +59,7 @@
 			<a role = "button"class = "btn btn-success"  href = "?ac=penob"> Official B. Req. Status</a>			
 			<a role = "button"class = "btn btn-success"  href = "?ac=penlea"> Leave Req. Status</a>		
 			<a role = "button"class = "btn btn-success"  href = "?ac=penundr"> Undertime Req. Status</a>
-			<?php if($_SESSION['acc_id'] == '4'){ ?>
+			<?php if($_SESSION['acc_id'] != '48'){ ?>
 			<a role = "button"class = "btn btn-success"  href = "?ac=penhol"> Holiday Req. Status</a>
 			<a role = "button"class = "btn btn-success"  href = "?ac=penpty"> Petty Req. Status</a>
 			<?php

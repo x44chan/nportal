@@ -1,6 +1,7 @@
 <?php
 	include 'conf.php';
 	session_start();
+	include('savelogs.php');
 	if(!isset($_SESSION['acc_id'])){
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}
@@ -35,7 +36,10 @@
 		$sql ="UPDATE loan set 
 	   		state = 'DECLoan'
 	    where loan_id = '$o' and account_id = '$accid'"; 
-
+	    $xxxss = "SELECT * FROM login where account_id = '$accid'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
+	    savelogs("Disapprove Loan", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' Loan ID: ' . $o);
+	  	
 	 	if ($conn->query($sql) === TRUE) {	 		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
@@ -122,6 +126,9 @@
 			}else{
 				echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penloan"); </script>';
 			}
+			$xxxss = "SELECT * FROM login where account_id = '$accid'";
+			$xxxsss = $conn->query($xxxss)->fetch_assoc();
+			savelogs("Approve Loan", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' - Approve Loan: ' . $appamount . ' - Requested Loan: ' . $oldamnt . ' - Start Date: ' . $cutoffdate);
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	} 

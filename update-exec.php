@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	include('conf.php');
+	include('savelogs.php');
 	if(!isset($_SESSION['acc_id'])){
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}
@@ -622,15 +623,20 @@
 		$stmt = "UPDATE `overtime` set 
 			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
+		$xxxss = "SELECT * FROM login where account_id = '$accid'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();	
+		
 		if($hrrestric == 0){
 			if ($conn->query($stmt) === TRUE) {
 		    	echo '<script type="text/javascript">window.location.replace("'.$redirec.'"); </script>';
+		    	savelogs("Update Overtime", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . " From: " . $oldot . " To: " . $hruptimein . ' - ' . $hruptimeout);
 		  	}else {
 		    	echo "Error updating record: " . $conn->error;
 		  	}
 			$conn->close();
 		}else{
 			echo '<script type="text/javascript">alert("Restricted to add O.T");window.location.replace("'.$redirec.'"); </script>';
+			savelogs("Update Overtime (Restricted)", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . " From: " . $oldot . " To: " . $hruptimein . ' - ' . $hruptimeout);
 		}
 	}
 
@@ -647,10 +653,13 @@
 			$acc = "";
 		}
 		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
+		$xxxss = "SELECT * FROM login where account_id = '$accid'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		$stmt = "UPDATE `officialbusiness` set 
 				obtimein = '$obtimein', obtimeout = '$obtimeout', state = 'CheckedHR', edithr = '$edithr', datehr = '$date' $acc
 			where account_id = '$accid' and state = 'UA' and officialbusiness_id = '$obid'";
 		if ($conn->query($stmt) === TRUE) {
+			savelogs("Update Official Business", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . " In: " . $obtimein . " Out: " . $obtimeout);
 	    	if($_SESSION['level'] == 'ACC'){
 	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penob"); </script>';
 			}else{

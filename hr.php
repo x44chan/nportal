@@ -396,6 +396,7 @@
 				$cstatus = $row['ecstatus'];
 				$accidd = $row['account_id'];
 				$egender = $row['egender'];
+				$cate = $row['empcatergory'];
 				if(date("Y") == 2015){	
 					$sl = $row['sickleave'] - $row['usedsl'];
 					$vl = $row['vacleave'] - $row['usedvl'];
@@ -439,7 +440,6 @@
 								
 				
 			}
-		}
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -501,8 +501,6 @@
 				}				
 				if($xcount[$i] >= $months) {
 					$wthpay = 'withoutpay1';
-				}elseif(($months - $xcount[$i]) < $numdays){
-					$wthpay = 'withoutpay2';
 				}else {
 					$wthpay = null;
 				}
@@ -511,6 +509,8 @@
 				}
 
 			}
+		}
+			
 		if(!isset($xcount[0])){
 			$xcount = 0;
 		}
@@ -527,8 +527,10 @@
 			<tr><td width="30%"><b>Name:</td><td width="30%"><?php echo $row['fname'] . ' ' . $row['lname']; ?></td></tr>
 			<tr><td width="30%"><b>Date Hired:</td><td width="30%"><?php echo date("M j, Y", strtotime($row['edatehired'])); ?></td></tr> 
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
+			<?php if(isset($cate) && $cate == 'Regular'){ ?>
 			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
 			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?></td></tr> 
+			<?php } ?>
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
 			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";

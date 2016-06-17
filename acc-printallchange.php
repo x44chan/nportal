@@ -2,6 +2,8 @@
 
 include 'header.php';
 include 'conf.php';
+session_start();
+include('savelogs.php');
 		$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and (source = 'Eliseo' or source = 'Sharon') and particular != 'Check' group by petty_liqdate.petty_id order by completedate desc,petty.petty_id desc";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
@@ -23,6 +25,7 @@ include 'conf.php';
 		$tamount = 0;
 		$tused = 0;
 		if($result->num_rows > 0){
+			savelogs("Print Return All Changes", date("M j, Y"));
 			while($row = $result->fetch_assoc()){
 				$petid = $row['petty_id'];
 				$accid = $row['account_id'];

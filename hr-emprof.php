@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php session_start(); include("savelogs.php");?>
 <?php  $title="Employee Profile";
 	include('header.php');	
   include 'conf.php';
@@ -125,6 +125,9 @@
       $update = "UPDATE login set last_day = '$lastday', ldreason = '$ldreason', active = '0' where account_id = '$accid'";
       if($conn->query($update) == TRUE){
        echo '<script type="text/javascript"> window.location.href = "hr-emprof.php?active=0"; </script>';
+        $stmts2xx = "SELECT * FROM `login` where account_id = '$accid'";
+        $dataxx = $conn->query($stmts2xx)->fetch_assoc();  
+        savelogs("Account InActive", $dataxx['fname'] . ' ' . $dataxx['lname'] . " Reason: " . $ldreason . " - Last Day: " . $lastday);
       }
   }
   if(isset($_GET['inacres'])){
@@ -416,6 +419,9 @@ if(isset($_POST['updateleave'])){
   if($datax['penleave'] == 0){  
     if($sql->execute()){
       echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
+      $stmts2xx = "SELECT * FROM `login` where account_id = '$accid'";
+      $dataxx = $conn->query($stmts2xx)->fetch_assoc();  
+      savelogs("Update Leave Balance", $dataxx['fname'] . ' ' . $dataxx['lname'] . " Vacation Leave: " . $vleave . " Sick Leave: " . $sleave);
     }
   }else{
     echo '<script type = "text/javascript">alert("You still have pending changes."); window.location.replace("hr-emprof.php");</script>';
@@ -448,8 +454,7 @@ if(isset($_POST['upsub'])){
     $catdates = ", regdate = '$catdate'";
   }
   $stmts2 = "SELECT count(account_id) as count FROM `login` where account_id = '$modify' and hrchange != '0'";
-  $data = $conn->query($stmts2)->fetch_assoc();
-  
+  $data = $conn->query($stmts2)->fetch_assoc();  
 
   if(date("Y-m-d") < "2015-12-29"){
     $stmt = "UPDATE `login` 
@@ -464,6 +469,9 @@ if(isset($_POST['upsub'])){
   if($data['count'] == 0){
     if($conn->query($stmt) == TRUE){
       echo '<script type = "text/javascript">alert("Successful"); window.location.replace("hr-emprof.php");</script>';
+      $stmts2xx = "SELECT * FROM `login` where account_id = '$modify'";
+      $dataxx = $conn->query($stmts2xx)->fetch_assoc();  
+      savelogs("Update Category", $dataxx['fname'] . ' ' . $dataxx['lname'] . " Category: " . $empcatergory . " Old Position: " . $oldpost . " Payment: " . $payment . ' Date' . $catdate);
     }       
   }else{
      echo '<script type = "text/javascript">alert("You still have pending changes."); window.location.replace("hr-emprof.php");</script>';

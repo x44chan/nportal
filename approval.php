@@ -2,6 +2,7 @@
 	date_default_timezone_set('Asia/Manila');
 	session_start();
 	include("conf.php");
+	include("savelogs.php");
 	if(isset($_SESSION['acc_id'])){
 		$accid = $_SESSION['acc_id'];
 		if($_SESSION['level'] == 'EMP'){
@@ -15,6 +16,8 @@
 	include('conf.php');
 	if(isset($_GET['overtime'])){	
 		$id = mysqli_real_escape_string($conn, $_GET['overtime']);
+		$xxxss = "SELECT * FROM overtime where overtime_id = '$id'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
 		if(isset($_GET['dareason'])){
 			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
@@ -32,7 +35,12 @@
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
-				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
+				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
+				if($state = 'DAHR'){
+					savelogs("Disapprove Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot'] . ' Reason: ' . $xxxsss['dareason']);	
+				}else{
+					savelogs("Approve Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot']);	
+				}
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}
@@ -67,16 +75,19 @@
 			}
 			if($state == 'DAAdmin'){
 				$dareason = "dareason = '$dareason',";
+				savelogs("Disapprove Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot'] . ' Reason: ' . $xxxsss['dareason']);	
 			}else{
 				$dareason = "";
 			}
 			if($state == 'AAdmin'){
 				$state = 'AAdmin';
+				savelogs("Approve Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot']);	
 			}
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE overtime set state = '$state', $dareason datehr = '$date' $otlate where overtime_id = $id and $states";
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("admin.php'.$link.'"); </script>';
+				
 			}else{
 				die("Connection error:". $conn->connect_error);
 			}		
@@ -93,6 +104,8 @@
 	if(isset($_GET['hol'])){	
 		$id = mysqli_real_escape_string($conn, $_GET['hol']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$xxxss = "SELECT * FROM holidayre,login where holidayre_id = '$id' and holidayre.account_id = login.account_id";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		if(isset($_GET['dareason'])){
 			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
 		}else{
@@ -103,8 +116,10 @@
 			$date = date('Y-m-d h:i A');
 			if($state == 'AHR'){
 				$state = 1;
+				savelogs("Approve Holiday", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' Date: ' . $xxxsss['holiday'] . ' Type: ' . $xxxsss['type']);	
 			}else{
 				$state = -1;
+				savelogs("Disapprove Holiday", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' Date: ' . $xxxsss['holiday'] . ' Type: ' . $xxxsss['type'] . ' Reason: ' . $dareason);
 			}
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE holidayre set state = '$state',datehr = '$date',dareason = '$dareason' where holidayre_id = $id and state = 0";			
@@ -121,8 +136,10 @@
 			}
 			if($state == 'AAdmin'){
 				$state = 2;
+				savelogs("Approve Holiday", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' Date: ' . $xxxsss['holiday'] . ' Type: ' . $xxxsss['type']);	
 			}else{
 				$state = -2;
+				savelogs("Disapprove Holiday", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . ' Date: ' . $xxxsss['holiday'] . ' Type: ' . $xxxsss['type'] . ' Reason: ' . $dareason);
 			}
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE holidayre set state = '$state',datehr = '$date',dareason = '$dareason' where holidayre_id = $id and state = 1";
@@ -162,11 +179,14 @@
 		}
 		$oid = mysql_escape_string($_POST['leave_id']);
 		$date = date('Y-m-d h:i A');
+		$xxxss = "SELECT * FROM nleave where leave_id = '$oid'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		$sql = "UPDATE nleave set 
 					state = '$upstate', leapay = '$leapay', ftowork = '$ftowork', datehr = '$date'
 				where leave_id = '$oid' and state = '$state'";
 		if($conn->query($sql) == TRUE){
 			echo '<script type="text/javascript">window.location.replace("hr.php?ac=penlea"); </script>';
+			savelogs("Approve Leave", $xxxsss['nameofemployee'] . ' Date From: ' . $xxxsss['dateofleavfr'] . ' To: ' . $xxxsss['dateofleavto']. ' Payment: ' . $leapay);	
 		}else{
 			die("Connection error:". $conn->connect_error);
 		}	
@@ -177,6 +197,8 @@
 	include('conf.php');
 	if(isset($_GET['officialbusiness_id'])){
 		$id = mysqli_real_escape_string($conn, $_GET['officialbusiness_id']);
+		$xxxss = "SELECT * FROM officialbusiness where officialbusiness_id = '$id'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);		
 		if(isset($_GET['dareason'])){
 			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
@@ -193,6 +215,7 @@
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
+				savelogs("Disapprove Official Business", $xxxsss['obename'] . " Reason: " . $dareason);
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
 				die("Connection error:". $conn->connect_error);
@@ -238,6 +261,8 @@
 	if(isset($_GET['undertime'])){
 		$id = mysqli_real_escape_string($conn, $_GET['undertime']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$xxxss = "SELECT * FROM undertime where undertime_id = '$id'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		if(isset($_GET['dareason'])){
 			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
 		}else{
@@ -247,6 +272,7 @@
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
+				savelogs("Disapprove Official Business", $xxxsss['name'] . " Reason: " . $dareason);
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
 			}else{
 				die("Connection error:". $conn->connect_error);
@@ -297,6 +323,8 @@
 	if(isset($_GET['leave'])){
 		$id = mysqli_real_escape_string($conn, $_GET['leave']);
 		$state = mysqli_real_escape_string($conn, $_GET['approve']);
+		$xxxss = "SELECT * FROM nleave where leave_id = '$id'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		if(isset($_GET['dareason'])){
 			$dareason = mysqli_real_escape_string($conn, $_GET['dareason']);
 		}else{
@@ -306,6 +334,7 @@
 			$date = date('Y-m-d h:i A');
 			if($state == 'DAHR'){
 				$accadmin = " and accadmin is null";
+				savelogs("Disapprove Leave ", $xxxsss['nameofemployee'] . " Reason: " . $dareason);
 			}else{
 				$accadmin = "";
 			}

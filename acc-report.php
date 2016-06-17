@@ -113,7 +113,7 @@ $(document).ready( function () {
 		<?php echo date('l jS \of F Y h:i A'); ?> <br>	<br>	
 		<div class="btn-group btn-group-lg">
 			<a  type = "button"class = "btn btn-primary" href = "accounting.php?ac=penot">Home</a>	
-			<?php if($_SESSION['acc_id'] == '4'){ ?>	
+			<?php if($_SESSION['acc_id'] != '48'){ ?>	
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 			<?php
 				include 'caloan/reqbut.php';
@@ -141,7 +141,7 @@ $(document).ready( function () {
 				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
 				</ul>
 			</div>
-			<?php if($_SESSION['acc_id'] == '4'){ ?>	
+			<?php if($_SESSION['acc_id'] != '48'){ ?>	
 			
 			<div class="btn-group btn-group-lg">
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>

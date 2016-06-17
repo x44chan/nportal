@@ -1,7 +1,11 @@
 <?php
+	include('savelogs.php');
 	if(isset($_GET['promotion'])){
 		include 'conf.php';
+		session_start();
 		$accid = mysql_escape_string($_GET['account_id']);
+		$xxxss = "SELECT * FROM login where account_id = '$accid'";
+		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		if($_GET['promotion'] == 'a'){
 			$sql = "UPDATE login set hrchange = '0' where account_id = '$accid' and hrchange != '0'";
 			if ($conn->query($sql) === TRUE) {
@@ -84,6 +88,7 @@ if(isset($_POST['hreg'])){
 			$stmt = $conn->prepare("INSERT into `login` (uname, pword, level) VALUES (?, ?, ?)");
 			$stmt->bind_param("sss", $uname, $pw, $level);
 			$stmt->execute();	
+			savelogs("Create New User", "Username: " . $uname . " Level: " . $level);
 			echo '<script type = "text/javascript">alert("Registration succesful")</script>';
        		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penot"); </script>';
 			$conn->close();

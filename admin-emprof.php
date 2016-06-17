@@ -136,7 +136,10 @@
     include 'caloan/leaverep.php';
     echo '</div><div style = "display: none;">';
   }
-
+  if(isset($_GET['audit'])){
+    include 'caloan/audit.php';
+    echo '</div><div style = "display: none;">';
+  }
 ?>
 <?php 
   if(isset($_GET['loan']) && $_GET['loan'] == ''){

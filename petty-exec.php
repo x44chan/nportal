@@ -1,6 +1,7 @@
 <?php
 	include("conf.php");
 	session_start();
+	include('savelogs.php');
 	if(!isset($_SESSION['acc_id'])){
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}
@@ -22,6 +23,7 @@
 		$sql ="UPDATE loan set 
 	   		state = 'ARcvCashCode', rcve_code = '$rcve_code'
 	    where loan_id = '$o' and account_id = '$accid'";  
+	   	savelogs("Receive Loan", "Loan #: " . $o);
 	    if ($conn->query($sql) === TRUE) {	 		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penloan"); </script>';
@@ -44,8 +46,10 @@
 		}
 		if(isset($_POST['transct'])){
 			$trans = $_POST['transct'];
+			$checkk = " Check #: " . $trans;
 		}else{
 			$trans = null;
+			$checkk = ' ' . $_POST['appart'] . ' ';
 		}
 		if($_SESSION['level'] == 'Admin'){
 			$source = $_POST['source'];
@@ -54,9 +58,11 @@
 			}else{
 				$state = 'AAPetty';
 			}
+			savelogs("Approve Petty", "Petty #: " . $petty_id . " Source: " . $source . $checkk);
 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 			$state = 'AAAPettyReceive';
 			$source = 'Accounting';
+			savelogs("Approve Petty", "Petty #: " . $petty_id . $checkk);
 		}
 		$sql ="UPDATE petty set 
 	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans', particular = '$particular'
@@ -76,6 +82,7 @@
 		$sql ="UPDATE petty set 
 			state = 'DAPetty'
 	    where petty_id = '$petty_id'"; 
+	    savelogs("Disapprove Petty", "Petty #: " . $petty_id);
 	 	if ($conn->query($sql) === TRUE) {
 	 		if($_SESSION['level'] == 'Admin'){
 	    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -96,7 +103,7 @@
 		$sql ="UPDATE cashadv set 
 	   		state = 'ACash'
 	    where cashadv_id = '$o' and account_id = '$accid' and state = 'UACA'"; 
-
+	    savelogs("Approve Cash Advance", "Cash Advance #: " .$o);
 	 	if ($conn->query($sql) === TRUE) {	 		
 			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 	  	}else {
@@ -110,6 +117,7 @@
 		$sql ="UPDATE cashadv set 
 	   		state = 'ARcvCash', rcve_code = '$rcve_code'
 	    where cashadv_id = '$o' and account_id = '$accid' and state = 'ACash'";  
+	    savelogs("Receive Cash Advance", "Cash Advance #: " .$o);
 	    if ($conn->query($sql) === TRUE) {	 		
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penca"); </script>';
@@ -133,6 +141,7 @@
 			$sql ="UPDATE cashadv set 
 		   		state = 'ACashReleased'
 		    where cashadv_id = '$pet_id' and state = 'ARcvCash' and rcve_code = '$rcve_code'"; 
+		    savelogs("Release Cash Advance", "Cash Advance #: " .$pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -162,7 +171,7 @@
 		$sql ="UPDATE petty set 
 	   		state = 'AAPettyReceived', rcve_code = '$rcve_code'
 	    where petty_id = '$o' and account_id = '$accid' and state = 'AAAPettyReceive'"; 
-
+	    savelogs("Receive Petty", "Petty #: " .$o);
 	 	if ($conn->query($sql) === TRUE) {	 		
 		    if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac='.$_GET['acc'].'"); </script>';
@@ -189,7 +198,7 @@
 		$sql ="UPDATE petty set 
 	   		state = 'AAPettyRep'
 	    where petty_id = '$o' and state = 'AAPettyReceived'"; 
-
+	    savelogs("Done Petty", "Petty #: " .$o);
 	 	if ($conn->query($sql) === TRUE) {	 		
 	    	if($_SESSION['level'] == 'Admin'){
 	    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -217,6 +226,7 @@
 			$sql ="UPDATE petty set 
 		   		state = 'AAPettyRep', releasedate = '$releasedate'
 		    where petty_id = '$pet_id' and state = 'AAPettyReceived' and rcve_code = '$rcve_code'"; 
+		    savelogs("Release Petty", "Petty #: " . $pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -251,6 +261,7 @@
 			$sql ="UPDATE loan set 
 		   		state = 'ALoan'
 		    where loan_id = '$pet_id' and state = 'ARcvCashCode' and rcve_code = '$rcve_code'"; 
+		    savelogs("Release Loan", "Loan #: " .$pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -288,11 +299,13 @@
 			if(isset($_POST['admliqsubmit'])){
 				$sql ="UPDATE petty_liqdate set 
 		   			liqstate = 'AdmnApp'
-		    	where petty_id = '$pet_id' and liqstate = 'LIQDATE' and liqcode is NULL"; 
+		    	where petty_id = '$pet_id' and liqstate = 'LIQDATE' and liqcode is NULL";
+		    	savelogs("Approve Liquidation/Remove Restriction", "Petty #: " . $pet_id); 
 			}elseif(isset($_POST['liqsubmit'])){
 				$sql ="UPDATE petty_liqdate set 
 		   			liqstate = 'EmpVal', liqcode = '$liqcode', completedate = '$comdate'
 		    	where petty_id = '$pet_id' and (liqstate = 'LIQDATE' or liqstate = 'AdmnApp') and liqcode is NULL"; 
+		    	savelogs("Complete Liquidation", "Petty #: " . $pet_id);
 			}
 			if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
@@ -328,6 +341,7 @@
 			$sql ="UPDATE petty_liqdate set 
 		   		liqstate = 'CompleteLiqdate', liqcode = '$liqcode', admincode = '$admincode', valdate = '$valdate'
 		    where petty_id = '$pet_id' and liqstate = 'EmpVal' and liqcode = '$liqcode'"; 
+		    savelogs("Employee Validate Code", "Petty #: " . $pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -379,6 +393,7 @@
 			$sql ="UPDATE petty_liqdate set 
 		   		accval = 'ExcessComplete'
 		    where petty_id = '$pet_id' and accval = 'AdminRcv' and admincode = '$liqcode'"; 
+		    savelogs("Admin Validation Code", "Petty #: " . $pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
@@ -410,6 +425,7 @@
 			$sql ="UPDATE petty_liqdate set 
 		   		accval = 'AdminRcv'
 		    where petty_id = '$pet_id' and accval IS NULL and liqstate = 'CompleteLiqdate'"; 
+		    savelogs("Receive Change", "Petty #: " . $pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
 		    		echo '<script type="text/javascript">window.location.replace("admin-petty.php?liqdate='.$_GET['excesscode'].'&acc='.$_GET['acc'].'"); </script>';

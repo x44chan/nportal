@@ -287,6 +287,20 @@
 			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b>Balance: </td><td>₱ '.number_format($_SESSION['repleamount'] - $total,2).'</td><td></td></tr>';
 			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b>Cash On Hand: </td><td>₱ '.number_format(($_SESSION['repleamount'] - $total) + ($change - $xchange), 2).'</td><td></td></tr>';
 			echo '<tr><td colspan = 10 style = "border-top: 0px;"><br><br><br><br><br> -- Nothing Follows -- </td></tr>';
+			if(isset($_GET['nopending'])){
+				$statusss = " Completed ";
+			}elseif(isset($_GET['spendliqui'])){
+				$statusss = " All Pending Petty Cash ";
+			}elseif(isset($_GET['bdochck'])){
+				$statusss = " Completed BDO Check ";
+			}elseif(isset($_GET['planterschck'])){
+				$statusss = " Planters Check ";
+			}elseif(isset($_GET['pendingchck'])){
+				$statusss = " All Pending Check ";
+			}else{
+				$statusss = " All ";
+			}
+			savelogs("Print Replenish Report", "Total Fund: ₱ " . number_format($_SESSION['repleamount']) . " - Status: " . $statusss . " - Date Covered: " .  date("M j, Y", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2)));
 		}		
 		
 		echo "</tbody></table></div>";	

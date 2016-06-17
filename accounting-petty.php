@@ -1,6 +1,7 @@
 <?php session_start(); ?>
 <?php  $title="Petty Report";
 	include('header.php');	
+	include('savelogs.php');
 	date_default_timezone_set('Asia/Manila');
 ?>
 <?php if($_SESSION['level'] != 'ACC'){	?>		
@@ -106,7 +107,7 @@
     <?php echo date('l jS \of F Y h:i A'); ?> <br><br>
     <div class="btn-group btn-group-lg">
       <a  type = "button"class = "btn btn-primary" href = "index.php">Home</a>
-      <?php if($_SESSION['acc_id'] == '4'){ ?>
+      <?php if($_SESSION['acc_id'] != '48'){ ?>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Update Profile</button>
 		<?php
 			include 'caloan/reqbut.php';
@@ -148,7 +149,7 @@
 		  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
         </ul>
       </div>
-      <?php if($_SESSION['acc_id'] == '4'){ ?>
+      <?php if($_SESSION['acc_id'] != '48'){ ?>
       <div class="btn-group btn-group-lg">
 		<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">My Request Status <span class="caret"></span></button>
 		<ul class="dropdown-menu" role="menu">
@@ -467,8 +468,9 @@
 			}
 			echo '</div>';
 			if(isset($_GET['print'])){
-			echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?liqdate='.$_GET['liqdate'].'&acc='.$_GET['acc'].'&complete";});</script>';
-		}
+				echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?liqdate='.$_GET['liqdate'].'&acc='.$_GET['acc'].'&complete";});</script>';
+				savelogs("Print Liquidation", "Petty #: " . $petyid);
+			}
 		}
 	}
 ?>
