@@ -36,10 +36,10 @@
 			$sql = "UPDATE overtime set state = '$state',datehr = '$date',dareason = '$dareason' where overtime_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
-				if($state = 'DAHR'){
-					savelogs("Disapprove Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot'] . ' Reason: ' . $xxxsss['dareason']);	
-				}else{
+				if($state == 'AHR'){
 					savelogs("Approve Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot']);	
+				}else{
+					savelogs("Disapprove Overtime", $xxxsss['nameofemp'] . ' Date: ' . $xxxsss['dateofot'] . ' From: ' . $xxxsss['startofot'] . ' To: ' . $xxxsss['endofot'] . ' Reason: ' . $xxxsss['dareason']);	
 				}
 			}else{
 				die("Connection error:". $conn->connect_error);

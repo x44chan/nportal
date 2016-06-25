@@ -39,7 +39,7 @@ $(document).ready(function(){
 	}
 ?>
 
-<div id = "offb" style = "margin-top: -30px; display: none; height:600px;">
+<div id = "offb" style = "margin-top: -30px; display: none; height: calc(100%);">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
 			<table width = "60%" align = "center">
@@ -141,10 +141,10 @@ $(document).ready(function(){
 		</div>
 	</form>
 </div>
-<div id = "undertime"style = "margin-top: -30px; display: none; height:550px;">
+<div id = "undertime"style = "margin-top: -30px; display: none; height: calc(100%);">
 	<?php include('undertime.php'); ?>
 </div>
-<div id = "formhidden"style = "margin-top: -30px;display: none; height:700px;" >
+<div id = "formhidden"style = "margin-top: -30px;display: none; height: calc(100%);" >
 	<form role = "form"  align = "center"action = "ot-exec.php" method = "post">
 		<div class = "form-group">
 			<table align = "center" width="50%">
@@ -512,11 +512,11 @@ $(document).ready(function(){
 				</tr>	
 				<tr>
 					<td align = center>	Vacation Leave Balance: </td>
-					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>"class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>" type = "number" class = "form-control"/></td>
 				</tr>
 				<tr>
 					<td abbr="center">V.L. Balance for this Quarter</td>
-					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>" type = "number" class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>
@@ -1011,17 +1011,17 @@ $(document).ready(function(){
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') )";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and penalty = '1'";
 		$resquery = $conn->query($query);
-		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
+		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan' and penalty = '1'";
 		$resqueryxx = $conn->query($sqlxx);
 		$date = date("Y-m-d");
-		if($date > date('Y-m-16')){
-			$date = date("Y-m-01", strtotime("next month"));
-			$date2 = date("Y-m-16");
+		if($date <= date('Y-m-08')){
+			$date = date("Y-m-23");
+			$date2 = date("Y-m-07");
 		}else{
-			$date = date("Y-m-16");
-			$date2 = date("Y-m-01");
+			$date = date("Y-m-08");
+			$date2 = date("Y-m-22");
 		}
 		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
 		$limita = $conn->query($xsql)->fetch_assoc();
@@ -1246,27 +1246,9 @@ $(document).ready(function(){
 <!-- polyfiller file to detect and load polyfills -->
 <script src="http://cdn.jsdelivr.net/webshim/1.12.4/polyfiller.js"></script>
 <script>
-	/*
-	webshims.setOptions('waitReady', false);
-	webshims.setOptions('forms-ext', {types: 'date'});
-	webshims.polyfill('forms forms-ext');
-	*/
-	webshim.setOptions('forms-ext', {
-	    replaceUI: 'auto'
-	});
-
-	//set language/UI dateformat || or use lang attribute on html element
-	//webshims.activeLang('hu'); // hu == hungary
-
-	webshim.polyfill('forms forms-ext');
-
-
-	$(function () {
-	    $('.check-validity').on('click', function () {
-	        $(this).jProp('form').checkValidity();
-	        return false;
-	    });
-	});
+  webshims.setOptions('waitReady', false);
+  webshims.setOptions('forms-ext', {types: 'date'});
+  webshims.polyfill('forms forms-ext');
 </script>
 <?php if($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'ACC'){
 	?>

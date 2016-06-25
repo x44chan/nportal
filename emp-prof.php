@@ -12,7 +12,11 @@
     <!-- Modal content-->
     <div class="modal-content" >
       <div class="modal-header" style="padding:25px 50px; font-size: 20px; text-align: left;">
+      <?php if($row['edatehired'] != ""){ ?>
        <button type="button" class="close" data-dismiss="modal"><font color = "#CC0000">&times;</font></button>
+      <?php }else{
+        echo '<h4 align = "center"> Profile Not Active <a href = "logout.php" class = "btn btn-danger"> Logout</a>';
+      }?>
           <div class="row" style="margin-left: 30px;">           
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -306,15 +310,15 @@
   </div>
 </div>
 <style>
-#myModal2 .row {
+.modal-header .row {
   margin-bottom: 10px;
 }
-#myModal2 .modal-header, #myModal2 h4, #myModal2 .close {
+.modal-header, .modal-header h4, .modal-header .close {
   background-color: #5cb85c;
   color:#E6E6E6 !important;
   font-size: 18px;
 }
-#myModal2 .modal-footer {
+.modal-footer {
   background-color: #f9f9f9;
 }
 </style>

@@ -45,6 +45,7 @@ if(isset($_POST['submitrans'])){
 	$petid = mysql_escape_string($_POST['petty_id']);
 	$sql = "UPDATE `petty` set acctrans = '$acctrans', state = 'TransProc', rcve_code = '$code' where petty_id = '$petid' and state = 'UATransfer'";
 	if($conn->query($sql) == TRUE){
+		savelogs("Approve Petty Transfer", "Petty #: " . $petid);
 		echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';	
 	}
 }
