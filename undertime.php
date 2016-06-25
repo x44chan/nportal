@@ -1,6 +1,6 @@
 	<form role = "form"  align = "center"action = "oundrtime-exec.php" method = "post">
 		<div class = "form-group">
-			<table align = "center"width = "60%">
+			<table align = "center"width = "60%" class="table-responsive">
 				<tr>
 					<td colspan = 3 align = center>
 						<h2> Undertime Request </h2>

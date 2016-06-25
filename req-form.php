@@ -42,7 +42,7 @@ $(document).ready(function(){
 <div id = "offb" style = "margin-top: -30px; display: none; height: calc(100%);">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
-			<table width = "60%" align = "center">
+			<table width = "60%" align = "center" class="table-responsive">
 				<tr>
 					<td colspan = 3 align = center>
 						<h2> Official Business Request </h2>
@@ -147,7 +147,7 @@ $(document).ready(function(){
 <div id = "formhidden"style = "margin-top: -30px;display: none; height: calc(100%);" >
 	<form role = "form"  align = "center"action = "ot-exec.php" method = "post">
 		<div class = "form-group">
-			<table align = "center" width="50%">
+			<table align = "center" width="60%" class="table-responsive">
 				<tr>
 					<td colspan = 2 align = center>
 						<h2> Overtime Request </h2>
@@ -456,7 +456,7 @@ $(document).ready(function(){
 ?>
 	<form role = "form"  align = "center"action = "oleave-exec.php" method = "post">
 		<div class = "form-group">
-			<table align = "center" width = "60%">
+			<table align = "center" width = "60%" class="table-responsive">
 				<tr>
 					<td colspan = 3 align = center>
 						<h2> Leave Request </h2>
