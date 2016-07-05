@@ -99,6 +99,8 @@
 				$_POST['project'] = $_POST['otinternet'];
 			}elseif($_POST['ottype'] == 'Others'){
 				$project = null;
+			}elseif($_POST['ottype'] == 'Oncall'){
+				$_POST['project'] = $_POST['otoncall'];
 			}
 		}
 		if($_POST['ottype'] == ""){

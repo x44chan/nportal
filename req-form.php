@@ -186,10 +186,28 @@ $(document).ready(function(){
 		          			<option value="P.M."> P.M. </option>
 		          			<option value="Internet"> Internet </option>
 		          			<option value="Project"> Project </option>
+		          			<option value="Oncall"> Oncall </option>
 		          			<option value="Others"> Others </option>	
 						</select>
 					</td>
 				</tr>
+				<tr style = "display: none;" id = "otoncall">
+            		<td><label>Internet <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otoncall">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
             	<tr style = "display: none;" id = "otproject">
             		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
@@ -574,6 +592,7 @@ $(document).ready(function(){
           			<option value="P.M."> P.M. </option>
           			<option value="Internet"> Internet </option>
           			<option value="Project"> Project </option>
+          			<option value="Oncall"> On-Call </option>
           			<option value="Combined"> P.M. & Internet </option>
           			<option value="Others"> Others </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
@@ -629,6 +648,21 @@ $(document).ready(function(){
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Internet' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "oncallxx">
+            	<label>On Call <font color = "red">*</font></label>
+            	<select class="form-control" name = "xoncall">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -777,6 +811,13 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['combined'];
+			}elseif($_POST['pettype'] == 'Oncall'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['xoncall'];
 			}	
 		}
 		if($count > 0){

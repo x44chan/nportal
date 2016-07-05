@@ -310,13 +310,14 @@
   </div>
 </div>
 <style>
-.modal-header .row {
+.row {
   margin-bottom: 10px;
 }
-.modal-header, .modal-header h4, .modal-header .close {
+.modal-header h4, .modal-header, .close {
   background-color: #5cb85c;
-  color:#E6E6E6 !important;
-  font-size: 18px;
+  color:white !important;
+  text-align: center;
+  font-size: 30px;
 }
 .modal-footer {
   background-color: #f9f9f9;

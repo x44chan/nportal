@@ -137,17 +137,17 @@ $(document).ready(function(){
 			$('#combined').hide();
 			$('select[name="combined"]').attr('required',false);
 		}
+		if(selected2 == 'Oncall'){
+			$('#oncallxx').show();
+			$('select[name="oncall"]').attr('required',true);
+		}else{
+			$('#oncallxx').hide();
+			$('select[name="oncall"]').attr('required',false);
+		}
 	});
 	$('select[name="ottype"]').change(function() {
 		    var selected2 = $(this).val();
-			if(selected2 == 'Project'){
-				$('#otproject').show();
-				$('select[name="otproject"]').attr('required',true);
-			}else{
-				$('#otproject').hide();
-				document.getElementById("loc").innerHTML = "";
-				$('select[name="otproject"]').attr('required',false);
-			}
+			
 			if(selected2 == 'P.M.'){
 				$('#otpm').show();
 				$('select[name="otpm"]').attr('required',true);
@@ -161,6 +161,22 @@ $(document).ready(function(){
 			}else{
 				$('#otinternet').hide();
 				$('select[name="otinternet"]').attr('required',false);
+			}
+			if(selected2 == 'Oncall'){
+				$('#otoncall').show();
+				$('select[name="otoncall"]').attr('required',true);
+			}else{
+				$('#otoncall').hide();
+				$('select[name="otoncall"]').attr('required',false);
+			}
+			if(selected2 == 'Project'){
+				$('#otproject').show();
+				$('select[name="otproject"]').attr('required',true);
+				$('select[name="loc"]').attr('required',true);
+			}else{
+				$('#otproject').hide();
+				document.getElementById("loc").innerHTML = "";
+				$('select[name="otproject"]').attr('required',false);
 			}
 		});
 	$("#petamount").keyup(function(e){
