@@ -183,13 +183,21 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
             $sql2 = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
             $result1 = $conn->query($sql1);
             $result2 = $conn->query($sql2);
+            $type = "1";
             if($result1->num_rows > 0 || $result2->num_rows > 0){
                 savelogs("Export Leave and Overtime", "For the Cutoff " . date("M j, Y", strtotime($date1)) . ' to ' . date("M j, Y", strtotime($date2)));
                 while($row1 = $result2->fetch_assoc()){              
                     echo '<tr>';
                     echo '<td>' . $row1['phoenix_empid'] . '</td>';
                     echo '<td>' . $row1['dateofot'] . '</td>';
-                    echo '<td>1</td>';
+                    if(stristr($row1['officialworksched'], 'Restday') == true){
+                    	$type = '17';
+                    }elseif(stristr($row1['officialworksched'], 'Special N-W Holliday') == true){
+                    	$type = '16';
+                    }elseif(stristr($row1['officialworksched'], 'Legal Holliday') == true){
+                    	$type = '15';
+                    }
+                    echo '<td>'.$type.'</td>';
                     if(stristr($row1['approvedothrs'], ':30') == true){
                         $row1['approvedothrs'] = str_replace(':30', '.5', $row1['approvedothrs']);
                     }elseif(stristr($row1['approvedothrs'], ':00') == true){
