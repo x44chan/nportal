@@ -399,8 +399,8 @@ if(isset($_GET['login_log'])){
           $edate = $row['probidate'];
           $tonull = $row['probidate'];
         }elseif($row['empcatergory'] == 'Contractual'){
-          $edate = $row['edatehired'];
-          $tonull = $row['edatehired'];
+          $edate = $row['contractdate'];
+          $tonull = $row['contractdate'];
         }else{
           $edate = "";
           $tonull = 'asd';
