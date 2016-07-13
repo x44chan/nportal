@@ -440,6 +440,7 @@
 								
 				
 			}
+		if($totavailvac > 0 || $availsick > 0){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -509,6 +510,10 @@
 				}
 
 			}
+		}
+	}
+		if(!isset($months)){
+			$months = 0;
 		}
 			
 		if(!isset($xcount[0])){
