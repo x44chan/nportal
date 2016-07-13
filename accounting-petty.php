@@ -192,6 +192,10 @@
 		include 'caloan/expenses.php';
 		echo '</div><div style = "display: none;">';
 	}
+	if(isset($_GET['expsum'])){
+		include 'caloan/expsum.php';
+		echo '</div><div style = "display: none;">';
+	}
 	if(isset($_GET['transfer'])){
 		include 'caloan/transferpty.php';
 		echo '</div><div style = "display: none;">';
@@ -350,6 +354,8 @@
 			$totalliq = 0;
 			$meal = 0; $gasoline = 0; $transpo = 0; $officesupp = 0; $cpload = 0;
 			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
+			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
+			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -405,6 +411,30 @@
 					$materials += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Others'){
 					$otherss += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Utilities'){
+					$utilities += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Social Payments'){
+					$social += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Permit & Licenses'){
+					$permit += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Services'){
+					$services += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Professional Fees'){
+					$profee += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Dues & Subscriptions'){
+					$due += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Advertising & Promotions'){
+					$adver += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Representation'){
+					$repre += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Repair & Maintenance'){
+					$repmaint += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Bank Charges'){
+					$bankc += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Miscellaneous'){
+					$misc += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Rental'){
+					$rental += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -453,6 +483,42 @@
 				}
 				if($otherss > 0){
 					echo '<br><label> Others: <i>₱ ' . number_format($otherss,2) . '</i></label>';
+				}
+				if($utilities > 0){
+					echo '<br><label> Utilities: <i>₱ ' . number_format($utilities,2) . '</i></label>';
+				}
+				if($social > 0){
+					echo '<br><label> Social Payments: <i>₱ ' . number_format($social,2) . '</i></label>';
+				}
+				if($permit > 0){
+					echo '<br><label> Permit & Licenses: <i>₱ ' . number_format($permit,2) . '</i></label>';
+				}
+				if($services > 0){
+					echo '<br><label> Services: <i>₱ ' . number_format($services,2) . '</i></label>';
+				}
+				if($profee > 0){
+					echo '<br><label> Professional Fees: <i>₱ ' . number_format($profee,2) . '</i></label>';
+				}
+				if($due > 0){
+					echo '<br><label> Dues & Subscriptions: <i>₱ ' . number_format($due,2) . '</i></label>';
+				}
+				if($adver > 0){
+					echo '<br><label> Advertising & Promotions: <i>₱ ' . number_format($adver,2) . '</i></label>';
+				}
+				if($repre > 0){
+					echo '<br><label> Representation: <i>₱ ' . number_format($repre,2) . '</i></label>';
+				}
+				if($repmaint > 0){
+					echo '<br><label> Repair & Maintenance: <i>₱ ' . number_format($repmaint,2) . '</i></label>';
+				}
+				if($bankc > 0){
+					echo '<br><label> Bank Charges: <i>₱ ' . number_format($bankc,2) . '</i></label>';
+				}
+				if($misc > 0){
+					echo '<br><label> Miscellaneous: <i>₱ ' . number_format($misc,2) . '</i></label>';
+				}
+				if($rental > 0){
+					echo '<br><label> Rental: <i>₱ ' . number_format($rental,2) . '</i></label>';
 				}
 			echo '</div>';
 			if(isset($_GET['print'])){

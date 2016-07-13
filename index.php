@@ -61,7 +61,8 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 		$result = $conn->query($sql);
 		
 		if($result->num_rows > 0){
-			while($row = $result->fetch_assoc()){					
+			while($row = $result->fetch_assoc()){	
+				$_SESSION['username'] = $row['uname'];						
 				$_SESSION['name'] = $row['fname'] . ' ' . $row['lname'];				
 				$_SESSION['level'] = $row['level'];
 				$_SESSION['acc_id'] = $row['account_id'];
@@ -74,6 +75,11 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 					$_SESSION['category'] = $row['oldpost'];
 				}else{
 					$_SESSION['category'] = $row['empcatergory'];
+				}
+				if($_SESSION['category'] == 'Regular' && $row['regdate'] <= date('Y-m-d')){
+					$_SESSION['category'] = $row['empcatergory'];
+				}else{
+					$_SESSION['category'] = $row['oldpost'];
 				}
 				echo	'<div class="alert alert-success" align = "center">						
 							<strong>Logging in ~!</strong>

@@ -8,6 +8,8 @@
 			$lk = 'admin-emprof.php?rep';
 		}elseif($_SESSION['level'] == 'ACC'){
 			$lk = 'acc-report.php?rep';
+		}elseif($_SESSION['level'] == 'HR'){
+			$lk = 'hr-emprof.php?export';
 		}else{
 			$lk = 'index.php';
 		}
@@ -15,13 +17,17 @@
 			$date1 = $_SESSION['date'];
 			$date2 = $_SESSION['date0'];
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));			
-		}elseif(date("d") < 16){
-			$date1 = date("Y-m-01");
-			$date2 = date("Y-m-15");
+		}elseif(date("d") >= 28){
+			$date1 = date("Y-m-23");
+			$date2 = date("Y-m-07", strtotime("+1 month"));
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
-		}else{
-			$date1 = date("Y-m-16");
-			$date2 = date("Y-m-t");
+		}elseif(date("d") <= 13){
+			$date1 = date("Y-m-23", strtotime("-1 month"));
+			$date2 = date("Y-m-07");
+			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
+		}elseif(date("d") > 13 && date("d") < 28){
+			$date1 = date("Y-m-08", strtotime("-1 month"));
+			$date2 = date("Y-m-22");
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
 		}
 		if(isset($_POST['repfilter'])){
@@ -36,7 +42,7 @@
 		}
 
 	$date3 = date("Y-m-d", strtotime($date2));
-	$date2 = date("Y-m-d 23:59:59 ", strtotime("+1 day", strtotime($date2)));
+	$date2 = date("Y-m-d 23:59:59 ", strtotime($date2));
 	if(!isset($_GET['report'])){
 ?>
 <form action = "" method="post">
@@ -62,11 +68,11 @@
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date From</label>
-				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; }elseif(date("d") < 16){ echo ' value = "'. date("Y-m-01") . '"';} else { echo ' value = "'. date("Y-m-16") . '"';}?> />
+				<input class="form-control input-sm" name ="repfr" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date'] . '" '; } else { echo ' value = "'. $date1 . '"';}?> />
 			</div>
 			<div class="col-xs-2" align="center">
 				<label>Date To</label>
-				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; }elseif(date("d") < 16){ echo ' value = "'. date("Y-m-15") . '"';} else { echo ' value = "'. date("Y-m-t") . '"';}?> />
+				<input class="form-control input-sm" name = "repto" type = "date" <?php if(isset($_SESSION['date'])){ echo 'value = "'. $_SESSION['date0'] . '" '; } else { echo ' value = "'. date("Y-m-d", strtotime($date2)) . '"';}?> />
 			</div>
 			<div class="col-xs-5">
 				<label style="margin-left: 50px;">Action</label>
@@ -105,10 +111,10 @@
 			$acounts = 0;
 			while ($row = $result->fetch_assoc()) {	
 				$accidd = $row['account_id'];
-						$ssql1 = "SELECT count(account_id) as otcount FROM overtime where overtime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofot < '$date3' ORDER BY datefile ASC";
-						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdatereq < '$date3' ORDER BY obdate ASC";
-						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
-						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofundrtime < '$date3' ORDER BY datefile ASC";
+						$ssql1 = "SELECT count(account_id) as otcount FROM overtime where overtime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+						$ssql2 = "SELECT count(account_id) as obcount  FROM officialbusiness where officialbusiness.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and obdatereq BETWEEN '$date1' and '$date2'  ORDER BY obdate ASC";
+						$ssql3 = "SELECT count(account_id) as leacount  FROM nleave where nleave.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') ORDER BY datefile ASC";
+						$ssql4 = "SELECT count(account_id) as undrcount  FROM undertime where undertime.account_id = $accidd and (state = 'AAdmin' or state = 'CheckedHR') and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 						$ssql5 = "SELECT count(account_id) as cashadv  FROM cashadv where cashadv.account_id = $accidd and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
 						$ssql6 = "SELECT count(loan_cutoff.account_id) as loanc,loan_cutoff.state,loan_cutoff.loan_id,loan_cutoff.enddate,loan_cutoff.full,loan.*,loan_cutoff.account_id  FROM loan_cutoff,loan where loan_cutoff.loan_id = loan.loan_id and loan.account_id = $accidd and loan_cutoff.account_id = $accidd and loan.state = 'ALoan' and (loan_cutoff.enddate between '$date1' and '$date2' or loan_cutoff.full BETWEEN '$date1' and '$date2') order by loandate desc limit 1";
 						$ssql8 = "SELECT count(account_id) as holcount FROM holidayre where holidayre.account_id = $accidd and state = '2' and holiday BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
@@ -202,7 +208,7 @@
 	<h4 style = "margin-left: 10px;">Category: <b><i><?php echo $empcatergorys;?></i></b></h4>
 	<hr>
 <?php if($_GET['report'] == 'all' || $_GET['report'] == 'ot'){
-		$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofot < '$date3' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 		?> 
@@ -279,7 +285,7 @@
 		?>
 
 <?php	
-	$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofot < '$date3' ORDER BY datefile ASC";
+	$sql = "SELECT * FROM overtime where overtime.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		$cutofftime2 = 0;	
@@ -355,7 +361,7 @@
 <?php
 	}
 if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
-	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and obdatereq < '$date3' ORDER BY obdate ASC";
+	$sql = "SELECT * FROM officialbusiness where officialbusiness.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR') and obdatereq BETWEEN '$date1' and '$date2' ORDER BY obdate ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 	?>
@@ -407,7 +413,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 		}
 	}
 if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
-		$sql = "SELECT * FROM nleave where nleave.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and dateofleavfr BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
+		$sql = "SELECT * FROM nleave where nleave.account_id = $accids and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') ORDER BY datefile ASC";
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 ?>
@@ -470,7 +476,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'lea'){
 }
 }
 if($_GET['report'] == 'all' || $_GET['report'] == 'undr'){
-	$sql = "SELECT * FROM undertime where undertime.account_id = $accids and  (state = 'AAdmin' or state = 'CheckedHR') and datehr BETWEEN '$date1' and '$date2' and dateofundrtime < '$date3' ORDER BY datefile ASC";
+	$sql = "SELECT * FROM undertime where undertime.account_id = $accids and  (state = 'AAdmin' or state = 'CheckedHR') and dateofundrtime BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 ?>
@@ -561,7 +567,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'hol'){
 				<tr>
 					<th width="10%">Date File</th>
 					<th width="10%">Date of Request</th>
-					<th width="17%">Time</th>
+					<!--<th width="17%">Time</th>-->
 					<th width="17%">Type</th>
 					<th width="20%">Reason</th>
 				</tr>
@@ -579,7 +585,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'hol'){
 				'<tr>
 					<td>'.date("M j, Y", strtotime($row['datefile'])).'</td>						
 					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
-					<td><b>'.$hrcheck.'</td>
+					<!--<td><b>'.$hrcheck.'</td>-->
 					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
 					<td>'.$row['reason'].'</td>
 				</tr>';

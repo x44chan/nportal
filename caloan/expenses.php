@@ -28,8 +28,10 @@
 		$_SESSION['datefr'] = "";
 		$_SESSION['dateto'] = "";
 		$_SESSION['loc'] = "";
+		$xxa = "(name = project or projtype = 'Others' or projtype = 'House')";
 		//echo '<script>window.location.replace("accounting-petty.php?expenses");</script>';
 	}
+	
 	if(isset($_GET['pettype']) && $_GET['pettype'] == 'all'){
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
@@ -40,8 +42,12 @@
 		$_SESSION['type'] = "Project";
 		$_GET['pettype'] = "all";
 		$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
+	}elseif(isset($_GET['pettype']) && $_GET['pettype'] == 'Uplink'){
+		$qsearch = "project is not null and ";
+		$_SESSION['searchbox'] = "";
+		$_SESSION['type'] = "Uplink";
 	}
-	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all')){
+	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Uplink')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
 		if($_SESSION['type'] == 'P.M.'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['pm']);
@@ -79,11 +85,11 @@
 			<div class="row">
 				<div class="col-xs-2" style="margin-top: -15px;">
 					<label>Date From: </label>
-					<input <?php if(isset($_SESSION['datefr'])){ echo 'value = "' . $_SESSION['datefr'] . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "datefr" class="form-control input-sm">
+					<input <?php if(isset($_SESSION['datefr'])){ echo 'value = "' . $_SESSION['datefr'] . '"'; }else{ echo 'value = "' . date("Y-m-01") . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "datefr" class="form-control input-sm">
 				</div>
 				<div class="col-xs-2" style="margin-top: -15px;">
 					<label>Date To: </label>
-					<input <?php if(isset($_SESSION['dateto'])){ echo 'value = "' . $_SESSION['dateto'] . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "dateto" class="form-control input-sm">
+					<input <?php if(isset($_SESSION['dateto'])){ echo 'value = "' . $_SESSION['dateto'] . '"'; }else{ echo 'value = "' . date("Y-m-t") . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "dateto" class="form-control input-sm">
 				</div>
 				<div class="col-xs-2"  style="margin-top: -15px;">
 					<label>Type </label>
@@ -92,6 +98,7 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
+		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Uplink'){ echo ' selected '; }  ?> value="Uplink"> Uplink </option>-->
 		      		</select>
 				</div>
 				<div class="col-xs-2" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Project'){echo 'display: none;';}?>" id = "project">
@@ -229,10 +236,15 @@
 <?php
 	$totalpet = 0;
 	$totalused = 0;
+	if(isset($_SESSION['type']) && $_SESSION['type'] == 'Uplink'){
+		$xxa = "(projtype = 'Uplink')";
+	}else{
+		$xxa = "(name = project or projtype = 'Others' or projtype = 'House')";
+	}
 	if(isset($_SESSION['searchbox']) && isset($_SESSION['type']) && $_SESSION['searchbox'] != "" && $_SESSION['type'] != ""){
 		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where  $_SESSION[edate] $_SESSION[qsearch] petty.petty_id = petty_liqdate.petty_id and (petty.state != 'DAPetty' and petty.state != 'CPetty') and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";
 	}else{
-		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and (name = project or projtype = 'Others' or projtype = 'House') and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";	
+		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where $_SESSION[edate] petty.petty_id = petty_liqdate.petty_id and $xxa and petty.state = 'AAPettyRep' and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";	
 	}
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){	
@@ -270,7 +282,7 @@
 		
 		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($totalused	,2).'");});</script>';
 		if(isset($_GET['print'])){
-			echo '<tr id = "bords"><td></td><td><b> Total </b></td><td><b>₱ ' . number_format($totalpet,2) . '</td><td><b>₱ ' . number_format($totalused,2) . '</td><td></td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td><b> Total </b></td><td><b>₱ ' . number_format($totalpet,2) . '</td><td><b>₱ ' . number_format($totalused,2) . '</td><td></td><td></td></tr>';
 		}
 	}
 

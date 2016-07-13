@@ -550,7 +550,7 @@
 				<select class="form-control" name = "payment" required>
 					<option value="">------</option>
 					<option value="wthoutpay">Without Pay</option>
-					<?php if($row['empcatergory'] == 'Regular' && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($totavailvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
+					<?php if($row['empcatergory'] == 'Regular' && $row['regdate'] <= date('Y-m-d') && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($totavailvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
 						<option value="wthpay">With Pay</option>
 					<?php } ?>
 				</select>

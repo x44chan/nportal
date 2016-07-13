@@ -215,7 +215,9 @@
 			unset($_SESSION['bypass']);
 			$sql = "UPDATE officialbusiness set state = '$state',datehr = '$date',dareason = '$dareason'  where officialbusiness_id = $id and $xstate";			
 			if($conn->query($sql) == TRUE){
-				savelogs("Disapprove Official Business", $xxxsss['obename'] . " Reason: " . $dareason);
+				if($state == 'DAHR'){
+					savelogs("Disapprove Official Business", $xxxsss['obename'] . " Reason: " . $dareason);
+				}
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';
 			}else{
 				die("Connection error:". $conn->connect_error);

@@ -595,6 +595,7 @@ $(document).ready(function(){
           			<option value="Oncall"> On-Call </option>
           			<option value="Combined"> P.M. & Internet </option>
           			<option value="Others"> Others </option>
+          			<option value="Uplink"> Uplink </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
@@ -738,7 +739,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
 						$projectcount += 1;
 					}
 					
@@ -754,7 +755,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
 						$projectcount += 1;
 					}
 				}
@@ -764,15 +765,13 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
 						$projectcount += 1;
 					}
 				}
 		   }
 		}
-		if($acc_id == '23'){
-			$count = 0;
-		}
+		
 		if(isset($_POST['pettype'])){
 			if($_POST['pettype'] == 'Project'){
 				if($projectcount > 0){
@@ -802,6 +801,13 @@ $(document).ready(function(){
 				}else{
 					$count = 0;
 				}
+			}elseif($_POST['pettype'] == 'Uplink'){
+				$_POST['project'] = null;
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}elseif($_POST['pettype'] == 'House'){
 				$_POST['project'] = $_POST['house'];
 			}elseif($_POST['pettype'] == 'Combined'){
@@ -819,6 +825,9 @@ $(document).ready(function(){
 				}
 				$_POST['project'] = $_POST['xoncall'];
 			}	
+		}
+		if($acc_id == '23'){
+			$count = 0;
 		}
 		if($count > 0){
 			if($_SESSION['level'] == 'EMP'){
