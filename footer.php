@@ -46,7 +46,12 @@ $(document).ready(function(){
 		    }
 		    xmlhttp.onreadystatechange = function() {
 		        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-		            document.getElementById("loc").innerHTML = xmlhttp.responseText;		  
+		            document.getElementById("loc").innerHTML = xmlhttp.responseText;	
+		            <?php 
+			        	if(isset($_GET['expn'])){
+			        		echo "$('#otproject').addClass('input-sm');"; 
+			        	}
+		        	?>	  
 		        }
 		    };
 		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str,true);

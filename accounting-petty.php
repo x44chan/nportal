@@ -355,7 +355,7 @@
 			$meal = 0; $gasoline = 0; $transpo = 0; $officesupp = 0; $cpload = 0;
 			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
-			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0;
+			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -435,6 +435,14 @@
 					$misc += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Rental'){
 					$rental += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Violation Fee'){
+					$viola += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Cash Advance'){
+					$cashadv += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Bid Docs'){
+					$bidoc += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Surety Bond'){
+					$surety += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -519,6 +527,18 @@
 				}
 				if($rental > 0){
 					echo '<br><label> Rental: <i>₱ ' . number_format($rental,2) . '</i></label>';
+				}
+				if($viola > 0){
+					echo '<br><label> Violation Fee: <i>₱ ' . number_format($repmaint,2) . '</i></label>';
+				}
+				if($cashadv > 0){
+					echo '<br><label> Cash Advance: <i>₱ ' . number_format($bankc,2) . '</i></label>';
+				}
+				if($bidoc > 0){
+					echo '<br><label> Bid Docs: <i>₱ ' . number_format($misc,2) . '</i></label>';
+				}
+				if($surety > 0){
+					echo '<br><label> Surety Bond: <i>₱ ' . number_format($rental,2) . '</i></label>';
 				}
 			echo '</div>';
 			if(isset($_GET['print'])){

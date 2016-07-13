@@ -1,6 +1,3 @@
-<script type="text/javascript">
-	$(document).ready(function(){$("table tbody th, table tbody td").wrapInner("<div style = 'page-break-inside: avoid;'></div>");});
-</script>
 <style type="text/css">
 	#bords tr, #bords td{border-top: 1px black solid !important;}
 	<?php
@@ -8,10 +5,10 @@
 			echo 'body { visibility: hidden; }';
 		}
 		if(isset($_GET['detailedpetty'])){
-			echo '	table { page-break-inside:auto }
-   					div   { page-break-inside:avoid; } /* This is the key */
-  					thead { display:table-header-group }
-   					tbody { display:table-footer-group }';
+			echo 'table { page-break-inside:auto }
+    div   { page-break-inside:avoid; } /* This is the key */
+    thead { display:table-header-group }
+    tbody { display:table-footer-group }';
 		}
 	?>
 	@media print {		
@@ -19,11 +16,11 @@
 	    	visibility: hidden;
 	    
 	  	}
-	  	<?php if(isset($_GET['print'])){ ?>
-	  	@page{
-	  		margin-left: 3mm;
-	  		margin-right: 3mm;
+	  	.col-xs-2{
+	  		font-size: 12px;
 	  	}
+	  	<?php if(isset($_GET['print'])){ ?>
+	  
 	  	#datepr{
 	  		margin-top: 25px;
 	  	}
@@ -77,7 +74,25 @@
 	}
 	<?php } 
 		if(isset($_GET['clear'])){
-			$_SESSION['sproj'] = "";
+			$_SESSION['loc'] = "";
+			$_SESSION['otproject'];
+			$_SESSION['edate'] = "";
+			$_SESSION['datefr'] = date("Y-m-01");
+			$_SESSION['dateto'] = date("Y-m-t");
+		}
+		if((isset($_GET['datefr']) && $_GET['datefr'] != "") && (isset($_GET['dateto']) && $_GET['dateto'] != "")){
+			$_SESSION['datefr'] = mysqli_real_escape_string($conn, $_GET['datefr']);
+			$_SESSION['dateto'] = mysqli_real_escape_string($conn, $_GET['dateto']);
+			$_SESSION['edate'] = " and completedate BETWEEN '$_SESSION[datefr]' and '$_SESSION[dateto]'";
+		}
+		if(empty($_SESSION['edate'])){
+			$_SESSION['edate'] = "";
+		}
+		if(isset($_GET['loc']) && $_GET['loc'] != ""){
+			$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
+		}
+		if(isset($_GET['otproject']) && $_GET['otproject']){
+			$_SESSION['otproject'] = mysqli_real_escape_string($conn, $_GET['otproject']);
 		}
 	?>
 </style>
@@ -90,16 +105,24 @@
 	<form action ="" method="get">
 		<input type = "hidden" name = "expn"/>
 		<div class="row">
-			<div class="col-xs-4 col-xs-offset-2" style="margin-top: -20px;">
-				<label> Location </label>
-				<select class="form-control input-sm" name = "sproj" required onchange="showUserx(this.value)">
-					<option value=""> - - - - - - - </option>
-					<?php
+			<div class="col-xs-2" style="margin-top: -15px;">
+				<label>Date From: </label>
+				<input <?php if(isset($_SESSION['datefr'])){ echo 'value = "' . $_SESSION['datefr'] . '"'; }else{ echo 'value = "' . date("Y-m-01") . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "datefr" class="form-control input-sm">
+			</div>
+			<div class="col-xs-2" style="margin-top: -15px;">
+				<label>Date To: </label>
+				<input <?php if(isset($_SESSION['dateto'])){ echo 'value = "' . $_SESSION['dateto'] . '"'; }else{ echo 'value = "' . date("Y-m-t") . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "dateto" class="form-control input-sm">
+			</div>
+			<div class="col-xs-3" style="margin-top: -15px;" id = "project">
+				<label>Location</label>
+				<select class="form-control input-sm" name = "loc" onchange="showUser(this.value)" required>
+					<option value=""> - - - - - - - - <?php echo $_SESSION['loc'];?></option>
+            		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
-            					if((isset($_GET['sproj']) && $_GET['sproj'] == $xrow['loc']) || (isset($_SESSION['loc']) && $_SESSION['loc'] == $xrow['loc'])){
+            					if((isset($_GET['loc']) && $_GET['loc'] == $xrow['loc']) || (isset($_SESSION['loc']) && $_SESSION['loc'] == $xrow['loc'])){
             						$select = ' selected ';
             					}else{
             						$select = "";
@@ -107,39 +130,37 @@
             					echo '<option '.$select.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
             				}
             			}
-            		?>	
+            		?>			
 				</select>
-			</div>
-			<div class="col-xs-4" id = "locx" style="margin-top: -15px;">
-					<?php
-						if((isset($_GET['otproject']) && $_GET['otproject'] != "") || (isset($_SESSION['sproj']) && $_SESSION['sproj'] != "")){
-							echo '<b>PO <font color = "red"> * </font></b>';
-							if(!isset($_GET['sproj'])){
-								$_GET['sproj'] = $_SESSION['loc'];
-							}
-							$otproject = mysqli_real_escape_string($conn, $_GET['sproj']);
-							$xx = "SELECT * FROM project where loc = '$otproject'";
-							$xxx = $conn->query($xx);
-							echo '<select name = "otproject" id = "otproject" class = "form-control input-sm">';
-							if($_GET['otproject'] == 'all'){
-								echo '<option selected value = "all">All</option>';		
-							}else{
-								echo '<option value = "all">All</option>';
-							}	
-							if($xxx->num_rows > 0){
-								while ($srow = $xxx->fetch_assoc()) {
-									if($_GET['otproject'] == $srow['name'] || $_SESSION['sproj'] == $srow['name']){
-	            						$select = ' selected ';
-	            					}else{
-	            						$select = "";
-	            					}
-	            					echo '<option '.$select.' value = "' . $srow['name'] . '"> ' . $srow['name'] . '</option>';
-								}
-							}
-							echo '</select>';
+			</div>			
+			<div class="col-xs-3" id = "loc" style="margin-top: -12px;">
+				<?php
+					if((isset($_GET['otproject']) && $_GET['otproject'] != "" && $_GET['otproject'] != 'all') || (isset($_SESSION['loc']) && $_SESSION['loc'] != "" && $_SESSION['loc'] != 'all')){
+						echo '<b>PO <font color = "red"> * </font></b>';
+						if(!isset($_GET['loc'])){
+							$_GET['loc'] = $_SESSION['loc'];
 						}
-					?>
-				</div>
+						if(!isset($_GET['otproject'])){
+							$_GET['otproject'] = $_SESSION['otproject'];
+						}
+						$otproject = mysqli_real_escape_string($conn, $_GET['loc']);
+						$xx = "SELECT * FROM project where loc = '$otproject'";
+						$xxx = $conn->query($xx);
+						echo '<select name = "otproject" id = "otproject" class = "form-control input-sm">';
+						if($xxx->num_rows > 0){
+							while ($srow = $xxx->fetch_assoc()) {
+								if($_GET['otproject'] == $srow['name']){
+            						$select = ' selected ';
+            					}else{
+            						$select = "";
+            					}
+            					echo '<option '.$select.' value = "' . $srow['name'] . '"> ' . $srow['name'] . '</option>';
+							}
+						}
+						echo '</select>';
+					}
+				?>
+			</div>
 			<!--<div class="col-xs-4" style="margin-top: -20px;">
 				<label> Type </label>
 				<select class="form-control input-sm" name = "type">
@@ -168,104 +189,202 @@
 				<hr>
 			</div>
 		</div>
-</div>
 		<?php
 		
-		if(isset($_GET['otproject']) || (isset($_SESSION['sproj']) && $_SESSION['sproj'] != "")) {
+		if(isset($_GET['otproject']) || (isset($_SESSION['otproject']) && $_SESSION['otproject'] != "")) {
 			if(isset($_GET['print'])) { 
 				echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?expn";});</script>';
 			}
 			if(isset($_GET['otproject'])){
 				$project = mysqli_real_escape_string($conn, $_GET['otproject']);
-				$_SESSION['sproj'] = $project;
-			}
-			if(isset($_GET['sproj'])){
-				$_SESSION['loc'] = $_GET['sproj'];
+				$_SESSION['otproject'] = $project;
 			}
 		?>
 	<div id = "report">
 		<div class="row">
 			<div class="col-xs-12">
-				<i><u><h3 align="center"><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc'].'<br>'; } ?></h3> <h4 align="center" style="text-transform: capitalize;"><?php if(isset($_SESSION['sproj'])){ echo $_SESSION['sproj'];}?></h4></u></i><a style = "margin-top: -50px; margin-right: 50px;"id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
+				<h3><i><u><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['otproject'])){ echo $_SESSION['otproject']. '' ; } if(isset($_GET['type'])){ echo $_GET['type'];}?></u></i></h3><i><h4 style="margin-left: 60px;"> <?php echo date("M j, Y",strtotime($_SESSION['datefr'])) . ' - ' . date("M j, Y",strtotime($_SESSION['dateto']));?></h4></i> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
 			</div>
 		</div>
 		<?php
-			if(isset($_SESSION['sproj']) && !empty($_SESSION['sproj'])){	
-				if($_SESSION['sproj'] == 'all'){
-					$_SESSION['q'] = " project is not null ";
-				}else{
-					$_SESSION['q'] = " project = '$_SESSION[sproj]' ";
-				}
-				$sql = "SELECT * FROM `petty`,`login`,`petty_liqdate` where petty.account_id = petty_liqdate.account_id and petty.petty_id = petty_liqdate.petty_id and petty.account_id = login.account_id  and $_SESSION[q] and position != 'House Helper' and state = 'AAPettyRep' and liqstate = 'CompleteLiqdate' group by liqdate_id order by petty.date desc";
-				$result = $conn->query($sql);
-				if($result->num_rows > 0){
-					$totalliq = 0;
-					$a = 0;
-					$_SESSION['last_id'] = "";
-					echo '<table align = "center" class = "table" style="font-size: 14px;">';
-					echo '<tbody>';	
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="5%">#</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Name</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Date</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Type</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="10%">Amount</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="25%">Info</th>';
-						echo '<th style = "border-top: none; border-bottom: 2px solid #ddd;" width="25%">Reasons</th>';
-						while ($row = $result->fetch_assoc()) {
-							$reason = $row['petreason'];
-							$sql2 = "SELECT * FROM project where loc = '$_SESSION[loc]'";
-							$dataxx = $conn->query($sql2);
-							if($dataxx->num_rows > 0){
-								while ($xxrow = $dataxx->fetch_assoc()) {
-									if($xxrow['name'] == $row['project']){
-										if($_SESSION['last_id'] != ""){	
-											if($_SESSION['last_id'] == $row['petreason']){
-												if(stristr($row['petreason'], ' ')){
-													$ex = explode(" ", $row['petreason']);
-													$reason = $ex[0] . ' ' . $ex[1] . '......';
-												}else{
-													$reason = $row['petreason'];
-												}						
-											}else{
-												$reason = $row['petreason'];
-											}
-										}
-										$_SESSION['last_id'] = $row['petreason'];
-										$petid = $row['liqdate_id'];
-										$accid = $row['account_id'];
-										$query = "SELECT * FROM `petty_liqdate` where liqdate_id = '$petid'";
-										$data = $conn->query($query)->fetch_assoc();
-										$query1 = "SELECT * FROM `login` where account_id = '$accid'";
-										$data1 = $conn->query($query1)->fetch_assoc();
-										if($data['rcpt'] != null){
-											$rcpt = "<b><font color = 'green'>w/ </font></b> Receipt";
-										}else{
-											$rcpt = "<b><font color = 'red'>w/o</font></b> Receipt";
-										}
-										
-										echo '<tr>';
-										echo '<td>' . $row['petty_id'] . '</td>';
-										echo '<td>' . ucfirst(strtolower($row['fname'])) . ' ' . ucfirst(strtolower($row['lname'])) . '</td>';
-										echo '<td>'. date("m/d/Y", strtotime($row['liqdate'])).'</td>';
-										echo '<td>'. $row['liqtype'] . ': ' . $row['liqothers'] .'</td>';
-										echo '<td>₱ '. number_format($row['liqamount'],2).'</td>';
-										echo '<td>'. $row['liqinfo'].'</td>';
-										echo '<td>'. $reason .'</td>';
-										echo '</tr>';	
-										$totalliq += $row['liqamount'];
-										$a += str_replace(',', '', $row['amount']);
-									}else{
-										continue;
-									}
-								}
-							}	
-							
+			if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){
+				$project = $_SESSION['otproject'];
+			}
+			if(!empty($_GET['type'])){
+				$type = mysqli_real_escape_string($conn, $_GET['type']);
+				$query = "and liqtype = '$type' ";
+			}else{
+				$type = "";
+				$query = "";
+			}			
+			$sql = "SELECT * FROM `petty` where project = '$project' and state = 'AAPettyRep'";
+			$result = $conn->query($sql);
+			$meal = 0;
+			$gas = 0;
+			$transpo = 0;
+			$cpload = 0;
+			$water = 0;
+			$notary = 0;
+			$toll = 0;
+			$gate = 0;
+			$material = 0;
+			$others = 0;
+			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
+			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
+			if($result->num_rows > 0){
+				while ($row = $result->fetch_assoc()) {
+					$sql2 = "SELECT * FROM petty_liqdate where petty_id = '$row[petty_id]' and liqstate = 'CompleteLiqdate' $query $_SESSION[edate]";
+					$result2 = $conn->query($sql2);
+					if($result2->num_rows > 0){
+						while ($row = $result2->fetch_assoc()) {
+							if($row['liqtype'] == 'Meal'){
+								$meal += $row['liqamount'];
+							}elseif($row['liqtype'] == "Gasoline"){
+								$gas += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Transportation'){
+								$transpo += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Cellfone Load'){
+								$cpload += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Water Fill'){
+								$water += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Notary Fee'){
+								$notary += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Toll Gate'){
+								$toll += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Gate Pass'){
+								$gate += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Materials'){
+								$material += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Others'){
+								$others += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Utilities'){
+								$utilities += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Social Payments'){
+								$social += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Permit & Licenses'){
+								$permit += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Services'){
+								$services += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Professional Fees'){
+								$profee += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Dues & Subscriptions'){
+								$due += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Advertising & Promotions'){
+								$adver += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Representation'){
+								$repre += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Repair & Maintenance'){
+								$repmaint += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Bank Charges'){
+								$bankc += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Miscellaneous'){
+								$misc += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Rental'){
+								$rental += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Violation Fee'){
+								$viola += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Cash Advance'){
+								$cashadv += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Bid Docs'){
+								$bidoc += $row['liqamount'];
+							}elseif($row['liqtype'] == 'Surety Bond'){
+								$surety += $row['liqamount'];
+							}
 						}
-					echo '</tbody>';
-					echo '</table>';
+					} 
 				}
 			}
 		?>
+		<div class="col-xs-12">
+			<b><i>
+			<?php
+				if($meal > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Meal </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"> <u>₱ '.	number_format($meal,2) .'</u></div></div>'; 
+				}
+				if($gas > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Gasoline </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($gas,2) .'</u></div></div>'; 
+				}
+				if($transpo > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Transportation </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($transpo,2) .'</u></div></div>';  
+				}
+				if($cpload > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Cellphone Load </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($cpload,2) .'</u></div></div>'; 
+				}
+				if($water > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Water Fill </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($water,2) .'</u></div></div>'; 
+				}
+				if($notary > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Notary Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($notary,2) .'</u></div></div>';  
+				}
+				if($toll > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Toll Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($toll,2) .'</u></div></div>'; 
+				}
+				if($gate > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Gate Pass </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($gate,2) .'</u></div></div>'; 
+				}
+				if($material > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Materials </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($material,2) .'</u></div></div>'; 
+				}
+				if($others > 0) {
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Others </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($others,2) .'</u></div></div>'; 
+				}				
+				if($utilities > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Utilities </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($utilities,2) .'</u></div></div>'; 
+				}
+				if($social > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Social Payments </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($social,2) .'</u></div></div>'; 
+				}
+				if($permit > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Permit & Licenses </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($permit,2) .'</u></div></div>'; 
+				}
+				if($services > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Services </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($services,2) .'</u></div></div>'; 
+				}
+				if($profee > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Professional Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($profee,2) .'</u></div></div>'; 
+				}
+				if($due > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Dues & Subscriptions </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($due,2) .'</u></div></div>'; 
+				}
+				if($adver > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Advertising & Promotions </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($adver,2) .'</u></div></div>'; 
+				}
+				if($repre > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Representation </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($repre,2) .'</u></div></div>'; 
+				}
+				if($repmaint > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Repair & Maintenance </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($repmaint,2) .'</u></div></div>'; 
+				}
+				if($bankc > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Bank Charges </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($bankc,2) .'</u></div></div>'; 
+				}
+				if($misc > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Miscellaneous </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($misc,2) .'</u></div></div>'; 
+				}
+				if($rental > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Rental </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($rental,2) .'</u></div></div>'; 
+				}
+				if($viola > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Violation Fee </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($viola,2) .'</u></div></div>'; 
+				}
+				if($cashadv > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Cash Advance </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($cashadv,2) .'</u></div></div>'; 
+				}
+				if($bidoc > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Bid Docs </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($bidoc,2) .'</u></div></div>'; 
+				}
+				if($surety > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Surety Bond </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($surety,2) .'</u></div></div>'; 
+				}
+				$total = $meal + $gas + $transpo + $cpload + $water + $notary + $toll + $gate + $material + $others + $utilities + $social + $permit + $services + $profee + $due + $adver + $repre + $repmaint + $bankc + $misc + $rental + $viola + $cashadv + $bidoc + $surety;
+				if($total > 0){
+					echo '<div class="row"><div class = "col-xs-7"><hr style = "border-color: #a6a6a6;"></div></div>';
+					echo '<div class="row" style = "margin-top: 1px solid;"><div class = "col-xs-2 col-xs-offset-1">Total </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.number_format($total,2).'</u></div></div>';
+				}
+			?>
+			</i></b>
+		</div>
 	</div>
 		<?php } ?>
 	</form>
+</div>

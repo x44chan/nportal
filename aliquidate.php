@@ -85,15 +85,15 @@
 				?>	
 				</select>
 			</div>
-			<div class="col-xs-3">
+			<!--<div class="col-xs-3">
 				<label>Others</label>
 				<input type = "text" class="form-control input-md" id = "others0" name = "others0" placeholder = "Others" disabled="">
-			</div>
-			<div class="col-xs-3">
+			</div>-->
+			<div class="col-xs-4">
 				<label>Amount</label>
 				<input required  autocomplete = 'off' pattern = "[0-9.]*" class = "form-control input-md" type = "text" id = "amount0" name = "amount0" placeholder = "Enter Amount"/>
 			</div>
-			<div class="col-xs-3">
+			<div class="col-xs-5">
 				<label>Transaction</label>
 				<textarea required  autocomplete = 'off' class="form-control input-md" name = "trans0" placeholder = 'Transaction Info'></textarea>
 			</div>			
@@ -158,7 +158,7 @@ $(document).ready(function(){
 	var i=1;
 
 	$("#add_row").click(function(){
-		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-3'><label>Others</label><input type = 'text' class='form-control' id = 'others"+i+"' name = 'others"+i+"' placeholder = 'Others' disabled></div><div class='col-xs-3'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-3'><label>Transaction</label><textarea required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></textarea></div>");
+		$('#addr'+i).html("<div class='col-xs-3'><label>Type</label><select required class='form-control' name = 'type"+ i +"' id = 'type"+ i +"'><option value=''> - - - - - </option><?php while ($rows = $results->fetch_assoc()) {echo '<option value = \"' . $rows['type'] . '\">' .$rows['type'].'</option>';}?></select></div><div class='col-xs-4'><label>Amount</label><input required placeholder = 'Enter Amount'  autocomplete = 'off' class = 'form-control input-md' type = 'text' id = 'amount"+i+"' name = 'amount"+i+"' pattern = '[0-9.]*'/></div><div class='col-xs-5'><label>Transaction</label><textarea required type = 'text' class='form-control' name = 'trans"+i+"' placeholder = 'Transaction Info' autocomplete = 'off'></textarea></div>");
 		$('#rcpt'+i).html('<div class="col-xs-4"><label><input type = "checkbox" name = "wthrcpt'+i+'" id = "wthrcpt'+i+'"/> Check if With Receipt</label></div>');
 
 <?php
