@@ -116,7 +116,7 @@
 			<div class="col-xs-3" style="margin-top: -15px;" id = "project">
 				<label>Location</label>
 				<select class="form-control input-sm" name = "loc" onchange="showUser(this.value)" required>
-					<option value=""> - - - - - - - - <?php echo $_SESSION['loc'];?></option>
+					<option value=""> - - - - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
