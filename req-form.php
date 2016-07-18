@@ -39,7 +39,7 @@ $(document).ready(function(){
 	}
 ?>
 
-<div id = "offb" style = "margin-top: -30px; display: none; height: calc(100%);">
+<div id = "offb" style = "margin-top: -30px; display: none; min-height: 600px; height: calc(100%);">
 	<form role = "form"  align = "center"action = "ob-exec.php" method = "post">
 		<div class = "form-group">
 			<table width = "60%" align = "center" class="table-responsive">
@@ -144,7 +144,7 @@ $(document).ready(function(){
 <div id = "undertime"style = "margin-top: -30px; display: none; height: calc(100%);">
 	<?php include('undertime.php'); ?>
 </div>
-<div id = "formhidden"style = "margin-top: -30px;display: none; height: calc(100%);" >
+<div id = "formhidden"style = "margin-top: -30px;display: none; min-height: 700px; height: calc(100%);" >
 	<form role = "form"  align = "center"action = "ot-exec.php" method = "post">
 		<div class = "form-group">
 			<table align = "center" width="60%" class="table-responsive">
@@ -531,11 +531,11 @@ $(document).ready(function(){
 				</tr>	
 				<tr>
 					<td align = center>	Vacation Leave Balance: </td>
-					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>" type = "number" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php echo $totavailvac;?>" class = "form-control"/></td>
 				</tr>
 				<tr>
 					<td abbr="center">V.L. Balance for this Quarter</td>
-					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>" type = "number" class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>"class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>
