@@ -78,6 +78,7 @@
 				  <li class="divider"></li>
 				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
 				  <li><a type = "button" href = "admin-petty.php?expenses"> Expenses </a></li>
+				  <li><a type = "button" href = "admin-petty.php?expn"> Sales Project Expenses </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -630,7 +631,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if(isset($resproj['loc'] )){
 				$pettype = '<br>Loc: <font color = "green">'. $resproj['loc']. '</font>'.$pettype;
 			}
-			if($row['projtype'] == 'Others'){
+			if($row['project'] == null){
 				$pettype = '<br><font color = "green">' . $row['projtype'] . '</font>';
 			}
 	?>
@@ -1067,7 +1068,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}else{
 						$project = "";
 					}
-					if($row['projtype'] == 'Others'){
+					if($row['project'] == ""){
 						$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 					}
 					echo '<td style="align: left !important;">'.$newDate.'</td>';

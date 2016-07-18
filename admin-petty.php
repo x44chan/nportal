@@ -150,6 +150,7 @@
 				  <li class="divider"></li>
 				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
 				  <li><a type = "button" href = "admin-petty.php?expenses"> Expenses </a></li>
+				  <li><a type = "button" href = "admin-petty.php?expn"> Sales Project Expenses </a></li>
 				</ul>
 			</div>
 			<div class="btn-group btn-group-lg">
@@ -230,18 +231,33 @@
 ?>
 
 <?php
+if(isset($_GET['expn'])){
+	include 'conf.php';
+	$_SESSION['loc'] = "";
+	$_SESSION['otproject'] = "";
+	$_SESSION['edate'] = "";
+	$_SESSION['bytype'] = "";
+	$_SESSION['datefr'] = date("Y-m-01");
+	$_SESSION['dateto'] = date("Y-m-t");
+	include 'caloan/expn.php';
+	echo '</div><div style = "display: none;">';
+}
 if(isset($_GET['expenses'])){
 	include 'caloan/expenses.php';
 	echo '</div><div style = "display: none;">';
 }
+if(isset($_GET['expn'])){
+	include 'caloan/expn.php';
+	echo '</div><div style = "display: none;">';
+}
 if(isset($_GET['pettydate'])){
-		include 'caloan/pettydate.php';
-		echo '</div><div style = "display: none;">';
-	}
+	include 'caloan/pettydate.php';
+	echo '</div><div style = "display: none;">';
+}
 if(isset($_GET['login_log'])){
-		include 'login_log.php';
-		echo '</div><div style = "display: none;">';
-	}
+	include 'login_log.php';
+	echo '</div><div style = "display: none;">';
+}
 	if(isset($_POST['submitrans'])){
 		$petid = mysql_escape_string($_POST['petty_id']);
 		$valcode = mysql_escape_string($_POST['valcode']);

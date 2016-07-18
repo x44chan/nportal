@@ -40,6 +40,8 @@
 				  <li class="divider"></li>
 				  <li><a type = "button" href = "accounting-petty.php?pettydate"> Petty Date Summary </a></li>
 				  <li><a type = "button" href = "accounting-petty.php?expenses"> Expenses </a></li>
+				  <li><a type = "button" href = "accounting-petty.php?expsum"> BIR Expenses </a></li>
+				   <li><a type = "button" href = "accounting.php?expn"> Sales Project Expenses </a></li>
 				</ul>
 			</div>
 			<?php if($_SESSION['acc_id'] != '48'){ ?>
@@ -430,7 +432,7 @@
 				}else{
 					$project = "";
 				}
-				if($row['projtype'] == 'Others'){
+				if($row['project'] == ""){
 					$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";
