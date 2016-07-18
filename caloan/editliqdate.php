@@ -56,7 +56,9 @@
 	      			<option <?php if($data['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
 	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
-	      			<option <?php if($data['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
+	      			<option <?php if($data['projtype'] == 'Luwas'){ echo ' selected ';} ?>value="Luwas"> Luwas </option>
+	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?>value="Supplier"> Supplier </option>
+	      			<option <?php if($data['projtype'] == 'Netlink'){ echo ' selected ';} ?>value="Netlink"> Netlink </option>
 	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
 	      			<?php } ?>
@@ -280,7 +282,7 @@
 				}
 			}
 			
-			echo $project . ' ' . $_POST['pettype'] . ' ' . $_GET['editliqdate'];
+			//echo $project . ' ' . $_POST['pettype'] . ' ' . $_GET['editliqdate'];
 			if($count>0){
 				$len += 1;
 				if($_POST['counter'] > $len){
@@ -308,12 +310,12 @@
 							$project = $_POST['pm'];
 						}elseif($_POST['pettype'] == 'Internet'){
 							$project = $_POST['internet'];
-						}elseif($_POST['pettype'] == 'Others'){
-							$project = null;
 						}elseif($_POST['pettype'] == 'House'){
 							$project = $_POST['house'];
 						}elseif($_POST['pettype'] == 'Combined'){
 							$project = $_POST['combined'];
+						}else{
+							$project = null;
 						}
 					}
 					$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");

@@ -28,7 +28,7 @@ $(document).ready(function(){
 		include 'caloan/latefiling.php';
 		echo '</div>';
 	}
-	if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false){
+	if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false || $_SESSION['level'] == "ACC"){
 		if(isset($_GET['expn'])){
 			include 'caloan/expn.php';
 			echo '</div>';
@@ -182,12 +182,13 @@ $(document).ready(function(){
 					<td> Type: <font color = "red">*</font></td>
 					<td>
 						<select required class="form-control" name = "ottype">
-		          			<option value=""> Select ( P.M / Internet / Project / Others)  </option>
+		          			<option value=""> Select ( P.M / Internet / Project / Luwas / Netlink)  </option>
 		          			<option value="P.M."> P.M. </option>
 		          			<option value="Internet"> Internet </option>
 		          			<option value="Project"> Project </option>
 		          			<option value="Oncall"> Oncall </option>
-		          			<option value="Others"> Others </option>	
+		          			<option value="Luwas"> Luwas </option>
+		          			<option value="Netlink"> Netlink </option>	
 						</select>
 					</td>
 				</tr>
@@ -594,8 +595,9 @@ $(document).ready(function(){
           			<option value="Project"> Project </option>
           			<option value="Oncall"> On-Call </option>
           			<option value="Combined"> P.M. & Internet </option>
-          			<option value="Others"> Others </option>
-          			<option value="Uplink"> Uplink </option>
+          			<option value="Luwas"> Luwas </option>
+          			<option value="Supplier"> Supplier </option>
+          			<option value="Netlink"> Netlink </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
@@ -739,7 +741,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 					
@@ -755,7 +757,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -765,7 +767,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Uplink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -794,13 +796,6 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['internet'];
-			}elseif($_POST['pettype'] == 'Others'){
-				$_POST['project'] = null;
-				if($projectcount > 0){
-					$count = 1;
-				}else{
-					$count = 0;
-				}
 			}elseif($_POST['pettype'] == 'Uplink'){
 				$_POST['project'] = null;
 				if($projectcount > 0){
@@ -824,6 +819,13 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['xoncall'];
+			}else{
+				$_POST['project'] = null;
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}	
 		}
 		if($acc_id == '23'){

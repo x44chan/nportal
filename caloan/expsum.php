@@ -114,7 +114,7 @@
 				$asd = '<br><b>Location: </b>'.$data234['loc'];
 			}
 			$totalpet += $row['amount'];
-			$totalused += $data23['liqamount'];
+			$totalused += $data23['sumxx'];
 			
 			echo '<tr>';
 			echo	'<td>' . $row['petty_id'] . '</td>';
@@ -129,7 +129,7 @@
 		
 		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($totalused	,2).'");});</script>';
 		if(isset($_GET['print'])){
-			echo '<tr id = "bords"><td></td><td></td><td><b> Total </b></td><td><b>₱ ' . number_format($totalpet,2) . '</td><td><b>₱ ' . number_format($totalused,2) . '</td><td></td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td><b> Total </b></td><td></td><td><b>₱ ' . number_format($totalused,2) . '</td><td></td><td></td></tr>';
 		}
 	}
 

@@ -75,8 +75,9 @@
 	<?php } 
 		if(isset($_GET['clear'])){
 			$_SESSION['loc'] = "";
-			$_SESSION['otproject'];
+			$_SESSION['otproject'] = "";
 			$_SESSION['edate'] = "";
+			$_SESSION['bytype'] = "";
 			$_SESSION['datefr'] = date("Y-m-01");
 			$_SESSION['dateto'] = date("Y-m-t");
 		}
@@ -91,11 +92,43 @@
 		if(isset($_GET['loc']) && $_GET['loc'] != ""){
 			$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
 		}
-		if(isset($_GET['otproject']) && $_GET['otproject']){
+		if(isset($_GET['otproject']) && $_GET['otproject'] != ""){
 			$_SESSION['otproject'] = mysqli_real_escape_string($conn, $_GET['otproject']);
+			$_SESSION['bytype'] = "";
+		}
+		if(isset($_GET['bytype']) && $_GET['bytype'] != ""){
+			$_SESSION['loc'] = "";
+			$_SESSION['otproject'] = "";
+			$_SESSION['bytype'] = mysqli_real_escape_string($conn, $_GET['bytype']);
 		}
 	?>
 </style>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#checkxx').change(function(){
+	    if($('#checkxx').is(":checked")){ 	        
+	    	$("#bytypexx").show();
+	    	$("#projectxx").hide();
+	    	$("#loc").hide();
+	    	$("#bytype").attr('required',true);
+	    	$("#bytype").attr('disabled',false);
+	    	$("#projectwasdx").attr('required',false);
+	    	$("#projectwasdx").attr('disabled',true);
+	    	$("#otproject").attr('disabled',true);
+	    }else{
+	    	$("#bytypexx").hide();
+	    	$("#projectxx").show();
+	    	$("#bytype").attr('required',false);
+	    	$("#bytype").attr('disabled',true);
+	    	$("#projectwasdx").attr('required',true);
+	    	$("#projectwasdx").attr('disabled',false);
+	    }
+	});
+	<?php if(isset($_GET['print'])){ ?>
+		document.title = "<?php if(isset($_SESSION['loc']) && $_SESSION['loc'] != ""){ echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo $_SESSION['bytype']; } if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){ echo $_SESSION['otproject']. '' ; } if(isset($_SESSION['type'])){ echo $_SESSION['type'];}?> Expenses Report";
+	<?php }?>
+});
+</script>
 <div class="container">
 	<div class="row">
 		<div class="col-xs-12">
@@ -113,9 +146,9 @@
 				<label>Date To: </label>
 				<input <?php if(isset($_SESSION['dateto'])){ echo 'value = "' . $_SESSION['dateto'] . '"'; }else{ echo 'value = "' . date("Y-m-t") . '"'; } ?> max = '<?php echo date("Y-12-31");?>' type="date" name = "dateto" class="form-control input-sm">
 			</div>
-			<div class="col-xs-3" style="margin-top: -15px;" id = "project">
+			<div class="col-xs-3" style="margin-top: -15px; <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo ' display: none; ';}?>" id = "projectxx" >
 				<label>Location</label>
-				<select class="form-control input-sm" name = "loc" onchange="showUser(this.value)" required>
+				<select class="form-control input-sm" id = "projectwasdx" name = "loc" onchange="showUser(this.value)" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' required ';}?>>
 					<option value=""> - - - - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -161,16 +194,16 @@
 					}
 				?>
 			</div>
-			<!--<div class="col-xs-4" style="margin-top: -20px;">
+			<div class="col-xs-3" style="margin-top: -15px; <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' display: none; ';}?>" id = "bytypexx">
 				<label> Type </label>
-				<select class="form-control input-sm" name = "type">
+				<select class="form-control input-sm" name = "bytype" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' disabled ';}?> id = "bytype">
 					<option value=""> - - - - - - - - </option>
 					<?php
 						$sql = "SELECT * FROM petty_type where type_id != 4 and type_id != 10 and type_id != 11";
 						$result = $conn->query($sql);
 						if($result->num_rows > 0){
 							while ($row = $result->fetch_assoc()) {
-								if(isset($_GET['type']) && $_GET['type'] == $row['type']){
+								if((isset($_GET['bytype']) && $_GET['bytype'] == $row['type']) || (isset($_SESSION['bytype']) && $_SESSION['bytype'] == $row['type'])){
 									$select = " selected ";
 								}else{
 									$select = "";
@@ -180,7 +213,12 @@
 						}
 					?>
 				</select>
-			</div>-->
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4 col-xs-offset-4">
+				<input type = "checkbox" id = "checkxx" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo ' checked ';}?>> <label for = "checkxx"> Switch to by Type </label>	</input>		
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12" align="center"  style="margin-bottom: -25px;">
@@ -191,7 +229,7 @@
 		</div>
 		<?php
 		
-		if(isset($_GET['otproject']) || (isset($_SESSION['otproject']) && $_SESSION['otproject'] != "")) {
+		if(isset($_GET['otproject']) || isset($_GET['bytype']) || (isset($_SESSION['otproject']) && $_SESSION['otproject'] != "") || (isset($_SESSION['bytype']) && $_SESSION['bytype'] != "")) {
 			if(isset($_GET['print'])) { 
 				echo '<script type = "text/javascript">	$(window).load(function() {window.print();window.location.href = "?expn";});</script>';
 			}
@@ -200,15 +238,23 @@
 				$_SESSION['otproject'] = $project;
 			}
 		?>
-	<div id = "report">
-		<div class="row">
+	</div>
+	<div class = "container-fluid" id = "report" style="margin-left:">
+		<div class="row" <?php if(!isset($_GET['print'])){ echo ' style="margin-left: 90px;" '; }?>>
 			<div class="col-xs-12">
-				<h3><i><u><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['otproject'])){ echo $_SESSION['otproject']. '' ; } if(isset($_GET['type'])){ echo $_GET['type'];}?></u></i></h3><i><h4 style="margin-left: 60px;"> <?php echo date("M j, Y",strtotime($_SESSION['datefr'])) . ' - ' . date("M j, Y",strtotime($_SESSION['dateto']));?></h4></i> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
+				<h3><i><u><?php if(isset($_SESSION['loc']) && $_SESSION['loc'] != ""){ echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo $_SESSION['bytype']; } if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){ echo $_SESSION['otproject']. '' ; } if(isset($_SESSION['type'])){ echo $_SESSION['type'];}?></u></i></h3><i><h4 style="margin-left: 60px;"> <?php echo date("M j, Y",strtotime($_SESSION['datefr'])) . ' - ' . date("M j, Y",strtotime($_SESSION['dateto']));?></h4></i> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
 			</div>
 		</div>
 		<?php
 			if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){
 				$project = $_SESSION['otproject'];
+			}else{
+				$project = "";
+			}
+			if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){
+				$bytype = $_SESSION['bytype'];
+			}else{
+				$bytype = "";
 			}
 			if(!empty($_GET['type'])){
 				$type = mysqli_real_escape_string($conn, $_GET['type']);
@@ -216,9 +262,7 @@
 			}else{
 				$type = "";
 				$query = "";
-			}			
-			$sql = "SELECT * FROM `petty` where project = '$project' and state = 'AAPettyRep'";
-			$result = $conn->query($sql);
+			}	
 			$meal = 0;
 			$gas = 0;
 			$transpo = 0;
@@ -231,69 +275,103 @@
 			$others = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
-			if($result->num_rows > 0){
-				while ($row = $result->fetch_assoc()) {
-					$sql2 = "SELECT * FROM petty_liqdate where petty_id = '$row[petty_id]' and liqstate = 'CompleteLiqdate' $query $_SESSION[edate]";
-					$result2 = $conn->query($sql2);
-					if($result2->num_rows > 0){
-						while ($row = $result2->fetch_assoc()) {
-							if($row['liqtype'] == 'Meal'){
-								$meal += $row['liqamount'];
-							}elseif($row['liqtype'] == "Gasoline"){
-								$gas += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Transportation'){
-								$transpo += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Cellfone Load'){
-								$cpload += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Water Fill'){
-								$water += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Notary Fee'){
-								$notary += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Toll Gate'){
-								$toll += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Gate Pass'){
-								$gate += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Materials'){
-								$material += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Others'){
-								$others += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Utilities'){
-								$utilities += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Social Payments'){
-								$social += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Permit & Licenses'){
-								$permit += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Services'){
-								$services += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Professional Fees'){
-								$profee += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Dues & Subscriptions'){
-								$due += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Advertising & Promotions'){
-								$adver += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Representation'){
-								$repre += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Repair & Maintenance'){
-								$repmaint += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Bank Charges'){
-								$bankc += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Miscellaneous'){
-								$misc += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Rental'){
-								$rental += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Violation Fee'){
-								$viola += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Cash Advance'){
-								$cashadv += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Bid Docs'){
-								$bidoc += $row['liqamount'];
-							}elseif($row['liqtype'] == 'Surety Bond'){
-								$surety += $row['liqamount'];
+			if($project != ""){		
+				$sql = "SELECT * FROM `petty` where project = '$project' and state = 'AAPettyRep'";
+				$result = $conn->query($sql);
+				
+				if($result->num_rows > 0){
+					while ($row = $result->fetch_assoc()) {
+						$sql2 = "SELECT * FROM petty_liqdate where petty_id = '$row[petty_id]' and liqstate = 'CompleteLiqdate' $query $_SESSION[edate]";
+						$result2 = $conn->query($sql2);
+						if($result2->num_rows > 0){
+							while ($row = $result2->fetch_assoc()) {
+								if($row['liqtype'] == 'Meal'){
+									$meal += $row['liqamount'];
+								}elseif($row['liqtype'] == "Gasoline"){
+									$gas += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Transportation'){
+									$transpo += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Cellfone Load'){
+									$cpload += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Water Fill'){
+									$water += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Notary Fee'){
+									$notary += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Toll Gate'){
+									$toll += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Gate Pass'){
+									$gate += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Materials'){
+									$material += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Others'){
+									$others += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Utilities'){
+									$utilities += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Social Payments'){
+									$social += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Permit & Licenses'){
+									$permit += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Services'){
+									$services += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Professional Fees'){
+									$profee += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Dues & Subscriptions'){
+									$due += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Advertising & Promotions'){
+									$adver += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Representation'){
+									$repre += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Repair & Maintenance'){
+									$repmaint += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Bank Charges'){
+									$bankc += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Miscellaneous'){
+									$misc += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Rental'){
+									$rental += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Violation Fee'){
+									$viola += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Cash Advance'){
+									$cashadv += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Bid Docs'){
+									$bidoc += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Surety Bond'){
+									$surety += $row['liqamount'];
+								}
 							}
-						}
-					} 
+						} 
+					}
 				}
 			}
+			if($bytype != ""){
+				$sql = "SELECT *,sum(liqamount) as amnt FROM `petty`,`project`,`petty_liqdate` where petty_liqdate.petty_id = petty.petty_id and petty.project = project.name and petty.state = 'AAPettyRep' and liqtype = '$_SESSION[bytype]' and liqstate = 'CompleteLiqdate' $_SESSION[edate] group by project,petty_liqdate.completedate order by project,completedate desc";
+				$result = $conn->query($sql);
+				if($result->num_rows > 0){		
+					echo '<table class = "table table-hover">';
+					echo '<thead><tr>';
+						echo '<th width = "30%"> Date </th>';
+						echo '<th width = "30%"> Amount </th>';
+						echo '<th width = "50%" style = "text-align: left;"> Type / Company</th>';
+					echo '</tr></thead>';			
+					echo '<tbody>';
+					while ($row = $result->fetch_assoc()) {
+						$sql2 = "SELECT sum(liqamount) as amnt FROM petty_liqdate where petty_id = '$row[petty_id]' and liqtype = '$_SESSION[bytype]' and liqstate = 'CompleteLiqdate' $_SESSION[edate]";
+						$result2 = $conn->query($sql2)->fetch_assoc();
+						if($result2['amnt'] == ""){
+							continue;
+						}
+
+						echo '<tr>';
+						echo '<td>' . date("M d, Y", strtotime($row['completedate'])) . '</td>';
+						echo '<td>' . number_format($row['amnt'],2) . '</td>';
+						echo '<td style = "text-align: left;"><b>' . $row['projtype'] . ': </b>' .$row['project'] . '</td>';
+						echo '</tr>';
+					}
+					echo '</tbody></table>';
+				} 
+			}
+				
+			
 		?>
 		<div class="col-xs-12">
 			<b><i>

@@ -44,12 +44,13 @@
 					<td> Type: <font color = "red">*</font></td>
 					<td>
 						<select required class="form-control" name = "ottype">
-		          			<option value=""> Select ( P.M / Internet / Project / Others)  </option>
+		          			<option value=""> Select ( P.M / Internet / Project / Luwas / Netlink)  </option>
 		          			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 		          			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 		          			<option <?php if($row['projtype'] == 'Project'){ echo ' selected '; } ?> value="Project"> Project </option>
 		          			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected '; } ?> value="Oncall"> Oncall </option>
-		          			<option <?php if($row['projtype'] == 'Others'){ echo ' selected '; } ?> value="Others"> Others </option>	
+		          			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected '; } ?> value="Luwas"> Luwas </option>	
+		          			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected '; } ?> value="Netlink"> Netlink </option>	
 						</select>
 					</td>
 				</tr>

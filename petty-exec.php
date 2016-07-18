@@ -44,7 +44,7 @@
 		if(isset($_POST['appart']) && $_POST['appart'] != ''){
 			$particular = $_POST['appart'];
 		}
-		if(isset($_POST['transct'])){
+		if(isset($_POST['transct']) && $_POST['transct'] != ""){
 			$trans = $_POST['transct'];
 			$checkk = " Check #: " . $trans;
 		}else{
@@ -57,6 +57,9 @@
 				$state = 'AAAPettyReceive';
 			}else{
 				$state = 'AAPetty';
+			}
+			if($state == 'AAPetty'){
+				$checkk = "";
 			}
 			savelogs("Approve Petty", "Petty #: " . $petty_id . " Source: " . $source . $checkk);
 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){

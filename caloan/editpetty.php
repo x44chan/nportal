@@ -49,10 +49,12 @@
       			<option value=""> - - - - - - - </option>
       			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
       			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
-      			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
-      			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected ';} ?>value="Oncall"> On Call </option>
-      			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
-      			<option <?php if($row['projtype'] == 'Others'){ echo ' selected ';} ?>value="Others"> Others </option>
+      			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?> value="Project"> Project </option>
+      			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected ';} ?> value="Oncall"> On Call </option>
+      			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?> value="Combined"> P.M. & Internet </option>
+      			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected ';} ?> value="Luwas"> Luwas </option>
+      			<option <?php if($row['projtype'] == 'Supplier'){ echo ' selected ';} ?> value="Supplier"> Supplier </option>
+      			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected ';} ?> value="Netlink"> Netlink </option>
       			<?php if($_SESSION['acc_id'] == '37') {  ?>
       				<option <?php if($row['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
       			<?php } ?>
@@ -238,7 +240,7 @@ echo '</div>';
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 					
@@ -254,7 +256,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -264,7 +266,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -297,13 +299,6 @@ echo '</div>';
 				}else{
 					$count = 0;
 				}
-			}elseif($_POST['pettype'] == 'Others'){
-				$project = null;
-				if($projectcount > 0){
-					$count = 1;
-				}else{
-					$count = 0;
-				}
 			}elseif($_POST['pettype'] == 'House'){
 				$project = $_POST['house'];
 			}elseif($_POST['pettype'] == 'Combined'){
@@ -313,6 +308,13 @@ echo '</div>';
 					$count = 0;
 				}
 				$project = $_POST['combined'];
+			}else{
+				$project = null;
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
 			}	
 		}
 		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){

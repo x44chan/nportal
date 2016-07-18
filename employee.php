@@ -283,7 +283,7 @@
 				}else{
 					$project = "";
 				}
-				if($row['projtype'] == 'Others'){
+				if($row['project'] == ""){
 					$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 				}
 				$query1 = "SELECT * FROM `overtime` where overtime_id = '$row[overtime_id]'";

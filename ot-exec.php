@@ -97,10 +97,11 @@
 				$_POST['project'] = $_POST['otpm'];
 			}elseif($_POST['ottype'] == 'Internet'){
 				$_POST['project'] = $_POST['otinternet'];
-			}elseif($_POST['ottype'] == 'Others'){
-				$project = null;
 			}elseif($_POST['ottype'] == 'Oncall'){
 				$_POST['project'] = $_POST['otoncall'];
+			}else{
+				$project = null;
+				$_POST['project'] = null;
 			}
 		}
 		if($_POST['ottype'] == ""){
@@ -114,9 +115,6 @@
 	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 			break;
-		}
-		if($_POST['ottype'] == 'Others'){
-			$_POST['project'] = null;
 		}
 		if($_POST['onleave'] != ""){
 			$reason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
