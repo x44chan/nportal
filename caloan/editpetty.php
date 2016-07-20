@@ -157,7 +157,7 @@
 		<div <?php if($row['projtype'] != 'Oncall'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
 			<div class="form-group">
             	<label>On Call <font color = "red">*</font></label>
-            	<select class="form-control" name = "pm">
+            	<select class="form-control" name = "oncall">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1'";
@@ -308,6 +308,13 @@ echo '</div>';
 					$count = 0;
 				}
 				$project = $_POST['combined'];
+			}elseif($_POST['pettype'] == 'Oncall'){
+				if($day5 > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$project = $_POST['oncall'];
 			}else{
 				$project = null;
 				if($projectcount > 0){
@@ -317,7 +324,7 @@ echo '</div>';
 				}
 			}	
 		}
-		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Others' && $project == "")){
+		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Netlink' && $_POST['pettype'] != 'Luwas' && $_POST['pettype'] != 'Supplier' && $project == "")){
 			echo '<script>alert("Empty");window.location.href="?editpetty='.$petid.'";</script>';
 			break;		
 		}

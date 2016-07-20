@@ -109,7 +109,7 @@ $(document).ready(function(){
 	    if($('#checkxx').is(":checked")){ 	        
 	    	$("#bytypexx").show();
 	    	$("#projectxx").hide();
-	    	$("#loc").hide();
+	    	$("#loc").html("");
 	    	$("#bytype").attr('required',true);
 	    	$("#bytype").attr('disabled',false);
 	    	$("#projectwasdx").attr('required',false);
@@ -122,6 +122,7 @@ $(document).ready(function(){
 	    	$("#bytype").attr('disabled',true);
 	    	$("#projectwasdx").attr('required',true);
 	    	$("#projectwasdx").attr('disabled',false);
+	    	showUser($("#projectwasdx").val());
 	    }
 	});
 	<?php if(isset($_GET['print'])){ ?>
@@ -194,7 +195,7 @@ $(document).ready(function(){
 					}
 				?>
 			</div>
-			<div class="col-xs-3" style="margin-top: -15px; <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' display: none; ';}?>" id = "bytypexx">
+			<div class="col-xs-3" style="margin-top: -15px; <?php if($_SESSION['bytype'] == ""){ echo ' display: none; ';}?>" id = "bytypexx">
 				<label> Type </label>
 				<select class="form-control input-sm" name = "bytype" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' disabled ';}?> id = "bytype">
 					<option value=""> - - - - - - - - </option>
