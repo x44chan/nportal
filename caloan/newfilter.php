@@ -26,7 +26,7 @@
 			$date2 = date("Y-m-07");
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
 		}elseif(date("d") > 13 && date("d") < 28){
-			$date1 = date("Y-m-08", strtotime("-1 month"));
+			$date1 = date("Y-m-08");
 			$date2 = date("Y-m-22");
 			$cutoffdate11 = date("M j", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2));
 		}

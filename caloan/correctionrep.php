@@ -97,7 +97,7 @@
 		if(isset($_GET['datefr']) && isset($_GET['dateto']) && $_GET['datefr'] != "" && $_GET['dateto'] != ""){
 			$datefr = mysqli_real_escape_string($conn, $_GET['datefr']);
 			$dateto = mysqli_real_escape_string($conn, $_GET['dateto']);
-			$stmt = "SELECT * FROM login,overtime where overtime.account_id = login.account_id and oldot is not null and active = 1 and dateofot BETWEEN '$datefr' and '$dateto' and oldot != concat(startofot,' - ',endofot) and state IN('CheckedHR','AAdmin') GROUP BY login.fname";
+			$stmt = "SELECT * FROM login,overtime where overtime.account_id = login.account_id and correction is not null and active = 1 and dateofot BETWEEN '$datefr' and '$dateto' and state IN('CheckedHR','AAdmin') GROUP BY login.fname";
 			$result = $conn->query($stmt);
 			if($result->num_rows > 0){
 	?>
@@ -113,7 +113,7 @@
 				</tr>
 				<?php
 					while ($row = $result->fetch_assoc()) {
-						$sql = "SELECT count(overtime_id) as count from overtime where  oldot is not null and  dateofot BETWEEN '$datefr' and '$dateto' and oldot != concat(startofot,' - ',endofot) and state IN('CheckedHR','AAdmin') and account_id = '$row[account_id]'";
+						$sql = "SELECT sum(correction) as count from overtime where  correction is not null and  dateofot BETWEEN '$datefr' and '$dateto' and state IN('CheckedHR','AAdmin') and account_id = '$row[account_id]'";
 						$data = $conn->query($sql)->fetch_assoc();
 						echo '<tr>';
 						echo	'<td>'.$row['fname'] . ' ' . $row['lname'].'</td>';

@@ -1063,12 +1063,12 @@ $(document).ready(function(){
 		$state = "UALoan";
 		$loandate = date("Y-m-d"); 
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
-		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and penalty = '1'";
+		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and (penalty = '1' or penalty is null)";
 		$resquery = $conn->query($query);
-		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan' and penalty = '1'";
+		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan' and (penalty = '1' or penalty is null)";
 		$resqueryxx = $conn->query($sqlxx);
 		$date = date("Y-m-d");
-		if($date <= date('Y-m-08')){
+		if($date <= date('Y-m-08', strtotime('-1 month'))){
 			$date = date("Y-m-23");
 			$date2 = date("Y-m-07");
 		}else{
@@ -1475,7 +1475,7 @@ $("#submita").click(function(){
 		$date = $_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'];
 		$query = "SELECT * FROM loan_cutoff,loan where loan_cutoff.account_id = '$accid' and loan.account_id = '$accid' and loan_cutoff.loan_id = loan.loan_id and ( ( loan.state != 'DALoan' ) and (CURDATE() <= enddate and loan_cutoff.state != 'Full' and loan_cutoff.state != 'Cancel' and loan_cutoff.state != 'Advance') ) and loan.penalty = '$type'";
 		$resquery = $conn->query($query);
-		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan'";
+		$sqlxx = "SELECT * FROM loan where account_id = '$accid' and state = 'UALoan' and penalty = '1'";
 		$resqueryxx = $conn->query($sqlxx);
 		$date = date("Y-m-d");
 		if($date <= date('Y-m-08')){

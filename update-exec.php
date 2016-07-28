@@ -619,9 +619,14 @@
 			$dates = "dateacc = '$datex',";
 			$redirec = 'techsupervisor.php?ac='.$ac;
 		}
+		if(isset($_POST['correction'])){
+			$correcxq = " , correction = '1' ";
+		}else{
+			$correcxq = "";
+		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
-			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot'
+			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot' $correcxq
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();	

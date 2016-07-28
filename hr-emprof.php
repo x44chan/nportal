@@ -206,7 +206,7 @@
 		if(isset($_GET['active']) && $_GET['active'] == '0'){
       $sql = "SELECT * from `login` where level != 'Admin' and active = '0' order by edatehired ASC";
     }else{
-      $sql = "SELECT * from `login` where level != 'Admin' and (active = '1' or active IS NULL)  and edatehired is not null order by edatehired ASC";
+      $sql = "SELECT * from `login` where level != 'Admin' and (active = '1' or active IS NULL) and (account_id != 47 and account_id != 48) order by edatehired ASC";
     }
    
 		$result = $conn->query($sql);

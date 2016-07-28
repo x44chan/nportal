@@ -2032,9 +2032,13 @@ echo '</tbody></table></form>';
 						<select class = "form-control" required name = "dareason" id = "dareason">
 							<option value = "">-------</option>
 							<option value = "Biometrics">Biometrics</option>
-							<option value="C.S.R">C.S.R.</option>	
+							<option value="C.S.R">C.S.R.</option>
+							<option value="Manpower Allocation">Manpower Allocation</option>	
 						</select>
 					</td>
+				</tr>
+				<tr>
+					<td align = "left" colspan = "2"> <label> Employee Error <input type = "checkbox" name = "correction"/> </td>
 				</tr>
 				<tr style="display:none;">
 					<td>
