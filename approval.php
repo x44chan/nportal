@@ -377,6 +377,7 @@
 			}else{
 				$dareason = "";
 			}
+			savelogs("Approve Leave", $xxxsss['nameofemployee'] . ' Date From: ' . $xxxsss['dateofleavfr'] . ' To: ' . $xxxsss['dateofleavto']. ' Payment: ' . $xxxsss['leapay']);	
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE nleave set state = '$state',dareason = '$dareason', datehr = '$date' $apadmin where leave_id = $id and (state = 'UAAdmin' or state = 'UALate' or state = 'AHR')";
 			if($conn->query($sql) == TRUE){
