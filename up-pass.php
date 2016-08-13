@@ -20,6 +20,7 @@
         </div>
       </div>
     </div>
+  </div>
 <script type="text/javascript">
 
   $(window).load(function(){   

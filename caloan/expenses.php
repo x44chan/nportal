@@ -42,12 +42,12 @@
 		$_SESSION['type'] = "Project";
 		$_GET['pettype'] = "all";
 		$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
-	}elseif(isset($_GET['pettype']) && $_GET['pettype'] == 'Uplink'){
+	}elseif(isset($_GET['pettype']) && $_GET['pettype'] == 'Netlink'){
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
-		$_SESSION['type'] = "Uplink";
+		$_SESSION['type'] = "Netlink";
 	}
-	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Uplink')){
+	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
 		if($_SESSION['type'] == 'P.M.'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['pm']);
@@ -98,7 +98,7 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
-		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Uplink'){ echo ' selected '; }  ?> value="Uplink"> Uplink </option>-->
+		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){ echo ' selected '; }  ?> value="Netlink"> Netlink </option>-->
 		      		</select>
 				</div>
 				<div class="col-xs-2" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Project'){echo 'display: none;';}?>" id = "project">
@@ -236,10 +236,10 @@
 <?php
 	$totalpet = 0;
 	$totalused = 0;
-	if(isset($_SESSION['type']) && $_SESSION['type'] == 'Uplink'){
-		$xxa = "(projtype = 'Uplink')";
+	if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){
+		$xxa = "(projtype = 'Netlink')";
 	}else{
-		$xxa = "(name = project or projtype = 'Others' or projtype = 'House')";
+		$xxa = "(name = project or projtype != '')";
 	}
 	if(isset($_SESSION['searchbox']) && isset($_SESSION['type']) && $_SESSION['searchbox'] != "" && $_SESSION['type'] != ""){
 		$sql = "SELECT * FROM `petty`,`project`,`petty_liqdate` where  $_SESSION[edate] $_SESSION[qsearch] petty.petty_id = petty_liqdate.petty_id and (petty.state != 'DAPetty' and petty.state != 'CPetty') and completedate is not null GROUP BY petty.petty_id ORDER BY completedate desc, projtype asc, project asc";

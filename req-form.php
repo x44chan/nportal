@@ -1098,7 +1098,7 @@ $(document).ready(function(){
 	    	}elseif ($_SESSION['level'] == 'HR') {
 	    		echo '<script type="text/javascript">alert("You can\'t request more than ₱ ' . number_format($limit). '");window.location.replace("hr.php?ac=penloan"); </script>';
 	    	} 
-		}elseif($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d")){
+		}elseif($_POST['cutofyr'] . '-' . $_POST['cutoffmonth'] . '-' . $_POST['cutoffday'] < date("Y-m-d", strtotime('-1 month'))){
 			echo '<script type="text/javascript">alert("Wrong date.");window.location.replace("employee.php?ac=penloan"); </script>';
 		}elseif(($resquery->num_rows > 0) || ($resqueryxx->num_rows > 0)){
 			if($_SESSION['level'] == 'EMP'){

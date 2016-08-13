@@ -265,7 +265,7 @@
 			}else{
 				$project = "";
 			}
-			if($row['projtype'] == 'Others'){
+			if($row['project'] == ""){
 				$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 			}
 			$originalDate = date($row['datefile']);

@@ -844,7 +844,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b><?php echo $row['penalty'];?><br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
 					<td><?php echo $row['loanreason'];?></td>
-					<td><b><?php echo $row['fname'] . ' ' . $row['lname'].'<br>Date: <i><font color = "green">' .date("M j, Y h:i A", strtotime($row['dateacc']));?></font></i><br>Req. Amount: <i><font color="green">₱ <?php echo number_format($row['oldamnt']);?></font> </td>
+					<td><b>Accounting <?php echo '<br>Date: <i><font color = "green">' .date("M j, Y h:i A", strtotime($row['dateacc']));?></font></i><br>Req. Amount: <i><font color="green">₱ <?php echo number_format($row['oldamnt']);?></font> </td>
 					<td>
 						<?php 
 							if($row['state'] == 'UALoan'){
@@ -1095,7 +1095,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 								$hrclose ='</b>';
 							}
 							if($row['otbreak'] != null){
-								$otbreak = '<br><b><i>Break: <font color = "red">'. substr($row['otbreak'], 1) . '</font>	<i><b>';
+								$otbreak = '<br><b><i></font>Break: <font color = "red">'. substr($row['otbreak'], 1) . '</font>	<i><b>';
 							}else{
 								$otbreak = "";
 							}
@@ -1112,7 +1112,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if($row['state'] == 'UAAdmin'){
 							$datehr = "<b> Waiting for Approval</b>";
 						}
-						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>';
+						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum'] . $hrot .  $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . $otbreak . ' </b>'.$oldot.'</td>';
 					}	
 					if($row['state'] == 'UALate'){
 						if(strtolower($row['position']) == 'service technician'){

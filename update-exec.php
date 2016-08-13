@@ -567,14 +567,19 @@
 			if($explo[0] > $explo2[0]){
 				$hrrestric += 1;
 			}
-			$oldot = $oldotstrt . ' - ' . $oldotend;
+			if(isset($_POST['oldotbreak']) && isset($_POST['otbreak']) && $_POST['oldotbreak'] != $_POST['otbreak']){
+				$oldotbreak = '<br><font color = "#333"> Filed Break </font>' . $_POST['oldotbreak'];
+			}else{
+				$oldotbreak = "";
+			}
+			$oldot = $oldotstrt . ' - ' . $oldotend . $oldotbreak;
 			if(substr($newappot,0,2) >= 8){
 				$newappot = date("G:i", strtotime("-1 hour", strtotime($newappot)));
 			}	
 			$date = date('Y-m-d h:i A');
 			//ot break on update app
 			if(isset($_POST['otbreak']) && $_POST['otbreak'] != null){
-				if($_POST['otbreak'] == '30 Minutes'){
+				if($_POST['otbreak'] == '30 Mins'){
 					$newappot = date("G:i", strtotime("-30 min", strtotime($newappot)));
 					$otbreak = '-30 Minutes';
 				}elseif ($_POST['otbreak'] == '1 Hour') {
@@ -626,7 +631,7 @@
 		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
-			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot' $correcxq
+			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();	

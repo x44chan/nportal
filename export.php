@@ -2,9 +2,9 @@
 $date1 = mysql_escape_string($_GET['date1']);
 $date2 = mysql_escape_string($_GET['date2']);
 $DB_Server = "127.0.0.1"; //MySQL Server    
-$DB_Username = "root"; //MySQL Username     
-$DB_Password = "";             //MySQL Password     
-$DB_DBName = "testnew";         //MySQL Database Name  
+$DB_Username = "intersta_emp"; //MySQL Username     
+$DB_Password = "MaxcaspeR2015#";             //MySQL Password     
+$DB_DBName = "intersta_emp";         //MySQL Database Name  
 
 include('savelogs.php');
 /*******EDIT LINES 3-8*******/
@@ -179,11 +179,10 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
         </tr>
         <?php
             include 'conf.php';
-            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') ORDER BY datefile ASC";
+            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') and leapay = 'wthpay' ORDER BY datefile ASC";
             $sql2 = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
             $result1 = $conn->query($sql1);
             $result2 = $conn->query($sql2);
-            $type = "1";
             if($result1->num_rows > 0 || $result2->num_rows > 0){
                 savelogs("Export Leave and Overtime", "For the Cutoff " . date("M j, Y", strtotime($date1)) . ' to ' . date("M j, Y", strtotime($date2)));
                 while($row1 = $result2->fetch_assoc()){              
@@ -196,6 +195,8 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                     	$type = '16';
                     }elseif(stristr($row1['officialworksched'], 'Legal Holliday') == true){
                     	$type = '15';
+                    }else{
+                    	$type = '1';
                     }
                     echo '<td>'.$type.'</td>';
                     if(stristr($row1['approvedothrs'], ':30') == true){
@@ -241,7 +242,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
                             echo '<td>8</td>';
                         }else{
-                            echo '<td>9</td>';
+                            echo '<td>8</td>';
                         }
                         echo '<td></td><td></td><td></td><td></td>';
                         echo '</tr>';
@@ -265,7 +266,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
                             echo '<td>4</td>';
                         }else{
-                            echo '<td>4.5</td>';
+                            echo '<td>4</td>';
                         }
                         echo '<td></td><td></td><td></td><td></td>';
                         echo '</tr>';
