@@ -253,9 +253,9 @@
 				}
 				$date1 = date("Y-m-d");
 				if($data['liqdate'] != ""){
-					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($data['liqdate'])));
 				}else{
-					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($row['date'])));
+					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
 				}
 				if($date1 >= $date2){
 					$red = '<tr style = "color: red;">';
@@ -293,12 +293,12 @@
 					echo '<td id = "backs" ><b><font color = "green">Completed</font></b><br>';
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'EmpVal'){
-					echo '<td id = "backs" ><b><font color = "red">Pending for Completion</font></b><br>';
+					echo '<td id = "backs" ><b><font color = "red">Pending for Completion (Emp Val)</font></b><br>';
 					echo '<a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}elseif($data['liqstate'] == 'LIQDATE'){
 					echo '<td><b> Pending Completion</b><br><a href = "?liqdate='.$data['petty_id'].'&acc='.$row['account_id'].'" class = "btn btn-primary">View Liquidate</a></td>';
 				}else{
-					echo '<td><b> Pending Liquidate</td>';
+					echo '<td><b> Pending Liquidate <br>('.date("M j, Y", strtotime($row['date'])).')</td>';
 				}
 				echo '<td id = "show" style = "display: none;"></td>';
 				echo '</tr>';	
@@ -358,6 +358,7 @@
 			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
+			$parking = 0; $purchases = 0; $utidevit = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -445,6 +446,12 @@
 					$bidoc += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Surety Bond'){
 					$surety += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Parking Fee'){
+					$parking += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Purchases'){
+					$purchases += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Utilities Auto Debit'){
+					$utidevit += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -541,6 +548,15 @@
 				}
 				if($surety > 0){
 					echo '<br><label> Surety Bond: <i>₱ ' . number_format($rental,2) . '</i></label>';
+				}
+				if($parking > 0){
+					echo '<br><label> Parking Fee: <i>₱ ' . number_format($parking,2) . '</i></label>';
+				}
+				if($purchases > 0){
+					echo '<br><label> Purchases: <i>₱ ' . number_format($purchases,2) . '</i></label>';
+				}
+				if($utidevit > 0){
+					echo '<br><label> Utilities Auto Debit: <i>₱ ' . number_format($utidevit,2) . '</i></label>';
 				}
 			echo '</div>';
 			if(isset($_GET['print'])){
