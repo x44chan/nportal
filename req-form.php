@@ -186,6 +186,7 @@ $(document).ready(function(){
 		          			<option value="P.M."> P.M. </option>
 		          			<option value="Internet"> Internet </option>
 		          			<option value="Project"> Project </option>
+		          			<option value="Support"> Project Support </option>
 		          			<option value="Oncall"> Oncall </option>
 		          			<option value="Luwas"> Luwas </option>
 		          			<option value="Netlink"> Netlink </option>	
@@ -216,6 +217,23 @@ $(document).ready(function(){
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT loc FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otsupport">
+            		<td><label>Location <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "locx" onchange="showUser(this.value)">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT loc FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -593,6 +611,7 @@ $(document).ready(function(){
           			<option value="P.M."> P.M. </option>
           			<option value="Internet"> Internet </option>
           			<option value="Project"> Project </option>
+          			<option value="Support"> Project Support </option>
           			<option value="Oncall"> On-Call </option>
           			<option value="Combined"> P.M. & Internet </option>
           			<option value="Luwas"> Luwas </option>
@@ -609,6 +628,31 @@ $(document).ready(function(){
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
+            			$xresult = $conn->query($xsql);
+            			$loc = "";
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
+            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
+            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
+            						$selecteds = ' selected ';		            						
+            						$loc = $xresult2['loc'];
+            					}else{
+            						$selecteds = "";
+            					}
+
+            					echo '<option '.$selecteds.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "support">
+            	<label>Project Support <font color = "red">*</font></label>
+            	<select class="form-control" name = "locx" onchange="showUserx(this.value)">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
             			$loc = "";
             			if($xresult->num_rows > 0){

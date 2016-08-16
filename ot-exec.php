@@ -91,7 +91,7 @@
 			$restric = 1;	
 		}
 		if(isset($_POST['ottype'])){
-			if($_POST['ottype'] == 'Project'){
+			if($_POST['ottype'] == 'Project' || $_POST['ottype'] == 'Support'){
 				$_POST['project'] = $_POST['otproject'];
 			}elseif($_POST['ottype'] == 'P.M.'){
 				$_POST['project'] = $_POST['otpm'];

@@ -50,6 +50,7 @@
       			<option <?php if($row['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
       			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
       			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?> value="Project"> Project </option>
+      			<option <?php if($row['projtype'] == 'Support'){ echo ' selected ';} ?> value="Support"> Project Support </option>
       			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected ';} ?> value="Oncall"> On Call </option>
       			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?> value="Combined"> P.M. & Internet </option>
       			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected ';} ?> value="Luwas"> Luwas </option>
@@ -90,8 +91,8 @@
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
-            			$loc = "";
             			if($xresult->num_rows > 0){
+            				$loc = "";
             				while($xrow = $xresult->fetch_assoc()){
             					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
             					$xresult2 = $conn->query($xsql2)->fetch_assoc();
@@ -109,14 +110,43 @@
             	</select>
             </div>
 		</div>
+		<div <?php if($row['projtype'] != 'Support'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "support">
+			<div  class="form-group">
+            	<label>Project Support <font color = "red">*</font></label>
+            	<select class="form-control" name = "locx" onchange="showUserx(this.value)">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				$locx = "";
+            				while($xrow = $xresult->fetch_assoc()){
+            					$xsql2 = "SELECT loc FROM `project` where type = 'Support' and name = '$row[project]'";
+            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
+            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
+            						$selecteds = ' selected ';		            						
+            						$locx = $xresult2['loc'];
+            					}else{
+            						$selecteds = "";
+            					}
+
+            					echo '<option '.$selecteds.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
 		<div class="col-xs-4" id = "locx">
-			<?php if($row['projtype'] == 'Project'){ ?>
+			<?php if($row['projtype'] == 'Project' || $row['projtype'] == 'Support'){ ?>
 		        	<td><b>PO <font color = "red"> * </font></b></td>
 		        	<td>
 		        		<select name = "otproject" class = "form-control">
 		        			<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' and loc = '$loc' order by CHAR_LENGTH(name)";
+		        				$xtype = $row['projtype'];
+		            			$xsql = "SELECT * FROM `project` where type = '$xtype' and state = '1' and (loc = '$loc' or loc = '$locx') order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
+		            			echo $xsql;
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
 		            					if($xrow['name'] == $row['project']){
@@ -278,7 +308,7 @@ echo '</div>';
 		$upreason = mysqli_real_escape_string($conn, $_POST['upreason']);
 		$pettype = mysqli_real_escape_string($conn, $_POST['pettype']);
 		if(isset($_POST['pettype'])){
-			if($_POST['pettype'] == 'Project'){
+			if($_POST['pettype'] == 'Project' || $_POST['pettype'] == 'Support'){
 				$project = $_POST['otproject'];
 				if($projectcount > 0){
 					$count = 1;

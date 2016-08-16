@@ -101,6 +101,16 @@ $(document).ready(function(){
 			$('#project').hide();
 			document.getElementById("locx").innerHTML = "";
 			$('select[name="project"]').attr('required',false);
+			$('select[name="loc"]').val("");
+		}
+		if(selected2 == 'Support'){
+			$('#support').show();
+			$('select[name="project"]').attr('required',true);
+		}else{
+			$('#support').hide();
+			document.getElementById("locx").innerHTML = "";
+			$('select[name="project"]').attr('required',false);
+			$('select[name="locx"]').val("");
 		}
 		if(selected2 == 'House'){
 			$('#house').show();
@@ -171,12 +181,25 @@ $(document).ready(function(){
 			}
 			if(selected2 == 'Project'){
 				$('#otproject').show();
+				$('select[name="loc"]').val("");
 				$('select[name="otproject"]').attr('required',true);
 				$('select[name="loc"]').attr('required',true);
 			}else{
 				$('#otproject').hide();
 				document.getElementById("loc").innerHTML = "";
 				$('select[name="otproject"]').attr('required',false);
+				$('select[name="loc"]').attr('required',false);
+			}
+			if(selected2 == 'Support'){
+				$('#otsupport').show();
+				$('select[name="locx"]').val("");
+				$('select[name="otproject"]').attr('required',true);
+				$('select[name="locx"]').attr('required',true);
+			}else{
+				$('#otsupport').hide();
+				document.getElementById("loc").innerHTML = "";
+				$('select[name="otproject"]').attr('required',false);				
+				$('select[name="locx"]').attr('required',false);
 			}
 		});
 	$("#petamount").keyup(function(e){
