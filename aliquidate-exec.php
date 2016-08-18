@@ -18,8 +18,8 @@
 
 			}
 		}
-		if($amount > str_replace(",","", $data['amount'])){
-			echo '<script type="text/javascript"> alert("Ooops. Huli ka!");  window.location.replace("index.php"); </script>';
+		if(str_replace(",","", number_format($amount,2)) - str_replace(",","", $data['amount']) > 0) {
+			echo '<script type="text/javascript"> alert("Ooops. Huli ka!");// window.location.replace("index.php"); </script>';
 		}else{
 			for($i = 0; $i <= $counter; $i++){
 				$stmt = $conn->prepare("INSERT INTO `petty_liqdate` (petty_id, account_id, liqdate, liqtype, liqamount, liqinfo, liqstate, rcpt, liqothers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");

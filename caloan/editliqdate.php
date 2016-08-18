@@ -256,7 +256,7 @@
 				$amount += $_POST['amount'.$i];
 			}
 		}
-		if($amount > str_replace(",","", $data['amount'])){
+		if(str_replace(",","", number_format($amount,2)) > str_replace(",","", $data['amount'])) {
 			echo '<script type="text/javascript"> alert("Ooops. Huli ka!");  window.location.replace("?ac=penpty"); </script>';
 		}else{
 			for($i = 1; $i <= $len; $i++){

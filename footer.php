@@ -32,7 +32,7 @@ $(document).ready(function(){
 </script>
 <?php } ?>
 <script type="text/javascript">
-	function showUser(str) {
+	function showUser(str,param,param1) {
 		if (str == "") {
 		    document.getElementById("loc").innerHTML = "";
 		    return;
@@ -54,11 +54,11 @@ $(document).ready(function(){
 		        	?>	  
 		        }
 		    };
-		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str,true);
+		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+param+"&support="+param1,true);
 		    xmlhttp.send();
 		}
 	}
-	function showUserx(str) {
+	function showUserx(str,param,param1) {
 		if (str == "" || str == 'all') {
 		    document.getElementById("locx").innerHTML = "";
 		    return;
@@ -87,7 +87,7 @@ $(document).ready(function(){
 		    		$x = "b";
 		    	}
 		    ?>
-		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str,true);
+		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str+"&project="+param+"&support="+param1,true);
 		    xmlhttp.send();
 		}
 	}

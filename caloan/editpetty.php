@@ -86,7 +86,7 @@
 		<div <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "project">
 			<div  class="form-group">
             	<label>Project <font color = "red">*</font></label>
-            	<select class="form-control" name = "loc" onchange="showUserx(this.value)">
+            	<select class="form-control" name = "loc" onchange="showUserx(this.value,'proj','')">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -113,7 +113,7 @@
 		<div <?php if($row['projtype'] != 'Support'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "support">
 			<div  class="form-group">
             	<label>Project Support <font color = "red">*</font></label>
-            	<select class="form-control" name = "locx" onchange="showUserx(this.value)">
+            	<select class="form-control" name = "locx" onchange="showUserx(this.value,'','sup')">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -146,7 +146,6 @@
 		        				$xtype = $row['projtype'];
 		            			$xsql = "SELECT * FROM `project` where type = '$xtype' and state = '1' and (loc = '$loc' or loc = '$locx') order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
-		            			echo $xsql;
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
 		            					if($xrow['name'] == $row['project']){

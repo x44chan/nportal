@@ -624,7 +624,7 @@ $(document).ready(function(){
           	</div>
           	<div style = "display: none;" class="form-group" id = "project">
             	<label>Project <font color = "red">*</font></label>
-            	<select class="form-control" name = "loc" onchange="showUserx(this.value)">
+            	<select class="form-control" name = "loc" onchange="showUserx(this.value,'proj','')">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -649,7 +649,7 @@ $(document).ready(function(){
             </div>
             <div style = "display: none;" class="form-group" id = "support">
             	<label>Project Support <font color = "red">*</font></label>
-            	<select class="form-control" name = "locx" onchange="showUserx(this.value)">
+            	<select class="form-control" name = "locx" onchange="showUserx(this.value,'','sup')">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
