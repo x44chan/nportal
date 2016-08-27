@@ -94,8 +94,16 @@ $(document).ready(function(){
 	});
 	$('select[name="pettype"]').change(function() {
 	    var selected2 = $(this).val();
+		if(selected2 == 'Corporate'){
+			$('#corpo').show();
+			$('select[name="corpo"]').attr('required',true);
+		}else{
+			$('#corpo').hide();
+			$('select[name="corpo"]').attr('required',false);
+		}
 		if(selected2 == 'Project'){
 			$('#project').show();
+			$('select[name="loc"]').val("");
 			$('select[name="project"]').attr('required',true);
 		}else{
 			$('#project').hide();
@@ -105,6 +113,7 @@ $(document).ready(function(){
 		}
 		if(selected2 == 'Support'){
 			$('#support').show();
+			$('select[name="loc"]').val("");
 			$('select[name="project"]').attr('required',true);
 		}else{
 			$('#support').hide();
@@ -164,6 +173,13 @@ $(document).ready(function(){
 			}else{
 				$('#otpm').hide();
 				$('select[name="otpm"]').attr('required',false);
+			}
+			if(selected2 == 'Corporate'){
+				$('#otcorpo').show();
+				$('select[name="otcorpo"]').attr('required',true);
+			}else{
+				$('#otcorpo').hide();
+				$('select[name="otcorpo"]').attr('required',false);
 			}
 			if(selected2 == 'Internet'){
 				$('#otinternet').show();

@@ -188,6 +188,7 @@ $(document).ready(function(){
 		          			<option value="Project"> Project </option>
 		          			<option value="Support"> Project Support </option>
 		          			<option value="Oncall"> Oncall </option>
+		          			<option value="Corporate"> Corporate </option>
 		          			<option value="Luwas"> Luwas </option>
 		          			<option value="Netlink"> Netlink </option>	
 						</select>
@@ -210,10 +211,27 @@ $(document).ready(function(){
 		            	</select>
 		            </td>
 		        </tr>
+		        <tr style = "display: none;" id = "otcorpo">
+            		<td><label>Corporate <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcorpo">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
             	<tr style = "display: none;" id = "otproject">
             		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "loc" onchange="showUser(this.value)">
+            			<select class="form-control" name = "loc" onchange="showUser(this.value,'proj','')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT loc FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(name)";
@@ -230,7 +248,7 @@ $(document).ready(function(){
 		        <tr style = "display: none;" id = "otsupport">
             		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "locx" onchange="showUser(this.value)">
+            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','supp')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT loc FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(name)";
@@ -614,6 +632,7 @@ $(document).ready(function(){
           			<option value="Support"> Project Support </option>
           			<option value="Oncall"> On-Call </option>
           			<option value="Combined"> P.M. & Internet </option>
+          			<option value="Corporate"> Corporate </option>
           			<option value="Luwas"> Luwas </option>
           			<option value="Supplier"> Supplier </option>
           			<option value="Netlink"> Netlink </option>
@@ -680,6 +699,21 @@ $(document).ready(function(){
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "corpo">
+            	<label>Corporate <font color = "red">*</font></label>
+            	<select class="form-control" name = "corpo">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -785,7 +819,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 					
@@ -801,7 +835,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -811,7 +845,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Others' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -819,13 +853,20 @@ $(document).ready(function(){
 		}
 		
 		if(isset($_POST['pettype'])){
-			if($_POST['pettype'] == 'Project'){
+			if($_POST['pettype'] == 'Project' || $_POST['pettype'] == 'Support'){
 				if($projectcount > 0){
 					$count = 1;
 				}else{
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['otproject'];
+			}if($_POST['pettype'] == 'Corporate'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['corpo'];
 			}elseif($_POST['pettype'] == 'P.M.'){
 				if($day5 > 0){
 					$count = 1;

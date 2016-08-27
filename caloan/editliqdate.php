@@ -54,11 +54,14 @@
 	      			<option value=""> - - - - - - - </option>
 	      			<option <?php if($data['projtype'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 	      			<option <?php if($data['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
-	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
-	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
-	      			<option <?php if($data['projtype'] == 'Luwas'){ echo ' selected ';} ?>value="Luwas"> Luwas </option>
-	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?>value="Supplier"> Supplier </option>
-	      			<option <?php if($data['projtype'] == 'Netlink'){ echo ' selected ';} ?>value="Netlink"> Netlink </option>
+	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?> value="Project"> Project </option>
+	      			<option <?php if($data['projtype'] == 'Support'){ echo ' selected ';} ?> value="Support"> Project Support </option>
+	      			<option <?php if($data['projtype'] == 'Oncall'){ echo ' selected ';} ?> value="Oncall"> On Call </option>
+	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?> value="Combined"> P.M. & Internet </option>
+	      			<option <?php if($data['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
+	      			<option <?php if($data['projtype'] == 'Luwas'){ echo ' selected ';} ?> value="Luwas"> Luwas </option>
+	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?> value="Supplier"> Supplier </option>
+	      			<option <?php if($data['projtype'] == 'Netlink'){ echo ' selected ';} ?> value="Netlink"> Netlink </option>
 	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
 	      			<?php } ?>
@@ -108,6 +111,50 @@
 	            		<option value = ""> - - - - - </option>
 	            		<?php
 	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'Corporate'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "corpo">
+				<div class="form-group">
+	            	<label>Corporate <font color = "red">*</font></label>
+	            	<select class="form-control" name = "corpo">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1'";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if($data['project'] == $xrow['name']){
+	            						$selected = ' selected ';
+	            					}else{
+	            						$selected = "";
+	            					}
+	            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>
+	            	</select>
+	            </div>
+			</div>
+			<div <?php if($data['projtype'] != 'Oncall'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
+				<div class="form-group">
+	            	<label>On Call <font color = "red">*</font></label>
+	            	<select class="form-control" name = "oncall">
+	            		<option value = ""> - - - - - </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1'";
 	            			$xresult = $conn->query($xsql);
 	            			if($xresult->num_rows > 0){
 	            				while($xrow = $xresult->fetch_assoc()){

@@ -50,6 +50,7 @@
 		          			<option <?php if($row['projtype'] == 'Project'){ echo ' selected '; } ?> value="Project"> Project </option>
 		          			<option <?php if($row['projtype'] == 'Support'){ echo ' selected '; } ?> value="Support"> Project Support </option>
 		          			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected '; } ?> value="Oncall"> Oncall </option>
+		          			<option <?php if($row['projtype'] == 'Corporate'){ echo ' selected '; } ?> value="Corporate"> Corporate </option>
 		          			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected '; } ?> value="Luwas"> Luwas </option>	
 		          			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected '; } ?> value="Netlink"> Netlink </option>	
 						</select>
@@ -80,7 +81,7 @@
 				<tr <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" '; } ?> id = "otproject">
             		<td><label>Project <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "loc" onchange="showUser(this.value)">
+            			<select class="form-control" name = "loc" onchange="showUser(this.value,'proj','')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -107,7 +108,7 @@
 		        <tr <?php if($row['projtype'] != 'Support'){ echo ' style = "display: none;" '; } ?> id = "otsupport">
             		<td><label>Project Support<font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "locx" onchange="showUser(this.value)">
+            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','supp')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -162,6 +163,28 @@
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] != 'Corporate'){ echo ' style = "display: none;" '; } ?> id = "otcorpo">
+            		<td><label>Corporate <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcorpo">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1'";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
