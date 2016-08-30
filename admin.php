@@ -1071,6 +1071,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					if($row['project'] == ""){
 						$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 					}
+					if($row['correction'] == 1){
+						$correctionx = '<b> ( Employee Error ) </b><br>';
+					}else{
+						$correctionx = "";
+					}
 					echo '<td style="align: left !important;">'.$newDate.'</td>';
 					echo '<td>'.$row['fname'] .' ' .$row['lname'] .'</td>';
 					echo '<td><b>'.$late.'Overtime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofot'])). '</font></i><br>O.T. : <i><font color = "green">'.$row['startofot'] . ' - ' . $row['endofot'].'</font><br>Sched: <font color = "green">'.$row['officialworksched'] .'</font>'.$otlate . $project.'</td>';
@@ -1112,7 +1117,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						if($row['state'] == 'UAAdmin'){
 							$datehr = "<b> Waiting for Approval</b>";
 						}
-						echo '<td style = "text-align:left;"><b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum'] . $hrot .  $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . $otbreak . ' </b>'.$oldot.'</td>';
+						echo '<td style = "text-align:left;">'.$correctionx.'<b>HR: '.$datehr. $datetech .'</b><br>'.$row['csrnum'] . $hrot .  $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . $otbreak . ' </b>'.$oldot.'</td>';
 					}	
 					if($row['state'] == 'UALate'){
 						if(strtolower($row['position']) == 'service technician'){

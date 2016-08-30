@@ -631,9 +631,30 @@
 		}else{
 			$correcxq = "";
 		}
+		if(isset($_POST['ottype'])){
+			if($_POST['ottype'] == 'Project' || $_POST['ottype'] == 'Support'){
+				$_POST['project'] = $_POST['otproject'];
+			}elseif($_POST['ottype'] == 'P.M.'){
+				$_POST['project'] = $_POST['otpm'];
+			}elseif($_POST['ottype'] == 'Internet'){
+				$_POST['project'] = $_POST['otinternet'];
+			}elseif($_POST['ottype'] == 'Oncall'){
+				$_POST['project'] = $_POST['otoncall'];
+			}elseif($_POST['ottype'] == 'Corporate'){
+				$_POST['project'] = $_POST['otcorpo'];
+			}else{
+				$project = null;
+				$_POST['project'] = null;
+			}
+		}
+		$project = mysqli_real_escape_string($conn, $_POST['project']);
+		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
+		if(isset($_POST['oldprojtype']) && $_POST['oldprojtype'] != "" && isset($_POST['oldproject']) && $_POST['oldproject'] != ""){
+		//	$oldot = $_POST['oldprojtype'] . ': ' . $_POST['oldproject'] . ' <br> ' . $oldot;
+		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
-			startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
+			project = '$project', projtype = '$projtype', startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();	
