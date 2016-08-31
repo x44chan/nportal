@@ -860,7 +860,7 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['otproject'];
-			}if($_POST['pettype'] == 'Corporate'){
+			}elseif($_POST['pettype'] == 'Corporate'){
 				if($projectcount > 0){
 					$count = 1;
 				}else{
@@ -946,6 +946,9 @@ $(document).ready(function(){
 			$stmt->bind_param("isssssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project'], $_POST['pettype']);
 			$stmt->execute();		
 			if($_SESSION['level'] == 'EMP'){
+				//include 'savelogs.php';  
+				//$_POST['pettype'] .= ' ' . $_POST['project'];
+				//savelogs("Request Petty", "Particular: " . $particularpet . ', Amount: ' . $amountpet . ', Petty Type: ' . $_POST['pettype']);
 	    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
 	    		echo '<script type="text/javascript">window.location.replace("accounting.php?ac=penpty"); </script>';
@@ -1162,14 +1165,14 @@ $(document).ready(function(){
 		}
 		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
 		$limita = $conn->query($xsql)->fetch_assoc();
-		if(date("Y-m-d") < date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
-			$limit = '5000';
-		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
-			$limit = '10000';
-		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
-			$limit = '10000';
-		}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
-			$limit = '20000';
+		if(date("Y-m-d") <= date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .4);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .6);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .7);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .9);
 		}
 		$query2 = "SELECT * FROM cashadv where account_id = '$accid' and state != 'DACA' and cadate < '$date' and cadate > '$date2'";
 		$resquery2 = $conn->query($query2);
@@ -1230,6 +1233,19 @@ $(document).ready(function(){
 	}
 
 ?>
+	<?php
+		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
+		$limita = $conn->query($xsql)->fetch_assoc();
+		if(date("Y-m-d") <= date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .4);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .6);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .7);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
+			$limit = ($_SESSION['salary'] * .9);
+		}
+	?>
    <!-- loanModal -->
   <div class="modal fade" id="loan" role="dialog">
     <div class="modal-dialog">    
@@ -1246,7 +1262,7 @@ $(document).ready(function(){
               <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
             </div>
             <div class="form-group">
-            	 <label for="usrname"> Amount <font color = "red">*</font></label>
+            	 <label for="usrname"> Amount <font color = "red">*</font> (Max Allowed Loan: <?php echo number_format($limit);?>)</label>
             	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
@@ -1289,7 +1305,7 @@ $(document).ready(function(){
 				<label>Payment Start (Day)</label>
 				<select class="form-control" name = "cutoffday">
 					<option value=""> - - - - - - - </option>
-					<option value="23">23-07</option>
+					<option value="23">23-07 (next month)</option>
 					<option value="08">08-22</option>
 				</select>
 			</div>
@@ -1304,8 +1320,8 @@ $(document).ready(function(){
 			<div class="form-group">
 				<p style="color: red; font-size: 12px;">
 					<b>Example: <br>
-						Your Payment Start is Feb 23 - 07(next mont) <br>
-						Cutoff Date Feb 08, 2016</b>
+						Your Payment Start is Feb 23 - 07(next month) <br>
+						Deduction Date Feb 13, 2016</b>
 				</p>
 			</div>
               <button type="submit" name = "loanpet" id = "loanpet" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
@@ -1331,18 +1347,7 @@ $(document).ready(function(){
 			}
 		});
 		$('#loanpet').click(function(){
-			<?php
-				$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
-				$limita = $conn->query($xsql)->fetch_assoc();
-				if(date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
-					$limit = '5000';
-				}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") < date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
-					$limit = '10000';
-				}elseif(date("Y-m-d") >= date("Y-m-d",strtotime('+5 years', strtotime($limita['regdate'])))){
-					$limit = '15000';
-				}
-			?>
-			if($("input[name='loanamount']").val() > <?php echo $limit; ?> ){
+			if($("input[name='loanamount']").val() > <?php echo str_replace(",", "", number_format($limit)); ?> ){
                alert("You can't request more than ₱ <?php echo number_format($limit);?>.");
                return false;
     		}
@@ -1521,7 +1526,7 @@ $("#submita").click(function(){
 			</div>
 			<div class="form-group">
 				<label>Payment Start (Day)</label>
-				<select class="form-control" name = "cutoffday">
+				<select class="form-control" required name = "cutoffday">
 					<option value=""> - - - - - - - </option>
 					<option value="23">23 - 07</option>
 					<option value="08">08 - 22</option>
@@ -1538,15 +1543,12 @@ $("#submita").click(function(){
 			<div class="form-group">
 				<p style="color: red; font-size: 12px;">
 					<b>Example: <br>
-						Your Payment Start is Feb 23 - 07(next mont) <br>
-						Cutoff Date Feb 08, 2016</b>
+						Your Payment Start is Feb 23 - 07(next month) <br>
+						Deduction Date Feb 13, 2016</b>
 				</p>
 			</div>
               <button type="submit" name = "penaltysub" onclick="return confirm('Are you sure?');" class="btn btn-success btn-block">Submit</button>
           </form>
-        </div>
-        <div class="modal-footer">
-          
         </div>
       </div>      
     </div>

@@ -71,6 +71,7 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				$_SESSION['post'] = $row['position'];
 				$_SESSION['dept'] = $row['department'];
 				$_SESSION['datehired'] = $row['edatehired'];
+				$_SESSION['salary'] = $row['salary'];
 				if($row['hrchange'] != 0){
 					$_SESSION['category'] = $row['oldpost'];
 				}else{
