@@ -58,7 +58,17 @@
 					$usedsl = 0;
 					$usedvl = 0;
 				}
-						
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$availsick = $sl - $row1['count'];
+						$scount = $row1['count'];						
+						}
+				}		
+				if($scount == null){
+					$scount = " - ";
+				}		
 				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 				$result1 = $conn->query($sql1);
 				if($result1->num_rows > 0){
@@ -158,13 +168,24 @@
 		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
 			$restric = 5;
 		}
+		if(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
+			$restric = 6;
+			$wthpay = 'withoutpay';
+		}elseif($availsick <= 0){
+			$wthpay = 'withoutpay';
+		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state , $wthpay);
 		if($restric == 0){
 			$stmt->execute();
 			if($wthpay != null){
-				$al = "alert('You already used your allowed V.L. for this quarter, your request is automatically flaged as without pay.');";
+				if($typeoflea == 'Vacation Leave'){
+					$quarter = 'quarter';
+				}elseif($typeoflea == 'Sick Leave'){
+					$quarter = 'year';
+				}
+				$al = "alert('You already used your allowed ".$typeoflea." for this ".$quarter.", your request is automatically flaged as without pay.');";
 			}else{
 				$al = "";
 			}
@@ -185,6 +206,8 @@
 				$alert = 'You can only request ' . $months . ' day/s per quarter ';
 			}elseif($restric == 5){
 				$alert = "Make it 2 request. 1.) ". ($months-$xcount[0]) ." day/s for with pay 2.) " . ($_POST['numdays'] - (($months-$xcount[0]))) . " day/s";
+			}elseif($restric == 6){
+				$alert = "Make it 2 request. 1.) ". ($availsick) ." day/s for with pay 2.) " . ($_POST['numdays'] - $availsick) . " day/s without pay";
 			}else{
 				$alert = "Wrong Date";
 			}
