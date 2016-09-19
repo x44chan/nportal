@@ -4,7 +4,7 @@ include 'header.php';
 include 'conf.php';
 session_start();
 include('savelogs.php');
-		$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and (source = 'Eliseo' or source = 'Sharon') and particular != 'Check' group by petty_liqdate.petty_id order by completedate desc,petty.petty_id desc";
+		$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = petty_liqdate.petty_id and (source = 'Eliseo' or source = 'Sharon') and (particular NOT IN ('Check','Auto Debit'))  group by petty_liqdate.petty_id order by completedate desc,petty.petty_id desc";
 		$result = $conn->query($sql);
 			echo '<div id = "report"><div align = "center"><i><h3>Liquidate List</h3></i></div>';
 			echo '<table class = "table" id = "myTableliq">';

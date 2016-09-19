@@ -130,7 +130,7 @@
 							if($data6['loanc'] > 0){
 								$data6['loanc'] = 1;
 							}
-							$acounts =  $data1['otcount'] + $data2['obcount'] + $data3['leacount'] + $data4['undrcount'] + $data5['cashadv'] + $data6['loanc'];
+							$acounts =  $data1['otcount'] + $data2['obcount'] + $data3['leacount'] + $data4['undrcount'] + $data5['cashadv'] + $data6['loanc'] + $data8['holcount'];
 							$title = "Overall Report";
 						}elseif($_GET['rep'] == 'ot'){
 							$data1 = $conn->query($ssql1)->fetch_assoc();
@@ -575,18 +575,18 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'hol'){
 			<tbody>
 	<?php
 		while($row = $result->fetch_assoc()){	
-			if($row['oldtime'] != ""){
+			/*if($row['oldtime'] != ""){
 				$hrcheck = 'App Time: <i><font color = "green">' . $row['timein'] . ' - ' .$row['timeout'] . '</i></font><br>';
 				$hrcheck .= 'Based On: <i><font color = "red">' . $row['dareason'] . '</font></i><br> Filed Time: <i><font color = "red">' . $row['oldtime'] . '</font></i>';
 			}else{
 				$hrcheck = $row['timein'] . ' - ' . $row['timeout'];
-			}
+			}*/
 			echo 
 				'<tr>
 					<td>'.date("M j, Y", strtotime($row['datefile'])).'</td>						
 					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
-					<!--<td><b>'.$hrcheck.'</td>-->
-					<td>'.date("M j, Y", strtotime($row['holiday'])).'</td>
+					<!--<td><b></td>-->
+					<td>'.$row['type'].'</td>
 					<td>'.$row['reason'].'</td>
 				</tr>';
 		}

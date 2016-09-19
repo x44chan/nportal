@@ -29,7 +29,7 @@
 		$('input[name = "transct"]').hide();
 		$('select[name = "source"]').change(function() {
 		    var selected = $(this).val();			
-			if(selected == 'Accounting' || $('select[name = "appart"]').val() == 'Cash'){
+			if(selected == 'Accounting' || ($('select[name = "appart"]').val() == 'Cash' || $('select[name = "appart"]').val() == 'Auto Debit')){
 				$('input[name = "transct"]').attr('required',false);
 				$('input[name = "transct"]').hide();
 			}else{
@@ -412,22 +412,20 @@
 				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
 				echo '<tr><td style = "width: 30%;">Particular: </td><td style = "width: 50%;">
 					<select name = "appart" class = "form-control">';
+				$cash = ""; $check = ""; $autodeb = ""; $trans = "";
 				if($row['particular'] == "Cash"){
 					$cash = ' selected ';
-					$check = "";
-					$trans = "";
 				}elseif($row['particular'] == "Check"){
 					$check = " selected ";
-					$trans = "";
-					$cash = "";
+				}elseif($row['particular'] == 'Auto Debit'){
+					$autodeb = " selected ";
 				}else{
 					$trans = " selected ";
-					$cash = "";
-					$check = "";
 				}
 					echo '<option value = "">----------</option>
               			<option value = "Cash" '.$cash.'>Cash</option>
-              			<option value = "Check" '.$check.'>Check</option>';				
+              			<option value = "Check" '.$check.'>Check</option>
+              			<option value = "Auto Debit" '.$autodeb.'>Auto Debit</option>';
 				echo '</select></td></tr>';	
 				echo '<tr><td style = "width: 30%;">Source of Fund <font color = "red">*</font></td><td><select required name = "source" class = "form-control"><option value = "">-------</option><option value = "Eliseo">Eliseo</option><option value = "Sharon">Sharon</option><option value = "Accounting">Accounting</option></select></td></tr>';
 				echo '<tr><td style = "width: 30%;">Amount: </td><td style = "width: 50%;"><input pattern = "[.0-9,]*" class = "form-control" type = "text" name = "pettyamount" value ="' ; if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); };echo'"/></td></tr>';

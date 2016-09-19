@@ -147,7 +147,9 @@
 				if(!isset($xcount[$i])){
 					continue;
 				}				
-				if($xcount[$i] >= $months) {
+				if($xcount[$i] > $months) {
+					$wthpay = 'withoutpay';
+				}elseif(($months - $xcount[$i]) <= 0){
 					$wthpay = 'withoutpay';
 				}elseif(($months - $xcount[$i]) < $numdays){
 					$wthpay = 'withoutpay';
@@ -165,21 +167,21 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && isset($xcount[0]) && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
 			$restric = 5;
 		}
 		if(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
 			$restric = 6;
 			$wthpay = 'withoutpay';
-		}elseif($availsick <= 0){
+		}elseif(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays']) && $availsick <= 0){
 			$wthpay = 'withoutpay';
 		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssssssssssss", $accid, $datefile, $nameofemployee, $datehired, $deprt, $posttile, $dateofleavfr, $dateofleavto, $numdays, $typeoflea, $othersl, $reason, $twodaysred, $state , $wthpay);
-		if($restric == 0){
+		if($restric == 0 || $restric == 3){
 			$stmt->execute();
-			if($wthpay != null){
+			if($wthpay != null && $restric == 0){
 				if($typeoflea == 'Vacation Leave'){
 					$quarter = 'quarter';
 				}elseif($typeoflea == 'Sick Leave'){
@@ -188,6 +190,9 @@
 				$al = "alert('You already used your allowed ".$typeoflea." for this ".$quarter.", your request is automatically flaged as without pay.');";
 			}else{
 				$al = "";
+			}
+			if($restric == 3){
+				$al = "alert('No more Vacation Leave Balance, your leave is w/o pay.');";
 			}
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';

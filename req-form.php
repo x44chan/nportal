@@ -496,8 +496,10 @@ $(document).ready(function(){
 				if(!isset($xcount[$i])){
 					continue;
 				}				
-				if($xcount[$i] >= $months) {
-					$wthpay = 'withoutpay1';
+				if($xcount[$i] > $months) {
+					$wthpay = 'withoutpay';
+				}elseif(($months - $xcount[$i]) <= 0){
+					$wthpay = 'withoutpay';
 				}else{
 					$wthpay = null;
 				}
@@ -571,7 +573,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td abbr="center">V.L. Balance for this Quarter</td>
-					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?>"class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];}else{ echo $totavailvac;}?>"class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>
@@ -616,6 +618,7 @@ $(document).ready(function(){
               	<option value = "Cash">Cash</option>
               	<option value = "Check">Check</option>
               	<option value = "Transfer">Transfer</option>
+              	<option value = "Auto Debit">Auto Debit</option>
               </select>
             </div>
             <div class="form-group">
@@ -819,7 +822,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 					
@@ -835,7 +838,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}
@@ -845,7 +848,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
 					}
 				}

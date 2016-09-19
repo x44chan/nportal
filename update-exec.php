@@ -400,7 +400,7 @@
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
 			$restric = 3;
 		}
-		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) != 0)){
+		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
 			$restric = 5;
 		}
 		if(($dxatax['typeoflea'] == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
@@ -415,9 +415,9 @@
 		$stmt = "UPDATE `nleave` set 
 			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state', leapay = '$wthpay'
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
-		if($restric == 0){
+		if($restric == 0 || $restric == 3){
 			if ($conn->query($stmt) === TRUE) {
-				if($wthpay != null){
+				if($wthpay != null && $restric == 0){
 			    	if($dxatax['typeoflea'] == 'Vacation Leave'){
 						$quarter = 'quarter';
 					}elseif($dxatax['typeoflea'] == 'Sick Leave'){
@@ -426,6 +426,9 @@
 					$al = "alert('You already used your allowed ".$dxatax['typeoflea']." for this ".$quarter.", your request is automatically flaged as without pay.');";
 				}else{
 					$al = "";
+				}
+				if($restric == 3){
+					$al = "alert('No more Vacation Leave Balance, your leave is w/o pay.');";
 				}
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';

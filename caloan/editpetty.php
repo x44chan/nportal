@@ -31,6 +31,7 @@
 				<option value = "Cash" <?php if($row['particular'] == "Cash"){ echo ' selected '; }?>> Cash </option>
 				<option value="Check" <?php if($row['particular'] == "Check"){ echo ' selected '; }?>> Check </option>
 				<option value="Transfer" <?php if($row['particular'] == "Transfer"){ echo ' selected '; }?>> Transfer </option>
+				<option value="Transfer" <?php if($row['particular'] == "Auto Debit"){ echo ' selected '; }?>> Auto Debit </option>
 			</select>
 		</div>
 		<div class="col-xs-3">
