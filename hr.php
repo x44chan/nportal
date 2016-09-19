@@ -403,14 +403,14 @@
 					$usedsl = $row['usedsl'];
 					$usedvl = $row['usedvl'];
 				}else{				
-					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$accids' and state = 'AAdmin'";
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
 					$datalea = $conn->query($leaveexec)->fetch_assoc();
 					$sl = $datalea['sleave'];
 					$vl = $datalea['vleave'];
 					$usedsl = 0;
 					$usedvl = 0;
 				}
-				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Sick Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 				$result1 = $conn->query($sql1);
 				if($result1->num_rows > 0){
 					while($row1 = $result1->fetch_assoc()){
@@ -421,7 +421,7 @@
 				if($scount == null){
 					$scount = " - ";
 				}			
-				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea = 'Vacation Leave'  and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 				$result1 = $conn->query($sql1);
 				if($result1->num_rows > 0){
 					while($row1 = $result1->fetch_assoc()){
@@ -429,7 +429,7 @@
 						$count = $row1['count'];
 						}
 				}		
-				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = '$accids' and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Other%' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
 				$result1 = $conn->query($sql1);
 				if($result1->num_rows > 0){
 					while($row1 = $result1->fetch_assoc()){
@@ -437,10 +437,26 @@
 						$count = $row1['count'];
 						}
 				}
-								
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Paternity Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$patternity = 7 - $row1['count'];
+						$count = $row1['count'];
+						}
+				}
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Wedding Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$wedding = 7 -  $row1['count'];
+						$count = $row1['count'];
+						}
+				}				
 				
 			}
-		if($totavailvac > 0 || $availsick > 0){
+		}
+	if($cate == 'Regular'){
 			$quarterdate = array();
 			$date1=date_create($datalea['startdate']);
 			$date2=date_create($datalea['enddate']);
@@ -480,7 +496,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -489,7 +505,7 @@
 					}
 				}
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and typeoflea = 'Vacation Leave' and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accids' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -500,9 +516,11 @@
 				if(!isset($xcount[$i])){
 					continue;
 				}				
-				if($xcount[$i] >= $months) {
-					$wthpay = 'withoutpay1';
-				}else {
+				if($xcount[$i] > $months) {
+					$wthpay = 'withoutpay';
+				}elseif(($months - $xcount[$i]) <= 0){
+					$wthpay = 'withoutpay';
+				}else{
 					$wthpay = null;
 				}
 				if(stristr($sql, '2016-12-31') == true){
@@ -511,14 +529,7 @@
 
 			}
 		}
-	}
-		if(!isset($months)){
-			$months = 0;
-		}
-			
-		if(!isset($xcount[0])){
-			$xcount = 0;
-		}
+
 		$sql = "SELECT * FROM nleave,login where login.account_id = $accids and leave_id = '$oid' and state = 'UA'";
 		$result = $conn->query($sql);
 
@@ -534,7 +545,7 @@
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
 			<?php if(isset($cate) && $cate == 'Regular'){ ?>
 			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
-			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; }else{ echo $totavailvac;}?></td></tr> 
+			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; }elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];}else{ echo $totavailvac;}?></td></tr> 
 			<?php } ?>
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
