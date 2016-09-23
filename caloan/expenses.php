@@ -51,8 +51,24 @@
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
 		if($_SESSION['type'] == 'P.M.'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['pm']);
+			if(isset($_SESSION['loc'])){
+				unset($_SESSION['loc']);
+			}
 		}elseif($_SESSION['type'] == 'Internet'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['internet']);
+			if(isset($_SESSION['loc'])){
+				unset($_SESSION['loc']);
+			}
+		}elseif($_SESSION['type'] == 'Combined'){
+			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['combined']);
+			if(isset($_SESSION['loc'])){
+				unset($_SESSION['loc']);
+			}
+		}elseif($_SESSION['type'] == 'Corporate'){
+			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['corpo']);
+			if(isset($_SESSION['loc'])){
+				unset($_SESSION['loc']);
+			}
 		}else{
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['otproject']);
 			$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
@@ -98,12 +114,14 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Combined'){ echo ' selected '; }  ?> value="Combined"> Combined </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Corporate'){ echo ' selected '; }  ?> value="Corporate"> Corporate </option>
 		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){ echo ' selected '; }  ?> value="Netlink"> Netlink </option>-->
 		      		</select>
 				</div>
 				<div class="col-xs-2" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Project'){echo 'display: none;';}?>" id = "project">
 					<label>Location</label>
-					<select class="form-control input-sm" name = "loc" onchange="showUserx(this.value)">
+					<select class="form-control input-sm" name = "loc" onchange="showUserx(this.value,'proj','')">
 						<option value = "all"> All </option>
 	            		<?php
 	            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
@@ -127,6 +145,46 @@
 						<option value = "all"> All </option>
 	            		<?php
 	            			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1' order by name";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] == $xrow['name']){
+	            						$select = ' selected ';
+	            					}else{
+	            						$select = "";
+	            					}
+	            					echo '<option '.$select.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>			
+					</select>
+				</div>
+				<div class="col-xs-4" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Combined'){echo 'display: none;';}?>" id = "combined">
+					<label>Combined</label>
+					<select class="form-control input-sm" name = "combined">
+						<option value = "all"> All </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1' order by name";
+	            			$xresult = $conn->query($xsql);
+	            			if($xresult->num_rows > 0){
+	            				while($xrow = $xresult->fetch_assoc()){
+	            					if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] == $xrow['name']){
+	            						$select = ' selected ';
+	            					}else{
+	            						$select = "";
+	            					}
+	            					echo '<option '.$select.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+	            				}
+	            			}
+	            		?>			
+					</select>
+				</div>
+				<div class="col-xs-4" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'Corporate'){echo 'display: none;';}?>" id = "corpo">
+					<label>Corporate</label>
+					<select class="form-control input-sm" name = "corpo">
+						<option value = "all"> All </option>
+	            		<?php
+	            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1' order by name";
 	            			$xresult = $conn->query($xsql);
 	            			if($xresult->num_rows > 0){
 	            				while($xrow = $xresult->fetch_assoc()){
@@ -172,7 +230,7 @@
 								$_GET['otproject'] = $_SESSION['searchbox'];
 							}
 							$otproject = mysqli_real_escape_string($conn, $_GET['loc']);
-							$xx = "SELECT * FROM project where loc = '$otproject'";
+							$xx = "SELECT * FROM project where loc = '$otproject' and type = '$_SESSION[type]'";
 							$xxx = $conn->query($xx);
 							echo '<select name = "otproject" id = "otproject" class = "form-control input-sm">';
 							if($_GET['otproject'] == 'all'){
@@ -206,7 +264,7 @@
 	<div style="margin-bottom: 40px;"></div>
 <?php if(isset($_GET['expenses'])){ ?>
 <div id = "report">
-	<h2 align="center" style="text-transform: uppercase;" id = "green"><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc'];}?> Expenses </h2><h4 align="center" style="text-transform: capitalize;"><i><?php if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] != ""){ echo 'Project: ' .$_SESSION['searchbox'];}?></h4></i>
+	<h2 align="center" style="text-transform: uppercase;" id = "green"><?php if(isset($_SESSION['loc'])){ echo $_SESSION['loc'];}?> Expenses </h2><h4 align="center" style="text-transform: capitalize;"><i><?php if(isset($_SESSION['searchbox']) && $_SESSION['searchbox'] != ""){ echo $_SESSION['type'].': ' .$_SESSION['searchbox'];}?></h4></i>
 	<i><h5 align="center" style="margin-top: -20px; font-size: 12px;"><?php if(isset($_SESSION['datefr']) && $_SESSION['datefr'] != ""){ echo '<br>'; if(substr($_SESSION['datefr'], 0 , 4) == substr($_SESSION['dateto'], 0 , 4)){ echo date("M j", strtotime($_SESSION['datefr'])); }else{echo date("M j, Y", strtotime($_SESSION['datefr']));} echo ' - ' . date("M j, Y",strtotime($_SESSION['dateto'])); } ?></h5></i>
 	<div class="row">
 		<div class="col-xs-12" align="right" <?php if(isset($_GET['print'])){ echo 'style="font-size: 11px;"'; }?>>

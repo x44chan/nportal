@@ -86,8 +86,13 @@ $(document).ready(function(){
 		    	}else{
 		    		$x = "b";
 		    	}
+		    	if(isset($_GET['expenses'])){
+		    		$ac = '&state=1';
+		    	}else{
+		    		$ac = ' ';
+		    	}
 		    ?>
-		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str+"&project="+param+"&support="+param1,true);
+		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str+"&project="+param+"<?php echo $ac;?> &support="+param1,true);
 		    xmlhttp.send();
 		}
 	}

@@ -9,7 +9,12 @@ if(isset($_GET['q'])){
 	}else{
 		$type = "";
 	}
-	$sql = "SELECT * FROM project where state = 1 and loc = '$q' and state = '1' $type order by CHAR_LENGTH(name)";
+	if(isset($_GET['state']) && $_GET['state'] != ""){
+		$state = 'and state >= 0 ';
+	}else{
+		$state = ' and state = "1" ';
+	}
+	$sql = "SELECT * FROM project where loc = '$q' $state $type order by CHAR_LENGTH(name)";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		echo '<td id = "projproj"> <b>PO <font color = "red"> * </font></b> </td><td><select name = "otproject" id = "otproject" class = "form-control" required>';
