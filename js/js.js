@@ -158,10 +158,10 @@ $(document).ready(function(){
 		}
 		if(selected2 == 'Oncall'){
 			$('#oncallxx').show();
-			$('select[name="oncall"]').attr('required',true);
+			$('select[name="xoncall"]').attr('required',true);
 		}else{
 			$('#oncallxx').hide();
-			$('select[name="oncall"]').attr('required',false);
+			$('select[name="xoncall"]').attr('required',false);
 		}
 	});
 	$('select[name="ottype"]').change(function() {

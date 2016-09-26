@@ -124,6 +124,9 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
+		if(empty($project) || empty($projtype)){
+			$restric = 3;
+		}
 		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("ssissssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		if($restric == 0){
@@ -139,14 +142,19 @@
 	    	}
 			$conn->close();
 		}else{
+			if($restric == 3){
+				$al = " No Selected Project/Location ";
+			}else{
+				$al = " Wrong date ";
+			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("Wrong date."); window.location.replace("employee.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("accounting.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("hr.php?ac=penot"); </script>';
 	    	}
 		}
 	}

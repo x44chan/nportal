@@ -1048,7 +1048,12 @@ $(document).ready(function(){
   </div> 
   <?php
   	if(isset($_POST['submithol']) && $_POST['holiday'] != "" && $_POST['type']){
-  		if(date("Y-m-d") == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date("Y-m-d") == $_POST['holiday'] || date("Y-m-d") == date("Y-m-d",strtotime("+1 day",strtotime($_POST['holiday'])))){
+  		if(date("D") == 'Mon'){
+			$minus = '+3 days';
+		}else{
+			$minus = '+1 days';
+		}
+  		if(date("Y-m-d") == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date("Y-m-d") == $_POST['holiday'] || date("Y-m-d") <= date("Y-m-d",strtotime($minus,strtotime($_POST['holiday'])))){
   			$restrict = 0;
   		}else{
   			$restrict = 1;
