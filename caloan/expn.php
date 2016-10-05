@@ -152,7 +152,7 @@ $(document).ready(function(){
 				<select class="form-control input-sm" id = "projectwasdx" name = "loc" onchange="showUser(this.value)" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' required ';}?>>
 					<option value=""> - - - - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
+            			$xsql = "SELECT * FROM `project` where (type = 'Project' or type = 'On Call') and state = '1' group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -276,7 +276,7 @@ $(document).ready(function(){
 			$others = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
-			$parking = 0; $purchases = 0; $utidevit = 0;
+			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0;
 			if($project != ""){		
 				$sql = "SELECT * FROM `petty` where project = '$project' and state = 'AAPettyRep'";
 				$result = $conn->query($sql);
@@ -345,6 +345,8 @@ $(document).ready(function(){
 									$purchases += $row['liqamount'];
 								}elseif($row['liqtype'] == 'Utilities Auto Debit'){
 									$utidevit += $row['liqamount'];
+								}elseif($row['liqtype'] == 'Payroll'){
+									$payroll += $row['liqamount'];
 								}
 							}
 						} 
@@ -471,7 +473,10 @@ $(document).ready(function(){
 				if($utidevit > 0){
 					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Utilities Auto Debit </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($utidevit,2) .'</u></div></div>'; 
 				}
-				$total = $meal + $gas + $transpo + $cpload + $water + $notary + $toll + $gate + $material + $others + $utilities + $social + $permit + $services + $profee + $due + $adver + $repre + $repmaint + $bankc + $misc + $rental + $viola + $cashadv + $utidevit + $bidoc + $surety + $purchases + $parking;
+				if($payroll > 0){
+					echo '<div class="row"><div class = "col-xs-2 col-xs-offset-1">Utilities Auto Debit </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.	number_format($payroll,2) .'</u></div></div>'; 
+				}
+				$total = $meal + $gas + $transpo + $cpload + $water + $notary + $toll + $gate + $material + $others + $utilities + $social + $permit + $services + $profee + $due + $adver + $repre + $repmaint + $bankc + $misc + $rental + $viola + $cashadv + $utidevit + $bidoc + $surety + $purchases + $parking + $payroll;
 				if($total > 0){
 					echo '<div class="row"><div class = "col-xs-7"><hr style = "border-color: #a6a6a6;"></div></div>';
 					echo '<div class="row" style = "margin-top: 1px solid;"><div class = "col-xs-2 col-xs-offset-1">Total </div><div class = "col-xs-1" style = "text-align: center;">:</div><div style = "text-align: right;" class = "col-xs-2"><u>₱ '.number_format($total,2).'</u></div></div>';

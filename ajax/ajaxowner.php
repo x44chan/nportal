@@ -14,6 +14,9 @@ if(isset($_GET['q'])){
 	}else{
 		$state = ' and state = "1" ';
 	}
+	if(isset($_GET['oncall']) && $_GET['oncall'] == "1"){
+		$type = " and type = 'On Call' ";
+	}
 	$sql = "SELECT * FROM project where loc = '$q' $state $type order by CHAR_LENGTH(name)";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){

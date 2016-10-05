@@ -1064,7 +1064,7 @@ $(document).ready(function(){
   		}
   		$stmt = $conn->prepare("INSERT INTO holidayre (account_id, datefile, holiday, type, reason) VALUES (?, now(), ?, ?, ?)");
   		$stmt->bind_param("isss", $_SESSION['acc_id'], $_POST['holiday'], $_POST['type'], $_POST['reason']);
-	  	if($restrict == 0){
+	  	if($restrict == 0 && isset($_SESSION['acc_id'])){
 	  		if($stmt->execute()){
 	  			if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">window.location.replace("employee.php?ac=penhol"); </script>';

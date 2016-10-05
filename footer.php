@@ -54,7 +54,20 @@ $(document).ready(function(){
 		        	?>	  
 		        }
 		    };
-		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+param+"&support="+param1,true);
+		    <?php 
+		    	if(isset($_GET['expn'])){	
+		    ?>
+		        	if($('select[name = "loc"]').val() == 'On Call'){
+		        		oncall = "1";
+		        	}else{
+		        		oncall = "";
+		        	}
+	        <?php
+	        	}else{
+	        		echo "oncall = '';";
+	        	}
+        	?>
+		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+param+"&support="+param1+"&oncall="+oncall,true);
 		    xmlhttp.send();
 		}
 	}
@@ -81,7 +94,7 @@ $(document).ready(function(){
 		        }
 		    };
 		    <?php
-		    	if(isset($_GET['expenses']) || isset($_GET['expn'])){
+		    	if(isset($_GET['expenses'])){
 		    		$x = "x=1";
 		    	}else{
 		    		$x = "b";

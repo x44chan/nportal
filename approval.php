@@ -274,7 +274,7 @@
 			$date = date('Y-m-d h:i A');
 			$sql = "UPDATE undertime set state = '$state',datehr = '$date',dareason = '$dareason'  where undertime_id = $id and state = 'UA'";			
 			if($conn->query($sql) == TRUE){
-				savelogs("Disapprove Official Business", $xxxsss['name'] . " Reason: " . $dareason);
+				savelogs("Approve Undertime", $xxxsss['name'] . " ID: " . $id);
 				echo '<script type="text/javascript">window.location.replace("hr.php?ac='.$_GET['ac'].'"); </script>';	
 			}else{
 				die("Connection error:". $conn->connect_error);
