@@ -59,8 +59,8 @@
 			if(isset($_SESSION['loc'])){
 				unset($_SESSION['loc']);
 			}
-		}elseif($_SESSION['type'] == 'Oncall'){
-			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['oncall']);
+		}elseif($_SESSION['type'] == 'On Call'){
+			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['xoncall']);
 			if(isset($_SESSION['loc'])){
 				unset($_SESSION['loc']);
 			}
@@ -118,7 +118,7 @@
 		      			<option value="all"> All </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'P.M.'){ echo ' selected '; } ?> value="P.M."> P.M. </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
-		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Oncall'){ echo ' selected '; } ?> value="Oncall"> On Call </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'On Call'){ echo ' selected '; } ?> value="On Call"> On Call </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Combined'){ echo ' selected '; }  ?> value="Combined"> Combined </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Corporate'){ echo ' selected '; }  ?> value="Corporate"> Corporate </option>
@@ -167,7 +167,7 @@
 				</div>
 				<div class="col-xs-4" style="margin-top: -15px; <?php if(!isset($_SESSION['type']) || $_SESSION['type'] != 'On Call'){echo 'display: none;';}?>" id = "oncallxx">
 					<label>On Call</label>
-					<select class="form-control input-sm" name = "oncall">
+					<select class="form-control input-sm" name = "xoncall">
 						<option value = "all"> All </option>
 	            		<?php
 	            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1' order by name";

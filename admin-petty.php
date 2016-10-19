@@ -356,9 +356,9 @@ if(isset($_GET['login_log'])){
 				}
 				$date1 = date("Y-m-d");
 				if($data['liqdate'] != ""){
-					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($data['liqdate'])));
+					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($data['liqdate'])));
 				}else{
-					$date2 = date("Y-m-d", strtotime("+3 days", strtotime($row['date'])));
+					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
 				}
 				if($date1 >= $date2){
 					$red = '<tr style = "color: red;">';

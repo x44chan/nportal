@@ -1154,12 +1154,14 @@
 				if($row['project'] == ""){
 					$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
 				}
+				$approvedothrs = str_replace(":", ".", $row['approvedothrs']);
+				$approvedothrs2 = str_replace("30", "5", $approvedothrs);
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
 						<td width = 250 height = 70>'.$data1["reason"]. $project. '</td>
-						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td style = "text-align:left;"><b># of hrs: '. $approvedothrs2.'<br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';

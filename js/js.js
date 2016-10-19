@@ -156,7 +156,7 @@ $(document).ready(function(){
 			$('#combined').hide();
 			$('select[name="combined"]').attr('required',false);
 		}
-		if(selected2 == 'Oncall'){
+		if(selected2 == 'Oncall' || selected2 == 'On Call'){
 			$('#oncallxx').show();
 			$('select[name="xoncall"]').attr('required',true);
 		}else{

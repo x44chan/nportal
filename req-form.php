@@ -930,7 +930,7 @@ $(document).ready(function(){
 	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}else{
-			if($_POST['pettype'] == ""){
+			if($_POST['pettype'] == "" || ($_POST['pettype'] == 'Project' && empty($_POST['project']))){
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
 		    	}elseif ($_SESSION['level'] == 'ACC') {
