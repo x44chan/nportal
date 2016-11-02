@@ -179,7 +179,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
         </tr>
         <?php
             include 'conf.php';
-            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR' or state = 'CLea' or state = 'ReqCLea' or state = 'ReqCLeaHR') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') and leapay = 'wthpay' ORDER BY datefile ASC";
+            $sql1 = "SELECT * FROM nleave,login where nleave.account_id = login.account_id and (state = 'AAdmin') and (dateofleavfr BETWEEN '$date1' and '$date2' or dateofleavto BETWEEN '$date1' and '$date2') and leapay = 'wthpay' ORDER BY datefile ASC";
             $sql2 = "SELECT * FROM overtime,login where overtime.account_id = login.account_id and (state = 'AAdmin' or state = 'CheckedHR') and dateofot BETWEEN '$date1' and '$date2' ORDER BY datefile ASC";
             $result1 = $conn->query($sql1);
             $result2 = $conn->query($sql2);
@@ -195,6 +195,8 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                     	$type = '16';
                     }elseif(stristr($row1['officialworksched'], 'Legal Holliday') == true){
                     	$type = '15';
+                    }elseif(stristr($row1['officialworksched'], 'Oncall') == true){
+                        $type = '4';
                     }else{
                     	$type = '1';
                     }
@@ -233,7 +235,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         }elseif($row1['typeoflea'] == 'Vacation Leave'){
                             echo '<td>21</td>';  
                         }elseif($row1['typeoflea'] == 'Others'){
-                            echo '<td>24</td>';
+                            echo '<td>21</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
                         }
@@ -257,7 +259,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         }elseif($row1['typeoflea'] == 'Vacation Leave'){
                             echo '<td>21</td>';  
                         }elseif($row1['typeoflea'] == 'Others'){
-                            echo '<td>24</td>';
+                            echo '<td>21</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
                         }

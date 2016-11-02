@@ -63,17 +63,17 @@
 	  		font-weight: bold;
 	    }
 	 	#report h4{
-			font-size: 13px;
+			font-size: 14px;
 		}
 		#report h3{
 	  		margin-bottom: 10px;
 		}
 		#report th{
-	  		font-size: 10px;
+	  		font-size: 12px;
 	  		width: 0;
 		} 
 		#report td{
-	  		font-size: 9px;
+	  		font-size: 12px;
 	  		bottom: 0px;
 	  		padding: 3px;
 	  		max-width: 210px;
@@ -358,7 +358,7 @@
 			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
-			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0;
+			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0; $inter = 0; $maintelabor = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -454,6 +454,10 @@
 					$utidevit += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Payroll'){
 					$payroll += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Inter'){
+					$inter += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Repairs and Maintenance (Labor)'){
+					$maintelabor += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -469,6 +473,12 @@
 			
 				if($meal > 0){
 					echo '<label> Meal: <i>₱ ' . number_format($meal,2) . '</label>';
+				}
+				if($maintelabor > 0){
+					echo '<label> Repairs and Maintenance (Labor): <i>₱ ' . number_format($maintelabor,2) . '</label>';
+				}
+				if($inter > 0){
+					echo '<label> Internet: <i>₱ ' . number_format($inter,2) . '</label>';
 				}
 				if($gasoline > 0){
 					echo '<br><label> Gasoline: <i>₱ ' . number_format($gasoline,2) . '</i></label>';

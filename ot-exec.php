@@ -106,7 +106,7 @@
 				$_POST['project'] = null;
 			}
 		}
-		if($_POST['ottype'] == ""){
+		if($_POST['ottype'] == "" || ($_POST['ottype'] == 'Project' && empty($_POST['project']))){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {

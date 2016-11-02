@@ -21,68 +21,7 @@
 			echo '<script type = "text/javascript">window.location.replace("accounting-petty.php?replenish");</script>';
 		}
 ?>
-<style type="text/css">
-	#bords tr, #bords td{border-top: 1px black solid !important; border-width: 1px;}
 
-	@media print {		
-		
-
-	  	@page{
-	  		margin-left: 4mm;
-	  		margin-right: 4mm;
-	  	}
-	  	#datepr{
-	  		margin-top: 25px;
-	  	}
-	  	#report, #report * {
-	    	visibility: visible;
-	 	}
-	 	#report h2{
-	  		margin-bottom: 10px;
-	  		margin-top: 10px;
-	  		font-size: 12pt;
-	  		font-weight: bold;
-	    }
-	    #report h3{
-	    	font-size: 12pt;
-	    }
-	 	#report h4{
-			font-size: 10pt;
-		}
-		#report h3{
-	  		margin-bottom: 10px;
-		}
-		#report th{
-	  		font-size: 7pt;
-	  		width: 0;
-		} 
-		#report td{
-	  		font-size: 6pt;
-	  		bottom: 0px;
-	  		padding: 3px;
-	  		max-width: 210px;
-		}
-		#totss{
-			font-size: 8pt;
-		}
-		#report {
-	   		position: absolute;
-	    	left: 0;
-	    	top: 0;
-	    	right: 0;
-	  	}
-	  	#backs{
-	  		display: none;
-	  	}
-	  	#show{
-	  		display: table-cell !important;
-	  	}
-	  		.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate  {
-		display: none; 
-		}
-	}
-
-</style>
 <form action = "" method="post">
 	<div class="container" id = "reports" style="margin-top: -20px;">
 		<div class="row">
@@ -136,16 +75,16 @@
 ?>
 <div id = "report">
 	<div class="row" >
-		<div class="col-xs-12" align="center" style = "<?php if(!isset($_GET['print'])){ echo ' margin-top: -40px;'; }else{echo 'font-size: 8pt;'; } ?>">
+		<div class="col-xs-12" align="center" style = "<?php if(!isset($_GET['print'])){ echo ' margin-top: -40px;'; }else{echo 'font-size: 12px;'; } ?>">
 			<i>
 				<h3>Petty Replenish Report <?php if(isset($_GET['bdochck'])){ echo "<br>(BDO Cheque)"; }elseif(isset($_GET['planterschck'])){ echo "<br>(Planters Cheque)"; }?></h3>
 			</i>
 			
-			<b><i>
+			<b style = "font-size: 12px;"><i>
 				<?php echo date("M j, Y", strtotime($date1)) . ' - ' . date("M j, Y", strtotime($date2)); ?>
 			</i></b>
 		</div>
-		<div class="col-xs-12" align="right" style="<?php if(isset($_GET['bdochck']) || isset($_GET['planterschck'])){ echo ' display: none; '; } echo ' font-size: 9pt; ';?>">
+		<div class="col-xs-12" align="right" style="<?php if(isset($_GET['bdochck']) || isset($_GET['planterschck'])){ echo ' display: none; '; } echo ' font-size: 12px; ';?>">
 			<i><b>
 				<?php if(!isset($_SESSION['repleamount']) || $_SESSION['repleamount'] == ""){ $_SESSION['repleamount'] = 0; } echo 'Total Fund: <span class = "badge">₱ ' . number_format($_SESSION['repleamount'],2) . '</span><br>';?>
 			</b></i>

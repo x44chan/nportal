@@ -864,7 +864,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-					<td><?php echo date("M j, Y h:s A", strtotime($row['datefile']));?></td>			
+					<td><?php echo date("M j, Y h:i A", strtotime($row['datefile']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b>Leave Balance<br>Vacation Leave: <font color = "green"> <?php echo $row['vleave'];?></font><br>Sick Leave: <font color = "green"> <?php echo $row['sleave'];?><br></font><b>For: <font color = "green"><?php echo date("M", strtotime($row['startdate']));?> - <?php echo date("M Y", strtotime($row['enddate']));?></font></td>
 					<td> - </td>
@@ -997,7 +997,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo '<tr>';
-			echo '<td>' . date("M j, Y h:s A", strtotime($row['datefile'])) . '</td>';
+			echo '<td>' . date("M j, Y h:i A", strtotime($row['datefile'])) . '</td>';
 			echo '<td>'.$row['fname']. ' '.$row['lname'].'</td>';
 			echo '<td><i><b>'.$row['type'].'<br> Date: <font color = "green">'.date("M j, Y",strtotime($row['holiday'])).'</font></b></td>';
 			echo '<td>'.$row['reason'].'</td>';
@@ -1042,7 +1042,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 					}
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:s A", strtotime($originalDate));					
+					$newDate = date("M j, Y h:i A", strtotime($originalDate));					
 					$explo = (explode(":",$row['approvedothrs']));
 					if($explo[1] > 0){
 						$explo[1] = '.5';
@@ -1147,7 +1147,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:s A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -1202,7 +1202,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['obdate']);
-					$newDate = date("M j, Y h:s A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -1275,7 +1275,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:s A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
 					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));

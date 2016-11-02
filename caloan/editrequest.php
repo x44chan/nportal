@@ -363,7 +363,7 @@
 		$id = mysqli_real_escape_string($conn,$_GET['o']);
 		$select = "SELECT * FROM holidayre where holidayre_id = '$id'";
 		$data = $conn->query($select)->fetch_assoc();
-		if($data['datefile'] == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || $data['datefile'] == $_POST['holiday'] || $data['datefile'] == date("Y-m-d",strtotime("+1 day",strtotime($_POST['holiday'])))){
+		if(date('Y-m-d',strtotime($data['datefile'])) == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date('Y-m-d',strtotime($data['datefile'])) == $_POST['holiday'] || date('Y-m-d',strtotime($data['datefile'])) == date("Y-m-d",strtotime("+1 day",strtotime($_POST['holiday'])))){
   			$restrict = 0;
   		}else{
   			$restrict = 1;
