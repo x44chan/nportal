@@ -50,7 +50,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td>Date File: </td>
-					<td><input type = "text"  class = "form-control" readonly name = "obdate" value = "<?php echo date('F j, Y');?>"/></td>
+					<td><input type = "text"  class = "form-control" readonly name = "obdate" value = "<?php echo date('F j, Y h:i A');?>"/></td>
 				</tr>
 				<tr>
 					<td>Name of Employee: </td>
@@ -160,7 +160,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td>Date File: </td>
-					<td><input type = "text" class = "form-control" readonly name = "datefile" value = "<?php echo date('F j, Y');?>"/></td>
+					<td><input type = "text" class = "form-control" readonly name = "datefile" value = "<?php echo date('F j, Y h:i A');?>"/></td>
 				</tr>
 				<tr>
 					<td>Name of Employee: </td>
@@ -414,7 +414,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td>Date File: </td>
-					<td><input type = "text" class = "form-control" readonly name = "datefile" required value = "<?php echo date('F j, Y');?>"/></td>
+					<td><input type = "text" class = "form-control" readonly name = "datefile" required value = "<?php echo date('F j, Y h:i A');?>"/></td>
 				</tr>				
 				<tr>
 					<td>Date Hired: </td>
