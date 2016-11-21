@@ -207,6 +207,28 @@
             	</select>
             </div>
 		</div>
+		<div <?php if($row['projtype'] != 'Supplier'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "supp">
+			<div class="form-group">
+            	<label>Supplier <font color = "red">*</font></label>
+            	<select class="form-control" name = "supp">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Supplier' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($row['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
 		<div <?php if($row['projtype'] != 'Oncall'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
 			<div class="form-group">
             	<label>On Call <font color = "red">*</font></label>
@@ -340,6 +362,13 @@ echo '</div>';
 				}
 			}elseif($_POST['pettype'] == 'Corporate'){
 				$project = $_POST['corpo'];
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+			}elseif($_POST['pettype'] == 'Supplier'){
+				$project = $_POST['supp'];
 				if($projectcount > 0){
 					$count = 1;
 				}else{

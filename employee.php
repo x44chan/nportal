@@ -477,6 +477,11 @@
 				}else{
 					$late = "";
 				}
+				if($row['nxtday'] == 1){
+					$nxtday = "<br>(next day out)";
+				}else{
+					$nxtday = "";
+				}
 				echo 
 					'	<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
@@ -484,7 +489,7 @@
 						<td >'.$row["obdept"].'</td>
 						<td>'.date("M j, Y", strtotime($row['obdatereq'])).'</td>					
 						<td>'.$sched.'</td>
-						<td>'.$row["officialworksched"].'</td>				
+						<td>'.$row["officialworksched"] . $nxtday .'</td>				
 						<td >'.$row["obreason"].'</td>	
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){

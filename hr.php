@@ -260,7 +260,12 @@
 					<td>Time Out: </td>
 					<td><input class = "form-control" value = "<?php echo $row['obtimeout'];?>" name = "obtimeout" id = "obtimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
 				</tr>				
-				
+				<tr>
+					<td colspan="2"><label><input name = "nxtday" value = "nxtday" type = "checkbox" <?php if($row['nxtday'] == 1){ echo ' checked '; } ?>/> For next day out (ex. - 12am * and beyond) </td>
+				</tr>				
+				<tr>
+					<td align = "left" colspan = "2"> <label> Employee Error <input type = "checkbox" name = "correction"/> </td>
+				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>
 					<td>
@@ -1677,6 +1682,11 @@ echo '</tbody></table></form>';
 			}else{
 				echo '<tr>';
 			}		
+			if($row['nxtday'] == 1){
+				$nxtday = "<br>(next day out)";
+			}else{
+				$nxtday = "";
+			}
 			echo 
 					'<td>'.$newDate.'</td>
 					<td>'.$row["obename"].'</td>
@@ -1684,7 +1694,7 @@ echo '</tbody></table></form>';
 					<td >'.$row["obdept"].'</td>
 					<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
 					<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
-					<td>'.$row["officialworksched"].'</td>				
+					<td>'.$row["officialworksched"] . $nxtday .'</td>				
 					<td >'.$row["obreason"].'</td>	';
 					if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
@@ -1719,7 +1729,12 @@ echo '</tbody></table></form>';
 					echo '<tr style = "color: red">';
 				}else{
 					echo '<tr>';
-				}		
+				}	
+				if($row['nxtday'] == 1){
+					$nxtday = "<br>(next day out)";
+				}else{
+					$nxtday = "";
+				}	
 				echo 
 						'<td>'.$newDate.'</td>
 						<td>'.$row["obename"].'</td>
@@ -1727,7 +1742,7 @@ echo '</tbody></table></form>';
 						<td >'.$row["obdept"].'</td>
 						<td>'.date("M d, Y", strtotime($row['obdatereq'])).'</td>					
 						<td>'.$row["obtimein"] . ' - ' . $row['obtimeout'].'</td>
-						<td>'.$row["officialworksched"].'</td>				
+						<td>'.$row["officialworksched"].$nxtday.'</td>				
 						<td >'.$row["obreason"].'</td>	';
 						if($row['state'] == 'UAACCAdmin'){
 							echo '<td><strong>Pending to Admin<strong></td>';
@@ -2010,7 +2025,7 @@ echo '</tbody></table></form>';
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
-		            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
+		            					$xsql2 = "SELECT loc FROM `project` where type = 'Support' and name = '$row[project]'";
 		            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
 		            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
 		            						$selecteds = ' selected ';		            						
@@ -2055,15 +2070,15 @@ echo '</tbody></table></form>';
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
-		            			$xresult = $conn->query($xsql);
-		            			$loc = "";
+		            			$xresult = $conn->query($xsql);		            			
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
 		            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
 		            					$xresult2 = $conn->query($xsql2)->fetch_assoc();
 		            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
 		            						$selecteds = ' selected ';		            						
-		            						$loc = $xresult2['loc'];
+		            						$locx = $xresult2['loc'];
+		            						$loc = "";
 		            					}else{
 		            						$selecteds = "";
 		            					}
@@ -2076,12 +2091,12 @@ echo '</tbody></table></form>';
 		            </td>
 		        </tr>		        
 		        <tr id = "loc" >
-		        	<?php if($row['projtype'] == 'Project'){ ?>
+		        	<?php if($row['projtype'] == 'Project' || $row['projtype'] == 'Support'){ ?>
 		        	<td><b>PO </td>
 		        	<td>
 		        		<select name = "otproject" class = "form-control">
 		        			<?php
-		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' and loc = '$loc' order by CHAR_LENGTH(name)";
+		            			$xsql = "SELECT * FROM `project` where type = '$row[projtype]' and state = '1' and (loc = '$loc' or loc = '$locx') order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -2183,11 +2198,16 @@ echo '</tbody></table></form>';
 						$explode = explode(" - ", $row['officialworksched']);
 						$ex1 = $explode[0];
 						$ex2 = $explode[1];
-					}
-					if(isset($explode1[0])){
-						echo '<input type = "hidden" value = "' . $explode1[0] . '" name = "onrestday"/>';
-					}				
-				?>	
+					}					
+				?>
+				<tr>					
+					<td colspan="2">
+						<label for="restday" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Restday'){ echo ' checked '; } ?> value = "restday" name="uprestday" id="restday"/> Rest Day </label>
+						<label for="oncall" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Oncall'){ echo ' checked '; } ?> value = "oncall" name="uponcall" id = "oncall"/> Oncall </label>
+						<label for="sw" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Special N-W Holliday'){ echo ' checked '; } ?> value = "sw" name="sw" id = "sw"/> Special N-W Holliday </label>
+						<label for="lg" style="font-size: 15px;"><input type="checkbox" <?php if(isset($explode1[0]) && $explode1[0] == 'Legal Holliday'){ echo ' checked '; } ?> value = "sw" name="lg" id = "lg"/> Legal Holliday </label>
+					</td>
+				</tr>	
 				<tr>
 					<td><b>OT Break ( if applicable ):  </td>
 					<td>

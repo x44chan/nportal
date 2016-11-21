@@ -101,6 +101,13 @@ $(document).ready(function(){
 			$('#corpo').hide();
 			$('select[name="corpo"]').attr('required',false);
 		}
+		if(selected2 == 'Supplier'){
+			$('#supp').show();
+			$('select[name="supp"]').attr('required',true);
+		}else{
+			$('#supp').hide();
+			$('select[name="supp"]').attr('required',false);
+		}
 		if(selected2 == 'Project'){
 			$('#project').show();
 			$('select[name="loc"]').val("");

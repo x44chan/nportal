@@ -124,9 +124,9 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
-		if(empty($project) || empty($projtype)){
-			$restric = 3;
-		}
+		//if(empty($project) || empty($projtype)){
+		//	$restric = 3;
+		//}
 		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("ssissssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		if($restric == 0){

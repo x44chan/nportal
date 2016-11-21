@@ -53,7 +53,7 @@
 		}
 		if($_SESSION['level'] == 'Admin'){
 			$source = $_POST['source'];
-			if($source == 'Eliseo' || $source=='Sharon'){
+			if($source == 'Eliseo' || $source == 'Sharon'){
 				$state = 'AAAPettyReceive';
 			}else{
 				$state = 'AAPetty';

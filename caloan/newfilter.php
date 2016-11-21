@@ -393,14 +393,18 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ob'){
 			$datey = date("Y");	
 			$originalDate = date($row['obdate']);
 			$newDate = date("M j, Y", strtotime($originalDate));
-
-			$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];			
+			$hr = $row['obtimein'] . ' - ' . $row['obtimeout'];
+			if($row['nxtday'] == 1){
+				$nxtday = "<br>(next day out)";
+			} else {
+				$nxtday = "";
+			}
 			echo
 				'<tr>
 					<td width = 100>'.$adjust .$newDate.'</td>
 					<td>'.date("M j, Y",strtotime($row['obdatereq'])).'</td>	
 					<td><i><b>'.$hr.'</b></td>
-					<td>'.$row["officialworksched"].'</td>				
+					<td>'.$row["officialworksched"]. $nxtday.'</td>				
 					<td >'.$row["obreason"].'</td>';
 					echo '</tr>';
 		}

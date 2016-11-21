@@ -95,11 +95,14 @@ $(document).ready(function(){
 					</td>
 				</tr>	
 				<tr class = "form-inline" >
-					<td>Official Work Sched: <font color = "red">*</font></td>
+					<td>Work Sched: <font color = "red">*</font></td>
 					<td style="float:left;">
 						<label for = "fr">From:</label><input placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "reqto"class = "form-control"  name = "obofficialworkschedfr"/>
 						<label for = "to">To:</label><input placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "reqfr"  name = "obofficialworkschedto"/>
 					</td>					
+				</tr>
+				<tr>
+					<td colspan="2"><label><input name = "nxtday" value = "nxtday" type = "checkbox"/> For next day out <br>( ex. Date of OB Nov 11, 16 (2pm- 12am) , 12am out is good as Nov 12, 16 (- 12 am) ) </td>
 				</tr>	
 				<tr id = "warning" style="display: none;">
 					<td></td>
@@ -726,6 +729,21 @@ $(document).ready(function(){
             		?>
             	</select>
             </div>
+            <div style = "display: none;" class="form-group" id = "supp">
+            	<label>Supplier <font color = "red">*</font></label>
+            	<select class="form-control" name = "supp">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Supplier' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
             <div style = "display: none;" class="form-group" id = "internet">
             	<label>Internet <font color = "red">*</font></label>
             	<select class="form-control" name = "internet">
@@ -870,6 +888,13 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['corpo'];
+			}elseif($_POST['pettype'] == 'Supplier'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['supp'];
 			}elseif($_POST['pettype'] == 'P.M.'){
 				if($day5 > 0){
 					$count = 1;
@@ -915,6 +940,9 @@ $(document).ready(function(){
 					$count = 0;
 				}
 			}	
+		}
+		if($_SESSION['level'] == 'ACC' && $particularpet == 'Auto Debit'){
+			$count = 0;
 		}
 		if($acc_id == '23'){
 			$count = 0;

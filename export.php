@@ -2,9 +2,9 @@
 $date1 = mysql_escape_string($_GET['date1']);
 $date2 = mysql_escape_string($_GET['date2']);
 $DB_Server = "127.0.0.1"; //MySQL Server    
-$DB_Username = "intersta_emp"; //MySQL Username     
-$DB_Password = "MaxcaspeR2015#";             //MySQL Password     
-$DB_DBName = "intersta_emp";         //MySQL Database Name  
+$DB_Username = "root"; //MySQL Username     
+$DB_Password = "";             //MySQL Password     
+$DB_DBName = "testnew";         //MySQL Database Name  
 
 include('savelogs.php');
 /*******EDIT LINES 3-8*******/
@@ -81,7 +81,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
     /*******YOU DO NOT NEED TO EDIT ANYTHING BELOW THIS LINE*******/    
     //create MySQL connection   
     $sql = "Select phoenix_chrono,DATE_FORMAT(obdatereq, '%m-%d-%Y'),obtimein,IF(obtimein is not null, 1, 0) as ot from officialbusiness,login where officialbusiness.account_id = login.account_id and obdatereq BETWEEN '$date1' and '$date2' and (state = 'CheckedHR' or state = 'AAdmin') and obtimein is not null and obtimein != '' ORDER BY obdatereq asc";
-    $sql2 = "Select phoenix_chrono,DATE_FORMAT(obdatereq, '%m-%d-%Y'),obtimeout,IF(obtimeout is not null, 2, 0) as ot from officialbusiness,login where officialbusiness.account_id = login.account_id and obdatereq BETWEEN '$date1' and '$date2' and (state = 'CheckedHR' or state = 'AAdmin') and obtimeout is not null and obtimeout != '' ORDER BY obdatereq asc";
+    $sql2 = "Select phoenix_chrono,obdatereq,obtimeout,IF(obtimeout is not null, 2, 0) as ot,nxtday from officialbusiness,login where officialbusiness.account_id = login.account_id and obdatereq BETWEEN '$date1' and '$date2' and (state = 'CheckedHR' or state = 'AAdmin') and obtimeout is not null and obtimeout != '' ORDER BY obdatereq asc";
     $Connect = @mysql_connect($DB_Server, $DB_Username, $DB_Password) or die("Couldn't connect to MySQL:<br>" . mysql_error() . "<br>" . mysql_errno());
     //select database   
     $Db = @mysql_select_db($DB_DBName, $Connect) or die("Couldn't select database:<br>" . mysql_error(). "<br>" . mysql_errno());   
@@ -116,6 +116,7 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                     if(stristr($row[$j], ':') == true){
                         $row[$j] = date("H:i:s",strtotime($row[$j]));
                     }
+                    
                     $schema_insert .= "$row[$j]".$sep;
                 }
                 else{
@@ -136,14 +137,24 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                 if($row[3] == ""){
                     continue;
                 }
+                if($j == 4){
+                    continue;
+                }
                 if(!isset($row[$j])){
                     $schema_insert .= "NULL".$sep;
                 }
                 elseif ($row[$j] != ""){
+                    if($j == 1){
+                        if($row[4] == 1){
+                            $row[$j] = date("m-d-Y",strtotime("+1 day", strtotime($row[$j])));
+                        }else{
+                            $row[$j] = date("m-d-Y",strtotime($row[$j]));
+                        }
+                    }
                     if(stristr($row[$j], ':') == true){
                         $row[$j] = date("H:i:s",strtotime($row[$j]));
                     }
-                    $schema_insert .= "$row[$j]".$sep;
+                    $schema_insert .= "$row[$j]" . $sep;
                 }
                 else{
                     $schema_insert .= "".$sep;

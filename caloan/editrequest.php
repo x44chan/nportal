@@ -85,7 +85,6 @@
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Project' and state = '1' group by loc order by CHAR_LENGTH(loc)";
 		            			$xresult = $conn->query($xsql);
-		            			$loc = "";
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
 		            					$xsql2 = "SELECT loc FROM `project` where type = 'Project' and name = '$row[project]'";
@@ -112,7 +111,6 @@
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";
 		            			$xresult = $conn->query($xsql);
-		            			$loc = "";
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
 		            					$xsql2 = "SELECT loc FROM `project` where type = 'Support' and name = '$row[project]'";
@@ -120,6 +118,7 @@
 		            					if($xrow['name'] == $row['project'] || $xresult2['loc'] == $xrow['loc']){
 		            						$selecteds = ' selected ';		            						
 		            						$locx = $xresult2['loc'];
+		            						$loc = "";
 		            					}else{
 		            						$selecteds = "";
 		            					}
@@ -661,11 +660,14 @@
 					</td>
 				</tr>	
 				<tr class = "form-inline">
-					<td>Official Work Sched: </td>
+					<td>Work Sched: </td>
 					<td>
 						<label for = "fr">From:</label><input name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" id = "toasd"class = "form-control"  />
 						<label for = "to">To:</label><input name = "upoffto"value = "<?php echo $ex2;?>" placeholder = "Click to Set time"  style = "width: 130px;" autocomplete ="off" class = "form-control" id = "frasd"  />
 					</td>					
+				</tr>
+				<tr>
+					<td colspan="2"><label><input name = "nxtday" value = "nxtday" type = "checkbox" <?php if($row['nxtday'] == 1){ echo ' checked '; } ?>/> For next day out (ex. - 12am * and beyond) </td>
 				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>

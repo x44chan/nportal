@@ -184,6 +184,10 @@
 		}else{
 			$officialworksched = mysql_escape_string($_POST['upoffr']). ' - ' . mysql_escape_string($_POST['upoffto']);
 		}
+		$nxtday = 0;
+		if(isset($_POST['nxtday']) && $_POST['nxtday'] == 'nxtday'){
+			$nxtday = 1;
+		}
 		if($_POST['upoffr'] == "" && $_POST['upoffto'] == ""){
 			$restric = 1;
 		}
@@ -216,7 +220,7 @@
 			$restric = 2;
 		}
 		$stmt = "UPDATE `officialbusiness` set 
-			obreason = '$obreason', officialworksched = '$officialworksched', obdatereq = '$date' $uplate
+			obreason = '$obreason', officialworksched = '$officialworksched', obdatereq = '$date' $uplate, nxtday = '$nxtday'
 			where account_id = '$accid' and (state = 'UALate' or state = 'UAAdmin' or state = 'UA') and officialbusiness_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
@@ -618,7 +622,7 @@
 			}else{
 				$otbreak = null;
 			}
-			if(isset($_POST['onrestday'])){
+			/*if(isset($_POST['onrestday'])){
 				if($_POST['onrestday'] == 'Oncall'){
 					$ex = explode(":", $newappot);
 					if($ex[1] > 0){
@@ -633,8 +637,32 @@
 						$newappot = '8:0';
 					}
 				}
+			}*/
+		if(isset($_POST['uprestday']) || isset($_POST['uponcall']) || isset($_POST['sw']) || isset($_POST['lg'])){
+			if(isset($_POST['uprestday'])){
+				$officialworksched = 'Restday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['uponcall'])){
+				$ex = explode(":", $approvedothrs);
+				if($ex[1] > 0){
+					$ex[0] .= '.5';
+				}else{
+					$ex[0] .= '.0';
+				}
+				if($ex[0] <= 4){
+					$approvedothrs = '4:0';
+				}elseif($ex[0] > 4){
+					$approvedothrs = '8:0';
+				}
+				$officialworksched = 'Oncall<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['sw'])){
+				$officialworksched = 'Special N-W Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
+			}elseif(isset($_POST['lg'])){
+				$officialworksched = 'Legal Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}
-			$datex = date('Y-m-d h:i A');
+		}else{
+			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+		}
+		$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){
 			$upstate = 'AHR';
 			$state = 'UA';
@@ -679,7 +707,7 @@
 		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
-			project = '$project', projtype = '$projtype', startofot = '$hruptimein', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
+			project = '$project', projtype = '$projtype', startofot = '$hruptimein', officialworksched = '$officialworksched', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();	
@@ -710,11 +738,20 @@
 		}else{
 			$acc = "";
 		}
+		$nxtday = 0;
+		if(isset($_POST['nxtday']) && $_POST['nxtday'] == 'nxtday'){
+			$nxtday = 1;
+		}
+		if(isset($_POST['correction'])){
+			$correcxq = " , correction = '1' ";
+		}else{
+			$correcxq = "";
+		}
 		$edithr = mysql_escape_string($_POST['oldobtimein']) . ' - ' . mysql_escape_string($_POST['oldobtimeout']);
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();
 		$stmt = "UPDATE `officialbusiness` set 
-				obtimein = '$obtimein', obtimeout = '$obtimeout', state = 'CheckedHR', edithr = '$edithr', datehr = '$date' $acc
+				obtimein = '$obtimein', obtimeout = '$obtimeout', state = 'CheckedHR', edithr = '$edithr', datehr = '$date' $acc, nxtday = '$nxtday' $correcxq
 			where account_id = '$accid' and state = 'UA' and officialbusiness_id = '$obid'";
 		if ($conn->query($stmt) === TRUE) {
 			savelogs("Update Official Business", $xxxsss['fname'] . ' ' . $xxxsss['lname'] . " In: " . $obtimein . " Out: " . $obtimeout);

@@ -21,6 +21,10 @@
 		}else{
 			$officialworksched = $_POST['obofficialworkschedfr']. ' - ' . $_POST['obofficialworkschedto'];
 		}
+		$nxtday = 0;
+		if(isset($_POST['nxtday']) && $_POST['nxtday'] == 'nxtday'){
+			$nxtday = 1;
+		}
 		if($_POST['obofficialworkschedfr'] == "" && $_POST['obofficialworkschedto'] == ""){
 			$restric = 1;
 		}
@@ -45,8 +49,8 @@
 		if($xx->num_rows > 0){
 			$restric = 2;
 		}
-		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state, oblate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("issssssssss",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $officialworksched, $state, $oblate);
+		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state, oblate, nxtday) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("issssssssssi",$accid, $twodaysred, $obdate, $obename, $obpost, $obdept, $obdatereq, $obreason, $officialworksched, $state, $oblate, $nxtday);
 		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){
