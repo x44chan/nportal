@@ -46,7 +46,7 @@
 		}
 		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$obdatereq' and account_id = '$accid'";
 		$xx = $conn->query($sql);
-		if($xx->num_rows > 0){
+		if($xx->num_rows >= 2){
 			$restric = 2;
 		}
 		$stmt = $conn->prepare("INSERT into `officialbusiness` (account_id, twodaysred, obdate, obename, obpost, obdept, obdatereq, obreason, officialworksched, state, oblate, nxtday) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -67,7 +67,7 @@
 			if($restric == 1){
 				$alert = "Wrong Date";
 			}else{
-				$alert = "You already filed " . date("M j, Y",strtotime($obdatereq)) .'.'; 
+				$alert = "You can only file twice (2) for date " . date("M j, Y",strtotime($obdatereq)) .'.'; 
 			}
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penob"); </script>';

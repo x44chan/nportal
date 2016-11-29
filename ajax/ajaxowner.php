@@ -2,10 +2,10 @@
 include('../conf.php');
 if(isset($_GET['q'])){
 	$q = mysqli_real_escape_string($conn, $_GET['q']);
-	if(isset($_GET['project']) && $_GET['project'] != ""){
-		$type = ' and type = "Project" ';
-	}elseif(isset($_GET['support']) && $_GET['support'] != ""){
+	if($_GET['project'] == "sup"){
 		$type = ' and type = "Support" ';
+	}elseif($_GET['project'] == "proj"){
+		$type = ' and type = "Project" ';
 	}else{
 		$type = "";
 	}

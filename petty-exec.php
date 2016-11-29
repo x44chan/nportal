@@ -37,6 +37,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}
+	  	$conn->close();
 	}
 	if(isset($_POST['submitpetty'])){		
 		$pettyamount = $_POST['pettyamount'];
@@ -78,7 +79,8 @@
 	    	}
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
-	  	}  
+	  	} 
+	  	$conn->close();
 	}
 	if(isset($_GET['pettyac']) && $_GET['pettyac'] == 'd'){	
 		$petty_id = $_GET['petty_id'];
@@ -95,6 +97,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}  
+	  	$conn->close();
 	}
 	
 ?>
@@ -112,6 +115,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	} 
+	  	$conn->close();
 	}
 	if(isset($_GET['cashadv'])){
 		$o = mysql_escape_string($_GET['cashadv']);
@@ -134,6 +138,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}
+	  	$conn->close();
 	}
 	if(isset($_POST['cashadvre'])){
 		$pet_id = $_POST['pet_id'];
@@ -162,6 +167,7 @@
 				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
+		$conn->close();
 	}
 ?>
 <?php
@@ -188,7 +194,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}  
-
+	  	$conn->close();
 	}
 
 ?>
@@ -211,7 +217,7 @@
 	  	}else {
 	    	echo "Error updating record: " . $conn->error;
 	  	}  
-
+	  	$conn->close();
 	}
 
 ?>
@@ -247,7 +253,7 @@
 				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
-
+		$conn->close();
 	}
 
 ?>
@@ -282,7 +288,7 @@
 				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
-
+		$conn->close();
 	}
 
 ?>
@@ -327,6 +333,7 @@
 				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?complete=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
+		$conn->close();
 	}
 ?>
 
@@ -379,7 +386,7 @@
 	    		echo '<script type="text/javascript">window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}
-
+		$conn->close();
 	}
 
 ?>
@@ -414,7 +421,7 @@
 				echo '<script type="text/javascript">window.location.replace("accounting-petty.php?validate=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
-
+		$conn->close();
 	}
 
 ?>
@@ -446,9 +453,10 @@
 			//	echo '<script type="text/javascript">window.location.replace("accounting-petty.php?release=1&petty_id='.$pet_id.'"); </script>';
 			}
 		}
+		$conn->close();
 	}else{
-		
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
+		$conn->close();
 	}
 
 

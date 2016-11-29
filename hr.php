@@ -2018,7 +2018,7 @@ echo '</tbody></table></form>';
 		        <tr <?php if($row['projtype'] != 'Support'){ echo ' style = "display: none;" '; } ?> id = "otsupport">
             		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','supp')">
+            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','sup')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT loc FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(name)";
@@ -2269,6 +2269,7 @@ echo '</tbody></table></form>';
 						<input value = "<?php echo $row['projtype'];?>" type = "hidden" name = "oldprojtype"/>
 						<input value = "<?php echo $row['project'];?>" type = "hidden" name = "oldproject"/>
 						<input value = "<?php echo $row['account_id'];?>" type = "hidden" name = "accid"/>
+						<input value = "<?php if(isset($explode1[0]) && $explode1[0] != ''){ echo $explode1[0]; } ?>" type = "hidden" name = "oldsched"/>
 					</td>
 				</tr>		
 				<script type="text/javascript">

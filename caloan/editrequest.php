@@ -106,7 +106,7 @@
 		        <tr <?php if($row['projtype'] != 'Support'){ echo ' style = "display: none;" '; } ?> id = "otsupport">
             		<td><label>Project Support<font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','supp')">
+            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','sup')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(loc)";

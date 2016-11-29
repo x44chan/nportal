@@ -67,7 +67,12 @@ $(document).ready(function(){
 	        		echo "oncall = '';";
 	        	}
         	?>
-		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+param+"&support="+param1+"&oncall="+oncall,true);
+        	if(param == ""){
+        		get = param1;
+        	}else if(param1 == ""){
+        		get = param;
+        	}
+		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+get+"&oncall="+oncall,true);
 		    xmlhttp.send();
 		}
 	}
@@ -76,6 +81,11 @@ $(document).ready(function(){
 		    document.getElementById("locx").innerHTML = "";
 		    return;
 		} else { 
+			if(param == ""){
+        		get = param1;
+        	}else if(param1 == ""){
+        		get = param;
+        	}
 		    if (window.XMLHttpRequest) {
 		        // code for IE7+, Firefox, Chrome, Opera, Safari
 		        xmlhttp = new XMLHttpRequest();
@@ -105,7 +115,7 @@ $(document).ready(function(){
 		    		$ac = ' ';
 		    	}
 		    ?>
-		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str+"&project="+param+"<?php echo $ac;?> &support="+param1,true);
+		    xmlhttp.open("GET","ajax/ajaxowner.php?<?php echo $x;?>&q="+str+"&project="+get+"<?php echo $ac;?>",true);
 		    xmlhttp.send();
 		}
 	}

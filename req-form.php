@@ -251,14 +251,14 @@ $(document).ready(function(){
 		        <tr style = "display: none;" id = "otsupport">
             		<td><label>Location <font color = "red">*</font></label></td>
             		<td>
-            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','supp')">
+            			<select class="form-control" name = "locx" onchange="showUser(this.value,'','sup')">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
-		            			$xsql = "SELECT loc FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(name)";
-		            			$xresult = $conn->query($xsql);
-		            			if($xresult->num_rows > 0){
-		            				while($xrow = $xresult->fetch_assoc()){
-		            					echo '<option value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+		            			$xsqlx = "SELECT loc FROM `project` where type = 'Support' and state = '1' group by loc order by CHAR_LENGTH(name)";
+		            			$xresultx = $conn->query($xsqlx);
+		            			if($xresultx->num_rows > 0){
+		            				while($xrowx = $xresultx->fetch_assoc()){
+		            					echo '<option value = "' . $xrowx['loc'] . '"> ' . $xrowx['loc'] . '</option>';
 		            				}
 		            			}
 		            		?>
@@ -958,7 +958,7 @@ $(document).ready(function(){
 	    		echo '<script type="text/javascript">alert("You still have pending liquidate");window.location.replace("hr.php?ac=penpty"); </script>';
 	    	}
 		}else{
-			if($_POST['pettype'] == "" || ($_POST['pettype'] == 'Project' && empty($_POST['project']))){
+			if($_POST['pettype'] == "" || ( ($_POST['pettype'] == 'Project' || $_POST['pettype'] == 'Support') && empty($_POST['project']))){
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
 		    	}elseif ($_SESSION['level'] == 'ACC') {
@@ -1270,16 +1270,16 @@ $(document).ready(function(){
 
 ?>
 	<?php
-		$xsql = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
-		$limita = $conn->query($xsql)->fetch_assoc();
-		if(date("Y-m-d") <= date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate'])))){
-			$limit = ($_SESSION['salary'] * .4);
-		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+1 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate'])))){
-			$limit = ($_SESSION['salary'] * .6);
-		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limita['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
-			$limit = ($_SESSION['salary'] * .7);
-		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+4 years', strtotime($limita['regdate'])))){
-			$limit = ($_SESSION['salary'] * .9);
+		$xsqlx = "SELECT * FROM login where account_id = '$_SESSION[acc_id]'";
+		$limitax = $conn->query($xsqlx)->fetch_assoc();
+		if(date("Y-m-d") <= date("Y-m-d",strtotime('+1 years', strtotime($limitax['regdate'])))){
+			$limitx = ($_SESSION['salary'] * .4);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+1 years', strtotime($limitax['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($limitax['regdate'])))){
+			$limitx = ($_SESSION['salary'] * .6);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($limitax['regdate']))) && date("Y-m-d") <= date("Y-m-d",strtotime('+4 years', strtotime($limitax['regdate'])))){
+			$limitx = ($_SESSION['salary'] * .7);
+		}elseif(date("Y-m-d") > date("Y-m-d",strtotime('+4 years', strtotime($limitax['regdate'])))){
+			$limitx = ($_SESSION['salary'] * .9);
 		}
 	?>
    <!-- loanModal -->
@@ -1298,7 +1298,7 @@ $(document).ready(function(){
               <input type = "text" readonly class = "form-control" value = "<?php echo $_SESSION['name'];?>"/>
             </div>
             <div class="form-group">
-            	 <label for="usrname"> Amount <font color = "red">*</font> (Max Allowed Loan: <?php echo number_format($limit);?>)</label>
+            	 <label for="usrname"> Amount <font color = "red">*</font> (Max Allowed Loan: <?php echo number_format($limitx);?>)</label>
             	<input type = "text" pattern = "[0-9]*" required name = "loanamount" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
           	</div>
           	<div class="form-group">
@@ -1383,8 +1383,8 @@ $(document).ready(function(){
 			}
 		});
 		$('#loanpet').click(function(){
-			if($("input[name='loanamount']").val() > <?php echo str_replace(",", "", number_format($limit)); ?> ){
-               alert("You can't request more than ₱ <?php echo number_format($limit);?>.");
+			if($("input[name='loanamount']").val() > <?php echo str_replace(",", "", number_format($limitx)); ?> ){
+               alert("You can't request more than ₱ <?php echo number_format($limitx);?>.");
                return false;
     		}
 		});

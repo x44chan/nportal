@@ -216,7 +216,7 @@
 		}
 		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$date' and account_id = '$accid' and officialbusiness_id != '$_SESSION[otid]'";
 		$xx = $conn->query($sql);
-		if($xx->num_rows > 0){
+		if($xx->num_rows >= 2){
 			$restric = 2;
 		}
 		$stmt = "UPDATE `officialbusiness` set 
@@ -241,7 +241,7 @@
 			if($restric == 1){
 				$alert = "Wrong Date";
 			}else{
-				$alert = "You already filed " . date("M j, Y",strtotime($date)) .'.'; 
+				$alert = "You can only file twice (2) for date " . date("M j, Y",strtotime($date)) .'.'; 
 			}
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("'.$alert.'"); window.location.replace("employee.php?ac=penob"); </script>';
@@ -702,9 +702,16 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
-		if(isset($_POST['oldprojtype']) && $_POST['oldprojtype'] != "" && isset($_POST['oldproject']) && $_POST['oldproject'] != ""){
-		//	$oldot = $_POST['oldprojtype'] . ': ' . $_POST['oldproject'] . ' <br> ' . $oldot;
+		if( (isset($_POST['oldprojtype']) && $_POST['oldprojtype'] != "" && isset($_POST['oldproject']) && $_POST['oldproject'] != "" ) || (isset($_POST['oldprojtype']) && ( $_POST['oldprojtype'] == 'Netlink' || $_POST['oldprojtype'] == 'Luwas') ) ){
+			$oldot = $oldot . ' <br> </i><font color = "#333"> Old Project: </font><i>' . $_POST['oldprojtype'] . ': ' . $_POST['oldproject'];
 		}
+		if(isset($_POST['oldsched'])){
+			if($_POST['oldsched'] == ""){
+				$_POST['oldsched'] = "Regular OT";
+			}
+			$oldot = $oldot . '<br> </i><font color = "#333">Old Schedule: </font><i>' . $_POST['oldsched'];
+		}
+		echo $oldot;
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
 			project = '$project', projtype = '$projtype', startofot = '$hruptimein', officialworksched = '$officialworksched', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
