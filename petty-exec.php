@@ -456,7 +456,6 @@
 		$conn->close();
 	}else{
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
-		$conn->close();
 	}
 
 

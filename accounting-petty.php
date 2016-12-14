@@ -555,16 +555,16 @@
 					echo '<br><label> Rental: <i>₱ ' . number_format($rental,2) . '</i></label>';
 				}
 				if($viola > 0){
-					echo '<br><label> Violation Fee: <i>₱ ' . number_format($repmaint,2) . '</i></label>';
+					echo '<br><label> Violation Fee: <i>₱ ' . number_format($viola,2) . '</i></label>';
 				}
 				if($cashadv > 0){
-					echo '<br><label> Cash Advance: <i>₱ ' . number_format($bankc,2) . '</i></label>';
+					echo '<br><label> Cash Advance: <i>₱ ' . number_format($cashadv,2) . '</i></label>';
 				}
 				if($bidoc > 0){
-					echo '<br><label> Bid Docs: <i>₱ ' . number_format($misc,2) . '</i></label>';
+					echo '<br><label> Bid Docs: <i>₱ ' . number_format($bidoc,2) . '</i></label>';
 				}
 				if($surety > 0){
-					echo '<br><label> Surety Bond: <i>₱ ' . number_format($rental,2) . '</i></label>';
+					echo '<br><label> Surety Bond: <i>₱ ' . number_format($surety,2) . '</i></label>';
 				}
 				if($parking > 0){
 					echo '<br><label> Parking Fee: <i>₱ ' . number_format($parking,2) . '</i></label>';

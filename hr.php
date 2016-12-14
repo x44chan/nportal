@@ -1161,12 +1161,14 @@
 				}
 				$approvedothrs = str_replace(":", ".", $row['approvedothrs']);
 				$approvedothrs2 = str_replace("30", "5", $approvedothrs);
+				//$approvedothrs2 = '<b># of hrs: '. $approvedothrs2.'<br>';
+				$approvedothrs2 = "";
 				echo 
 					'	<td width = 180>'.$newDate.'</td>
 						<td>'.date("M j, Y", strtotime($row["dateofot"])).'</td>
 						<td>'.$row["nameofemp"].'</td>
 						<td width = 250 height = 70>'.$data1["reason"]. $project. '</td>
-						<td style = "text-align:left;"><b># of hrs: '. $approvedothrs2.'<br>'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
+						<td style = "text-align:left;">'. $approvedothrs2.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
 						<td>'.$row["officialworksched"].'</td>';
 				if($row['state'] == 'UAACCAdmin'){
 						echo '<td><strong>Pending to Admin<strong></td>';
@@ -2222,8 +2224,8 @@ echo '</tbody></table></form>';
 					<td><b>Official Work Sched: </b></td>
 					<td>
 						<?php if(isset($explode1[0])){ echo '<b>'.$explode1[0].'</b><br>'; } ?>
-						<label for = "fr">From:</label><input onkeydown="return false;"name = "upoffr" value = "<?php echo $ex1;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
-						<label for = "to">To:</label><input onkeydown="return false;"name = "upoffto"value = "<?php echo $ex2;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
+						<label for = "fr">From:</label><input onkeydown="return false;" name = "oldofffr" value = "<?php echo $ex1;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;" name = "oldoffto"value = "<?php echo $ex2;?>"readonly placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
 					</td>			
 				</tr>
 				<tr>
@@ -2239,6 +2241,14 @@ echo '</tbody></table></form>';
 				<tr>
 					<td><b>New End of OT: </b></td>
 					<td><input  value = "<?php echo $row['endofot'];?>" required class = "form-control" name = "hruptimeout" placeholder = "Click to Set time" autocomplete ="off" /></td>
+				</tr>				
+				<tr class = "form-inline" >
+					<td><b>New Official Work Sched: </b></td>
+					<td>
+						<?php if(isset($explode1[0])){ echo '<b>'.$explode1[0].'</b><br>'; } ?>
+						<label for = "fr">From:</label><input onkeydown="return false;" name = "upoffr" value = "<?php echo $ex1;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" id = "to"class = "form-control"  />
+						<label for = "to">To:</label><input onkeydown="return false;" name = "upoffto" value = "<?php echo $ex2;?>" placeholder = "Click to Set time" required style = "width: 130px;" autocomplete ="off" class = "form-control" id = "fr"  />
+					</td>			
 				</tr>
 				<tr id = "warning" style="display: none;">
 					<td></td>
@@ -2291,7 +2301,8 @@ echo '</tbody></table></form>';
 					$(document).ready(function(){
 						$('input[name="hruptimein"]').ptTimeSelect();
 						$('input[name="hruptimeout"]').ptTimeSelect();
-						
+						$('input[name="upoffr"]').ptTimeSelect();
+						$('input[name="upoffto"]').ptTimeSelect();
 					});
 				</script>
 		</div>

@@ -57,7 +57,7 @@
 			if(isset($_POST['restday'])){
 				$officialworksched = 'Restday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
 			}elseif(isset($_POST['oncall'])){
-				$ex = explode(":", $approvedothrs);
+				/*$ex = explode(":", $approvedothrs);
 				if($ex[1] > 0){
 					$ex[0] .= '.5';
 				}else{
@@ -67,7 +67,7 @@
 					$approvedothrs = '4:0';
 				}elseif($ex[0] > 4){
 					$approvedothrs = '8:0';
-				}
+				}*/
 				$officialworksched = 'Oncall<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];
 			}elseif(isset($_POST['sw'])){
 				$officialworksched = 'Special N-W Holliday<br>' . $_POST['officialworkschedfr']. ' - ' . $_POST['officialworkschedto'];

@@ -966,8 +966,8 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
-			if($row['project'] == 'P.M.' || $row['project'] == 'Internet'){
-				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
+			if($row['projtype'] == 'P.M.' || $row['projtype'] == 'Internet'){
+				$pettype = '<br>'.$row['projtype'].': <font color = "green">'.$row['project'].'</font>';
 			}else{
 				$xx = "SELECT * FROM project where name = '$row[project]'";
 				$xxx = $conn->query($xx)->fetch_assoc();

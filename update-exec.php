@@ -64,7 +64,7 @@
 			if(isset($_POST['uprestday'])){
 				$officialworksched = 'Restday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}elseif(isset($_POST['uponcall'])){
-				$ex = explode(":", $approvedothrs);
+				/*$ex = explode(":", $approvedothrs);
 				if($ex[1] > 0){
 					$ex[0] .= '.5';
 				}else{
@@ -74,7 +74,7 @@
 					$approvedothrs = '4:0';
 				}elseif($ex[0] > 4){
 					$approvedothrs = '8:0';
-				}
+				}*/
 				$officialworksched = 'Oncall<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}elseif(isset($_POST['sw'])){
 				$officialworksched = 'Special N-W Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
@@ -642,7 +642,7 @@
 			if(isset($_POST['uprestday'])){
 				$officialworksched = 'Restday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}elseif(isset($_POST['uponcall'])){
-				$ex = explode(":", $approvedothrs);
+				/*$ex = explode(":", $approvedothrs);
 				if($ex[1] > 0){
 					$ex[0] .= '.5';
 				}else{
@@ -652,7 +652,7 @@
 					$approvedothrs = '4:0';
 				}elseif($ex[0] > 4){
 					$approvedothrs = '8:0';
-				}
+				}*/
 				$officialworksched = 'Oncall<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}elseif(isset($_POST['sw'])){
 				$officialworksched = 'Special N-W Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
@@ -709,9 +709,8 @@
 			if($_POST['oldsched'] == ""){
 				$_POST['oldsched'] = "Regular OT";
 			}
-			$oldot = $oldot . '<br> </i><font color = "#333">Old Schedule: </font><i>' . $_POST['oldsched'];
+			$oldot = $oldot . '<br> </i><font color = "#333">Old Schedule: </font><i>' . $_POST['oldsched'] . '<br>'. $_POST['oldofffr'] . ' - ' . $_POST['oldoffto'];
 		}
-		echo $oldot;
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
 			project = '$project', projtype = '$projtype', startofot = '$hruptimein', officialworksched = '$officialworksched', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
