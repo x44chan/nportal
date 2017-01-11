@@ -105,14 +105,9 @@ echo '<script type="text/javascript"> window.location.replace("techsupervisor.ph
 				}				
 			}
 		}else{
-	echo  '<div class="alert alert-warning" align = "center">
-						
-						<strong>Warning!</strong> Incorrect Login.
-					</div>';
-			
-			}
+			echo  '<div class="alert alert-warning" align = "center"><strong>Warning!</strong> Incorrect Login.	</div>';
+		}
 		$conn->close();
 	}
-	
 	include('footer.php');
 ?>

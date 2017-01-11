@@ -31,16 +31,19 @@
 				 islock = '2'
 			where account_id = '$accid' and islock = '1'";
 		if ($conn->query($stmt) === TRUE) {
+			savelogs("201 Unlock", "Request to Unlock");
 			echo '<script type="text/javascript">window.location.replace("hr-emprof.php"); </script>';
 		}
 	}
 	if(isset($_GET['unlock']) && $_SESSION['level'] == 'Admin'){
 		if(isset($_GET['dapp'])){
 			$islock = '1';
-			$accid = mysqli_real_escape_string($conn, $_GET['dapp']);
+			$accid = mysqli_real_escape_string($conn, $_GET['dapp']);			
+			savelogs("201 Unlock", "Disapproved");
 		}elseif(isset($_GET['app'])){
 			$accid = mysqli_real_escape_string($conn, $_GET['app']);
 			$islock = '0';
+			savelogs("201 Unlock", "Approved");
 		}
 		$stmt = "UPDATE `login` set 
 				 islock = '$islock'
