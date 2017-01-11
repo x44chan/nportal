@@ -6,15 +6,15 @@
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}
 	function random_string($length) {
-		    $key = '';
-		    $keys = array_merge(range(0, 9), range('a', 'z'));
+	    $key = '';
+	    $keys = array_merge(range(0, 9), range('a', 'z'));
 
-		    for ($i = 0; $i < $length; $i++) {
-		        $key .= $keys[array_rand($keys)];
-		    }
+	    for ($i = 0; $i < $length; $i++) {
+	        $key .= $keys[array_rand($keys)];
+	    }
 
-		    return $key;
-		}
+	    return $key;
+	}
 	if(isset($_GET['loan'])){
 		$o = mysql_escape_string($_GET['loan']);
 		$rcve_code = random_string(4);
@@ -63,13 +63,15 @@
 				$checkk = "";
 			}
 			savelogs("Approve Petty", "Petty #: " . $petty_id . " Source: " . $source . $checkk);
+			$appdate = ", appdate = now() ";
 		}else if($_SESSION['level'] == 'ACC' || $_SESSION['level'] == 'HR'){
 			$state = 'AAAPettyReceive';
 			$source = 'Accounting';
 			savelogs("Approve Petty", "Petty #: " . $petty_id . $checkk);
+			$appdate = "";
 		}
 		$sql ="UPDATE petty set 
-	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans', particular = '$particular'
+	   		amount = '$pettyamount', source = '$source', state = '$state', transfer_id = '$trans', particular = '$particular' $appdate
 	    where petty_id = '$petty_id'"; 
 	 	if ($conn->query($sql) === TRUE) {	 		
 	    	if($_SESSION['level'] == 'Admin'){
