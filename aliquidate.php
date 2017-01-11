@@ -75,7 +75,7 @@
 				<select required class="form-control input-md" id = "type0" name = "type0">
 					<option value=""> - - - - - </option>
 				<?php
-					$sqls = "SELECT * FROM `petty_type` ORDER BY type_id";
+					$sqls = "SELECT * FROM `petty_type` ORDER BY type ASC";
 					$results = $conn->query($sqls);
 					if($results->num_rows > 0){
 						while ($rows = $results->fetch_assoc()) {
@@ -149,7 +149,7 @@
 ?>
 <script type="text/javascript">
 <?php
-	$sqls = "SELECT * FROM `petty_type`";
+	$sqls = "SELECT * FROM `petty_type` ORDER BY type ASC";
 	$results = $conn->query($sqls);
 	if($results->num_rows > 0){
 		

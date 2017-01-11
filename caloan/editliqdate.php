@@ -455,7 +455,7 @@
 
 <script type="text/javascript">
 <?php
-	$sqls = "SELECT * FROM `petty_type`";
+	$sqls = "SELECT * FROM `petty_type` ORDER BY type ASC";
 	$results = $conn->query($sqls);
 	if($results->num_rows > 0){
 		
