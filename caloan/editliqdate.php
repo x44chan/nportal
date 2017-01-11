@@ -56,12 +56,14 @@
 	      			<option <?php if($data['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
 	      			<option <?php if($data['projtype'] == 'Project'){ echo ' selected ';} ?>value="Project"> Project </option>
 	      			<option <?php if($data['projtype'] == 'Support'){ echo ' selected ';} ?>value="Support"> Project Support </option>	      			
-      				<option <?php if($data['projtype'] == 'Oncall'){ echo ' selected ';} ?> value="Oncall"> On Call </option>
+      				<option <?php if($data['projtype'] == 'Service'){ echo ' selected ';} ?> value="Service"> Service </option>	      			
+	      			<option <?php if($data['projtype'] == 'Email Hosting'){ echo ' selected ';} ?> value="Email Hosting"> Email Hosting </option>
 	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
 	      			<option <?php if($data['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
 	      			<option <?php if($data['projtype'] == 'Luwas'){ echo ' selected ';} ?>value="Luwas"> Luwas </option>
 	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?>value="Supplier"> Supplier </option>
 	      			<option <?php if($data['projtype'] == 'Netlink'){ echo ' selected ';} ?>value="Netlink"> Netlink </option>
+	      			<option <?php if($data['projtype'] == 'Permit & Licenses Netlink'){ echo ' selected ';} ?>value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
 	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
 	      			<?php } ?>
@@ -89,13 +91,35 @@
 	            	</select>
 	            </div>
 			</div>
-			<div <?php if($data['projtype'] != 'Oncall'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
+			<div <?php if($data['projtype'] != 'Service'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
 			<div class="form-group">
-            	<label>On Call <font color = "red">*</font></label>
+            	<label>Service <font color = "red">*</font></label>
             	<select class="form-control" name = "oncall">
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1'";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					if($data['project'] == $xrow['name']){
+            						$selected = ' selected ';
+            					}else{
+            						$selected = "";
+            					}
+            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+		</div>
+		<div <?php if($data['projtype'] != 'Email Hosting'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "ehosting">
+			<div class="form-group">
+            	<label>Email Hosting <font color = "red">*</font></label>
+            	<select class="form-control" name = "ehosting">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Email Hosting' and state = '1'";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -298,7 +322,7 @@
 				<select required class="form-control input-md" id = "type<?php echo $i;?>" name = "type<?php echo $i;?>">
 					<option value=""> - - - - - </option>
 				<?php
-					$sqls = "SELECT * FROM `petty_type` ORDER BY type_id";
+					$sqls = "SELECT * FROM `petty_type` ORDER BY type ASC";
 					$results = $conn->query($sqls);
 					if($results->num_rows > 0){
 						while ($rows = $results->fetch_assoc()) {
@@ -429,12 +453,14 @@
 							$project = $_POST['house'];
 						}elseif($_POST['pettype'] == 'Combined'){
 							$project = $_POST['combined'];
-						}elseif($_POST['pettype'] == 'Oncall'){
+						}elseif($_POST['pettype'] == 'Service'){
 							$project = $_POST['oncall'];
 						}elseif($_POST['pettype'] == 'Corporate'){
 							$project = $_POST['corpo'];
 						}elseif($_POST['pettype'] == 'Supplier'){
 							$project = $_POST['supp'];
+						}elseif($_POST['pettype'] == 'Email Hosting'){
+							$project = $_POST['ehosting'];
 						}else{
 							$project = null;
 						}

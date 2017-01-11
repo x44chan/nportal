@@ -729,7 +729,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	
 	}	
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (petty.state != 'DAPetty' and petty.state != 'CPetty')";
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (petty.state != 'DAPetty' and petty.state != 'CPetty' and petty.state != 'UAPetty')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -746,10 +746,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				continue;
 			}
 			$date1 = date("Y-m-d");
-			if($row['releasedate']){
-				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['releasedate'])));
+			if($row['appdate'] != '0000-00-00 00:00:00'){
+				$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['appdate'])));
 			}else{
-				$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
+				$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['date'])));
 			}
 			if($date1 >= $date2){
 				$red = ' style = "color: red;" ';
@@ -1355,6 +1355,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					<?php
 				}
 			}
+			$conn->close();
 		?>
 		</tbody>
 		</table>

@@ -829,7 +829,7 @@ $(document).ready(function(){
 			$state = 'UAPetty';
 		}
 		$datefile = date("Y-m-d");
-		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty' and petty.state != 'UAPetty') order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
 		$day5 = 0;
@@ -842,18 +842,17 @@ $(document).ready(function(){
 				if($data['petty_id'] == null){
 					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
 						$projectcount += 1;
-					}
-					
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					}					
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
 				}
 				if($data['liqstate'] == 'LIQDATE'){
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
 					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
@@ -861,9 +860,9 @@ $(document).ready(function(){
 					}
 				}
 				if($data['liqstate'] == 'EmpVal'){
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
 					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){

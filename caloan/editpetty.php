@@ -52,12 +52,14 @@
       			<option <?php if($row['projtype'] == 'Internet'){ echo ' selected '; } ?> value="Internet"> Internet </option>
       			<option <?php if($row['projtype'] == 'Project'){ echo ' selected ';} ?> value="Project"> Project </option>
       			<option <?php if($row['projtype'] == 'Support'){ echo ' selected ';} ?> value="Support"> Project Support </option>
-      			<option <?php if($row['projtype'] == 'Oncall'){ echo ' selected ';} ?> value="Oncall"> On Call </option>
+      			<option <?php if($row['projtype'] == 'Service'){ echo ' selected ';} ?> value="Service"> Service </option>
+                        <option <?php if($row['projtype'] == 'Email Hosting'){ echo ' selected ';} ?> value="Email Hosting"> Email Hosting </option>
       			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?> value="Combined"> P.M. & Internet </option>
       			<option <?php if($row['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
       			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected ';} ?> value="Luwas"> Luwas </option>
       			<option <?php if($row['projtype'] == 'Supplier'){ echo ' selected ';} ?> value="Supplier"> Supplier </option>
       			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected ';} ?> value="Netlink"> Netlink </option>
+                        <option <?php if($row['projtype'] == 'Permit & Licenses Netlink'){ echo ' selected ';} ?> value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
       			<?php if($_SESSION['acc_id'] == '37') {  ?>
       				<option <?php if($row['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
       			<?php } ?>
@@ -186,27 +188,49 @@
             </div>
 		</div>
 		<div <?php if($row['projtype'] != 'Corporate'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "corpo">
-			<div class="form-group">
-            	<label>Corporate <font color = "red">*</font></label>
-            	<select class="form-control" name = "corpo">
-            		<option value = ""> - - - - - </option>
-            		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1'";
-            			$xresult = $conn->query($xsql);
-            			if($xresult->num_rows > 0){
-            				while($xrow = $xresult->fetch_assoc()){
-            					if($row['project'] == $xrow['name']){
-            						$selected = ' selected ';
-            					}else{
-            						$selected = "";
-            					}
-            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
-            				}
-            			}
-            		?>
-            	</select>
+                  <div class="form-group">
+                  <label>Corporate <font color = "red">*</font></label>
+                  <select class="form-control" name = "corpo">
+                        <option value = ""> - - - - - </option>
+                        <?php
+                              $xsql = "SELECT * FROM `project` where type = 'Corporate' and state = '1'";
+                              $xresult = $conn->query($xsql);
+                              if($xresult->num_rows > 0){
+                                    while($xrow = $xresult->fetch_assoc()){
+                                          if($row['project'] == $xrow['name']){
+                                                $selected = ' selected ';
+                                          }else{
+                                                $selected = "";
+                                          }
+                                          echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                    }
+                              }
+                        ?>
+                  </select>
             </div>
-		</div>
+            </div>
+            <div <?php if($row['projtype'] != 'Email Hosting'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "ehosting">
+                  <div class="form-group">
+                        <label>Email Hosting <font color = "red">*</font></label>
+                        <select class="form-control" name = "ehosting">
+                              <option value = ""> - - - - - </option>
+                              <?php
+                                    $xsql = "SELECT * FROM `project` where type = 'Email Hosting' and state = '1'";
+                                    $xresult = $conn->query($xsql);
+                                    if($xresult->num_rows > 0){
+                                          while($xrow = $xresult->fetch_assoc()){
+                                                if($row['project'] == $xrow['name']){
+                                                      $selected = ' selected ';
+                                                }else{
+                                                      $selected = "";
+                                                }
+                                                echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                          }
+                                    }
+                              ?>
+                        </select>
+                  </div>
+            </div>
 		<div <?php if($row['projtype'] != 'Supplier'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "supp">
 			<div class="form-group">
             	<label>Supplier <font color = "red">*</font></label>
@@ -229,9 +253,9 @@
             	</select>
             </div>
 		</div>
-		<div <?php if($row['projtype'] != 'Oncall'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
+		<div <?php if($row['projtype'] != 'Service'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
 			<div class="form-group">
-            	<label>On Call <font color = "red">*</font></label>
+            	<label>Service <font color = "red">*</font></label>
             	<select class="form-control" name = "oncall">
             		<option value = ""> - - - - - </option>
             		<?php
@@ -304,7 +328,7 @@ echo '</div>';
 	echo '<script type="text/javascript">window.location.replace("?ac=penpty"); </script>';
 }
 	if(isset($_POST['uppetty'])){
-		$sql = "SELECT * FROM petty,login where login.account_id = '$_SESSION[acc_id]' and login.position != 'House Helper' and petty.account_id = '$_SESSION[acc_id]' and (petty.state != 'DAPetty' and petty.state != 'CPetty') and petty_id != '$petid' order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$_SESSION[acc_id]' and login.position != 'House Helper' and petty.account_id = '$_SESSION[acc_id]' and (petty.state != 'DAPetty' and petty.state != 'CPetty' and petty.state != 'UAPetty') and petty_id != '$petid' order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
 		$day5 = 0;
@@ -315,33 +339,32 @@ echo '</div>';
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
-					}
-					
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					}					
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
 				}
 				if($data['liqstate'] == 'LIQDATE'){
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
 					}
 				}
 				if($data['liqstate'] == 'EmpVal'){
-					if($row['releasedate'] != "" && date("Y-m-d",strtotime("+5 days", strtotime($row['releasedate']))) <= date("Y-m-d")){
+					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
-					}elseif(date("Y-m-d",strtotime("+5 days", strtotime($row['date']))) <= date("Y-m-d")){
+					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
 					}
 				}
@@ -361,13 +384,20 @@ echo '</div>';
 					$count = 0;
 				}
 			}elseif($_POST['pettype'] == 'Corporate'){
-				$project = $_POST['corpo'];
-				if($projectcount > 0){
-					$count = 1;
-				}else{
-					$count = 0;
-				}
-			}elseif($_POST['pettype'] == 'Supplier'){
+                        $project = $_POST['corpo'];
+                        if($projectcount > 0){
+                              $count = 1;
+                        }else{
+                              $count = 0;
+                        }
+                  }elseif($_POST['pettype'] == 'Email Hosting'){
+                        $project = $_POST['ehosting'];
+                        if($projectcount > 0){
+                              $count = 1;
+                        }else{
+                              $count = 0;
+                        }
+                  }elseif($_POST['pettype'] == 'Supplier'){
 				$project = $_POST['supp'];
 				if($projectcount > 0){
 					$count = 1;
@@ -397,7 +427,7 @@ echo '</div>';
 					$count = 0;
 				}
 				$project = $_POST['combined'];
-			}elseif($_POST['pettype'] == 'Oncall'){
+			}elseif($_POST['pettype'] == 'Service'){
 				if($day5 > 0){
 					$count = 1;
 				}else{
@@ -413,7 +443,7 @@ echo '</div>';
 				}
 			}	
 		}
-		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Netlink' && $_POST['pettype'] != 'Luwas' && $_POST['pettype'] != 'Supplier' && $project == "")){
+		if($_POST['pettype'] == "" || ($_POST['pettype'] != 'Netlink' && $_POST['pettype'] != 'Luwas' && $_POST['pettype'] != 'Supplier' && $_POST['pettype'] != 'Permit & Licenses Netlink' && $project == "")){
 			echo '<script>alert("Empty");window.location.href="?editpetty='.$petid.'";</script>';
 			break;		
 		}

@@ -252,10 +252,10 @@
 					$change =  " - ";
 				}
 				$date1 = date("Y-m-d");
-				if($data['liqdate'] != ""){
-					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($data['liqdate'])));
+				if($row['appdate'] != '0000-00-00 00:00:00' && ($row['state'] != 'UAPetty' || $row['state'] != 'CPetty' || $row['state'] != 'DAPetty')){
+					$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['appdate'])));
 				}else{
-					$date2 = date("Y-m-d", strtotime("+5 days", strtotime($row['date'])));
+					$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['date'])));
 				}
 				if($date1 >= $date2){
 					$red = '<tr style = "color: red;">';
