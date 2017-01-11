@@ -17,6 +17,9 @@ if(isset($_GET['q'])){
 	if(isset($_GET['oncall']) && $_GET['oncall'] == "1"){
 		$type = " and type = 'On Call' ";
 	}
+	if(isset($_GET['tag']) && $_GET['tag'] == "1"){
+		$state = "";
+	}
 	$sql = "SELECT * FROM project where loc = '$q' $state $type order by CHAR_LENGTH(name)";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
@@ -25,7 +28,12 @@ if(isset($_GET['q'])){
 			echo '<option value = "all">All</option>';
 		}
 		while ($row = $result->fetch_assoc()) {
-			echo '<option value = "' . $row['name'] . '"> ' . $row['name'] . '</option>';
+			if(isset($_GET['tag']) && $_GET['tag'] == "1"){
+				$tag = " ( " . $row['type'] . " ) ";
+			}else{
+				$tag = "";
+			}
+			echo '<option value = "' . $row['name'] . '"> ' . $row['name'] . $tag . '</option>';
 		}
 		echo '</select></td>';
 	}

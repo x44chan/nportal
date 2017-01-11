@@ -14,13 +14,11 @@
 	@media print {		
 		body  {
 	    	visibility: hidden;
-	    
 	  	}
 	  	.col-xs-2{
 	  		font-size: 12px;
 	  	}
-	  	<?php if(isset($_GET['print'])){ ?>
-	  
+	  	<?php if(isset($_GET['print'])){ ?> 
 	  	#datepr{
 	  		margin-top: 25px;
 	  	}
@@ -98,14 +96,15 @@
 		}
 		if(isset($_GET['bytype']) && $_GET['bytype'] != ""){
 			$_SESSION['loc'] = "";
+
 			$_SESSION['otproject'] = "";
+
 			$_SESSION['bytype'] = mysqli_real_escape_string($conn, $_GET['bytype']);
 		}
 	?>
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
-	
 	$('#projectwasdx').change(function() {
 		var selected = $(this).val();
     	if(selected != ""){
@@ -144,7 +143,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<form action ="" method="get">
-		<input type = "hidden" name = "expn"/>
+	<input type = "hidden" name = "expn"/>
 		<div class="row">
 			<div class="col-xs-2" style="margin-top: -15px;">
 				<label>Date From: </label>
@@ -159,7 +158,7 @@ $(document).ready(function(){
 				<select class="form-control input-sm" id = "projectwasdx" name = "loc" onchange="showUser(this.value)" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' required ';}?>>
 					<option value=""> - - - - - - - - </option>
             		<?php
-            			$xsql = "SELECT * FROM `project` where (type = 'Project' or type = 'On Call') and state = '1' group by loc order by CHAR_LENGTH(loc)";
+            			$xsql = "SELECT * FROM `project` where (type = 'Project' or type = 'On Call') group by loc order by CHAR_LENGTH(loc)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -169,7 +168,7 @@ $(document).ready(function(){
             						$select = "";
             					}
             					echo '<option '.$select.' value = "' . $xrow['loc'] . '"> ';
-            					
+   					
             					if($xrow['loc'] == 'On Call'){
             						$xrow['loc'] = 'Service';
             					}
@@ -187,28 +186,28 @@ $(document).ready(function(){
 							$_GET['loc'] = $_SESSION['loc'];
 						}
 						if(!isset($_GET['otproject'])){
-							$_GET['otproject'] = $_SESSION['otproject'];
+						$_GET['otproject'] = $_SESSION['otproject'];
 						}
 						$otproject = mysqli_real_escape_string($conn, $_GET['loc']);
-						$xx = "SELECT * FROM project where loc = '$otproject'";
+						$xx = "SELECT * FROM project where loc = '$otproject' order by CHAR_LENGTH(name)";
 						$xxx = $conn->query($xx);
 						echo '<select name = "otproject" id = "otproject" class = "form-control input-sm">';
 						if($xxx->num_rows > 0){
 							while ($srow = $xxx->fetch_assoc()) {
 								if($_GET['otproject'] == $srow['name']){
             						$select = ' selected ';
-            					}else{
+           					}else{
             						$select = "";
             					}
-            					echo '<option '.$select.' value = "' . $srow['name'] . '"> ' . $srow['name'] . '</option>';
+            					echo '<option '.$select.' value = "' . $srow['name'] . '"> ' . $srow['name'] . " ( " . $srow['type'] . " ) " . '</option>';
 							}
 						}
 						echo '</select>';
-					}
+				}
 				?>
 			</div>
 			<div class="col-xs-3" style="margin-top: -15px; <?php if($_SESSION['bytype'] == ""){ echo ' display: none; ';}?>" id = "bytypexx">
-				<label> Type </label>
+			<label> Type </label>
 				<select class="form-control input-sm" name = "bytype" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] == ""){ echo ' disabled ';}?> id = "bytype">
 					<option value=""> - - - - - - - - </option>
 					<?php
@@ -218,7 +217,7 @@ $(document).ready(function(){
 							while ($row = $result->fetch_assoc()) {
 								if((isset($_GET['bytype']) && $_GET['bytype'] == $row['type']) || (isset($_SESSION['bytype']) && $_SESSION['bytype'] == $row['type'])){
 									$select = " selected ";
-								}else{
+							}else{
 									$select = "";
 								}
 								echo '<option '. $select .' value = "' . $row['type'] . '"> ' . $row['type'] . '</option>';
@@ -231,7 +230,7 @@ $(document).ready(function(){
 		<div class="row">
 			<div class="col-xs-4 col-xs-offset-4">
 				<input type = "checkbox" id = "checkxx" <?php if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo ' checked ';}?>> <label for = "checkxx"> Switch to by Type </label>	</input>		
-			</div>
+		</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12" align="center"  style="margin-bottom: -25px;">
@@ -255,7 +254,7 @@ $(document).ready(function(){
 	<div class = "container-fluid" id = "report" style="margin-left:">
 		<div class="row" <?php if(!isset($_GET['print'])){ echo ' style="margin-left: 90px;" '; }?>>
 			<div class="col-xs-12">
-				<h3><i><u><?php if(isset($_SESSION['loc']) && $_SESSION['loc'] != ""){ echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo $_SESSION['bytype']; } if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){ echo $_SESSION['otproject']. '' ; } if(isset($_SESSION['type'])){ echo $_SESSION['type'];}?></u></i></h3><i><h4 style="margin-left: 60px;"> <?php echo date("M j, Y",strtotime($_SESSION['datefr'])) . ' - ' . date("M j, Y",strtotime($_SESSION['dateto']));?></h4></i> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
+				<h3><i><u><?php if(isset($_SESSION['loc']) && $_SESSION['loc'] != ""){ if($_SESSION['loc'] == 'On Call'){ $_SESSION['loc'] = 'Service'; } echo $_SESSION['loc']. ': ' ; } if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){ echo $_SESSION['bytype']; } if(isset($_SESSION['otproject']) && $_SESSION['otproject'] != ""){ echo $_SESSION['otproject']. '' ; } if(isset($_SESSION['type'])){ echo $_SESSION['type'];}?></u></i></h3><i><h4 style="margin-left: 60px;"> <?php echo date("M j, Y",strtotime($_SESSION['datefr'])) . ' - ' . date("M j, Y",strtotime($_SESSION['dateto']));?></h4></i> <a id = "backs" href = "?expn&print" class = "btn btn-sm btn-success pull-right"><span class = "glyphicon glyphicon-print"></span> Print </a>
 			</div>
 		</div>
 		<?php
@@ -266,7 +265,7 @@ $(document).ready(function(){
 			}
 			if(isset($_SESSION['bytype']) && $_SESSION['bytype'] != ""){
 				$bytype = $_SESSION['bytype'];
-			}else{
+		}else{
 				$bytype = "";
 			}
 			if(!empty($_GET['type'])){
@@ -399,9 +398,7 @@ $(document).ready(function(){
 					}
 					echo '</tbody></table>';
 				} 
-			}
-				
-			
+			}			
 		?>
 		<div class="col-xs-12">
 			<b><i>

@@ -390,7 +390,7 @@ if(isset($_GET['login_log'])){
     if(isset($_GET['active']) && $_GET['active'] == '0'){
       $sql = "SELECT * from `login` where level != 'Admin' and fname is not null and active = '0' order by lname ASC";
     }else{
-      $sql = "SELECT * from `login` where level != 'Admin' and fname is not null and (active = '1' or active IS NULL) order by lname ASC";
+      $sql = "SELECT * from `login` where level != 'Admin' and fname is not null and account_id NOT IN (47,48,37) and (active = '1' or active IS NULL) order by lname ASC";
     }
 		
 		$result = $conn->query($sql);
@@ -497,13 +497,17 @@ $(document).ready(function(){
             }
        ?>
        <div class="row">
-         <div class="col-xs-4">
+         <div class="col-xs-3">
            <label>Sick Leave</label>
            <p style="margin-left: 10px"><i><?php echo $sl;?></i></p>
          </div>
-         <div class="col-xs-4">
+         <div class="col-xs-3">
            <label>Vacation Leave</label>
            <p style="margin-left: 10px"><i><?php echo $vl;?></i></p>
+         </div>
+         <div class="col-xs-3">
+           <label>Salary</label>
+           <p style="margin-left: 10px"><i>₱ <?php if($row['salary'] != "") { echo number_format($row['salary'],2); }?></i></p>
          </div>
        </div>
   		<div class="row">

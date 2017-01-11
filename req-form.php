@@ -1680,3 +1680,54 @@ $("#submita").click(function(){
 		$_SESSION['searchbox'] = "";
 	}
 ?>
+<?php if($_SESSION['level'] == 'ACC') { ?>
+<!-- Helper caModal -->
+  <div class="modal fade" id="cahelper" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Helper Cash Advance</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Select Helper <font color = "red">*</font></label>
+              <select class="form-control" name = "helpername" required>
+              	<option value=""> - - - - - - - - </option>
+              	<option value="Helper 1"> Helper 1 </option>
+              </select>
+            </div>
+            <div class="form-group">
+            	<label for="usrname"> Amount <font color = "red">*</font></label>
+            	<input type = "text" pattern = "[0-9]*" required name = "amountca" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+          	</div>
+          	<div class="form-group">
+            	<label for="usrname"> Reason / Note <font color = "red">*</font></label>
+            	<textarea required name = "careason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
+          	</div>
+              <button type="submit" name = "submithelperca" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div>
+  <?php
+  	if(isset($_POST['submithelperca'])){
+  		$url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+  		if(!empty($_POST['amountca']) && !empty($_POST['careason']) && !empty($_POST['helpername'])){
+  			$stmt = $conn->prepare("INSERT INTO helperca (hname, amount, reason) VALUES (?, ?, ?)");
+  			$stmt->bind_param("sss", $_POST['helpername'], $_POST['amountca'], $_POST['careason']);
+  			if($stmt->execute()){
+  				echo '<script type="text/javascript">alert("Helper CA Successful"); window.location.replace("'.$url.'"); </script>';
+  			}
+  		}else{
+  			echo '<script type="text/javascript">alert("Check your data"); window.location.replace("'.$url.'"); </script>';
+  		}
+  	}
+  ?>
+<?php }  ?>

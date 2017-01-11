@@ -17,5 +17,10 @@
 	  <?php
 	  	}
 	  ?>
+
+	  <?php	if($_SESSION['level'] == 'ACC'){ ?>
+		<li class="divider"></li>
+	  	<li><a href="#" data-toggle="modal" data-target="#cahelper">Help Cash Advance</a></li>
+	  <?php }	?>
 	</ul>
 </div>

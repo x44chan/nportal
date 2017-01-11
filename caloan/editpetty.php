@@ -452,7 +452,9 @@ echo '</div>';
 		}else{
 			$state = 'UAPetty';
 		}
-
+            if($_SESSION['level'] == 'ACC' && $particularpet == 'Auto Debit'){
+                  $count = 0;
+            }
 		$petid = mysql_escape_string($_GET['editpetty']);
 		$sql = "UPDATE `petty` set projtype = '$pettype', project = '$project', amount = '$upamount', particular = '$upparti', petreason = '$upreason', state = '$state' where account_id = '$accid' and petty_id = '$petid' and (state = 'UAPetty' or state = 'UATransfer')";
 		if($count == 0){

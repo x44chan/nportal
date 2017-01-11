@@ -126,7 +126,8 @@ $(document).ready( function () {
 		        		<li><a href = "acc-report.php">Cut Off Summary</a></li>
 		        		<li><a href="hr-emprof.php">Employee Profile</a></li>
 		        		<li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
-		        		 <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
+		        		<li><a href = "helper.php">Helper CA</a></li>
+		        		<li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
 		        	</ul>
 		    </div>
 			<div class="btn-group btn-group-lg">

@@ -14,7 +14,6 @@ $(document).ready(function(){
 	jQuery.fn.preventDoubleSubmission = function() {
 	  $(this).on('submit',function(e){
 	    var $form = $(this);
-
 	    if ($form.data('submitted') === true) {
 	      // Previously submitted - don't submit again
 	      e.preventDefault();
@@ -23,7 +22,6 @@ $(document).ready(function(){
 	      $form.data('submitted', true);
 	    }
 	  });
-
 	  // Keep chainability
 	  return this;
 	};
@@ -31,7 +29,7 @@ $(document).ready(function(){
 });
 </script>
 <?php } ?>
-<?php if(isset($conn)){ $conn->close(); echo '<div stlye = "display: none;" id = "closerxxchan"></div>';}?>
+<?php if(isset($conn) && is_resource($conn)){ $conn->close(); echo '<div stlye = "display: none;" id = "closerxxchan"></div>';}?>
 <script type="text/javascript">
 	function showUser(str,param,param1) {
 		if (str == "") {
@@ -63,6 +61,7 @@ $(document).ready(function(){
 		        	}else{
 		        		oncall = "";
 		        	}
+		        	tag = 1;
 	        <?php
 	        	}else{
 	        		echo "oncall = '';";
@@ -75,7 +74,7 @@ $(document).ready(function(){
         	}else{
         		get = "";
         	}
-		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+get+"&oncall="+oncall,true);
+		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+get+"&oncall="+oncall+"&tag="+tag,true);
 		    xmlhttp.send();
 		}
 	}

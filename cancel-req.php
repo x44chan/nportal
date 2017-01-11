@@ -1,5 +1,6 @@
 <?php
 	include 'conf.php';
+	include 'savelogs.php';
 	session_start();
 	$accid = $_SESSION['acc_id'];
 	if(!isset($_SESSION['acc_id'])){

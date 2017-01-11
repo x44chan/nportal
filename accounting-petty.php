@@ -134,6 +134,7 @@
             <li><a href = "acc-report.php">Cut Off Summary</a></li>
             <li><a href="hr-emprof.php">Employee Profile</a></li>
             <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
+            <li><a href = "helper.php">Helper CA</a></li>
             <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
           </ul>
       </div>
@@ -358,7 +359,7 @@
 			$waterf = 0; $notary = 0; $toll = 0; $gatepass = 0; $housegood = 0; $materials = 0; $otherss = 0;
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
-			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0; $inter = 0; $maintelabor = 0; $maintemater = 0;
+			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0; $inter = 0; $maintelabor = 0; $maintemater = 0; $delivercharge = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -460,6 +461,8 @@
 					$maintelabor += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Repairs and Maintenance (Materials)'){
 					$maintemater += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Delivery Charge'){
+					$delivercharge += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -478,6 +481,9 @@
 				}
 				if($maintelabor > 0){
 					echo '<label> Repairs and Maintenance (Labor): <i>₱ ' . number_format($maintelabor,2) . '</label>';
+				}
+				if($delivercharge > 0){
+					echo '<label> Delivery Charge: <i>₱ ' . number_format($delivercharge,2) . '</label>';
 				}
 				if($maintemater > 0){
 					echo '<label> Repairs and Maintenance (Materials): <i>₱ ' . number_format($maintemater,2) . '</label>';
