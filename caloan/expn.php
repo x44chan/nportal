@@ -105,6 +105,13 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
+	
+	$('#projectwasdx').change(function() {
+		var selected = $(this).val();
+    	if(selected != ""){
+	    	$("#bytypexx").hide();
+	    }
+	});
 	$('#checkxx').change(function(){
 	    if($('#checkxx').is(":checked")){ 	        
 	    	$("#bytypexx").show();
@@ -161,7 +168,12 @@ $(document).ready(function(){
             					}else{
             						$select = "";
             					}
-            					echo '<option '.$select.' value = "' . $xrow['loc'] . '"> ' . $xrow['loc'] . '</option>';
+            					echo '<option '.$select.' value = "' . $xrow['loc'] . '"> ';
+            					
+            					if($xrow['loc'] == 'On Call'){
+            						$xrow['loc'] = 'Service';
+            					}
+            					echo $xrow['loc'] . '</option>';
             				}
             			}
             		?>			

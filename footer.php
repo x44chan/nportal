@@ -31,6 +31,7 @@ $(document).ready(function(){
 });
 </script>
 <?php } ?>
+<?php if(isset($conn)){ $conn->close(); echo '<div stlye = "display: none;" id = "closerxxchan"></div>';}?>
 <script type="text/javascript">
 	function showUser(str,param,param1) {
 		if (str == "") {
@@ -71,6 +72,8 @@ $(document).ready(function(){
         		get = param1;
         	}else if(param1 == ""){
         		get = param;
+        	}else{
+        		get = "";
         	}
 		    xmlhttp.open("GET","ajax/ajaxowner.php?q="+str+"&project="+get+"&oncall="+oncall,true);
 		    xmlhttp.send();

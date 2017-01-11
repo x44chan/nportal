@@ -111,24 +111,30 @@
 				$_POST['project'] = $_POST['otpm'];
 			}elseif($_POST['ottype'] == 'Internet'){
 				$_POST['project'] = $_POST['otinternet'];
-			}elseif($_POST['ottype'] == 'Oncall'){
+			}elseif($_POST['ottype'] == 'Service'){
 				$_POST['project'] = $_POST['otoncall'];
 			}elseif($_POST['ottype'] == 'Corporate'){
 				$_POST['project'] = $_POST['otcorpo'];
+			}elseif($_POST['ottype'] == 'Email Hosting'){
+				$_POST['project'] = $_POST['otehosting'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;
 			}
 		}
-		if($_POST['ottype'] == ""){
+		if($_POST['ottype'] == "" || 
+			($_POST['ottype'] == 'Service' && (!isset($_POST['otoncall']) || $_POST['otoncall'] == "")) ||
+			($_POST['ottype'] == 'Support' && (!isset($_POST['otproject']) || $_POST['otproject'] == "")) ||
+			($_POST['ottype'] == 'Email Hosting' && (!isset($_POST['otehosting']) || $_POST['otehosting'] == "")) || 
+			($_POST['ottype'] == 'Project' && (!isset($_POST['otproject']) || $_POST['otproject'] == ""))){
 			if($_SESSION['level'] == 'EMP'){
-	    	//	echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("accounting.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("accounting.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("techsupervisor.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("techsupervisor.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penpty"); </script>';
+	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("hr.php?ac=penot"); </script>';
 	    	}
 			break;
 		}
@@ -691,10 +697,12 @@
 				$_POST['project'] = $_POST['otpm'];
 			}elseif($_POST['ottype'] == 'Internet'){
 				$_POST['project'] = $_POST['otinternet'];
-			}elseif($_POST['ottype'] == 'Oncall'){
+			}elseif($_POST['ottype'] == 'Service'){
 				$_POST['project'] = $_POST['otoncall'];
 			}elseif($_POST['ottype'] == 'Corporate'){
 				$_POST['project'] = $_POST['otcorpo'];
+			}elseif($_POST['ottype'] == 'Email Hosting'){
+				$_POST['project'] = $_POST['otehosting'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;

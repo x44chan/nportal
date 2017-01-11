@@ -101,6 +101,13 @@ $(document).ready(function(){
 			$('#corpo').hide();
 			$('select[name="corpo"]').attr('required',false);
 		}
+		if(selected2 == 'Email Hosting'){
+			$('#ehosting').show();
+			$('select[name="ehosting"]').attr('required',true);
+		}else{
+			$('#ehosting').hide();
+			$('select[name="ehosting"]').attr('required',false);
+		}
 		if(selected2 == 'Supplier'){
 			$('#supp').show();
 			$('select[name="supp"]').attr('required',true);
@@ -163,7 +170,7 @@ $(document).ready(function(){
 			$('#combined').hide();
 			$('select[name="combined"]').attr('required',false);
 		}
-		if(selected2 == 'Oncall' || selected2 == 'On Call'){
+		if(selected2 == 'Service' || selected2 == 'Service'){
 			$('#oncallxx').show();
 			$('select[name="xoncall"]').attr('required',true);
 		}else{
@@ -195,12 +202,19 @@ $(document).ready(function(){
 				$('#otinternet').hide();
 				$('select[name="otinternet"]').attr('required',false);
 			}
-			if(selected2 == 'Oncall'){
+			if(selected2 == 'Service'){
 				$('#otoncall').show();
 				$('select[name="otoncall"]').attr('required',true);
 			}else{
 				$('#otoncall').hide();
 				$('select[name="otoncall"]').attr('required',false);
+			}
+			if(selected2 == 'Email Hosting'){
+				$('#otehosting').show();
+				$('select[name="otehosting"]').attr('required',true);
+			}else{
+				$('#otehosting').hide();
+				$('select[name="otehosting"]').attr('required',false);
 			}
 			if(selected2 == 'Project'){
 				$('#otproject').show();

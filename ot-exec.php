@@ -97,16 +97,22 @@
 				$_POST['project'] = $_POST['otpm'];
 			}elseif($_POST['ottype'] == 'Internet'){
 				$_POST['project'] = $_POST['otinternet'];
-			}elseif($_POST['ottype'] == 'Oncall'){
+			}elseif($_POST['ottype'] == 'Service'){
 				$_POST['project'] = $_POST['otoncall'];
 			}elseif($_POST['ottype'] == 'Corporate'){
 				$_POST['project'] = $_POST['otcorpo'];
+			}elseif($_POST['ottype'] == 'Email Hosting'){
+				$_POST['project'] = $_POST['otehosting'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;
 			}
 		}
-		if($_POST['ottype'] == "" || ($_POST['ottype'] == 'Project' && empty($_POST['project']))){
+		if($_POST['ottype'] == "" || 
+			($_POST['ottype'] == 'Service' && (!isset($_POST['otoncall']) || $_POST['otoncall'] == "")) ||
+			($_POST['ottype'] == 'Support' && (!isset($_POST['otproject']) || $_POST['otproject'] == "")) ||
+			($_POST['ottype'] == 'Email Hosting' && (!isset($_POST['otehosting']) || $_POST['otehosting'] == "")) || 
+			($_POST['ottype'] == 'Project' && (!isset($_POST['otproject']) || $_POST['otproject'] == ""))){
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">alert("Empty");window.location.replace("employee.php?ac=penpty"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
@@ -124,9 +130,6 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
-		//if(empty($project) || empty($projtype)){
-		//	$restric = 3;
-		//}
 		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("ssissssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
 		if($restric == 0){
@@ -142,19 +145,14 @@
 	    	}
 			$conn->close();
 		}else{
-			if($restric == 3){
-				$al = " No Selected Project/Location ";
-			}else{
-				$al = " Wrong date ";
-			}
 			if($_SESSION['level'] == 'EMP'){
-	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("employee.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date."); window.location.replace("employee.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'ACC') {
-	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("accounting.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("accounting.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'TECH') {
-	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("techsupervisor.php?ac=penot"); </script>';
 	    	}elseif ($_SESSION['level'] == 'HR') {
-	    		echo '<script type="text/javascript">alert("'.$al.'"); window.location.replace("hr.php?ac=penot"); </script>';
+	    		echo '<script type="text/javascript">alert("Wrong date"); window.location.replace("hr.php?ac=penot"); </script>';
 	    	}
 		}
 	}

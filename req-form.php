@@ -190,7 +190,8 @@ $(document).ready(function(){
 		          			<option value="Internet"> Internet </option>
 		          			<option value="Project"> Project </option>
 		          			<option value="Support"> Project Support </option>
-		          			<option value="Oncall"> Oncall </option>
+		          			<option value="Service"> Service </option>
+		          			<option value="Email Hosting"> Email Hosting </option>
 		          			<option value="Corporate"> Corporate </option>
 		          			<option value="Luwas"> Luwas </option>
 		          			<option value="Netlink"> Netlink </option>	
@@ -198,12 +199,29 @@ $(document).ready(function(){
 					</td>
 				</tr>
 				<tr style = "display: none;" id = "otoncall">
-            		<td><label>Internet <font color = "red">*</font></label></td>
+            		<td><label>Service <font color = "red">*</font></label></td>
             		<td>
             			<select class="form-control" name = "otoncall">
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otehosting">
+            		<td><label>Email Hosting <font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otehosting">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Email Hosting' and state = '1' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -636,12 +654,14 @@ $(document).ready(function(){
           			<option value="Internet"> Internet </option>
           			<option value="Project"> Project </option>
           			<option value="Support"> Project Support </option>
-          			<option value="Oncall"> On-Call </option>
+          			<option value="Service"> Service </option>
+          			<option value="Email Hosting"> Email Hosting </option>
           			<option value="Combined"> P.M. & Internet </option>
           			<option value="Corporate"> Corporate </option>
           			<option value="Luwas"> Luwas </option>
           			<option value="Supplier"> Supplier </option>
           			<option value="Netlink"> Netlink </option>
+          			<option value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
@@ -729,6 +749,21 @@ $(document).ready(function(){
             		?>
             	</select>
             </div>
+            <div style = "display: none;" class="form-group" id = "ehosting">
+            	<label>Email Hosting <font color = "red">*</font></label>
+            	<select class="form-control" name = "ehosting">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Email Hosting' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
             <div style = "display: none;" class="form-group" id = "supp">
             	<label>Supplier <font color = "red">*</font></label>
             	<select class="form-control" name = "supp">
@@ -760,7 +795,7 @@ $(document).ready(function(){
             	</select>
             </div>
             <div style = "display: none;" class="form-group" id = "oncallxx">
-            	<label>On Call <font color = "red">*</font></label>
+            	<label>Service <font color = "red">*</font></label>
             	<select class="form-control" name = "xoncall">
             		<option value = ""> - - - - - </option>
             		<?php
@@ -840,7 +875,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
 					}					
 					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
@@ -855,7 +890,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
 					}
 				}
@@ -865,7 +900,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
 						$projectcount += 1;
 					}
 				}
@@ -887,6 +922,13 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['corpo'];
+			}elseif($_POST['pettype'] == 'Email Hosting'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['ehosting'];
 			}elseif($_POST['pettype'] == 'Supplier'){
 				if($projectcount > 0){
 					$count = 1;
@@ -924,7 +966,7 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['combined'];
-			}elseif($_POST['pettype'] == 'Oncall'){
+			}elseif($_POST['pettype'] == 'Service'){
 				if($projectcount > 0){
 					$count = 1;
 				}else{
