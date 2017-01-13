@@ -626,7 +626,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$proj = "SELECT * FROM `project` where name = '$row[project]'";
 			$resproj = $conn->query($proj)->fetch_assoc();
 			$pettype = '<br>'.$row['projtype'].': <font color = "green">'.$row['project'].'</font>';
-			if(isset($resproj['loc'] )){
+			if(isset($resproj['loc']) && $resproj['loc'] != ""){
 				$pettype = '<br>Loc: <font color = "green">'. $resproj['loc']. '</font>'.$pettype;
 			}
 			if($row['project'] == null){
@@ -729,7 +729,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		}
 	
 	}	
-	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (petty.state != 'DAPetty' and petty.state != 'CPetty' and petty.state != 'UAPetty')";
+	$sql = "SELECT * from `petty`,`login` where login.account_id = petty.account_id and (petty.state != 'DAPetty' and petty.state != 'CPetty')";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -746,7 +746,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				continue;
 			}
 			$date1 = date("Y-m-d");
-			if($row['appdate'] != '0000-00-00 00:00:00'){
+			if($row['appdate'] != '0000-00-00 00:00:00' && ($row['state'] != 'UAPetty' || $row['state'] != 'CPetty' || $row['state'] != 'DAPetty')){
 				$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['appdate'])));
 			}else{
 				$date2 = date("Y-m-d", strtotime("+6 days", strtotime($row['date'])));
@@ -1355,7 +1355,6 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					<?php
 				}
 			}
-			$conn->close();
 		?>
 		</tbody>
 		</table>
@@ -1403,7 +1402,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	</form>
 </div>
 <?php 
-	if($_SESSION['pass'] == 'defaultadmin'){
+	if($_SESSION['pass'] == 'defaultpass'){
 		include('up-pass.php');
 	}
 	?>

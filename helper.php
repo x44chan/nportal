@@ -4,7 +4,7 @@
 	date_default_timezone_set('Asia/Manila');
 	include("conf.php");
 ?>
-<?php	if($_SESSION['level'] != 'ACC'){	?>		
+<?php	if($_SESSION['level'] != 'Admin' && $_SESSION['level'] != 'ACC'){	?>		
 	<script type="text/javascript">	window.location.replace("index.php");</script>	
 <?php	}	?>
 <style type="text/css">
@@ -79,6 +79,7 @@
 <script type="text/javascript" src="css/src/jquery.ptTimeSelect2.js"></script>
 <link rel="stylesheet" type="text/css" href="css/src/jquery.ptTimeSelect2.css" />
 <div align = "center">
+	<?php if($_SESSION['level'] == 'ACC'){ ?>
 	<div class="alert alert-success"><br>
 		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
 		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
@@ -145,6 +146,48 @@
 			<a role = "button"class = "btn btn-success"  href = "?ac=penloan"> Loan Req. Status</a>
 		</div>
 	</div>
+	<?php } else { ?>
+		<div class="alert alert-success"><br>
+		Welcome <strong><?php echo $_SESSION['name'];?> !</strong> <br>
+		<?php echo date('l jS \of F Y h:i A'); ?> <br><br>
+		<div class="btn-group btn-group-lg">
+			<a href = "admin.php"  type = "button"class = "btn btn-primary"  id = "showneedapproval">Home</a>	
+			<button  type = "button"class = "btn btn-primary"  id = "newuserbtn">New User</button>			
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
+				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
+				  <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
+				</ul>
+			</div>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Petty Voucher <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a type = "button"  href = "admin-petty.php">Petty List</a></li>
+				  <li><a type = "button"  href = "admin-petty.php?liqdate">Petty Liquidate</a></li>
+				  <li><a type = "button"  href = "admin-petty.php?report=1">Petty Report</a></li>
+				  <li class="divider"></li>
+				  <li><a type = "button" href = "admin-petty.php?pettydate"> Petty Date Summary </a></li>
+				  <li><a type = "button" href = "admin-petty.php?expenses"> Expenses </a></li>
+				  <li><a type = "button" href = "admin-petty.php?expn"> Sales Project Expenses </a></li>
+				</ul>
+			</div>
+			<div class="btn-group btn-group-lg">
+				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">H.R. / Tech Modules <span class="caret"></span></button>
+				<ul class="dropdown-menu" role="menu">
+				  <li><a href = "?login_log" type = "button">Login Log</a></li>
+				  <li><a type = "button" href = "tech-sched.php">Tech Schedule</a></li>
+				  <li><a type = "button" href = "hr-timecheck.php">H.R Time Checking</a></li>
+				</ul>
+			</div>
+			<a type = "button"class = "btn btn-primary"  href = "admin-req-app.php" id = "showapproveda">Approved Request</a>
+			<a type = "button"class = "btn btn-primary" href = "admin-req-dapp.php"  id = "showdispproveda">Dispproved Request</a>
+			<a class="btn btn-danger"  href = "logout.php"  role="button">Logout</a>
+		</div><br><br>
+	</div>
+	<?php } ?>
 </div>
 <?php
 	if(isset($_GET['datefr']) && isset($_GET['dateto'])){
@@ -236,11 +279,11 @@
 		
 	</div>
 </div>
-<?php include('emp-prof.php') ?>
+<?php if(!isset($_GET['print'])){ include('emp-prof.php') ?>
 <?php 
 	if($_SESSION['pass'] == 'default'){
 		include('up-pass.php');
-	}else if($_SESSION['201date'] == null || $_SESSION['201date'] == '0000-00-00'){
+	}else if(($_SESSION['201date'] == null || $_SESSION['201date'] == '0000-00-00') && ($_SESSION['level'] != 'Admin')){
 	?>
 <script type="text/javascript">
 $(document).ready(function(){	      
@@ -251,4 +294,4 @@ $(document).ready(function(){
 });
 </script>
 <?php }include('req-form.php');?>
-<?php include("footer.php");?>
+<?php include("footer.php"); }?>
