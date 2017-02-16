@@ -545,7 +545,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ca'){
 		while($row = $result->fetch_assoc()){				
 			$originalDate = date($row['cadate']);
 			$newDate = date("M j, Y", strtotime($originalDate));
-			if($row['source']){
+			if($row['source'] != "" && $_GET['report'] != 'all'){
 				$source = "( " . $row['source'] . " )";
 			}else{
 				$source = "";
@@ -635,10 +635,15 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 			}else{
 				$row['penalty'] = '<b> Salary Loan </b><br>';
 			}
+			if($row['source'] != "" && $_GET['report'] != 'all'){
+				$source = "( " . $row['source'] . " )";
+			}else{
+				$source = "";
+			}
 ?>	
 			<tr>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd; border-left: 1px solid #ddd; vertical-align: middle; text-align: center;">
-					<i><p style="margin-left: 10px;"><?php echo  $row['penalty']. date("M j, Y", strtotime($row['loandate'])); ?><br><?php if($row['source']){ echo '( ' . $row['source'] . ' )';}?> </p></i>
+					<i><p style="margin-left: 10px;"><?php echo  $row['penalty']. date("M j, Y", strtotime($row['loandate'])); ?><br><?php echo $source; ?> </p></i>
 				</td>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd;vertical-align: middle; text-align: center;">
 					<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['loanamount']); ?></p></i>
