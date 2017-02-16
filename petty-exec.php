@@ -108,10 +108,11 @@
 	if(isset($_POST['caapp'])){
 		$o = mysql_escape_string($_POST['cashadvid']);
 		$accid = mysql_escape_string($_POST['accid']);
+		$source = mysqli_real_escape_string($conn, $_POST['loan_source']);
 		$sql ="UPDATE cashadv set 
-	   		state = 'ACash'
+	   		state = 'ACash', source = '$source'
 	    where cashadv_id = '$o' and account_id = '$accid' and state = 'UACA'"; 
-	    savelogs("Approve Cash Advance", "Cash Advance #: " .$o);
+	    savelogs("Approve Cash Advance", "Cash Advance #: " .$o . ", Source -> " . $source);
 	 	if ($conn->query($sql) === TRUE) {	 		
 			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 	  	}else {
@@ -266,15 +267,17 @@
 		$accid = $_SESSION['acc_id'];
 		$pet_id = $_POST['pet_id'];
 		$rcve_code = $_POST['rcve_code'];
+		$source = mysqli_real_escape_string($conn, $_POST['loan_source']);
 		$query = "SELECT * FROM `loan` where loan_id = '$pet_id' and rcve_code = '$rcve_code'";
 		$result = $conn->query($query);
 		if($result->num_rows > 0){
 			$sql ="UPDATE loan set 
-		   		state = 'ALoan'
+		   		state = 'ALoan', source = '$source'
 		    where loan_id = '$pet_id' and state = 'ARcvCashCode' and rcve_code = '$rcve_code'"; 
 		    savelogs("Release Loan", "Loan #: " .$pet_id);
 		 	if ($conn->query($sql) === TRUE) {	 		
 		    	if($_SESSION['level'] == 'Admin'){
+		    		savelogs("Release Loan", "Loand ID -> " . $pet_id . ", Code -> " . $rcve_code . ", Source -> " . $source);
 		    		echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 		 		}else if($_SESSION['level'] == 'ACC'){
 		 			echo '<script type="text/javascript">window.location.replace("accounting-petty.php"); </script>';

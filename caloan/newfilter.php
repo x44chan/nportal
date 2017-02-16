@@ -545,10 +545,14 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'ca'){
 		while($row = $result->fetch_assoc()){				
 			$originalDate = date($row['cadate']);
 			$newDate = date("M j, Y", strtotime($originalDate));
-
+			if($row['source']){
+				$source = "( " . $row['source'] . " )";
+			}else{
+				$source = "";
+			}
 			echo 
 				'<tr>
-					<td>'.$newDate.'</td>						
+					<td>'.$newDate.'<br>'.$source .'</td>						
 					<td>₱ '.number_format($row["caamount"]).'</td>
 					<td>'.$row["careason"].'</td>
 				</tr>';
@@ -634,7 +638,7 @@ if($_GET['report'] == 'all' || $_GET['report'] == 'loan'){
 ?>	
 			<tr>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd; border-left: 1px solid #ddd; vertical-align: middle; text-align: center;">
-					<i><p style="margin-left: 10px;"><?php echo  $row['penalty']. date("M j, Y", strtotime($row['loandate'])); ?></p></i>
+					<i><p style="margin-left: 10px;"><?php echo  $row['penalty']. date("M j, Y", strtotime($row['loandate'])); ?><br><?php if($row['source']){ echo '( ' . $row['source'] . ' )';}?> </p></i>
 				</td>
 				<td rowspan="<?php echo $len+1;?>" style = "border-right: 1px solid #ddd;vertical-align: middle; text-align: center;">
 					<i><p style="margin-left: 10px;">₱ <?php echo number_format($row['loanamount']); ?></p></i>
