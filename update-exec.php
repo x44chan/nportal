@@ -300,7 +300,7 @@
 					$usedsl = $row['usedsl'];
 					$usedvl = $row['usedvl'];
 				}else{				
-					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin' and startdate like '$datey%'";					
 					$datalea = $conn->query($leaveexec)->fetch_assoc();
 					$sl = $datalea['sleave'];
 					$vl = $datalea['vleave'];
@@ -339,6 +339,7 @@
 			$date2=date_create($datalea['enddate']);
 			$diff=date_diff($date1,$date2);
 			$months = $diff->format("%m");
+			$quarter = 4;
 			if($months > 9 && $months <= 12){
 				$months = ceil($vl / 4);
 				$quarter = 4;
@@ -399,7 +400,7 @@
 				}else {
 					$wthpay = null;
 				}
-				if(stristr($sql, '2016-12-31') == true){
+				if(stristr($sql, '-12-31') == true){
 					$wthpay = null;
 				}
 			}
@@ -428,7 +429,7 @@
 		if($restric == 0 || $restric == 3){
 			if ($conn->query($stmt) === TRUE) {
 				if($wthpay != null && $restric == 0){
-			    	if($dxatax['typeoflea'] == 'Vacation Leave'){
+			    	if($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others'){
 						$quarter = 'quarter';
 					}elseif($dxatax['typeoflea'] == 'Sick Leave'){
 						$quarter = 'year';

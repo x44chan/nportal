@@ -463,6 +463,7 @@ $(document).ready(function(){
 			$date2=date_create($datalea['enddate']);
 			$diff=date_diff($date1,$date2);
 			$months = $diff->format("%m");
+			$quarter = 4;
 			if($months > 9 && $months <= 12){
 				$months = ceil($vl / 4);
 				$quarter = 4;
@@ -552,7 +553,7 @@ $(document).ready(function(){
 							<option value = ""> ---- </option>							
 							<option value = "Sick Leave">Sick Leave</option>
 							<option value = "Vacation Leave">Vacation Leave</option>
-							<?php //if($patternity > 0 && $egender == "Male"){ echo '<option value = "Paternity Leave">Paternity Leave </option>'; }?>
+							<?php if($patternity > 0 && $egender == "Male"){ echo '<option value = "Paternity Leave">Paternity Leave </option>'; }?>
 							<?php //if($wedding  > 0 && $cstatus != 'Married' && $egender == "Female"){ echo '<option value = "Wedding Leave">Wedding Leave </option>'; echo $cstatus;}?>
 							<option value = "Others">Others(Pls. Specify)</option>
 						</select>						
@@ -594,7 +595,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td abbr="center">V.L. Balance for this Quarter</td>
-					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ echo $months-$xcount[0]; }elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];}else{ echo $totavailvac;}?>"class = "form-control"/></td>
+					<td><input readonly="" id = "vacleave" value = "<?php if($totavailvac >= $months){ if($months-$xcount[0] < 0){ echo '0';}else{echo $months-$xcount[0];} }elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];}else{ echo $totavailvac;}?>"class = "form-control"/></td>
 				</tr>
 				<tr class = "form-inline">
 					<td>Inclusive Dates: </td>
@@ -864,7 +865,7 @@ $(document).ready(function(){
 			$state = 'UAPetty';
 		}
 		$datefile = date("Y-m-d");
-		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty' and petty.state != 'UAPetty') order by state ASC, source asc";
+		$sql = "SELECT * FROM petty,login where login.account_id = '$acc_id' and login.position != 'House Helper' and petty.account_id = '$acc_id' and (petty.state != 'DAPetty' and petty.state != 'CPetty') order by state ASC, source asc";
 		$result = $conn->query($sql);
 		$count = 0;
 		$day5 = 0;
@@ -875,7 +876,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
 						$projectcount += 1;
 					}					
 					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
@@ -890,7 +891,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
 						$projectcount += 1;
 					}
 				}
@@ -900,7 +901,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
 						$projectcount += 1;
 					}
 				}
@@ -982,7 +983,7 @@ $(document).ready(function(){
 				}
 			}	
 		}
-		if($_SESSION['level'] == 'ACC' && $particularpet == 'Auto Debit'){
+		if($_SESSION['level'] == 'ACC'){
 			$count = 0;
 		}
 		if($acc_id == '23'){
@@ -1122,7 +1123,7 @@ $(document).ready(function(){
 		}else{
 			$minus = '+1 days';
 		}
-  		if(date("Y-m-d") == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date("Y-m-d") == $_POST['holiday'] || date("Y-m-d") <= date("Y-m-d",strtotime($minus,strtotime($_POST['holiday'])))){
+  		if(date('Y-m-d') == date("Y-m-d",strtotime("-1 day",strtotime($_POST['holiday']))) || date('Y-m-d') == $_POST['holiday'] || date('Y-m-d') == date("Y-m-d",strtotime($minus,strtotime($_POST['holiday'])))){
   			$restrict = 0;
   		}else{
   			$restrict = 1;

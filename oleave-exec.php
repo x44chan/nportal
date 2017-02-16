@@ -51,7 +51,7 @@
 					$usedsl = $row['usedsl'];
 					$usedvl = $row['usedvl'];
 				}else{				
-					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin'";
+					$leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row[account_id]' and state = 'AAdmin' and startdate like '$datey%'";					
 					$datalea = $conn->query($leaveexec)->fetch_assoc();
 					$sl = $datalea['sleave'];
 					$vl = $datalea['vleave'];
@@ -93,6 +93,7 @@
 			$date2=date_create($datalea['enddate']);
 			$diff=date_diff($date1,$date2);
 			$months = $diff->format("%m");
+			$quarter = 4;
 			if($months > 9 && $months <= 12){
 				$months = ceil($vl / 4);
 				$quarter = 4;
@@ -167,8 +168,8 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && isset($xcount[0]) && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
-			$restric = 5;
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && isset($xcount[0]) && $xcount[0] > 0 && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
+		//	$restric = 5;
 		}
 		if(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
 			$restric = 6;
@@ -182,7 +183,7 @@
 		if($restric == 0 || $restric == 3){
 			$stmt->execute();
 			if($wthpay != null && $restric == 0){
-				if($typeoflea == 'Vacation Leave'){
+				if($typeoflea == 'Vacation Leave' || $typeoflea == 'Others'){
 					$quarter = 'quarter';
 				}elseif($typeoflea == 'Sick Leave'){
 					$quarter = 'year';
