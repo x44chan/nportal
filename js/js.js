@@ -242,6 +242,9 @@ $(document).ready(function(){
 	$("#petamount").keyup(function(e){
         $(this).val(format($(this).val()));
     });
+    $("#rebamount").keyup(function(e){
+        $(this).val(format($(this).val()));
+    });
     $("#uppet").keyup(function(e){
         $(this).val(format($(this).val()));
     });

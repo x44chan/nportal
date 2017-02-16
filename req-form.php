@@ -663,6 +663,7 @@ $(document).ready(function(){
           			<option value="Supplier"> Supplier </option>
           			<option value="Netlink"> Netlink </option>
           			<option value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
+          			<option value="ELMS Rental"> ELMS Rental </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
