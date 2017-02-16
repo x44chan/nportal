@@ -42,12 +42,12 @@
 		$_SESSION['type'] = "Project";
 		$_GET['pettype'] = "all";
 		$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
-	}elseif(isset($_GET['pettype']) && $_GET['pettype'] == 'Netlink'){
+	}elseif(isset($_GET['pettype']) && ($_GET['pettype'] == 'Netlink' || $_GET['pettype'] == 'ELMS Rental' || $_GET['pettype'] == 'Permit & Licenses Netlink')){
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
-		$_SESSION['type'] = "Netlink";
+		$_SESSION['type'] = $_GET['pettype'];
 	}
-	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink')){
+	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink' && $_GET['pettype'] == 'Netlink' && $_GET['pettype'] == 'ELMS Rental' && $_GET['pettype'] == 'Permit & Licenses Netlink')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
 		if($_SESSION['type'] == 'P.M.'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['pm']);
@@ -122,6 +122,8 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Project'){ echo ' selected '; }  ?> value="Project"> Project </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Combined'){ echo ' selected '; }  ?> value="Combined"> Combined </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Corporate'){ echo ' selected '; }  ?> value="Corporate"> Corporate </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Permit & Licenses Netlink'){ echo ' selected '; }  ?> value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'ELMS Rental'){ echo ' selected '; }  ?> value="ELMS Rental"> ELMS Rental </option>
 		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){ echo ' selected '; }  ?> value="Netlink"> Netlink </option>-->
 		      		</select>
 				</div>
@@ -320,8 +322,8 @@
 <?php
 	$totalpet = 0;
 	$totalused = 0;
-	if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){
-		$xxa = "(projtype = 'Netlink')";
+	if(isset($_SESSION['type']) && $_SESSION['type'] != '' && $_SESSION['searchbox'] == ""){
+		$xxa = "(projtype = '$_SESSION[type]')";
 	}else{
 		$xxa = "(name = project or projtype != '')";
 	}

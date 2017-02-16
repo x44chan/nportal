@@ -533,6 +533,10 @@ if(isset($_POST['upsub'])){
             <label for="usrname"> Chrono # <font color = "red">*</font></label>
             <input type="text" value = "<?php echo $row['phoenix_chrono']; ?>"name = "phoenix_chrono" pattern = '[0-9-]+' required style = "font-weight:normal;text-transform:capitalize;" class="form-control" placeholder="141">
           </div>
+          <div class="col-md-4">
+            <label for="usrname"> Salary <font color = "red">*</font></label>
+            <input type="text" value = "<?php echo number_format($row['salary'],2); ?>"name = "salary" pattern = '[0-9.,]+' required style = "font-weight:normal;text-transform:capitalize;" class="form-control" placeholder="141">
+          </div>
         </div>
         <div class="row">
          <div class="col-md-8">
@@ -1015,6 +1019,7 @@ if(isset($_POST['submitprof'])){
   $empdateto3 = mysql_escape_string($_POST['empdateto3']);
   $chrono = mysqli_real_escape_string($conn, $_POST['phoenix_chrono']);
   $empid = mysqli_real_escape_string($conn, $_POST['phoenix_empid']);
+  $salary = mysqli_real_escape_string($conn, str_replace(",", "", $_POST['salary']));
 
   $sql ="UPDATE login set 
     fname = '$efname', lname = '$esname', mname = '$emname', position = '$epost', department = '$edept',
@@ -1024,7 +1029,7 @@ if(isset($_POST['submitprof'])){
     esss = '$esss', ephilhealth = '$ephilhealth', etin = '$etin', epagibig = '$epagibig', enameofschool = '$enameofschool', eschooladd = '$eschooladd', egrad = '$egrad',
     ecourse = '$ecourse', eyrgrad = '$eyrgrad',  etel = '$etel', ecstatus = '$ecstatus', 201date = '$dates', empost = '$empost', empost2 = '$empost2',
     empost3 = '$empost3', emcompany = '$emcompany', emcompany2 = '$emcompany2', emcompany3 = '$emcompany3', empdatefr = '$empdatefr', empdatefr2 = '$empdatefr2', empdatefr3 = '$empdatefr3',
-    empdateto = '$empdateto', empdateto2 = '$empdateto2', empdateto3 = '$empdateto3', islock = '1', phoenix_chrono = '$chrono', phoenix_empid = '$empid'
+    empdateto = '$empdateto', empdateto2 = '$empdateto2', empdateto3 = '$empdateto3', islock = '1', phoenix_chrono = '$chrono', phoenix_empid = '$empid', salary = '$salary'
     where account_id = '$acc_id'"; 
   if ($conn->query($sql) === TRUE) {
    echo '<script type = "text/javascript">alert("update successful"); window.location.replace("hr-emprof.php");</script>';
