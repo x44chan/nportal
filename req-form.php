@@ -1680,6 +1680,56 @@ $("#submita").click(function(){
 		$_SESSION['searchbox'] = "";
 	}
 ?>
+<!-- Helper caModal -->
+  <div class="modal fade" id="rebate" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Rebate</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Rebator Name <font color = "red">*</font></label>
+              <input type = "text" name = "reb_name" class="form-control" placeholder = "Enter Rebator Name" required/>
+            </div>
+            <div class="form-group">
+            	<label for="usrname"> Amount <font color = "red">*</font></label>
+            	<input type = "text" pattern = "[.0-9,]*" id = "rebamount" required name = "amount_reb" class ="form-control" autocomplete = "off" placeholder = "Enter amount">
+          	</div>
+          	<div class="form-group">
+            	<label for="usrname"> Date <font color = "red">*</font></label>
+            	<input type = "date" name="reb_date" class="form-control" required>	
+            </div>
+          	<div class="form-group">
+            	<label for="usrname"> Note <font color = "red">*</font></label>
+            	<textarea required name = "reb_reason" class ="form-control" autocomplete = "off" placeholder = "Enter reason"></textarea>
+          	</div>
+              <button type="submit" name = "submit_reb" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div>
+    <?php
+	  	if(isset($_POST['submit_reb'])){
+	  		$url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	  		if(!empty($_POST['reb_name']) && !empty($_POST['amount_reb']) && !empty($_POST['reb_reason']) && !empty($_POST['reb_date'])){
+	  			$stmt = $conn->prepare("INSERT INTO rebate (reb_name, amount, note, date) VALUES (?, ?, ?, ?)");
+	  			$stmt->bind_param("ssss", $_POST['reb_name'], $_POST['amount_reb'], $_POST['reb_reason'], $_POST['reb_date']);
+	  			if($stmt->execute()){
+	  				echo '<script type="text/javascript">alert("Rebate Successful"); window.location.replace("'.$url.'"); </script>';
+	  			}
+	  		}else{
+	  			echo '<script type="text/javascript">alert("Check your data"); window.location.replace("'.$url.'"); </script>';
+	  		}
+	  	}
+	  ?>
 <?php if($_SESSION['level'] == 'ACC') { ?>
 <!-- Helper caModal -->
   <div class="modal fade" id="cahelper" role="dialog">
@@ -1696,7 +1746,11 @@ $("#submita").click(function(){
               <label for="usrname"> Select Helper <font color = "red">*</font></label>
               <select class="form-control" name = "helpername" required>
               	<option value=""> - - - - - - - - </option>
-              	<option value="Helper 1"> Helper 1 </option>
+              	<option value="Perfecto Sarmiento"> Perfecto Sarmiento </option>
+              	<option value="Roger Carbajosa"> Roger Carbajosa </option>
+              	<option value="Dennis Espinosa"> Dennis Espinosa </option>
+              	<option value="Michael Umali"> Michael Umali  </option>
+              	<option value="Jomar Miranda"> Jomar Miranda </option>
               </select>
             </div>
             <div class="form-group">

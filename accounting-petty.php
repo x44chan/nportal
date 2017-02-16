@@ -135,6 +135,7 @@
             <li><a href="hr-emprof.php">Employee Profile</a></li>
             <li><a href = "acc-report.php?sumar=leasum">Employee Leave Summary</a></li>
             <li><a href = "helper.php">Helper CA</a></li>
+            <li><a href = "rebate.php">Rebate</a></li>
             <li><a data-toggle="modal" data-target="#newAcc">Add User</a></li>
           </ul>
       </div>
@@ -360,6 +361,7 @@
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
 			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0; $inter = 0; $maintelabor = 0; $maintemater = 0; $delivercharge = 0;
+			$bankdepo = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -463,6 +465,8 @@
 					$maintemater += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Delivery Charge'){
 					$delivercharge += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Bank Deposits'){
+					$bankdepo += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -478,6 +482,9 @@
 			
 				if($meal > 0){
 					echo '<label> Meal: <i>₱ ' . number_format($meal,2) . '</label>';
+				}
+				if($bankdepo > 0){
+					echo '<label> Bank Deposits: <i>₱ ' . number_format($bankdepo,2) . '</label>';
 				}
 				if($maintelabor > 0){
 					echo '<label> Repairs and Maintenance (Labor): <i>₱ ' . number_format($maintelabor,2) . '</label>';

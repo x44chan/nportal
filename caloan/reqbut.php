@@ -9,18 +9,16 @@
 		<li><a href="#"  data-toggle="modal" data-target="#petty">Petty Cash Form</a></li>
 		<li><a href="#"  data-toggle="modal" data-target="#penalty">Penalty Loan Form</a></li>		
 	  	<li><a href="#"  data-toggle="modal" data-target="#cashadv">Cash Advance Form</a></li>
-	  <?php
-	  	if($_SESSION['category'] == "Regular"){
-	  ?>
-		<li class="divider"></li>
-	  	<li><a href="#"  data-toggle="modal" data-target="#loan">Salary Loan Form</a></li>
-	  <?php
-	  	}
-	  ?>
-
-	  <?php	if($_SESSION['level'] == 'ACC'){ ?>
-		<li class="divider"></li>
-	  	<li><a href="#" data-toggle="modal" data-target="#cahelper">Help Cash Advance</a></li>
-	  <?php }	?>
+	  	<?php	if((stristr($_SESSION['post'], 'sales') !== false) || stristr($_SESSION['post'], 'marketing') !== false || $_SESSION['level'] == 'ACC'){ ?>
+	  		<li><a href="#"  data-toggle="modal" data-target="#rebate">Rebate</a></li>
+	  	<?php	}	?>
+		<?php	if($_SESSION['category'] == "Regular"){	?>
+			<li class="divider"></li>
+		  	<li><a href="#"  data-toggle="modal" data-target="#loan">Salary Loan Form</a></li>
+		<?php	}	?>
+		<?php	if($_SESSION['level'] == 'ACC'){	?>
+			<li class="divider"></li>
+	  		<li><a href="#" data-toggle="modal" data-target="#cahelper">Help Cash Advance</a></li>
+	  	<?php	}	?>
 	</ul>
 </div>
