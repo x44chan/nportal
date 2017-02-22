@@ -274,13 +274,9 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
                         }
-                        /*if($row1['leapay'] == 'wthoutpay'){
-                            echo '<td>0</td>';
-                        }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
-                            echo '<td>4</td>';
-                        }else{
-                            echo '<td>4</td>';
-                        }
+                       
+                        echo '<td>'. number_format(8*$row1['numdays'],2).'</td>';
+                        
                         echo '<td></td><td></td><td></td><td></td>';
                         echo '</tr>';
                     }

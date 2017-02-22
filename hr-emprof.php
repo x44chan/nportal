@@ -307,7 +307,7 @@
     <div class="row">
       <div class="col-xs-12">
         <hr>
-        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Category</i></u></h4>
+        <h4 style="font-size: 21px; margin-left: -20px;"><u><i>Update Category <?php if($row['hrchange'] != '0'){ echo ' (pending) '; } ?></i></u></h4>
       </div>
     </div>
     <div class="row">
@@ -360,7 +360,7 @@
     </div>
     <input type = "hidden" value = "<?php echo  $accid;?>" name = "accid"/>
   </form>
-  <?php if($row['empcatergory'] == "Regular"){ ?>
+  <?php if($row['empcatergory'] == "Regular" && $row['hrchange'] == 0){ ?>
   <?php 
       $id = mysql_escape_string($_GET['modify']);
       $sqlxx = "SELECT * FROM nleave_bal where account_id = '$id' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
@@ -412,11 +412,17 @@ if(isset($_POST['updateleave'])){
   $vleave = mysql_escape_string($_POST['vacleave']);
   $startdate = mysql_escape_string($_POST['startdate']);
   $enddate = date('Y-12-31', strtotime($_POST['startdate']));
+  $date1x = date_create(date("Y-01-01"));
+  $date2x = date_create($startdate);
+  $diffx = date_diff($date1x,$date2x);
+  $computation = (12 - $diffx->format("%m")) / 12;
   $accid = mysql_escape_string($_GET['modify']);
+  $vleave = number_format($vleave * $computation,2);
+  $sleave = number_format($sleave * $computation,2);
   $state = 'UA';
   $datefile = date("Y-m-d");
   $sql = $conn->prepare("INSERT INTO `nleave_bal` (account_id, sleave, vleave, startdate, enddate, state, datefile) VALUES (?, ?, ?, ?, ?, ?, ?)");
-  $sql->bind_param("iiissss", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile);
+  $sql->bind_param("iddssss", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile);
   $select = "SELECT count(account_id) as penleave FROM nleave_bal where account_id = '$accid' and (state != 'DAAdmin' and state != 'AAdmin')";
   $datax = $conn->query($select)->fetch_assoc();
   if($datax['penleave'] == 0){  

@@ -467,14 +467,15 @@
 			$date2=date_create($datalea['enddate']);
 			$diff=date_diff($date1,$date2);
 			$months = $diff->format("%m");
+			$quarter = 4;
 			if($months > 9 && $months <= 12){
-				$months = ceil($vl / 4);
+				$months = number_format($vl / 4,2);
 				$quarter = 4;
 			}elseif($months > 6 && $months <= 9){
-				$months = ceil($vl / 3);
+				$months = number_format($vl / 3,2);
 				$quarter = 3;
 			}elseif($months > 3 && $months <= 6) {
-				$months = ceil($vl / 2);
+				$months = number_format($vl / 2,2);
 				$quarter = 2;
 			}elseif($months > 0 && $months <= 3){
 				$months = $vl;
@@ -550,7 +551,7 @@
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
 			<?php if(isset($cate) && $cate == 'Regular'){ ?>
 			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
-			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; }elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];}else{ echo $totavailvac;}?></td></tr> 
+			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; $remainvac = $months-$xcount[0];}elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];  $remainvac =$months-$xcount[0];}else{ echo $totavailvac;  $remainvac=$totavailvac;}?></td></tr> 
 			<?php } ?>
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
@@ -571,7 +572,7 @@
 				<select class="form-control" name = "payment" required>
 					<option value="">------</option>
 					<option value="wthoutpay">Without Pay</option>
-					<?php if($row['empcatergory'] == 'Regular' && $row['regdate'] <= date('Y-m-d') && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($totavailvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
+					<?php if($row['empcatergory'] == 'Regular' && $row['regdate'] <= date('Y-m-d') && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($remainvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
 						<option value="wthpay">With Pay</option>
 					<?php } ?>
 				</select>

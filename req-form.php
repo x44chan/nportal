@@ -465,13 +465,13 @@ $(document).ready(function(){
 			$months = $diff->format("%m");
 			$quarter = 4;
 			if($months > 9 && $months <= 12){
-				$months = ceil($vl / 4);
+				$months = number_format($vl / 4,2);
 				$quarter = 4;
 			}elseif($months > 6 && $months <= 9){
-				$months = ceil($vl / 3);
+				$months = number_format($vl / 3,2);
 				$quarter = 3;
 			}elseif($months > 3 && $months <= 6) {
-				$months = ceil($vl / 2);
+				$months = number_format($vl / 2,2);
 				$quarter = 2;
 			}elseif($months > 0 && $months <= 3){
 				$months = $vl;

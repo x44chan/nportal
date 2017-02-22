@@ -95,13 +95,13 @@
 			$months = $diff->format("%m");
 			$quarter = 4;
 			if($months > 9 && $months <= 12){
-				$months = ceil($vl / 4);
+				$months = number_format($vl / 4,2);
 				$quarter = 4;
 			}elseif($months > 6 && $months <= 9){
-				$months = ceil($vl / 3);
+				$months = number_format($vl / 3,2);
 				$quarter = 3;
 			}elseif($months > 3 && $months <= 6) {
-				$months = ceil($vl / 2);
+				$months = number_format($vl / 2,2);
 				$quarter = 2;
 			}elseif($months > 0 && $months <= 3){
 				$months = $vl;
@@ -168,8 +168,8 @@
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
 		}
-		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && isset($xcount[0]) && $xcount[0] > 0 && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
-		//	$restric = 5;
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
+			$restric = 5;
 		}
 		if(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
 			$restric = 6;
