@@ -60,7 +60,8 @@
       			<option <?php if($row['projtype'] == 'Supplier'){ echo ' selected ';} ?> value="Supplier"> Supplier </option>
       			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected ';} ?> value="Netlink"> Netlink </option>
                         <option <?php if($row['projtype'] == 'Permit & Licenses Netlink'){ echo ' selected ';} ?> value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
-                        <option <?php if($row['projtype'] == 'ELMS Rental'){ echo ' selected ';} ?> value="ELMS Rental"> ELMS Rental </option>
+                        <option <?php if($row['projtype'] == 'ELMS Rental & Electric Bill'){ echo ' selected ';} ?> value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
+                        <option <?php if($row['projtype'] == 'Sotero Molino'){ echo ' selected ';} ?> value="Sotero Molino"> Sotero Molino </option>
                         <?php if($_SESSION['acc_id'] == '37') {  ?>
       				<option <?php if($row['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
       			<?php } ?>
@@ -340,7 +341,7 @@ echo '</div>';
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}					
 					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
@@ -355,7 +356,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -365,7 +366,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}

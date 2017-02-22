@@ -42,12 +42,12 @@
 		$_SESSION['type'] = "Project";
 		$_GET['pettype'] = "all";
 		$_SESSION['loc'] = mysqli_real_escape_string($conn, $_GET['loc']);
-	}elseif(isset($_GET['pettype']) && ($_GET['pettype'] == 'Netlink' || $_GET['pettype'] == 'ELMS Rental' || $_GET['pettype'] == 'Permit & Licenses Netlink')){
+	}elseif(isset($_GET['pettype']) && ($_GET['pettype'] == 'Netlink' || $_GET['pettype'] == 'ELMS Rental & Electric Bill' || $_GET['pettype'] == 'Permit & Licenses Netlink' || $_GET['pettype'] == 'Sotero Molino')){
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
 		$_SESSION['type'] = $_GET['pettype'];
 	}
-	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink' && $_GET['pettype'] == 'Netlink' && $_GET['pettype'] == 'ELMS Rental' && $_GET['pettype'] == 'Permit & Licenses Netlink')){
+	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink' && $_GET['pettype'] != 'Sotero Molino' && $_GET['pettype'] != 'ELMS Rental & Electric Bill' && $_GET['pettype'] != 'Permit & Licenses Netlink')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
 		if($_SESSION['type'] == 'P.M.'){
 			$_SESSION['searchbox'] = mysqli_real_escape_string($conn, $_GET['pm']);
@@ -123,7 +123,8 @@
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Combined'){ echo ' selected '; }  ?> value="Combined"> Combined </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Corporate'){ echo ' selected '; }  ?> value="Corporate"> Corporate </option>
 		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Permit & Licenses Netlink'){ echo ' selected '; }  ?> value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
-		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'ELMS Rental'){ echo ' selected '; }  ?> value="ELMS Rental"> ELMS Rental </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'ELMS Rental & Electric Bill'){ echo ' selected '; }  ?> value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
+		      			<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Sotero Molino'){ echo ' selected '; }  ?> value="Sotero Molino"> Sotero Molino </option>
 		      			<!--<option <?php if(isset($_SESSION['type']) && $_SESSION['type'] == 'Netlink'){ echo ' selected '; }  ?> value="Netlink"> Netlink </option>-->
 		      		</select>
 				</div>

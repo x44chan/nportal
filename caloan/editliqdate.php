@@ -64,7 +64,8 @@
 	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?>value="Supplier"> Supplier </option>
 	      			<option <?php if($data['projtype'] == 'Netlink'){ echo ' selected ';} ?>value="Netlink"> Netlink </option>
 	      			<option <?php if($data['projtype'] == 'Permit & Licenses Netlink'){ echo ' selected ';} ?>value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
-	      			<option <?php if($data['projtype'] == 'ELMS Rental'){ echo ' selected ';} ?>value="ELMS Rental"> ELMS Rental </option>
+	      			<option <?php if($data['projtype'] == 'ELMS Rental & Electric Bill'){ echo ' selected ';} ?>value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
+	      			<option <?php if($data['projtype'] == 'Sotero Molino'){ echo ' selected ';} ?>value="Sotero Molino"> Sotero Molino </option>
 	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
 	      			<?php } ?>

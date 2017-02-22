@@ -663,7 +663,8 @@ $(document).ready(function(){
           			<option value="Supplier"> Supplier </option>
           			<option value="Netlink"> Netlink </option>
           			<option value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
-          			<option value="ELMS Rental"> ELMS Rental </option>
+          			<option value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
+          			<option value="Sotero Molino"> Sotero Molino </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
@@ -877,7 +878,7 @@ $(document).ready(function(){
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}					
 					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
@@ -892,7 +893,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -902,7 +903,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental'){
+					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
