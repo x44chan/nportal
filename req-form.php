@@ -192,6 +192,7 @@ $(document).ready(function(){
 		          			<option value="Support"> Project Support </option>
 		          			<option value="Service"> Service </option>
 		          			<option value="Email Hosting"> Email Hosting </option>
+		          			<option value="Commission Base"> Commission Base </option>
 		          			<option value="Corporate"> Corporate </option>
 		          			<option value="Luwas"> Luwas </option>
 		          			<option value="Netlink"> Netlink </option>	
@@ -205,6 +206,50 @@ $(document).ready(function(){
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otcomisiontype">
+            		<td><label>Commission Base (Project/Bidding)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisiontype">
+		            		<option value = ""> - - - - - </option>
+		            		<option value="Bidding">Bidding</option>
+		            		<option value="Project">Project</option>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otcomisionproj">
+            		<td><label>Commission Base (Project)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisionproj">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Project' and state = '1' order by CHAR_LENGTH(name)";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr style = "display: none;" id = "otcomisionbid">
+            		<td><label>Commission Base (Bidding)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisionbid">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Bidding' and state = '1' order by CHAR_LENGTH(name)";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){
@@ -658,6 +703,7 @@ $(document).ready(function(){
           			<option value="Service"> Service </option>
           			<option value="Email Hosting"> Email Hosting </option>
           			<option value="Combined"> P.M. & Internet </option>
+          			<option value="Commission Base"> Commission Base </option>
           			<option value="Corporate"> Corporate </option>
           			<option value="Luwas"> Luwas </option>
           			<option value="Supplier"> Supplier </option>
@@ -728,6 +774,44 @@ $(document).ready(function(){
             		<option value = ""> - - - - - </option>
             		<?php
             			$xsql = "SELECT * FROM `project` where type = 'P.M.' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "comisiontype">
+            	<label>Commission Base (Bidding/Project) <font color = "red">*</font></label>
+            	<select class="form-control" name = "comisiontype">
+            		<option value = ""> - - - - - </option>
+            		<option value="Bidding">Bidding</option>
+                    <option value="Project">Project</option>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "comisionbid">
+            	<label>Commission Base (Bidding)<font color = "red">*</font></label>
+            	<select class="form-control" name = "comisionbid">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Bidding' and state = '1' order by CHAR_LENGTH(name)";
+            			$xresult = $conn->query($xsql);
+            			if($xresult->num_rows > 0){
+            				while($xrow = $xresult->fetch_assoc()){
+            					echo '<option value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+            				}
+            			}
+            		?>
+            	</select>
+            </div>
+            <div style = "display: none;" class="form-group" id = "comisionproj">
+            	<label>Commission Base (Project)<font color = "red">*</font></label>
+            	<select class="form-control" name = "comisionproj">
+            		<option value = ""> - - - - - </option>
+            		<?php
+            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Project' and state = '1' order by CHAR_LENGTH(name)";
             			$xresult = $conn->query($xsql);
             			if($xresult->num_rows > 0){
             				while($xrow = $xresult->fetch_assoc()){
@@ -881,7 +965,7 @@ $(document).ready(function(){
 					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink'  || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}					
-					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
+					if($row['projtype'] == 'Commission Base' || $row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
@@ -893,7 +977,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
+					if($row['projtype'] == 'Commission Base' || $row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -903,7 +987,7 @@ $(document).ready(function(){
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
+					if($row['projtype'] == 'Commission Base' || $row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Auto Debit' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -911,6 +995,7 @@ $(document).ready(function(){
 		}
 		
 		if(isset($_POST['pettype'])){
+			$comtype = "";
 			if($_POST['pettype'] == 'Project' || $_POST['pettype'] == 'Support'){
 				if($projectcount > 0){
 					$count = 1;
@@ -976,6 +1061,18 @@ $(document).ready(function(){
 					$count = 0;
 				}
 				$_POST['project'] = $_POST['xoncall'];
+			}elseif($_POST['pettype'] == 'Commission Base'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				if(isset($_POST['comisionbid']) && !empty($_POST['comisionbid'])){
+					$_POST['project'] = $_POST['comisionbid'];
+				}elseif(isset($_POST['comisionproj']) && !empty($_POST['comisionproj'])){
+					$_POST['project'] = $_POST['comisionproj'];
+				}
+				$comtype = $_POST['comisiontype'];
 			}else{
 				$_POST['project'] = null;
 				if($projectcount > 0){
@@ -1017,8 +1114,8 @@ $(document).ready(function(){
 			if($_POST['pettype'] == 'Others'){
 				$_POST['project'] = null;
 			}
-			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`, `projtype`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("isssssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project'], $_POST['pettype']);
+			$stmt = $conn->prepare("INSERT INTO petty (`account_id`,`date`, `particular`, `amount`, `state`, `petreason`, `project`, `projtype`,`comtype`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("issssssss", $acc_id, $datefile, $particularpet, $amountpet, $state, $_POST['petreason'], $_POST['project'], $_POST['pettype'], $comtype);
 			$stmt->execute();		
 			if($_SESSION['level'] == 'EMP'){
 				//include 'savelogs.php';  

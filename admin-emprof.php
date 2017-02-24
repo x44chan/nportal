@@ -171,7 +171,7 @@
         <tbody>
 <?php 
     include("conf.php");
-    $sql = "SELECT * from `login`,`loan` where login.account_id = loan.account_id and level != 'Admin' and active != 0 and position != 'House Helper' $qrty and state = 'ALoan' order by edatehired";
+    $sql = "SELECT * from `login`,`loan` where login.account_id = loan.account_id and loan_id in (select loan_cutoff.loan_id from loan_cutoff where loan_cutoff.enddate >= CURDATE() group by loan_cutoff.loan_id order by enddate desc) and level != 'Admin' and active != 0 and position != 'House Helper' $qrty and state = 'ALoan' order by edatehired";
     $result = $conn->query($sql);
     $datey = date("Y");
     

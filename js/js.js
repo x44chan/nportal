@@ -92,6 +92,44 @@ $(document).ready(function(){
 			$("#othersl").attr('required',false);
 		}
 	});
+	$('select[name="otcomisiontype"]').change(function() {
+	    var selected3 = $(this).val();
+	    if(selected3 == 'Bidding'){
+			$('#otcomisionbid').show();
+			$('select[name="otcomisionbid"]').attr('required',true);
+		}else{
+			$('#otcomisionbid').hide();
+			$('select[name="otcomisionbid"]').attr('required',false);
+			$('select[name="otcomisionbid"]').val('');
+		}
+		if(selected3 == 'Project'){
+			$('#otcomisionproj').show();
+			$('select[name="otcomisionproj"]').attr('required',true);
+		}else{
+			$('#otcomisionproj').hide();
+			$('select[name="otcomisionproj"]').attr('required',false);
+			$('select[name="otcomisionproj"]').val('');
+		}
+	});
+	$('select[name="comisiontype"]').change(function() {
+	    var selected3 = $(this).val();
+	    if(selected3 == 'Bidding'){
+			$('#comisionbid').show();
+			$('select[name="comisionbid"]').attr('required',true);
+		}else{
+			$('#comisionbid').hide();
+			$('select[name="comisionbid"]').attr('required',false);
+			$('select[name="comisionbid"]').val('');
+		}
+		if(selected3 == 'Project'){
+			$('#comisionproj').show();
+			$('select[name="comisionproj"]').attr('required',true);
+		}else{
+			$('#comisionproj').hide();
+			$('select[name="comisionproj"]').attr('required',false);
+			$('select[name="comisionproj"]').val('');
+		}
+	});
 	$('select[name="pettype"]').change(function() {
 	    var selected2 = $(this).val();
 		if(selected2 == 'Corporate'){
@@ -156,6 +194,16 @@ $(document).ready(function(){
 			$('#internet').hide();
 			$('select[name="internet"]').attr('required',false);
 		}
+		if(selected2 == 'Commission Base'){
+			$('#comisiontype').show();
+			$('select[name="comisiontype"]').attr('required',true);
+			$('select[name="comisiontype"]').val('');
+		}else{
+			$('#comisiontype').hide();
+			$('#comisionbid').hide();
+			$('#comisionproj').hide();
+			$('select[name="comisiontype"]').attr('required',false);
+		}
 		if(selected2 == 'All'){
 			$('#all').show();
 			$('select[name="internet"]').attr('required',true);
@@ -201,6 +249,13 @@ $(document).ready(function(){
 			}else{
 				$('#otinternet').hide();
 				$('select[name="otinternet"]').attr('required',false);
+			}
+			if(selected2 == 'Commission Base'){
+				$('#otcomisiontype').show();
+				$('select[name="otcomisiontype"]').attr('required',true);
+			}else{
+				$('#otcomisiontype').hide();
+				$('select[name="otcomisiontype"]').attr('required',false);
 			}
 			if(selected2 == 'Service'){
 				$('#otoncall').show();

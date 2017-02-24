@@ -105,6 +105,7 @@
 				$uplate = ', state = "UA" ';
 		}
 		if(isset($_POST['ottype'])){
+			$comtype = "";
 			if($_POST['ottype'] == 'Project' || $_POST['ottype'] == 'Support'){
 				$_POST['project'] = $_POST['otproject'];
 			}elseif($_POST['ottype'] == 'P.M.'){
@@ -117,6 +118,13 @@
 				$_POST['project'] = $_POST['otcorpo'];
 			}elseif($_POST['ottype'] == 'Email Hosting'){
 				$_POST['project'] = $_POST['otehosting'];
+			}elseif($_POST['ottype'] == 'Commission Base'){
+				if(isset($_POST['otcomisionbid']) && !empty($_POST['otcomisionbid'])){
+					$_POST['project'] = $_POST['otcomisionbid'];
+				}elseif(isset($_POST['otcomisionproj']) && !empty($_POST['otcomisionproj'])){
+					$_POST['project'] = $_POST['otcomisionproj'];
+				}
+				$comtype = $_POST['otcomisiontype'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;
@@ -145,7 +153,7 @@
 			$restric = 0;
 		}
 		$stmt = "UPDATE `overtime` set 
-			projtype = '$projtype', project = '$project', csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
+			comtype = '$comtype', projtype = '$projtype', project = '$project', csrnum = '$csrnum', otbreak = '$otbreak', approvedothrs = '$approvedothrs', officialworksched = '$officialworksched', startofot = '$start', endofot = '$end', reason = '$reason', otbreak = '$otbreak', dateofot = '$date' $uplate
 			where account_id = '$accid' and $state and overtime_id = '$_SESSION[otid]'";
 		if($restric == 0){
 			if ($conn->query($stmt) === TRUE) {
@@ -704,6 +712,13 @@
 				$_POST['project'] = $_POST['otcorpo'];
 			}elseif($_POST['ottype'] == 'Email Hosting'){
 				$_POST['project'] = $_POST['otehosting'];
+			}elseif($_POST['ottype'] == 'Commission Base'){
+				if(isset($_POST['otcomisionbid']) && !empty($_POST['otcomisionbid'])){
+					$_POST['project'] = $_POST['otcomisionbid'];
+				}elseif(isset($_POST['otcomisionproj']) && !empty($_POST['otcomisionproj'])){
+					$_POST['project'] = $_POST['otcomisionproj'];
+				}
+				$comtype = $_POST['otcomisiontype'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;
@@ -712,7 +727,7 @@
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
 		if( (isset($_POST['oldprojtype']) && $_POST['oldprojtype'] != "" && isset($_POST['oldproject']) && $_POST['oldproject'] != "" ) || (isset($_POST['oldprojtype']) && ( $_POST['oldprojtype'] == 'Netlink' || $_POST['oldprojtype'] == 'Luwas') ) ){
-			$oldot = $oldot . ' <br> </i><font color = "#333"> Old Project: </font><i>' . $_POST['oldprojtype'] . ': ' . $_POST['oldproject'];
+			$oldot = $oldot . ' <br> </i><font color = "#333"> Old Project: </font><i>' . $_POST['oldprojtype'] . ': ' . $_POST['oldproject'] . ' ' . $comtype;
 		}
 		if(isset($_POST['oldsched'])){
 			if($_POST['oldsched'] == ""){
@@ -722,7 +737,7 @@
 		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
-			project = '$project', projtype = '$projtype', startofot = '$hruptimein', officialworksched = '$officialworksched', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
+			comtype = '$comtype', project = '$project', projtype = '$projtype', startofot = '$hruptimein', officialworksched = '$officialworksched', endofot = '$hruptimeout', $dates dareason = '$dareason',  oldot = '$oldot', state = '$upstate', approvedothrs = '$newappot', otbreak = '$otbreak' $correcxq
 			where account_id = '$accid' and state = 'UA' and overtime_id = '$overtime'";
 		$xxxss = "SELECT * FROM login where account_id = '$accid'";
 		$xxxsss = $conn->query($xxxss)->fetch_assoc();	

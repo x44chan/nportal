@@ -334,7 +334,7 @@
 					</div>
 					<div class = "col-xs-3">
 						<label> Type / Project </label>
-						<p>'.$amount['projtype']. ' / ' . $amount['project'].'</p>
+						<p>'.$amount['projtype']. ' / ' . $amount['project'] . ' / ' . $amount['comtype'] .'</p>
 					</div>
 					<div class = "col-xs-3">
 						<label> Petty # / Source </label>

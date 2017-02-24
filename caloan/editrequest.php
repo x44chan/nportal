@@ -50,6 +50,7 @@
 		          			<option <?php if($row['projtype'] == 'Project'){ echo ' selected '; } ?> value="Project"> Project </option>
 		          			<option <?php if($row['projtype'] == 'Support'){ echo ' selected '; } ?> value="Support"> Project Support </option>
 		          			<option <?php if($row['projtype'] == 'Service'){ echo ' selected '; } ?> value="Service"> Service </option>
+		          			<option <?php if($row['projtype'] == 'Commission Base'){ echo ' selected '; } ?> value="Commission Base"> Commission Base </option>
 		          			<option <?php if($row['projtype'] == 'Email Hosting'){ echo ' selected '; } ?> value="Email Hosting"> Email Hosting </option>
 		          			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected '; } ?> value="Luwas"> Luwas </option>	
 		          			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected '; } ?> value="Netlink"> Netlink </option>	
@@ -63,6 +64,60 @@
 		            		<option value = ""> - - - - - </option>
 		            		<?php
 		            			$xsql = "SELECT * FROM `project` where type = 'On Call' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] != 'Commission Base'){ echo ' style = "display: none;" '; } ?>  id = "otcomisiontype">
+            		<td><label>Commission Base (Project/Bidding)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisiontype">
+		            		<option value = ""> - - - - - </option>
+		            		<option value="Bidding" <?php if($row['comtype'] == 'Bidding') echo ' selected '; ?>>Bidding</option>
+		            		<option value="Project" <?php if($row['comtype'] == 'Project') echo ' selected '; ?>>Project</option>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] == 'Commission Base' && $row['comtype'] == 'Project'){}else{ echo ' style = "display: none;" '; } ?> id = "otcomisionproj">
+            		<td><label>Commission Base (Project)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisionproj">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Project' and state = '1'";
+		            			$xresult = $conn->query($xsql);
+		            			if($xresult->num_rows > 0){
+		            				while($xrow = $xresult->fetch_assoc()){
+		            					if($xrow['name'] == $row['project']){
+		            						$selecteds = ' selected ';
+		            					}else{
+		            						$selecteds = "";
+		            					}
+		            					echo '<option '.$selecteds.' value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+		            				}
+		            			}
+		            		?>
+		            	</select>
+		            </td>
+		        </tr>
+		        <tr <?php if($row['projtype'] == 'Commission Base' && $row['comtype'] == 'Bidding'){}else{ echo ' style = "display: none;" '; } ?> id = "otcomisionbid">
+            		<td><label>Commission Base (Bidding)<font color = "red">*</font></label></td>
+            		<td>
+            			<select class="form-control" name = "otcomisionbid">
+		            		<option value = ""> - - - - - </option>
+		            		<?php
+		            			$xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Bidding' and state = '1'";
 		            			$xresult = $conn->query($xsql);
 		            			if($xresult->num_rows > 0){
 		            				while($xrow = $xresult->fetch_assoc()){

@@ -91,6 +91,7 @@
 			$restric = 1;	
 		}
 		if(isset($_POST['ottype'])){
+			$comtype = "";
 			if($_POST['ottype'] == 'Project' || $_POST['ottype'] == 'Support'){
 				$_POST['project'] = $_POST['otproject'];
 			}elseif($_POST['ottype'] == 'P.M.'){
@@ -103,6 +104,13 @@
 				$_POST['project'] = $_POST['otcorpo'];
 			}elseif($_POST['ottype'] == 'Email Hosting'){
 				$_POST['project'] = $_POST['otehosting'];
+			}elseif($_POST['ottype'] == 'Commission Base'){
+				if(isset($_POST['otcomisionbid']) && !empty($_POST['otcomisionbid'])){
+					$_POST['project'] = $_POST['otcomisionbid'];
+				}elseif(isset($_POST['otcomisionproj']) && !empty($_POST['otcomisionproj'])){
+					$_POST['project'] = $_POST['otcomisionproj'];
+				}
+				$comtype = $_POST['otcomisiontype'];
 			}else{
 				$project = null;
 				$_POST['project'] = null;
@@ -130,8 +138,8 @@
 		}
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
-		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("ssissssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum']);	
+		$stmt = $conn->prepare("INSERT into `overtime` (project, projtype, account_id, datefile, 2daysred, dateofot, nameofemp, startofot, endofot, officialworksched, reason, state, approvedothrs, otbreak, csrnum, comtype) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("ssisssssssssssss",$project, $projtype, $accid, $datefile, $twodaysred, $dateofot, $nameofemployee, $startofot, $endofot, $officialworksched, $reason, $state, $approvedothrs, $otbreak, $_POST['csrnum'], $comtype);	
 		if($restric == 0){
 			$stmt->execute();
 			if($_SESSION['level'] == 'EMP'){

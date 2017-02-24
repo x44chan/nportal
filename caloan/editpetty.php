@@ -55,7 +55,8 @@
       			<option <?php if($row['projtype'] == 'Service'){ echo ' selected ';} ?> value="Service"> Service </option>
                         <option <?php if($row['projtype'] == 'Email Hosting'){ echo ' selected ';} ?> value="Email Hosting"> Email Hosting </option>
       			<option <?php if($row['projtype'] == 'Combined'){ echo ' selected ';} ?> value="Combined"> P.M. & Internet </option>
-      			<option <?php if($row['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
+      			<option <?php if($row['projtype'] == 'Commission Base'){ echo ' selected ';} ?> value="Commission Base"> Commission Base </option>
+                        <option <?php if($row['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
       			<option <?php if($row['projtype'] == 'Luwas'){ echo ' selected ';} ?> value="Luwas"> Luwas </option>
       			<option <?php if($row['projtype'] == 'Supplier'){ echo ' selected ';} ?> value="Supplier"> Supplier </option>
       			<option <?php if($row['projtype'] == 'Netlink'){ echo ' selected ';} ?> value="Netlink"> Netlink </option>
@@ -68,27 +69,59 @@
       		</select>
 		</div>
 		<div <?php if($row['projtype'] != 'Combined'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "combined">
-			<div  class="form-group">
-            	<label>P.M. & Internet <font color = "red">*</font></label>
-            	<select class="form-control" name = "combined">
-            		<option value = ""> - - - - - </option>
-            		<?php
-            			$xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
-            			$xresult = $conn->query($xsql);
-            			if($xresult->num_rows > 0){
-            				while($xrow = $xresult->fetch_assoc()){
-            					if($row['project'] == $xrow['name']){
-            						$selected = ' selected ';
-            					}else{
-            						$selected = "";
-            					}
-            					echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
-            				}
-            			}
-            		?>
-            	</select>
+                  <div  class="form-group">
+                        <label>P.M. & Internet <font color = "red">*</font></label>
+                        <select class="form-control" name = "combined">
+                              <option value = ""> - - - - - </option>
+                              <?php
+                                    $xsql = "SELECT * FROM `project` where type = 'Combined' and state = '1'";
+                                    $xresult = $conn->query($xsql);
+                                    if($xresult->num_rows > 0){
+                                          while($xrow = $xresult->fetch_assoc()){
+                                                if($row['project'] == $xrow['name']){
+                                                      $selected = ' selected ';
+                                                }else{
+                                                      $selected = "";
+                                                }
+                                                echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                          }
+                                    }
+                              ?>
+                        </select>
+                  </div>
             </div>
-		</div>
+            <div <?php if($row['projtype'] != 'Commission Base'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "comisiontype">
+                  <div  class="form-group">
+                        <label>(Bidding/Project) <font color = "red">*</font></label>
+                        <select class="form-control" name = "comisiontype">
+                              <option value = ""> - - - - - </option>
+                              <option value="Bidding" <?php if($row['comtype'] == 'Bidding'){ echo ' selected '; }?>>Bidding</option>
+                              <option value="Project" <?php if($row['comtype'] == 'Project'){ echo ' selected '; }?>>Project</option>
+                        </select>
+                  </div>
+            </div>
+            <div <?php if($row['projtype'] != 'Commission Base'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "comisionbid">
+                  <div  class="form-group">
+                        <label>Commission Base (Bidding)<font color = "red">*</font></label>
+                        <select class="form-control" name = "comisionbid">
+                              <option value = ""> - - - - - </option>
+                              <?php
+                                    $xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Bidding' and state = '1' order by CHAR_LENGTH(name)";
+                                    $xresult = $conn->query($xsql);
+                                    if($xresult->num_rows > 0){
+                                          while($xrow = $xresult->fetch_assoc()){
+                                                if($row['project'] == $xrow['name']){
+                                                      $selected = ' selected ';
+                                                }else{
+                                                      $selected = "";
+                                                }
+                                                echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                          }
+                                    }
+                              ?>
+                        </select>
+                  </div>
+            </div>
 		<div <?php if($row['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "project">
 			<div  class="form-group">
             	<label>Project <font color = "red">*</font></label>
@@ -341,7 +374,7 @@ echo '</div>';
 			$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 			$data = $conn->query($sql)->fetch_assoc();
 				if($data['petty_id'] == null){
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
+					if($row['projtype'] == 'Commission Base' || $row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}					
 					if($row['appdate'] != "0000-00-00 00:00:00" && date("Y-m-d",strtotime("+6 days", strtotime($row['appdate']))) <= date("Y-m-d")){
@@ -356,7 +389,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
+					if($row['projtype'] == 'Commission Base' || $row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -366,7 +399,7 @@ echo '</div>';
 					}elseif(date("Y-m-d",strtotime("+6 days", strtotime($row['date']))) <= date("Y-m-d")){
 						$day5 += 1;
 					}
-					if($row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == ' ELMS Rental & Electric Bill'){
+					if($row['projtype'] == 'Commission Base' || $row['projtype'] == 'Project' || $row['projtype'] == 'Support' || $row['projtype'] == 'Corporate' || $row['projtype'] == 'Netlink' || $row['projtype'] == 'Luwas' || $row['projtype'] == 'Supplier' || $row['projtype'] == 'Support' || $row['projtype'] == 'Email Hosting' || $row['projtype'] == 'Permit & Licenses Netlink' || $row['projtype'] == 'ELMS Rental & Electric Bill'){
 						$projectcount += 1;
 					}
 				}
@@ -430,13 +463,24 @@ echo '</div>';
 				}
 				$project = $_POST['combined'];
 			}elseif($_POST['pettype'] == 'Service'){
-				if($day5 > 0){
-					$count = 1;
-				}else{
-					$count = 0;
-				}
-				$project = $_POST['oncall'];
-			}else{
+                        if($day5 > 0){
+                              $count = 1;
+                        }else{
+                              $count = 0;
+                        }
+                        $project = $_POST['oncall'];
+                  }elseif($_POST['pettype'] == 'Commission Base'){
+                        if($projectcount > 0){
+                              $count = 1;
+                        }else{
+                              $count = 0;
+                        }
+                        if(isset($_POST['comisionbid']) && !empty($_POST['comisionbid'])){
+                              $_POST['project'] = $_POST['comisionbid'];
+                        }elseif(isset($_POST['comisionproj']) && !empty($_POST['comisionproj'])){
+                              $_POST['project'] = $_POST['comisionproj'];
+                        }
+                  }else{
 				$project = null;
 				if($projectcount > 0){
 					$count = 1;

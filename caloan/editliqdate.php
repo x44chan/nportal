@@ -59,6 +59,7 @@
       				<option <?php if($data['projtype'] == 'Service'){ echo ' selected ';} ?> value="Service"> Service </option>	      			
 	      			<option <?php if($data['projtype'] == 'Email Hosting'){ echo ' selected ';} ?> value="Email Hosting"> Email Hosting </option>
 	      			<option <?php if($data['projtype'] == 'Combined'){ echo ' selected ';} ?>value="Combined"> P.M. & Internet </option>
+	      			<option <?php if($data['projtype'] == 'Commission Base'){ echo ' selected ';} ?> value="Commission Base"> Commission Base </option>
 	      			<option <?php if($data['projtype'] == 'Corporate'){ echo ' selected ';} ?> value="Corporate"> Corporate </option>
 	      			<option <?php if($data['projtype'] == 'Luwas'){ echo ' selected ';} ?>value="Luwas"> Luwas </option>
 	      			<option <?php if($data['projtype'] == 'Supplier'){ echo ' selected ';} ?>value="Supplier"> Supplier </option>
@@ -93,6 +94,60 @@
 	            	</select>
 	            </div>
 			</div>
+			<div <?php if($data['projtype'] != 'Commission Base'){ echo ' style = "display: none;" ';} ?> class="col-xs-2"  id = "comisiontype">
+                  <div  class="form-group">
+                        <label>(Bidding/Project) <font color = "red">*</font></label>
+                        <select class="form-control" name = "comisiontype">
+                              <option value = ""> - - - - - </option>
+                              <option value="Bidding" <?php if($data['comtype'] == 'Bidding'){ echo ' selected '; }?>>Bidding</option>
+                              <option value="Project" <?php if($data['comtype'] == 'Project'){ echo ' selected '; }?>>Project</option>
+                        </select>
+                  </div>
+            </div>
+            <div <?php if($data['projtype'] == 'Commission Base' && $data['comtype'] == 'Bidding'){ }else{echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "comisionbid">
+                  <div  class="form-group">
+                        <label>Commission Base <font color = "red">*</font></label>
+                        <select class="form-control" name = "comisionbid">
+                              <option value = ""> - - - - - </option>
+                              <?php
+                                    $xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Bidding' and state = '1' order by CHAR_LENGTH(name)";
+            						$xresult = $conn->query($xsql);
+                                    if($xresult->num_rows > 0){
+                                          while($xrow = $xresult->fetch_assoc()){
+                                                if($data['project'] == $xrow['name']){
+                                                      $selected = ' selected ';
+                                                }else{
+                                                      $selected = "";
+                                                }
+                                                echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                          }
+                                    }
+                              ?>
+                        </select>
+                  </div>
+            </div>
+            <div <?php if($data['projtype'] == 'Commission Base' && $data['comtype'] == 'Project'){ }else{echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "comisionproj">
+                  <div  class="form-group">
+                        <label>Commission Base <font color = "red">*</font></label>
+                        <select class="form-control" name = "comisionproj">
+                              <option value = ""> - - - - - </option>
+                              <?php
+                                    $xsql = "SELECT * FROM `project` where type = 'Commission Base' and comtype = 'Project' and state = '1' order by CHAR_LENGTH(name)";
+            						$xresult = $conn->query($xsql);
+                                    if($xresult->num_rows > 0){
+                                          while($xrow = $xresult->fetch_assoc()){
+                                                if($data['project'] == $xrow['name']){
+                                                      $selected = ' selected ';
+                                                }else{
+                                                      $selected = "";
+                                                }
+                                                echo '<option '.$selected .'value = "' . $xrow['name'] . '"> ' . $xrow['name'] . '</option>';
+                                          }
+                                    }
+                              ?>
+                        </select>
+                  </div>
+            </div>
 			<div <?php if($data['projtype'] != 'Service'){ echo ' style = "display: none;" ';} ?> class="col-xs-4" id = "oncallxx">
 			<div class="form-group">
             	<label>Service <font color = "red">*</font></label>
@@ -461,14 +516,20 @@
 							$project = $_POST['corpo'];
 						}elseif($_POST['pettype'] == 'Supplier'){
 							$project = $_POST['supp'];
-						}elseif($_POST['pettype'] == 'Email Hosting'){
+						}elseif($_POST['pettype'] == 'Commission Base'){
+	                        if(isset($_POST['comisionbid']) && !empty($_POST['comisionbid'])){
+	                              $project = $_POST['comisionbid'];
+	                        }elseif(isset($_POST['comisionproj']) && !empty($_POST['comisionproj'])){
+	                              $project = $_POST['comisionproj'];
+	                        }
+		                }elseif($_POST['pettype'] == 'Email Hosting'){
 							$project = $_POST['ehosting'];
 						}else{
 							$project = null;
 						}
 					}
-					$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ? where petty_id = ?");
-					$stmt2->bind_param("ssi", $project, $pettype, $_GET['editliqdate']);
+					$stmt2 = $conn->prepare("UPDATE `petty` set project = ?, projtype = ?, comtype = ? where petty_id = ?");
+					$stmt2->bind_param("sssi", $project, $pettype, $_POST['comisiontype'], $_GET['editliqdate']);
 					if($stmt2->execute()){
 						$count += 1;
 					}else{

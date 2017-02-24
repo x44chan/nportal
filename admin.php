@@ -643,6 +643,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($row['project'] == null){
 				$pettype = '<br><font color = "green">' . $row['projtype'] . '</font>';
 			}
+			if($row['comtype'] != ""){
+				$pettype .= '<br><font color = "green">'. $row['comtype'] . '</font>';
+			}
 	?>
 				<tr>
 				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
@@ -721,7 +724,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	
 	}
 
-	$sql = "SELECT *,DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) as enddatex from `loan_cutoff`,`login` where login.account_id = loan_cutoff.account_id and state = 'CutOffPaid' and CURDATE() BETWEEN cutoffdate and DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) and full is null and active = 1";
+	$sql = "SELECT *,DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) as enddatex from `loan_cutoff`,`login` where login.account_id = loan_cutoff.account_id and loan_id in (select loan_id from loan where state = 'ALoan') and state = 'CutOffPaid' and CURDATE() BETWEEN cutoffdate and DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) and full is null and active = 1";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
@@ -982,10 +985,13 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}else{
 				$xx = "SELECT * FROM project where name = '$row[project]'";
 				$xxx = $conn->query($xx)->fetch_assoc();
-				$pettype = '<br>Loc: <font color ="green">' . $xxx['loc'] .'</font><br>Proj: <font color = "green">' . $row['project'].'</font>';
+				$pettype = '<br>Loc: <font color ="green">' . $xxx['loc'] .'</font><br>'.$row['projtype'].': <font color = "green">' . $row['project'].'</font>';
 			}
 			if($row['project'] == ""){
 				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
+			}
+			if($row['comtype'] != ""){
+				$pettype .= '<br><font color = "green">'. $row['comtype'] . '</font>';
 			}
 
 	?>
@@ -1079,6 +1085,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					if($row['project'] == ""){
 						$project = '<b><br><font color = "green">' . $row['projtype'] . '</font>';
+					}
+					if($row['comtype'] != ""){
+						$project .= '<b><br><font color = "green">( ' . $row['comtype'] . ' )</font>';
 					}
 					if($row['correction'] == 1){
 						$correctionx = '<b> ( Employee Error ) </b><br>';

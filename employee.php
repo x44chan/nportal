@@ -294,7 +294,7 @@
 						<td>'.$row["nameofemp"].'</td>
 						<td>'.$newDate2.'</td>
 						<td style = "text-align:left;">'.$row['csrnum']. $hrot . $row["startofot"] . ' - ' . $row['endofot'] . $hrclose . ' </b>'.$oldot. $otbreak.'</td>							
-						<td width = 300 height = 70>'.$data1['reason']. $project.'</td>
+						<td width = 300 height = 70>'.$data1['reason']. $project.'<br><font color = "green"><i>'.$row['comtype'].'</i></font></td>
 						<td>'.$row["officialworksched"].'</td>				
 						<td><b>';
 							if($row['state'] == 'UA' && strtolower($row['position']) != 'service technician'){
