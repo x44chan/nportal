@@ -31,7 +31,7 @@
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
-				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan/CA List</a></li>
 				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
 				  <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
 				</ul>
@@ -66,6 +66,8 @@
 			<a  type = "button"class = "btn btn-success" href = "?applea"> Disapproved Leave  </a>			
 			<a  type = "button"class = "btn btn-success" href = "?appundr"> Disapproved Undertime  </a>	
 			<a  type = "button"class = "btn btn-success" href = "?apppety"> Disapproved Petty  </a>
+			<a  type = "button"class = "btn btn-success" href = "?apploan"> Disapproved Loan  </a>
+			<a  type = "button"class = "btn btn-success" href = "?appca"> Disapproved Cash Advance  </a>
 		</div>
 	</div>
 </div>
@@ -111,7 +113,7 @@
 				}
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
-					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>' . date("M j, Y (l)", strtotime($row['loandate'])).'</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
@@ -163,7 +165,7 @@
 <?php
 	if($result->num_rows > 0){
 		while ($row = $result->fetch_assoc()) {
-			echo '<tr><td>' . date("M j, Y", strtotime($row['cadate'])) . '</td>';
+			echo '<tr><td>' . date("M j, Y (l)", strtotime($row['cadate'])) . '</td>';
 			echo '<td>₱ ' . number_format($row['caamount']) . '</td>';
 			echo '<td>' . $row['careason'] . '</td>';
 			echo '<td><b>';
@@ -216,7 +218,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y (l)", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				$petid = $row['petty_id'];
 				if($row['state'] == 'AAPettyRep'){
@@ -295,7 +297,7 @@
 			}
 			
 			$originalDate = date($row['datefile']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 			echo
 				'<tr>
 					<td>'.$newDate.'</td>
@@ -352,7 +354,7 @@
 		if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			$originalDate = date($row['obdate']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 			echo 
 				'<tr>
 					<td>'.$newDate.'</td>
@@ -413,7 +415,7 @@
 		if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){				
 			$originalDate = date($row['datefile']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 
 			$datetoday = date("Y-m-d");
 			echo 
@@ -466,7 +468,7 @@
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 					echo '<tr style = "color: red">';

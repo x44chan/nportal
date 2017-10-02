@@ -4,6 +4,7 @@
 	if(!isset($_SESSION['acc_id'])){
 		echo '<script type="text/javascript">window.location.replace("index.php"); </script>';
 	}elseif(isset($_POST['leasubmit'])){
+		$last = 0;
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];		
 		$datefile = date('Y-m-d H:i:s');
@@ -55,6 +56,7 @@
 					$datalea = $conn->query($leaveexec)->fetch_assoc();
 					$sl = $datalea['sleave'];
 					$vl = $datalea['vleave'];
+					$solo = $datalea['solleave'];
 					$usedsl = 0;
 					$usedvl = 0;
 				}
@@ -82,6 +84,14 @@
 				if($result1->num_rows > 0){
 					while($row1 = $result1->fetch_assoc()){
 						$totavailvac = $availvac - $row1['count'];
+						$count = $row1['count'];
+						}
+				}
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Solo Parent Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$solleave = $solo - $row1['count'];
 						$count = $row1['count'];
 						}
 				}			
@@ -128,7 +138,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and dateofleavfr BETWEEN '$one' and '$two'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -137,7 +147,7 @@
 					}
 				}
 				if(date("Y-m-d") >= $one && date("Y-m-d") <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and dateofleavfr BETWEEN '$one' and '$two'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -162,20 +172,37 @@
 				}
 			}
 		}
+		$lea = "";
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac >= $_POST['numdays'])){
 			$state = 'UA';
 		}
 		if($typeoflea == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $_POST['numdays'])){
 			$restric = 3;
+			$lea = 'Vacation Leave';
 		}
-		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
+		if(($typeoflea == 'Vacation Leave' || $typeoflea == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)  && $last < 1){
 			$restric = 5;
+		}
+		if(($typeoflea == 'Solo Parent Leave') && $_SESSION['category'] == 'Regular' && $solleave <= 0){
+			$restric = 7;
 		}
 		if(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
 			$restric = 6;
 			$wthpay = 'withoutpay';
 		}elseif(($typeoflea == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays']) && $availsick <= 0){
 			$wthpay = 'withoutpay';
+		}
+		$year = date("Y");
+		if($typeoflea == 'Bereavement Leave' ){
+			$sqlbereave = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Bereavement Leave' and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and YEAR(dateofleavfr) = '$year'";
+			$counterbereave = $conn->query($sqlbereave)->fetch_assoc();
+			if($counterbereave['count'] >= 3){
+				$wthpay = 'withoutpay';
+				$restric = 3;
+				$lea = 'Bereavement Leave';
+			}else{
+				$wthpay = null;
+			}
 		}
 		$stmt = $conn->prepare("INSERT into `nleave` (account_id, datefile, nameofemployee, datehired, deprt, posttile, dateofleavfr, dateofleavto, numdays, typeoflea, othersl, reason, twodaysred, state, leapay) 
 								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -187,13 +214,15 @@
 					$quarter = 'quarter';
 				}elseif($typeoflea == 'Sick Leave'){
 					$quarter = 'year';
+				}elseif($typeoflea == 'Bereavement Leave'){
+					$quarter = 'year';
 				}
 				$al = "alert('You already used your allowed ".$typeoflea." for this ".$quarter.", your request is automatically flaged as without pay.');";
 			}else{
 				$al = "";
 			}
 			if($restric == 3){
-				$al = "alert('No more Vacation Leave Balance, your leave is w/o pay.');";
+				$al = "alert('No more ".$lea." Balance, your leave is w/o pay.');";
 			}
 			if($_SESSION['level'] == 'EMP'){
 	    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';
@@ -214,6 +243,8 @@
 				$alert = "Make it 2 request. 1.) ". ($months-$xcount[0]) ." day/s for with pay 2.) " . ($_POST['numdays'] - (($months-$xcount[0]))) . " day/s";
 			}elseif($restric == 6){
 				$alert = "Make it 2 request. 1.) ". ($availsick) ." day/s for with pay 2.) " . ($_POST['numdays'] - $availsick) . " day/s without pay";
+			}elseif($restric == 7){
+				$alert = "No more Solo Parent Leave Balance";
 			}else{
 				$alert = "Wrong Date";
 			}

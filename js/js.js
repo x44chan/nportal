@@ -78,6 +78,25 @@ $(document).ready(function(){
       		$('input[name = "cname"]').attr('required',false); 
       	}
     });
+    $('select[name = "proj_type"]').change(function() {
+    	var selected = $(this).val();
+    	if(selected == 'Commission Base' || selected == 'Project' || selected == 'Support'){
+    		$('#proj_loc').show();
+    		$('input[name = "proj_loc"]').attr('required',true);
+      	}else{
+      		$('#proj_loc').hide();
+      		$('input[name = "proj_loc"]').attr('required',false); 
+      		
+      	}
+      	if(selected == 'Commission Base'){
+    		$('#comisiontypex').show();
+    		$('input[name = "comisiontypex"]').attr('required',true);
+      	}else{
+      		$('#comisiontypex').hide();
+      		$('input[name = "comisiontypex"]').attr('required',false); 
+      		
+      	}
+    });
 	$('#typeoflea').change(function() {
 	    var selected = $(this).val();
 		
@@ -132,6 +151,20 @@ $(document).ready(function(){
 	});
 	$('select[name="pettype"]').change(function() {
 	    var selected2 = $(this).val();
+		if(selected2 == 'Company Vehicle'){
+			$('#com_car').show();
+			$('select[name="com_car"]').attr('required',true);
+		}else{
+			$('#com_car').hide();
+			$('select[name="com_car"]').attr('required',false);
+		}
+		if(selected2 == 'Social Payments'){
+			$('#social').show();
+			$('select[name="social"]').attr('required',true);
+		}else{
+			$('#social').hide();
+			$('select[name="social"]').attr('required',false);
+		}
 		if(selected2 == 'Corporate'){
 			$('#corpo').show();
 			$('select[name="corpo"]').attr('required',true);

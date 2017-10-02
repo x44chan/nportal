@@ -207,7 +207,7 @@
 			
 	}else{
 		if($_SESSION['level'] == 'Admin'){
-			echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
+		//	echo '<script type="text/javascript">window.location.replace("admin.php"); </script>';
 		}else{
 			echo '<script type="text/javascript">window.location.replace("?ac=penloan"); </script>';
 		}

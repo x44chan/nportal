@@ -148,7 +148,7 @@
     
 ?>
   <div id = "reportg">
-    <i><h2 align = "center">Employee Loan</h2></i>
+    <i><h2 align = "center">Employee Loan/Cash Advance</h2></i>
     <?php
       if(isset($_GET['print'])){
         echo '<script type = "text/javascript"> $(window).load(function() {window.print();window.location.href = "?sumar='.$_GET['sumar'].'";});</script>';
@@ -163,8 +163,8 @@
         <tr>
           <th>Name</th>
           <th>Type</th>
-          <th>Loan Date</th>
-          <th>Loan Amount</th>
+          <th>Loan/Cash Date</th>
+          <th>Amount</th>
           <th>Action</th>
         </tr>
         </thead>
@@ -190,6 +190,31 @@
           echo '<td> ' . date("M j, Y", strtotime($row['loandate'])) . '</td>';
           echo '<td>₱ ' . number_format($row['appamount'],2) . '</td>';
           echo '<td><a href = "?loan='.$row['loan_id'].'&accid='.$row['account_id'].'" class = "btn btn-primary"> View Request </a></td>';
+        echo '</tr>';
+      }
+    }
+    if(date("d") >= 28){
+      $date1 = date("Y-m-23");
+      $date2 = date("Y-m-07", strtotime("+1 month"));
+    }elseif(date("d") <= 13){
+      $date1 = date("Y-m-23", strtotime("-1 month"));
+      $date2 = date("Y-m-07");
+    }elseif(date("d") > 13 && date("d") < 28){
+      $date1 = date("Y-m-08");
+      $date2 = date("Y-m-22");
+    }
+    $sql = "SELECT * FROM cashadv,login where cashadv.account_id =login.account_id and state = 'ACashReleased' and cadate BETWEEN '$date1' and '$date2' ORDER BY cadate ASC";
+    $result = $conn->query($sql);
+    $datey = date("Y");
+    
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+        echo '<tr>';
+          echo '<td>' . $row['fname'] . ' ' . $row['lname'] . '</td>';
+          echo  '<td><b> <font color = "green">Cash Advance</font> </td>';
+          echo '<td> ' . date("M j, Y", strtotime($row['cadate'])) . '</td>';
+          echo '<td>₱ ' . number_format($row['caamount'],2) . '</td>';
+          echo '<td><b><font color = "red">For Deduction</font></td>';
         echo '</tr>';
       }
     }
@@ -371,6 +396,7 @@ if(isset($_GET['login_log'])){
       echo '<a href ="admin-emprof.php?active=0" class = "btn btn-danger pull-right" style = "margin-bottom: 20px; margin-right: 10px;"><span class="glyphicon glyphicon-eye-close"></span>  View In-Active Employee </a>';
     }
   ?>
+  	<a href = "export.php?201" class="btn btn-primary pull-right" style="margin-right: 10px;"> Export 201 Files </a>
 		<table id = "xmyTable" align = "center" class = "table table-hover" style="font-size: 14px;">
 		<thead>
 				<tr>

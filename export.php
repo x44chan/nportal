@@ -1,6 +1,8 @@
 <?php
-$date1 = mysql_escape_string($_GET['date1']);
-$date2 = mysql_escape_string($_GET['date2']);
+if(isset($_GET['date1'])){
+    $date1 = mysql_escape_string($_GET['date1']);
+    $date2 = mysql_escape_string($_GET['date2']);
+}
 $DB_Server = "127.0.0.1"; //MySQL Server    
 $DB_Username = "root"; //MySQL Username     
 $DB_Password = "";             //MySQL Password     
@@ -249,10 +251,15 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                             echo '<td>21</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
+                        }elseif($row1['typeoflea'] == 'Paternity Leave'){
+                            echo '<td>101</td>';
+                        }elseif($row1['typeoflea'] == 'Solo Parent Leave'){
+                            echo '<td>103</td>';
                         }
                         /*if($row1['leapay'] == 'wthoutpay'){
                             echo '<td>0</td>';
-                        }else*/if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
+                        }else*/
+                        if(strtoupper($row1['position']) == 'SERVICE TECHNICIAN'){
                             echo '<td>8</td>';
                         }else{
                             echo '<td>8</td>';
@@ -273,6 +280,10 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                             echo '<td>21</td>';
                         }elseif($row1['typeoflea'] == 'Sick Leave'){
                             echo '<td>22</td>';
+                        }elseif($row1['typeoflea'] == 'Paternity Leave'){
+                            echo '<td>101</td>';
+                        }elseif($row1['typeoflea'] == 'Solo Parent Leave'){
+                            echo '<td>103</td>';
                         }
                        
                         echo '<td>'. number_format(8*$row1['numdays'],2).'</td>';
@@ -283,6 +294,136 @@ if(isset($_GET['exob'])  && ($_SESSION['level'] == 'ACC' || $_SESSION['level'] =
                 }
             }
         ?>
+    </table>
+<?php  
+    }
+?>
+<?php
+    if(isset($_GET['201']) && ($_SESSION['level'] == 'Admin')){
+        // The function header by sending raw excel
+        header("Content-type: application/vnd-ms-excel");
+         
+        // Defines the name of the export file "codelution-export.xls"
+        header("Content-Disposition: attachment; filename=201 Files Portal (".date("Y-m-d H/i/s A").").xls");
+?>
+    <style type="text/css">
+        tr {
+            padding: 10px !important;
+            text-align: center;
+        }
+        td {
+            padding: 10px !important;
+            text-align: center;
+        }
+        th {
+            padding: 10px !important;
+            text-align: center;
+        }
+    </style>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Employee No.</th>
+                <th>Chrono No.</th>
+                <th>Full Name</th>
+                <th>Date Hired</th>
+                <th>Employment Status</th>
+                <th>Status Date</th>
+                <th>Service Period</th>
+                <th>Current Position</th>
+                <th>Department</th>
+                <th>Civil Status</th>
+                <th>Mobile No.</th>
+                <th>Address</th>
+                <th>Blood Type</th>
+                <th>Birthday</th>
+                <th>Age</th>
+                <th>Salary Category</th>
+                <th>Salary Per Day</th>
+                <th>Salary Per Month</th>
+                <th>Allowed Loan</th>
+                <th>Allowed C.A.</th>
+                <th>V.L.</th>
+                <th>S.L.</th>
+                <th>SSS #</th>
+                <th>TIN #</th>
+                <th>PHILHEALTH #</th>
+                <th>PAGIBIG</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                include 'conf.php';
+                $sql1 = "SELECT *,TIMESTAMPDIFF(YEAR, ebday, CURDATE()) AS age,TIMESTAMPDIFF(DAY, edatehired, CURDATE()) AS serviceper from `login` where level != 'Admin' and fname is not null and account_id NOT IN (47,48,37) and (active = '1' or active IS NULL) order by phoenix_empid ASC";
+                $result1 = $conn->query($sql1);
+                if($result1->num_rows > 0){
+                    while($row1 = $result1->fetch_object()){
+                        $limit = 0;
+                        $ca = '1,500';
+                        $vacleave = ' - ';
+                        $sleave = ' - ';
+                        if($row1->empcatergory == 'Regular'){
+                            $ca = '3,000';
+                            $leaveexec = "SELECT * FROM `nleave_bal` where account_id = '$row1->account_id' and CURDATE() BETWEEN startdate and enddate and state = 'AAdmin'";
+                            $datalea = $conn->query($leaveexec)->fetch_assoc();
+                            $sleave = $datalea['sleave'];
+                            $vacleave = $datalea['vleave'];
+                            $categdate = $row1->regdate;
+                            if(date("Y-m-d") <= date("Y-m-d",strtotime('+1 years', strtotime($row1->regdate)))){
+                                $limit = ($row1->salary * .4);
+                            }elseif(date("Y-m-d") > date("Y-m-d",strtotime('+1 years', strtotime($row1->regdate))) && date("Y-m-d") <= date("Y-m-d",strtotime('+2 years', strtotime($row1->regdate)))){
+                                $limit = ($row1->salary * .6);
+                            }elseif(date("Y-m-d") > date("Y-m-d",strtotime('+2 years', strtotime($row1->regdate))) && date("Y-m-d") <= date("Y-m-d",strtotime('+4 years', strtotime($row1->regdate)))){
+                                $limit = ($row1->salary * .7);
+                            }elseif(date("Y-m-d") > date("Y-m-d",strtotime('+4 years', strtotime($row1->regdate)))){
+                                $limit = ($row1->salary * .9);
+                            }            
+                        }elseif($row1->empcatergory == 'Contractual'){
+                            $categdate = $row1->contractdate;
+                        }elseif($row1->empcatergory == 'Probationary'){
+                            $categdate = $row1->probidate;
+                        }elseif($row1->empcatergory == ""){
+                            $categdate = 'No Category';
+                            $row1->empcatergory = 'No Category';
+                            $row1->payment = 'No Salary Category';
+                        }         
+                        echo '<tr>';
+                        echo    '<td>' . $row1->phoenix_empid . '</td>';
+                        echo    '<td>' . $row1->phoenix_chrono . '</td>';
+                        echo    '<td>' . $row1->fname . ' ' . $row1->mname . ', ' . $row1->lname . '</td>';
+                        echo    '<td>' . $row1->edatehired . '</td>';
+                        echo    '<td>' . $row1->empcatergory . '</td>';
+                        echo    '<td>' . $categdate . '</td>';
+                        echo    '<td>' . number_format($row1->serviceper/365, 2) . '</td>';
+                        echo    '<td>' . $row1->position . '</td>';
+                        echo    '<td>' . $row1->department . '</td>';
+                        echo    '<td>' . $row1->ecstatus . '</td>';
+                        echo    '<td>' . strval($row1->econt) . '</td>';
+                        echo    '<td>' . $row1->eaddress . '</td>';
+                        echo    '<td>' . $row1->eblood . '</td>';
+                        echo    '<td>' . $row1->ebday . '</td>';
+                        echo    '<td>' . $row1->age . '</td>'; 
+                        echo    '<td>' . $row1->payment . '</td>';
+                        if($row1->salary > 0){
+                            echo    '<td>' . number_format($row1->salary/26, 2) . '</td>';
+                            echo    '<td>' . number_format($row1->salary, 2) . '</td>';
+                        }else{
+                            echo    '<td> No Salary </td>';
+                            echo    '<td> No Salary </td>';
+                        }
+                        echo    '<td>' . number_format($limit) . '</td>';
+                        echo    '<td>' . $ca . '</td>';
+                        echo    '<td>' . $vacleave . '</td>';
+                        echo    '<td>' . $sleave . '</td>';                      
+                        echo    '<td>' . $row1->esss . '</td>';
+                        echo    '<td>' . $row1->etin . '</td>';
+                        echo    '<td>' . $row1->ephilhealth . '</td>';
+                        echo    '<td>' . $row1->epagibig . '</td>';
+                        echo '</tr>';
+                    }
+                }
+            ?>
+        </tbody>
     </table>
 <?php  
     }

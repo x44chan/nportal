@@ -46,6 +46,9 @@
 		$qsearch = "project is not null and ";
 		$_SESSION['searchbox'] = "";
 		$_SESSION['type'] = $_GET['pettype'];
+		if(isset($_SESSION['loc'])){
+			unset($_SESSION['loc']);
+		}
 	}
 	if(isset($_GET['pettype']) && ($_GET['pettype'] != "" && $_GET['pettype'] != 'all' && $_GET['pettype'] != 'Netlink' && $_GET['pettype'] != 'Sotero Molino' && $_GET['pettype'] != 'ELMS Rental & Electric Bill' && $_GET['pettype'] != 'Permit & Licenses Netlink')){
 		$_SESSION['type'] = mysqli_real_escape_string($conn, $_GET['pettype']);
@@ -80,7 +83,11 @@
 		}
 		
 		if($_SESSION['searchbox'] == 'all'){
-			$qsearch = "projtype like '%$_SESSION[type]%' and petty.project = name and loc = '$_SESSION[loc]' and ";
+			$xxloc = "";
+			if(isset($_SESSION['loc'])){
+				$xxloc = "and loc = '$_SESSION[loc]'";
+			}
+			$qsearch = "projtype like '%$_SESSION[type]%' and petty.project = name $xxloc and ";
 		}else{
 			$qsearch = "projtype = '$_SESSION[type]' and project like '%$_SESSION[searchbox]%' and";
 		}

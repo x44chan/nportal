@@ -383,10 +383,14 @@
         <label>Vacation Leave <font color = "red"> * </font></label>
         <input type="text" required <?php if($dataxx['sleave'] > 0){ echo ' value = "' . $dataxx['vleave'] . '" '; } ?> name = "vacleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Vacation Leave #">
       </div>
-      <?php if($dataxx['sleave'] <= 0 && $dataxx['sleave'] <= 0) { ?>
+      <div class="col-xs-3">
+        <label>Solo Parent Leave <font color = "red"> * </font></label>
+        <input type="text" required <?php if($dataxx['solleave'] > 0){ echo ' value = "' . $dataxx['solleave'] . '" '; } ?> name = "solleave" pattern = "[0-9]*" class="form-control" placeholder = "Enter Solo Parent Leave #">
+      </div>
+      <?php if($dataxx['vleave'] <= 0 && $dataxx['sleave'] <= 0 && $dataxx['solleave'] <= 0) { ?>
       <div class="col-xs-3">
         <label>Balance For <font color = "red"> * </font></label>
-        <input type = "date" class="form-control" name = "startdate" placeholder = "Enter Start Date">
+        <input type = "date" class="form-control" name = "startdate" placeholder = "Enter Start Date" required>
       </div>
       <?php } ?>
     </div>
@@ -410,6 +414,7 @@
 if(isset($_POST['updateleave'])){
   $sleave = mysql_escape_string($_POST['sickleave']);
   $vleave = mysql_escape_string($_POST['vacleave']);
+  $solleave = mysql_escape_string($_POST['solleave']);
   $startdate = mysql_escape_string($_POST['startdate']);
   $enddate = date('Y-12-31', strtotime($_POST['startdate']));
   $date1x = date_create(date("Y-01-01"));
@@ -421,8 +426,8 @@ if(isset($_POST['updateleave'])){
   $sleave = number_format($sleave * $computation,2);
   $state = 'UA';
   $datefile = date("Y-m-d");
-  $sql = $conn->prepare("INSERT INTO `nleave_bal` (account_id, sleave, vleave, startdate, enddate, state, datefile) VALUES (?, ?, ?, ?, ?, ?, ?)");
-  $sql->bind_param("iddssss", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile);
+  $sql = $conn->prepare("INSERT INTO `nleave_bal` (account_id, sleave, vleave, startdate, enddate, state, datefile, solleave) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+  $sql->bind_param("iddssssd", $accid, $sleave, $vleave, $startdate, $enddate, $state, $datefile, $solleave);
   $select = "SELECT count(account_id) as penleave FROM nleave_bal where account_id = '$accid' and (state != 'DAAdmin' and state != 'AAdmin')";
   $datax = $conn->query($select)->fetch_assoc();
   if($datax['penleave'] == 0){  

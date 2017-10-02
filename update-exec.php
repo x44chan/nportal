@@ -58,7 +58,7 @@
 		$csrnum = mysql_escape_string($_POST['csrnum']);
 		
 		if(isset($_POST['updateofot'])){
-			$date = $_POST['updateofot'];
+			$date = mysqli_real_escape_string($conn, $_POST['updateofot']);
 		}
 		if(isset($_POST['uprestday']) || isset($_POST['uponcall']) || isset($_POST['sw']) || isset($_POST['lg'])){
 			if(isset($_POST['uprestday'])){
@@ -82,7 +82,7 @@
 				$officialworksched = 'Legal Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}
 		}else{
-			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+			$officialworksched = mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 		}	
 		if($_SESSION['level'] == "HR"){
 			$state = 'state = "UAAdmin"';	
@@ -149,7 +149,7 @@
 		$project = mysqli_real_escape_string($conn, $_POST['project']);
 		$projtype = mysqli_real_escape_string($conn, $_POST['ottype']);
 		if($_POST['onleave'] != ""){
-			$reason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$reason .= '<br><b><i>(' . mysqli_real_escape_string($conn, $_POST['onleave']).')</i></b>';
 			$restric = 0;
 		}
 		$stmt = "UPDATE `overtime` set 
@@ -225,7 +225,7 @@
 			$uplate = ',oblate = null';	
 		}
 		if($_POST['onleave'] != ""){
-			$obreason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$obreason .= '<br><b><i>(' . mysqli_real_escape_string($conn, $_POST['onleave']) .')</i></b>';
 			$restric = 0;
 		}
 		$sql = "SELECT * FROM officialbusiness where state != 'DAAdmin' and obdatereq = '$date' and account_id = '$accid' and officialbusiness_id != '$_SESSION[otid]'";
@@ -269,13 +269,14 @@
 		}
 	}
 
-	if(isset($_POST['upleasubmit'])){		
+	if(isset($_POST['upleasubmit'])){	
+		$last = 0;	
 		$post = strtolower($_SESSION['post']);
 		$accid = $_SESSION['acc_id'];
-		$dateofleavfr = $_POST['dateofleavfr'];
-		$dateofleavto = $_POST['dateofleavto'];
-		$numdays = $_POST['numdays'];
-		$reason = $_POST['leareason'];
+		$dateofleavfr = mysqli_real_escape_string($conn, $_POST['dateofleavfr']);
+		$dateofleavto = mysqli_real_escape_string($conn, $_POST['dateofleavto']);
+		$numdays = mysqli_real_escape_string($conn, $_POST['numdays']);
+		$reason = mysqli_real_escape_string($conn, $_POST['leareason']);
 		if($_SESSION['level'] == "HR"){
 			$state = 'AHR';	
 		}else if($post == "service technician"){
@@ -380,7 +381,7 @@
 				}
 				$one = $quarterdate[$i];
 				if(date("Y-m-d") > $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and dateofleavfr BETWEEN '$one' and '$two'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					if($counter['count'] == ""){
 						$months += ($months-1);
@@ -389,7 +390,7 @@
 					}
 				}
 				if($dxatax['datefile'] >= $one && $dxatax['datefile'] <= $two){
-					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and state = 'AAdmin' and dateofleavfr BETWEEN '$one' and '$two' and leapay = 'wthpay'";
+					$sql = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and (typeoflea = 'Vacation Leave' or typeoflea = 'Others') and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and dateofleavfr BETWEEN '$one' and '$two'";
 					$counter = $conn->query($sql)->fetch_assoc();
 					$xcount[] = $counter['count'];
 				}else{
@@ -410,6 +411,7 @@
 				}
 				if(stristr($sql, '-12-31') == true){
 					$wthpay = null;
+					$last = 1;
 				}
 			}
 		}
@@ -418,8 +420,9 @@
 		}
 		if($dxatax['typeoflea'] == 'Vacation Leave' && $_SESSION['category'] == 'Regular' && ($totavailvac < $numdays)){
 			$restric = 3;
+			$lea = 'Vacation Leave';
 		}
-		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0)){
+		if(($dxatax['typeoflea'] == 'Vacation Leave' || $dxatax['typeoflea'] == 'Others') && $_SESSION['category'] == 'Regular' && (($months-$xcount[0]) < $_POST['numdays'] && ($months-$xcount[0]) > 0) && $last < 1){
 			$restric = 5;
 		}
 		if(($dxatax['typeoflea'] == 'Sick Leave') && $_SESSION['category'] == 'Regular' && ($availsick < $_POST['numdays'])  && $availsick != 0){
@@ -431,9 +434,22 @@
 		if($dxatax['typeoflea'] == 'Sick Leave' && !isset($wthpay)){
 			$wthpay = "";
 		}
+		$year = date("Y");
+		if($dxatax['typeoflea'] == 'Bereavement Leave' ){
+			$sqlbereave = "SELECT sum(numdays) as count from nleave where account_id = '$accid' and typeoflea = 'Bereavement Leave' and ( (leapay = 'wthpay' and state = 'AAdmin') or (state in ('UA','AHR') and leapay is null) ) and YEAR(dateofleavfr) = '$year'";
+			$counterbereave = $conn->query($sqlbereave)->fetch_assoc();
+			if($counterbereave['count'] >= 3){
+				$wthpay = 'withoutpay';
+				$restric = 3;
+				$lea = 'Bereavement Leave';
+			}else{
+				$wthpay = null;
+			}
+		}
 		$stmt = "UPDATE `nleave` set 
 			dateofleavfr = '$dateofleavfr', dateofleavto = '$dateofleavto', numdays = '$numdays', reason = '$reason', state = '$state', leapay = '$wthpay'
 			where account_id = '$accid' and (state = '$state' or (state = 'UA' and accadmin is null) or state = 'UAAdmin') and leave_id = '$_SESSION[otid]'";
+		//echo $stmt;
 		if($restric == 0 || $restric == 3){
 			if ($conn->query($stmt) === TRUE) {
 				if($wthpay != null && $restric == 0){
@@ -441,13 +457,15 @@
 						$quarter = 'quarter';
 					}elseif($dxatax['typeoflea'] == 'Sick Leave'){
 						$quarter = 'year';
-					}
+					}elseif($typeoflea == 'Bereavement Leave'){
+					$quarter = 'year';
+				}
 					$al = "alert('You already used your allowed ".$dxatax['typeoflea']." for this ".$quarter.", your request is automatically flaged as without pay.');";
 				}else{
 					$al = "";
 				}
 				if($restric == 3){
-					$al = "alert('No more Vacation Leave Balance, your leave is w/o pay.');";
+					$al = "alert('No more ".$lea." Balance, your leave is w/o pay.');";
 				}
 				if($_SESSION['level'] == 'EMP'){
 		    		echo '<script type="text/javascript">'.$al.'window.location.replace("employee.php?ac=penlea"); </script>';
@@ -539,7 +557,7 @@
 			$uplate = ', state = "UA" ';	
 		}
 		if($_POST['onleave'] != ""){
-			$unreason .= '<br><b><i>(' . $_POST['onleave'].')</i></b>';
+			$unreason .= '<br><b><i>(' . mysqli_real_escape_string($conn, $_POST['onleave']) .')</i></b>';
 			$restric = 0;
 		}
 		$stmt = "UPDATE `undertime` set 
@@ -561,16 +579,17 @@
 		$conn->close();
 
 	}
-	if(isset($_POST['hrupdatetime'])){	
-			$oldotstrt = $_POST['oldotstrt'];
-			$oldotend = $_POST['oldotend'];
-			$hruptimein = $_POST['hruptimein'];
-			$hruptimeout = $_POST['hruptimeout'];
-			$dareason = $_POST['dareason'];
-			$overtime = $_POST['overtime'];
-			$approve = $_POST['approve'];
-			$ac = $_POST['ac'];
-			$accid = $_POST['accid'];
+	if(isset($_POST['hrupdatetime'])){
+			$comtype = "";
+			$oldotstrt = mysqli_real_escape_string($conn, $_POST['oldotstrt']);
+			$oldotend = mysqli_real_escape_string($conn, $_POST['oldotend']);
+			$hruptimein = mysqli_real_escape_string($conn, $_POST['hruptimein']);
+			$hruptimeout = mysqli_real_escape_string($conn, $_POST['hruptimeout']);
+			$dareason = mysqli_real_escape_string($conn, $_POST['dareason']);
+			$overtime = mysqli_real_escape_string($conn, $_POST['overtime']);
+			$approve = mysqli_real_escape_string($conn, $_POST['approve']);
+			$ac = mysqli_real_escape_string($conn, $_POST['ac']);
+			$accid = mysqli_real_escape_string($conn, $_POST['accid']);
 			//hrs:minutes computation
 			function gettimediff($dtime,$atime){ 
 			 $nextday = $dtime > $atime?1:0;
@@ -614,7 +633,7 @@
 				$hrrestric += 1;
 			}
 			if(isset($_POST['oldotbreak']) && isset($_POST['otbreak']) && $_POST['oldotbreak'] != $_POST['otbreak']){
-				$oldotbreak = '<br><font color = "#333"> Filed Break </font>' . $_POST['oldotbreak'];
+				$oldotbreak = '<br><font color = "#333"> Filed Break </font>' . mysqli_real_escape_string($conn, $_POST['oldotbreak']);
 			}else{
 				$oldotbreak = "";
 			}
@@ -675,7 +694,7 @@
 				$officialworksched = 'Legal Holliday<br>' . mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 			}
 		}else{
-			$officialworksched = $_POST['upoffr']. ' - ' . $_POST['upoffto'];
+			$officialworksched = mysqli_real_escape_string($conn, $_POST['upoffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['upoffto']);
 		}
 		$datex = date('Y-m-d h:i A');
 		if($_SESSION['level'] == 'HR'){
@@ -733,7 +752,7 @@
 			if($_POST['oldsched'] == ""){
 				$_POST['oldsched'] = "Regular OT";
 			}
-			$oldot = $oldot . '<br> </i><font color = "#333">Old Schedule: </font><i>' . $_POST['oldsched'] . '<br>'. $_POST['oldofffr'] . ' - ' . $_POST['oldoffto'];
+			$oldot = $oldot . '<br> </i><font color = "#333">Old Schedule: </font><i>' . mysqli_real_escape_string($conn, $_POST['oldsched']) . '<br>'. mysqli_real_escape_string($conn, $_POST['oldofffr']) . ' - ' . mysqli_real_escape_string($conn, $_POST['oldoffto']);
 		}
 		$upstate = 'AHR';
 		$stmt = "UPDATE `overtime` set 
@@ -869,11 +888,11 @@
 	}
 
 	if(isset($_POST['disapprovetime'])){	
-			$dareason = $_POST['dareason'];
-			$overtime = $_POST['overtime'];
-			$approve = $_POST['approve'];
-			$ac = $_POST['ac'];
-			$accid = $_POST['accid'];
+			$dareason = mysqli_real_escape_string($conn, $_POST['dareason']);
+			$overtime = mysqli_real_escape_string($conn, $_POST['overtime']);
+			$approve = mysqli_real_escape_string($conn, $_POST['approve']);
+			$ac = mysqli_real_escape_string($conn, $_POST['ac']);
+			$accid = mysqli_real_escape_string($conn, $_POST['accid']);
 
 		$stmt = "UPDATE `overtime` set 
 			 state = '$approve', dareason = '$dareason'

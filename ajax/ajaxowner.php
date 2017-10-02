@@ -30,10 +30,12 @@ if(isset($_GET['q'])){
 		while ($row = $result->fetch_assoc()) {
 			if(isset($_GET['tag']) && $_GET['tag'] == "1"){
 				$tag = " ( " . $row['type'] . " ) ";
+				$sname = ':' . $row['type'];
 			}else{
 				$tag = "";
+				$sname = "";
 			}
-			echo '<option value = "' . $row['name'] . '"> ' . $row['name'] . $tag . '</option>';
+			echo '<option value = "' . $row['name']. $sname . '"> ' . $row['name'] . $tag . '</option>';
 		}
 		echo '</select></td>';
 	}

@@ -412,6 +412,7 @@
 					$datalea = $conn->query($leaveexec)->fetch_assoc();
 					$sl = $datalea['sleave'];
 					$vl = $datalea['vleave'];
+					$solo = $datalea['solleave'];
 					$usedsl = 0;
 					$usedvl = 0;
 				}
@@ -458,7 +459,14 @@
 						$count = $row1['count'];
 						}
 				}				
-				
+				$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Solo Parent Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+				$result1 = $conn->query($sql1);
+				if($result1->num_rows > 0){
+					while($row1 = $result1->fetch_assoc()){
+						$solleave = $solo -  $row1['count'];
+						$count = $row1['count'];
+						}
+				}				
 			}
 		}
 	if($cate == 'Regular'){
@@ -535,7 +543,14 @@
 
 			}
 		}
-
+		$year = date("Y");
+		$sqlbereave = "SELECT sum(numdays) as count,leapay from nleave where leave_id = '$oid' and account_id = '$accids' and typeoflea = 'Bereavement Leave' and ( (leapay = 'wthpay' and state = 'AAdmin') or state = 'UA' or state = 'AHR') and YEAR(dateofleavfr) = '$year'";
+		$counterbereave = $conn->query($sqlbereave)->fetch_assoc();
+		if($counterbereave['leapay'] != ""){
+			$wthpay = 'withoutpay';
+		}else{
+			$wthpay = "";
+		}
 		$sql = "SELECT * FROM nleave,login where login.account_id = $accids and leave_id = '$oid' and state = 'UA'";
 		$result = $conn->query($sql);
 
@@ -550,9 +565,11 @@
 			<tr><td width="30%"><b>Date Hired:</td><td width="30%"><?php echo date("M j, Y", strtotime($row['edatehired'])); ?></td></tr> 
 			<tr><td width="30%"><b>Type of Leave:</td><td width="30%"><?php echo $row['typeoflea']; if($row['typeoflea'] == "Others"){echo '<br> ( '. $row['othersl'] . ' )';}?></td></tr> 
 			<?php if(isset($cate) && $cate == 'Regular'){ ?>
-			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; } else { echo $totavailvac; }	?></td></tr> 
+			<tr><td width="30%"><b>Balance:</td><td width="30%"><?php if($row['typeoflea'] == 'Sick Leave'){ echo $availsick; }elseif($row['typeoflea'] == 'Solo Parent Leave'){ echo $solleave; } else { echo $totavailvac; }	?></td></tr> 
+			<?php if($row['typeoflea'] != 'Sick Leave' && $row['typeoflea'] != 'Solo Parent Leave'){ ?>
 			<tr><td width="30%"><b>Balance for this Quarter:</td><td width="30%"><?php if($totavailvac >= $months){ echo $months-$xcount[0]; $remainvac = $months-$xcount[0];}elseif(isset($xcount[0]) && $months-$xcount[0] <= 0){echo  $months-$xcount[0];  $remainvac =$months-$xcount[0];}else{ echo $totavailvac;  $remainvac=$totavailvac;}?></td></tr> 
-			<?php } ?>
+			<?php }} ?>
+			<?php  ?>
 			<tr><td width="30%"><b>Date of Leave (From - To):</td><td width="30%"><?php echo date("M j", strtotime($row['dateofleavfr'])) . ' - ' . date("M j, Y", strtotime($row['dateofleavto'])); ?></td></tr> 
 			<tr><td width="30%"><b>Number of Days: </td><td width="30%"><?php echo $row['numdays']; ?></td></tr> 
 			<tr><td width="30%"><b>Reason: </td><td width="30%"><?php $query1 = "SELECT * FROM `nleave` where leave_id = '$row[leave_id]'";
@@ -572,7 +589,9 @@
 				<select class="form-control" name = "payment" required>
 					<option value="">------</option>
 					<option value="wthoutpay">Without Pay</option>
-					<?php if($row['empcatergory'] == 'Regular' && $row['regdate'] <= date('Y-m-d') && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($remainvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave'))) { ?>
+					<?php if(($row['empcatergory'] == 'Regular' && $row['regdate'] <= date('Y-m-d') && $row['leapay'] == null && (($availsick >= $row['numdays'] && $row['typeoflea'] == 'Sick Leave') || ($remainvac >= $row['numdays'] && $row['typeoflea'] != 'Sick Leave')))) { ?>
+						<option value="wthpay">With Pay</option>
+					<?php }elseif($wthpay == "" && ($row['typeoflea'] == 'Bereavement Leave' || $row['typeoflea'] == 'Solo Parent Leave')){ ?>
 						<option value="wthpay">With Pay</option>
 					<?php } ?>
 				</select>
@@ -591,8 +610,8 @@
 <?php
 			}
 		}
-	
 	}
+	
 ?>
 
 <?php

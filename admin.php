@@ -64,7 +64,7 @@
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
-				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan/CA List</a></li>
 				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
 				  <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
 				</ul>
@@ -357,6 +357,8 @@
 		}else{
 			$sql = "UPDATE `petty` set state = 'AAPettyRep',transfer_id = '$refcode',source = '$source',releasedate = '$releasedate' where petty_id = '$petid' and state = 'TransProcCode'";
 			if($conn->query($sql) == TRUE){
+				include('savelogs.php');
+				savelogs("Petty Transfer", "Petty #: " . $petid . ", Transfer Code: " . $refcode . ", Source: " . $source);
 				echo '<script type="text/javascript">alert("Successful");window.location.replace("admin.php"); </script>';	
 			}
 		}
@@ -375,7 +377,7 @@
 				if(isset($_SESSION['transct'])){
 					$xrefcode = $_SESSION['transct'];
 				}
-				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y", strtotime($row['date'])).'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y h:i A (l)", strtotime($row['date'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
@@ -406,7 +408,7 @@
 		$result = $conn->query($sql);
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){
-				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y", strtotime($row['date'])).'</td></tr>';
+				echo '<tr><td style = "width: 30%;">Date: </td><td style = "width: 50%;">' . date("M j, Y h:i A (l)", strtotime($row['date'])).'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Petty Number: </td><td style = "width: 50%;"><input name = "petty_id"type = "hidden" value = "' . $row['petty_id'].'"/>' . $row['petty_id'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Name : </td><td style = "width: 50%;">' . $row['fname'] . ' ' . $row['lname'].'</td></tr>';
 				echo '<tr><td style = "width: 30%;">Reason: </td><td style = "width: 50%;">' . $row['petreason'].'</td></tr>';	
@@ -546,11 +548,14 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				  <tbody>';
 			while($row = $result->fetch_assoc()){
 				echo '<tr><td><label>Loan ID #</label></td><td>' . $row['loan_id'] . '</td></tr>';
-				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y", strtotime($row['loandate'])). '</td></tr>';
-				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';				
+				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y (l)", strtotime($row['loandate'])). '</td></tr>';
+				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';			
 				echo '<tr><td><label>Amount</label></td><td>₱ ';
 				if(!is_numeric($row['loanamount'])){ echo $row['amount']; }else{ echo number_format($row['loanamount']); } ;
 				echo '</td></tr>';
+				echo '<tr><td><label>Duration</label></td><td>' . $row['duration'] . '</td></tr>';
+				echo '<tr><td><label>Start Date</label></td><td>' . date("M j, Y", strtotime($row['startdate'])) . '</td></tr>';
+				echo '<tr><td><label>End Date</label></td><td>' . date("M j, Y", strtotime("+".$row['duration'], strtotime($row['startdate']))) . '</td></tr>';
 				echo '	<tr>
 							<td style = "width: 30%;"><b>Source: </td>
 							<td style = "width: 50%;">
@@ -561,10 +566,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 									<option value = "Petty Change"> Petty Change </option>
 								</select>	
 							</td>
-						</tr>';			
+						</tr>';	
 				echo '<tr><td><label>Receive Code</label></td><td><input type = "text" class = "form-control" name = "rcve_code" placeholder = "Enter Code" required/></td></tr>';
 				echo '<input type = "hidden" value = "' . $row['loan_id'] . '" name = "pet_id"/>';
-				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codelon">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></td></tr>';
+				echo '<tr><td colspan = "2"><button class = "btn btn-primary" type = "submit" name = "codelon">Release Petty</button> <a id = "backs" class = "btn btn-danger" href = "admin.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to Dashboard</a></td></tr>';
 			}
 			echo "</tbody></table></form></div>";
 			
@@ -589,7 +594,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 				  <tbody>';
 			while($row = $result->fetch_assoc()){
 				echo '<tr><td><label>Petty #</label></td><td>' . $row['cashadv_id'] . '</td></tr>';
-				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y", strtotime($row['cadate'])). '</td></tr>';
+				echo '<tr><td><label>Date</label></td><td>' . date("M j, Y (l)", strtotime($row['cadate'])). '</td></tr>';
 				echo '<tr><td><label>Name</label></td><td>' . $row['fname'] . ' '. $row['lname'] . '</td></tr>';				
 				
 								
@@ -648,7 +653,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}
 	?>
 				<tr>
-				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y (l)", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><b>Petty: <i><font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <font color = "green"><i>₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font><?php echo $pettype;?></i></td>
 				<td><?php echo $row['petreason'];?></td>
@@ -661,6 +666,47 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						echo '<a class = "btn btn-success" style = "width: 100px" href = "?transrelease=1&petty_id='.$row['petty_id'].'">Release</a> ';
 					}					
 					?></td>
+				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
+				</tr>
+
+	<?php
+		}
+	
+	}
+	$sql = "SELECT * from `project` where state ='2' and isAp = '0'";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			$ap_proj = "";
+			if($row['type'] == "On Call"){
+				$row['type'] = "Service";
+			}
+			if($row['type'] != ""){
+				$ap_proj .= "Type: <font color = 'green'> " . $row['type'] . "</font> <br>";
+			}
+			if($row['comtype'] != ""){
+				$ap_proj .= "Comission Type: <font color = 'green'> " . $row['comtype'] . "</font> <br>";
+			}
+			if($row['name'] != ""){
+				$ap_proj .= "Project Name/P.O.: <font color = 'green'> " . $row['name'] . "</font> <br>";
+			}
+			if($row['loc'] != ""){
+				$ap_proj .= "Location: <font color = 'green'> " . $row['loc'] . "</font> <br>";
+			}
+	?>
+				<tr>
+				<td><?php echo date("M j, Y (l)", strtotime($row['date']));?></td>			
+				<td> Constanscia Fabrid </td>
+				<td><b><?php echo $ap_proj;?></b></td>
+				<td> - </td>
+				<td> - </td>
+				<td><?php 
+					if($row['state'] == '2' && $row['isAp'] == '0'){
+						echo '<a class = "btn btn-primary" href = "approval.php?proj_table=a&project_id='.$row['project_id'].'">Approve</a> ';
+						echo '<a class = "btn btn-primary" href = "approval.php?proj_table=d&project_id='.$row['project_id'].'"">Disapprove</a>';
+					}					
+					?>
+				</td>
 				<td id = "tohide"><?php echo date("Y/m/d", strtotime($row['date']));?></td>
 				</tr>
 
@@ -724,13 +770,13 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	
 	}
 
-	$sql = "SELECT *,DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) as enddatex from `loan_cutoff`,`login` where login.account_id = loan_cutoff.account_id and loan_id in (select loan_id from loan where state = 'ALoan') and state = 'CutOffPaid' and CURDATE() BETWEEN cutoffdate and DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) and full is null and active = 1";
+	$sql = "SELECT *,DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) as enddatex from `loan_cutoff`,`login` where login.account_id = loan_cutoff.account_id and state = 'CutOffPaid' and CURDATE() BETWEEN cutoffdate and DATE(DATE_ADD(enddate, INTERVAL 1 DAY)) and full is null and active = 1";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-				<td><?php echo date("M j, Y",strtotime($row['enddatex']));?></td>			
+				<td><?php echo date("M j, Y (l)",strtotime($row['enddatex']));?></td>			
 				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
 				<td> <b><font color = "green">Loan</font><br><i>Amount: ₱ <?php $row['cutamount'] = str_replace(',', '', $row['cutamount']); echo number_format($row['cutamount'],2); ?> </td>
 				<td> - </td>
@@ -773,7 +819,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 
 	?>
 				<tr <?php echo $red; ?>>
-				<td><?php echo date("M j, Y",strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y (l)",strtotime($row['date']));?></td>			
 				<td><?php if($row['fname'] != ""){ echo $row['fname']. ' '.$row['lname']; } else{ echo 'Pending for Update Profile'; }?></td>
 				<td> <b><font color = "green">Petty Cash</font><br><i>Amount: ₱ <?php echo $row['amount']; ?> </td>
 				<td> - </td>
@@ -816,7 +862,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-					<td><?php echo date("M j, Y", strtotime($row['cadate']));?></td>			
+					<td><?php echo date("M j, Y (l)", strtotime($row['cadate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 					<td><b>Cash Advance<br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['caamount']);?></font></td>
 					<td><?php echo $row['careason'];?></td>
@@ -852,11 +898,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			$tas = $conn->query($sq)->fetch_assoc();
 	?>
 				<tr>
-					<td><?php echo date("M j, Y", strtotime($row['loandate']));?></td>			
+					<td><?php echo date("M j, Y (l)", strtotime($row['loandate']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b><?php echo $row['penalty'];?><br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></td>
+					<td><b><?php echo $row['penalty'];?><br><b>Amount: <i><font color = "green">₱ <?php echo number_format($row['loanamount']);?></font><br><b>Duration: <i><font color = "green"><?php echo $row['duration'];?></font><br><b>Start Date: <i><font color = "green"><?php echo date("M j, Y", strtotime($row['startdate']));?></font><br><b>End Date: <i><font color = "green"><?php echo date("M j, Y", strtotime("+".$row['duration'], strtotime($row['startdate'])));?></font></td>
 					<td><?php echo $row['loanreason'];?></td>
-					<td><b>Accounting <?php echo '<br>Date: <i><font color = "green">' .date("M j, Y h:i A", strtotime($row['dateacc']));?></font></i><br>Req. Amount: <i><font color="green">₱ <?php echo number_format($row['oldamnt']);?></font> </td>
+					<td><b>Accounting <?php echo '<br>Date: <i><font color = "green">' .date("M j, Y h:i A (l)", strtotime($row['dateacc']));?></font></i><br>Req. Amount: <i><font color="green">₱ <?php echo number_format($row['oldamnt']);?></font> </td>
 					<td>
 						<?php 
 							if($row['state'] == 'UALoan'){
@@ -878,9 +924,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 		while($row = $result->fetch_assoc()){
 	?>
 				<tr>
-					<td><?php echo date("M j, Y h:i A", strtotime($row['datefile']));?></td>			
+					<td><?php echo date("M j, Y (l)", strtotime($row['datefile']));?></td>			
 					<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
-					<td><b>Leave Balance<br>Vacation Leave: <font color = "green"> <?php echo $row['vleave'];?></font><br>Sick Leave: <font color = "green"> <?php echo $row['sleave'];?><br></font><b>For: <font color = "green"><?php echo date("M", strtotime($row['startdate']));?> - <?php echo date("M Y", strtotime($row['enddate']));?></font></td>
+					<td><b>Leave Balance<br>Vacation Leave: <font color = "green"> <?php echo $row['vleave'];?></font><br>Sick Leave: <font color = "green"> <?php echo $row['sleave'];?></font><br>Solo Parent Leave: <font color = "green"> <?php echo $row['solleave'];?><br></font><b>For: <font color = "green"><?php echo date("M", strtotime($row['startdate']));?> - <?php echo date("M Y", strtotime($row['enddate']));?></font></td>
 					<td> - </td>
 					<td><b> HR Department </b></td>
 					<td> <?php 
@@ -985,18 +1031,21 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			}else{
 				$xx = "SELECT * FROM project where name = '$row[project]'";
 				$xxx = $conn->query($xx)->fetch_assoc();
-				$pettype = '<br>Loc: <font color ="green">' . $xxx['loc'] .'</font><br>'.$row['projtype'].': <font color = "green">' . $row['project'].'</font>';
+				$xxloc = "<br>";
+				if($xxx['loc'] != ""){
+					$xxloc = '<br>Loc: <font color ="green">' . $xxx['loc'] .'</font><br>';
+				}
+				$pettype = $xxloc . $row['projtype'].': <font color = "green">' . $row['project'].'</font>';
 			}
 			if($row['project'] == ""){
 				$pettype = '<br><font color = "green">'.$row['project'].'</font>';
 			}
-			if($row['comtype'] != ""){
-				$pettype .= '<br><font color = "green">'. $row['comtype'] . '</font>';
+			if($row['comtype'] != ""){		
+				$pettype .= '<br><font color = "green">'. $row['comtype'] . '</font>';		
 			}
-
 	?>
 				<tr>
-				<td><?php echo date("M j, Y", strtotime($row['date']));?></td>			
+				<td><?php echo date("M j, Y (l)", strtotime($row['date']));?></td>			
 				<td><?php echo $row['fname']. ' '.$row['lname'];?></td>
 				<td><b>Petty: <font color = "green"><?php echo $row['particular'];?></font><br><b>Amount: <i><font color = "green">₱ <?php if(!is_numeric($row['amount'])){ echo $row['amount']; }else{ echo number_format($row['amount'],2); }?></font><?php echo $pettype;?></i></td>
 				<td><?php echo $row['petreason'];?></td>
@@ -1014,11 +1063,11 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 	if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			echo '<tr>';
-			echo '<td>' . date("M j, Y h:i A", strtotime($row['datefile'])) . '</td>';
+			echo '<td>' . date("M j, Y h:i A (l)", strtotime($row['datefile'])) . '</td>';
 			echo '<td>'.$row['fname']. ' '.$row['lname'].'</td>';
 			echo '<td><i><b>'.$row['type'].'<br> Date: <font color = "green">'.date("M j, Y",strtotime($row['holiday'])).'</font></b></td>';
 			echo '<td>'.$row['reason'].'</td>';
-			echo '<td style = "text-align: left;"><b>HR: '.date("M j, Y h:i A",strtotime($row['datehr'])).'</td>';
+			echo '<td style = "text-align: left;"><b>HR: '.date("M j, Y h:i A (l)",strtotime($row['datehr'])).'</td>';
 			echo '<td>
 					<a href = "approval.php?approve=A'.$_SESSION['level'].'&hol='.$row['holidayre_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Approve</a>
 					<a href = "?approve=DA'.$_SESSION['level'].'&dhol='.$row['holidayre_id'].'"';?><?php echo'" class="btn btn-primary" role="button">Disapprove</a>
@@ -1059,7 +1108,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						$row['csrnum'] = '<b>CSR Number: '.$row['csrnum'] .'</b><br>';
 					}
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:i A", strtotime($originalDate));					
+					$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));					
 					$explo = (explode(":",$row['approvedothrs']));
 					if($explo[1] > 0){
 						$explo[1] = '.5';
@@ -1122,9 +1171,9 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 							}else{
 								$otbreak = "";
 							}
-						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
 						if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
-							$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+							$datetech =  '<br>TECH: ' .date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 						}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
 							$datetech = "";
 						}
@@ -1167,7 +1216,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:i A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
@@ -1176,7 +1225,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					}
 					$query1 = "SELECT * FROM `undertime` where undertime_id = '$row[undertime_id]'";
 					$data1 = $conn->query($query1)->fetch_assoc();	
-					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+					$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
 					if($row['state'] == 'UALate'){
 						$late = '<b><i><font color = "red"> Late Filed </font></b><br>';
 					}else{
@@ -1187,7 +1236,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td><b>'.$late.'Undertime<br>Date: <i><font color = "green">'. date("M j, Y", strtotime($row['dateofundrtime'])). '</font><br>Time: <font color = "green">'.$row['undertimefr'] . ' - ' . $row['undertimeto'] .'</td>';
 					echo '<td>'.$data1['reason'].'</td>';
 					if($row['dateacc'] != ""){
-						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 					}else{
 						$datetech = "";
 					}
@@ -1203,7 +1252,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						}
 						echo '<td><b>'.$datehr. '</td>';
 					}else{
-						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
 
 						echo '<td><b>HR: '.$datehr. '</td>';
 					}
@@ -1222,15 +1271,15 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['obdate']);
-					$newDate = date("M j, Y h:i A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
 					if($datetoday >= $row['twodaysred'] ){
 						echo '<tr style = "color: red">';
 					}else{
 						echo '<tr>';
 					}
-					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
+					$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
+					$dateacc = date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 					if($row['oblate'] != ""){
 						$late = '<b><i><font color = "red"> Late Filed </font></b><br>';
 					}else{
@@ -1247,7 +1296,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td>'.$row['obreason'].'</td>';
 
 					if($row['dateacc'] != "" && strtolower($row['position']) == 'service technician'){
-						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 					}elseif($row['dateacc'] == "" && strtolower($row['position']) == 'service technician'){
 						$datetech = "";
 					}
@@ -1277,7 +1326,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						}else{
 							$chk = 'HR';
 						}
-						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
 						echo '<td><b>'.$chk.': '.$datehr. '</td>';
 					}
 					echo '<td width = "200">
@@ -1295,10 +1344,10 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 			if($result->num_rows > 0){
 				while($row = $result->fetch_assoc()){
 					$originalDate = date($row['datefile']);
-					$newDate = date("M j, Y h:i A", strtotime($originalDate));
+					$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 					$datetoday = date("Y-m-d");
-					$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
-					$dateacc = date("M j, Y h:i A", strtotime($row['dateacc']));
+					$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
+					$dateacc = date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 					if($row['lealte'] > 0){
 						$lealate = '<br><font color = "red"> <b> Late Filed </b></font><br>';
 					}else{
@@ -1331,7 +1380,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 					echo '<td><b>'.$cancel.$row['typeoflea']. '</b><br>' .$othersl. '<b><i style = "color: green;"> '.$ftowork. ' </i>Fr: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavfr'])).'</font><br>To: <font color = "green">'.date("M j, Y", strtotime($row['dateofleavto'])).'</font><br>Num days: <i><font color = "green">' .$row['numdays'].'</font></i><b></td>';
 					echo '<td>'.$data1['reason'].'</td>';
 					if($row['dateacc'] != ""){
-						$datetech =  '<br>TECH: ' .date("M j, Y h:i A", strtotime($row['dateacc']));
+						$datetech =  '<br>TECH: ' .date("M j, Y h:i A (l)", strtotime($row['dateacc']));
 					}else{
 						$datetech = "";
 					}
@@ -1352,7 +1401,7 @@ if(isset($_GET['liqdate']) && $_GET['liqdate'] != ""){
 						}
 						echo '<td><b>'.$lealate.$datehr. $datetech .'</td>';
 					}else{						
-						$datehr = date("M j, Y h:i A", strtotime($row['datehr']));
+						$datehr = date("M j, Y h:i A (l)", strtotime($row['datehr']));
 						echo '<td><b>HR: '.$datehr. $datetech . '<br>' . $row['leapay'] .'</td>';
 					}
 					if($row['state'] != 'ReqCLeaHR'){

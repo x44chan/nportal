@@ -438,6 +438,7 @@ $(document).ready(function(){
 	$datey = date("Y");
 	$availsick = 0;
 	$totavailvac = 0;
+	$solo = 0;
 	if($result->num_rows > 0){		
 		while($row = $result->fetch_assoc()){
 			$cstatus = $row['ecstatus'];
@@ -453,6 +454,7 @@ $(document).ready(function(){
 				$datalea = $conn->query($leaveexec)->fetch_assoc();
 				$sl = $datalea['sleave'];
 				$vl = $datalea['vleave'];
+				$solo = $datalea['solleave'];
 				$usedsl = 0;
 				$usedvl = 0;
 			}
@@ -498,8 +500,16 @@ $(document).ready(function(){
 					$wedding = 7 -  $row1['count'];
 					$count = $row1['count'];
 					}
-			}				
-			
+			}			
+
+			$sql1 = "SELECT SUM(numdays) as count  FROM nleave where nleave.account_id = $accidd and typeoflea like 'Solo Parent Leave' and leapay = 'wthpay' and state = 'AAdmin' and YEAR(dateofleavfr) = $datey";
+			$result1 = $conn->query($sql1);
+			if($result1->num_rows > 0){
+				while($row1 = $result1->fetch_assoc()){
+					$solleave = $solo -  $row1['count'];
+					$count = $row1['count'];
+					}
+			}			
 		}
 	}
 	if($_SESSION['category'] == 'Regular'){
@@ -588,7 +598,7 @@ $(document).ready(function(){
 				</tr>
 				<tr>
 					<td colspan = 3 align = center>
-						<h5><p style = "font-style: italic; color: red;">For scheduled leave, submit Leave request to Human Resources Department seven(7) days prior to leave date. </h5>
+						<h5><p style = "font-style: italic; color: red;">For scheduled leave, submit Leave request to Human Resources Department seven(7) working days prior to leave date. </h5>
 					</td>
 				</tr>		
 				<tr class = "form-inline" >
@@ -600,6 +610,8 @@ $(document).ready(function(){
 							<option value = "Vacation Leave">Vacation Leave</option>
 							<?php if($patternity > 0 && $egender == "Male"){ echo '<option value = "Paternity Leave">Paternity Leave </option>'; }?>
 							<?php //if($wedding  > 0 && $cstatus != 'Married' && $egender == "Female"){ echo '<option value = "Wedding Leave">Wedding Leave </option>'; echo $cstatus;}?>
+							<option value = "Bereavement Leave">Bereavement Leave</option>
+							<?php if($solleave > 0){ ?><option value = "Solo Parent Leave">Solo Parent Leave</option> <?php } ?>
 							<option value = "Others">Others(Pls. Specify)</option>
 						</select>						
 						<input disabled type = "text" name = "othersl" class = "form-control" id = "othersl" style = "width: 40%;"/>
@@ -630,6 +642,12 @@ $(document).ready(function(){
 					<td colspan = 3 align = "center">
 					<h3>LEAVE DETAILS</h3>
 				</tr>
+				<?php if($solleave > 0){ ?>
+					<tr>
+						<td align = center>	Solo Parent Leave Balance: </td>
+						<td><input readonly="" id = "soloparent" value = "<?php echo $solleave;?>" class = "form-control"/></td>
+					</tr>
+				<?php } ?>
 				<tr>
 					<td align = center>	Sick Leave Balance: </td>
 					<td><input readonly="" id = "sickleave" value = "<?php echo $availsick;?>" class = "form-control"/></td>
@@ -711,11 +729,33 @@ $(document).ready(function(){
           			<option value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
           			<option value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
           			<option value="Sotero Molino"> Sotero Molino </option>
+          			<option value="Company Vehicle"> Company Vehicle </option>
+          			<option value="Social Payments"> Social Payments </option>
           			<?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option value="House"> House </option>
 	      			<?php } ?>
           		</select>
           	</div>
+          	<div style = "display: none;" class="form-group" id = "com_car">
+            	<label>Company Vehicle <font color = "red">*</font></label>
+            	<select class="form-control" name = "com_car">
+            		<option value = ""> - - - - - </option>            		
+            		<option value="Mitsubishi L300-NJ 9174"> Mitsubishi L300-NJ 9174 </option>
+            		<option value="Mitsubishi L300-WMO 916"> Mitsubishi L300-WMO 916 </option>
+            		<option value="Mitsubishi L300-ABL3130"> Mitsubishi L300-ABL3130 </option>
+            		<option value="Honda City DV 0616"> Honda City DV 0616 </option>
+            		<option value="Ford Everest- UQZ 974"> Ford Everest- UQZ 974 </option>
+            	</select>
+            </div>
+          	<div style = "display: none;" class="form-group" id = "social">
+            	<label>Social Payment <font color = "red">*</font></label>
+            	<select class="form-control" name = "social">
+            		<option value = ""> - - - - - </option>
+            		<option value="SSS"> SSS </option>
+            		<option value="Phic"> Phic </option>
+            		<option value="HDMF"> HDMF </option>
+            	</select>
+            </div>
           	<div style = "display: none;" class="form-group" id = "project">
             	<label>Project <font color = "red">*</font></label>
             	<select class="form-control" name = "loc" onchange="showUserx(this.value,'proj','')">
@@ -924,6 +964,7 @@ $(document).ready(function(){
             		<option value = "HARDWARE"> HARDWARE </option>
             		<option value = "DEPARTMENT STORE"> DEPARTMENT STORE </option>
             		<option value = "PARKING"> PARKING </option>
+            		<option value = "NASI HELPER"> NASI HELPER </option>
             	</select>
             </div>
             <?php } ?>
@@ -1073,6 +1114,20 @@ $(document).ready(function(){
 					$_POST['project'] = $_POST['comisionproj'];
 				}
 				$comtype = $_POST['comisiontype'];
+			}elseif($_POST['pettype'] == 'Company Vehicle'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['com_car'];
+			}elseif($_POST['pettype'] == 'Social Payments'){
+				if($projectcount > 0){
+					$count = 1;
+				}else{
+					$count = 0;
+				}
+				$_POST['project'] = $_POST['social'];
 			}else{
 				$_POST['project'] = null;
 				if($projectcount > 0){
@@ -1085,7 +1140,7 @@ $(document).ready(function(){
 		if($_SESSION['level'] == 'ACC'){
 			$count = 0;
 		}
-		if($acc_id == '23'){
+		if($acc_id == '23' || $acc_id == '13' || $acc_id == '9' || $acc_id == '6'){
 			$count = 0;
 		}
 		if($count > 0){
@@ -1884,4 +1939,97 @@ $("#submita").click(function(){
   		}
   	}
   ?>
+  <div class="modal fade" id="proj_table" role="dialog">
+    <div class="modal-dialog">    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4>Project Table</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form" action = "" method = "post">
+            <div class="form-group">
+              <label for="usrname"> Select Group <font color = "red">*</font></label>
+              <select class="form-control" name = "proj_type" required>
+              	<option value=""> - - - - - - - - </option>
+              	<?php 
+              		$project_table = "SELECT type FROM project where type is not null and type <> '' group by type";
+              		$resproject_table = $conn->query($project_table);
+              		if($resproject_table->num_rows > 0){
+              			while ($rowproj_table = $resproject_table->fetch_object()) {
+              				if($rowproj_table->type == 'On Call'){
+              					$rowproj_table->type = 'Service';
+              				}
+              				echo '<option value = "' . $rowproj_table->type . '"> ' . $rowproj_table->type . '</option>';
+              			}
+              		}
+              	?>
+              </select>
+            </div>
+            <div class="form-group" id="comisiontypex" style="display: none;">
+            	<label>Commission Base (Bidding/Project) <font color="red">*</font></label>
+            	<select class="form-control user-error" name="comisiontypex" aria-invalid="true">
+            		<option value=""> - - - - - </option>
+            		<option value="Bidding">Bidding</option>
+                    <option value="Project">Project</option>
+            	</select>
+            </div>
+            <div class="form-group" id = "proj_loc" style="display: none;">
+              <label for="usrname"> Select Location <font color = "red">*</font></label>
+              <select class="form-control" name = "proj_loc" >
+              	<option value=""> - - - - - - - - </option>
+              	<?php 
+              		$project_table = "SELECT loc,type FROM project where (loc is not null and loc <> '') and (type is not null and type <> '') group by loc";
+              		$resproject_table = $conn->query($project_table);
+              		if($resproject_table->num_rows > 0){
+              			while ($rowproj_table = $resproject_table->fetch_object()) {
+              				if($rowproj_table->type == 'On Call' || $rowproj_table->loc == '(NO PO)' || $rowproj_table->loc == 'BIDDING'){
+              					continue;
+              				}
+              				echo '<option value = "' . $rowproj_table->loc . '"> ' . $rowproj_table->loc . '</option>';
+              			}
+              		}
+              	?>
+              </select>
+            </div>
+            <div class="form-group">
+            	<label for="usrname"> Project Name/P.O. <font color = "red">*</font></label>
+            	<input type = "text" required name = "proj_name" class ="form-control" autocomplete = "off" placeholder = "Enter Name">
+          	</div>
+              <button type="submit" name = "proj_sub" class="btn btn-success btn-block">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>      
+    </div>
+  </div>
+<?php
+	if(isset($_POST['proj_sub'])){
+		$url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		$loc = isset($_POST['proj_loc']) ? mysqli_real_escape_string($conn, $_POST['proj_loc']) : ''; 
+		$name = isset($_POST['proj_name']) ? mysqli_real_escape_string($conn, $_POST['proj_name']) : '';
+		$type = isset($_POST['proj_type']) ? mysqli_real_escape_string($conn, $_POST['proj_type']) : '';
+		$comptype = isset($_POST['comisiontypex']) ? mysqli_real_escape_string($conn, $_POST['comisiontypex']) : '';
+		$state = 2;
+		if($_POST['proj_type'] == 'Service'){
+			$type = "On Call";
+			$loc = "On Call";
+		}
+		if($_POST['proj_type'] <> 'Project' && $_POST['proj_type'] <> 'Support' && $_POST['proj_type'] <> 'Service' && $_POST['proj_type'] <> 'Commission Base'){
+			$loc = NULL;
+		}	
+		if($_POST['proj_type'] <> 'Commission Base'){
+			$comptype = '';
+		}
+		$sql = $conn->prepare("INSERT INTO `project` (loc, name, type, state, comtype) VALUES (?, ?, ?, ?, ?)");
+		$sql->bind_param("sssss", $loc, $name, $type, $state, $comptype);
+		if($sql->execute()){
+			echo '<script type="text/javascript">alert("Adding Project Successful"); window.location.replace("'.$url.'"); </script>';
+			savelogs("Add new project", "Location -> " . $loc . ', Project Name/P.O. -> ' . $name . ', Type -> ' . $type . ', Comission Type -> ' . $comptype);
+		}
+	}
+?>
 <?php }  ?>

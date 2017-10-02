@@ -19,6 +19,7 @@
             if (msg.match(/(http\:\/\/\S+)/)) {
                 var image_url = RegExp.$1;
                 // show JPEG image in page
+                alert(image_url);
                 document.getElementById('upload_results').innerHTML = 
                     'Snapshot<br>' + 
                     '<a href="'+image_url+'" target"_blank"><img src="' + image_url + '?time"></a>';

@@ -388,3 +388,23 @@
 	}			
 	}
 ?>
+
+<?php
+	if(isset($_GET['proj_table']) && isset($_GET['project_id']) && $_SESSION['level'] == 'Admin'){
+		if($_GET['proj_table'] == 'a'){
+			$state = '1';
+			$isAp = '1';
+			$not = "Approved";
+		}else{
+			$state = '2';
+			$isAp = '2';
+			$not = "Disapproved";
+		}
+		$sql = "UPDATE project set state = '$state', isAp = '$isAp' where project_id = '" . mysqli_real_escape_string($conn, $_GET['project_id']) . "'";			
+		if($conn->query($sql) == TRUE){
+			echo '<script type="text/javascript"> alert("Project '.$not.'"); window.location.replace("admin.php"); </script>';		
+		}else{
+			die("Connection error:". $conn->connect_error);
+		}
+	}
+?>

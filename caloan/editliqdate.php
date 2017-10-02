@@ -67,11 +67,37 @@
 	      			<option <?php if($data['projtype'] == 'Permit & Licenses Netlink'){ echo ' selected ';} ?>value="Permit & Licenses Netlink"> Permit & Licenses Netlink </option>
 	      			<option <?php if($data['projtype'] == 'ELMS Rental & Electric Bill'){ echo ' selected ';} ?>value="ELMS Rental & Electric Bill"> ELMS Rental & Electric Bill </option>
 	      			<option <?php if($data['projtype'] == 'Sotero Molino'){ echo ' selected ';} ?>value="Sotero Molino"> Sotero Molino </option>
-	      			<?php if($_SESSION['acc_id'] == '37') {  ?>
+	      			<option <?php if($data['projtype'] == 'Company Vehicle'){ echo ' selected ';} ?> value="Company Vehicle"> Company Vehicle </option>
+                    <option <?php if($data['projtype'] == 'Social Payments'){ echo ' selected ';} ?> value="Social Payments"> Social Payments </option>
+                    <?php if($_SESSION['acc_id'] == '37') {  ?>
 	      			<option <?php if($data['projtype'] == 'House'){ echo ' selected ';} ?>value="House"> House </option>
 	      			<?php } ?>
 	      		</select>
 			</div>
+			<div <?php if($data['projtype'] != 'Company Vehicle'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "com_car">
+                  <div  class="form-group">
+                        <label>Company Vehicle <font color = "red">*</font></label>
+                        <select class="form-control" name = "com_car">
+                              <option value = ""> - - - - - </option>
+                              <option <?php if($data['project'] == 'Mitsubishi L300-NJ 9174'){ echo ' selected '; } ?> value="Mitsubishi L300-NJ 9174"> Mitsubishi L300-NJ 9174 </option>
+                              <option <?php if($data['project'] == 'Mitsubishi L300-WMO 916'){ echo ' selected '; } ?> value="Mitsubishi L300-WMO 916"> Mitsubishi L300-WMO 916 </option>
+                              <option <?php if($data['project'] == "Mitsubishi L300-ABL3130"){ echo ' selected '; } ?> value="Mitsubishi L300-ABL3130"> Mitsubishi L300-ABL3130 </option>
+                              <option <?php if($data['project'] == "Honda City DV 0616"){ echo ' selected '; } ?> value="Honda City DV 0616"> Honda City DV 0616 </option>
+                              <option <?php if($data['project'] == "Ford Everest- UQZ 974"){ echo ' selected '; } ?> value="Ford Everest- UQZ 974"> Ford Everest- UQZ 974 </option>
+                        </select>
+                  </div>
+            </div>
+            <div <?php if($data['projtype'] != 'Social Payments'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "social">
+                  <div  class="form-group">
+                        <label>Social Payments <font color = "red">*</font></label>
+                        <select class="form-control" name = "social">
+                              <option value = ""> - - - - - </option>
+                              <option <?php if($data['project'] == 'SSS'){ echo ' selected '; } ?>value="SSS"> SSS </option>
+                              <option <?php if($data['project'] == 'Phic'){ echo ' selected '; } ?>value="Phic"> Phic </option>
+                              <option <?php if($data['project'] == 'HDMF'){ echo ' selected '; } ?>value="HDMF"> HDMF </option>
+                        </select>
+                  </div>
+            </div>
 			<div <?php if($data['projtype'] != 'Project'){ echo ' style = "display: none;" ';} ?> class="col-xs-4"  id = "project">
 				<div  class="form-group">
 	            	<label>Project <font color = "red">*</font></label>
@@ -524,7 +550,11 @@
 	                        }
 		                }elseif($_POST['pettype'] == 'Email Hosting'){
 							$project = $_POST['ehosting'];
-						}else{
+						}elseif($_POST['pettype'] == 'Company Vehicle'){		                        
+		                    $project = $_POST['com_car'];
+		                }elseif($_POST['pettype'] == 'Social Payments'){		                       
+		                    $project = $_POST['social'];
+		                }else{
 							$project = null;
 						}
 					}

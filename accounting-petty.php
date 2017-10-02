@@ -17,12 +17,10 @@
     	} );
     	 $('#myTablepet').DataTable( {
 	        "order": [[ 1, "desc" ],[ 0, "desc" ]],
-	        <?php 
-		        if(isset($_GET['print'])){
-		        	echo '"paging": false,';
-		        }
-	        ?>
-	        "iDisplayLength": 12
+	        <?php if(isset($_GET['print'])){ ?>
+	       		"paging": false,
+	       	<?php } ?>
+		    "iDisplayLength": 12
 	    });
 	});
 	
@@ -361,7 +359,7 @@
 			$utilities = 0; $social = 0; $permit = 0; $services = 0; $profee = 0; $due = 0; $adver = 0;
 			$repre = 0; $repmaint = 0; $bankc = 0; $misc = 0; $rental = 0; $viola = 0; $cashadv = 0; $bidoc = 0; $surety = 0;
 			$parking = 0; $purchases = 0; $utidevit = 0; $payroll = 0; $inter = 0; $maintelabor = 0; $maintemater = 0; $delivercharge = 0;
-			$bankdepo = 0;
+			$bankdepo = 0; $preminsu = 0;
 			while($row = $result->fetch_assoc()){
 				$petid = $row['liqdate_id'];
 				$accid = $row['account_id'];
@@ -467,6 +465,8 @@
 					$delivercharge += $data['liqamount'];
 				}elseif($data['liqtype'] == 'Bank Deposits'){
 					$bankdepo += $data['liqamount'];
+				}elseif($data['liqtype'] == 'Insurance Premium'){
+					$preminsu += $data['liqamount'];
 				}
 			}
 			$a = str_replace(',', '', $amount['amount']);
@@ -482,6 +482,9 @@
 			
 				if($meal > 0){
 					echo '<label> Meal: <i>₱ ' . number_format($meal,2) . '</label>';
+				}
+				if($preminsu > 0){
+					echo '<label> Insurance Premium: <i>₱ ' . number_format($preminsu,2) . '</label>';
 				}
 				if($bankdepo > 0){
 					echo '<label> Bank Deposits: <i>₱ ' . number_format($bankdepo,2) . '</label>';
@@ -901,6 +904,7 @@
 					<th>Reference #</th>
 					<th>Amount</th>
 					<th>Used Petty</th>
+					<th width="5%">Reason</th>
 					<th>Liquidation Status</th>
 				</tr>
 			  </thead>
@@ -1005,7 +1009,7 @@
 				$a = str_replace(',', '', $row['amount']);
 				echo number_format($data2['totalliq'],2) . '</td>';
 				$used += $data2['totalliq'];
-				
+				echo '<td>' . $row['petreason'] . '</td>';
 				echo '<td><b>';
 				$sql = "SELECT * FROM `petty`,`petty_liqdate` where petty.petty_id = '$petid' and petty_liqdate.petty_id = '$petid'";
 				$data = $conn->query($sql)->fetch_assoc();
@@ -1032,8 +1036,8 @@
 		}
 		echo '<script type = "text/javascript">$(document).ready(function(){ $("#total").text("₱ '.number_format($total,2).'");  $("#used").text("₱ '.number_format($used,2).'"); });</script>';
 		if(isset($_GET['print'])){
-			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td></tr>';
-			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td><b> Total: </td><td>₱ '.number_format($total,2).'</td><td>₱ '.number_format($used,2).'</td><td></td><td></td></tr>';
+			echo '<tr id = "bords"><td></td><td></td><td></td><td></td><td></td><td></td><td><b>Change: </td><td>₱ '.number_format($change,2).'</td><td></td><td></td></tr>';
 		}		
 		echo "</tbody></table></div>";	
 		echo '<div align = "center"><br><a id = "backs" style = "margin-right: 10px;"class = "btn btn-primary" href = "?report=1&print'.$link.$link2.'"><span id = "backs"class="glyphicon glyphicon-print"></span> Print Report</a><a id = "backs" class = "btn btn-danger" href = "accounting-petty.php"><span id = "backs"class="glyphicon glyphicon-chevron-left"></span> Back to List</a></div>';

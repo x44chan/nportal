@@ -24,6 +24,9 @@
 	if(isset($_GET['clear'])){
 		$_SESSION['datefr'] = date("Y-m-01");
 		$_SESSION['dateto'] = date("Y-m-t");
+		if(isset($_SESSION['loc'])){
+			unset($_SESSION['loc']);
+		}
 		//echo '<script>window.location.replace("accounting-petty.php?expenses");</script>';
 	}
 	if((isset($_GET['datefr']) && $_GET['datefr'] != "") && (isset($_GET['dateto']) && $_GET['dateto'] != "")){

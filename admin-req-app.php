@@ -31,7 +31,7 @@
 				<button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">Employee List <span class="caret"></span></button>
 				<ul class="dropdown-menu" role="menu">
 				  <li><a href = "admin-emprof.php" type = "button">Employee Profile</a></li>
-				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan List</a></li>
+				  <li><a href = "admin-emprof.php?loan" type = "button">Employee Loan/CA List</a></li>
 				  <li><a href = "admin-emprof.php?sumar=leasum" type = "button">Employee Leave Summary</a></li>
 				  <li><a href = "admin-emprof.php?leaverep" type = "button">Employee Leave Report</a></li>
 				</ul>
@@ -66,6 +66,8 @@
 			<a  type = "button"class = "btn btn-success" href = "?applea"> Approved Leave  </a>			
 			<a  type = "button"class = "btn btn-success" href = "?appundr"> Approved Undertime  </a>	
 			<a  type = "button"class = "btn btn-success" href = "?apppety"> Approved Petty  </a>
+			<a  type = "button"class = "btn btn-success" href = "?apploan"> Approved Loan  </a>
+			<a  type = "button"class = "btn btn-success" href = "?appca"> Approved Cash Advance  </a>
 		</div>
 	</div>
 </div>
@@ -82,12 +84,10 @@
 		$sql = "SELECT * FROM loan,login where login.account_id = loan.account_id and state = 'ALoan' order by state ASC";
 		$result = $conn->query($sql);		
 	?>	
-		<form role = "form" action = "approval.php"    method = "get">
+		<form role = "form" action = "approval.php"    method = "get" style="margin-top: -15px;">
+			<h2 align="center"> Loan Request Status </h2>
 			<table id = "myTable" class = "table table-hover" align = "center">
 				<thead>
-					<tr>
-						<td colspan = 8 align = center><h2> Loan Request Status </h2></td>
-					</tr>
 					<tr>
 						<th>Loan #</th>
 						<th>Date File</th>
@@ -104,6 +104,8 @@
 				$loan_id = $row['loan_id'];
 				$stmts = "SELECT sum(cutamount) as cutamount,loan_id,cutoffdate,enddate FROM `loan_cutoff` where loan_id = '$loan_id'";
 				$data = $conn->query($stmts)->fetch_assoc();
+				$stmtsx = "SELECT * FROM `loan_cutoff` where loan_id = '$loan_id' and state = 'Full'";
+				$datax = $conn->query($stmtsx)->fetch_assoc();
 				if(date("Y-m-d") > $data['enddate']){
 					$comp = '<b><font color = "green">Completed</font></b>';
 				}if($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
@@ -113,29 +115,29 @@
 				}
 				echo	'<tr>';
 					echo	'<td>' . $row['loan_id'].'</td>';
-					echo	'<td>' . date("M j, Y", strtotime($row['loandate'])).'</td>';
+					echo	'<td>' . date("M j, Y (l)", strtotime($row['loandate'])).'</td>';
 					echo	'<td>&#8369; ' . number_format($row['loanamount'])  .'</td>';
 					echo	'<td>' . date("M j, Y", strtotime($data['cutoffdate'])) . '</td>';
 					echo	'<td>&#8369; '.number_format($row['appamount']).'</td>';
 					echo	'<td style = "width: 300px;">';
 								if($row['state'] == 'UALoan'){
-									echo '<b>Pending to Admin</b>';
+									echo '<b>Pending to Accounting</b>';
 								}elseif($row['state'] == 'DALoan'){
-									echo '<b><font color = "red">Dispproved by the Admin</font></b>';
+									echo '<b><font color = "red">Disapproved by the Admin</font></b>';
 								}elseif($row['state'] == 'DECLoan'){
 									echo '<b><font color = "red">Declined</font></b>';
 								}elseif($row['appamount'] != null && $row['appamount'] != $row['loanamount']){
-									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Update Requested Amount</a> ';									
+									echo '<a href = "?uploan='.$row['loan_id'].'&acc='.$row['account_id'].'" class = "btn btn-success">Update Requested Amount</a> ';									
 								}elseif($row['state'] == 'ARcvLoan'){
-									echo '<a href = "petty-exec.php?loan='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-success">Receive Loan</a> ';
-									echo '<a href = "loan-exec.php?loanss='.$row['loan_id'].'&acc='.$_GET['ac'].'" class = "btn btn-danger">Decline</a>';
+									echo '<b><font color = "green">Pending for Receiving</font></b>';
 								}elseif($row['state'] == 'ARcvCashCode'){
 									echo '<font color = "green"><b>Received ';
-									echo '</font></br>Code: ' . $row['rcve_code'];
-								}elseif($row['state'] == 'ALoan' && date("Y-m-d") > $data['enddate']){
-									echo '<b><font color = "green">Completed</font></b>';
+									//echo '</font></br>Code: ' . $row['rcve_code'];
+								}elseif($row['state'] == 'ALoan' && (date("Y-m-d") >= date('Y-m-d', strtotime('+'.$row['duration'], strtotime($row['startdate'])))) || $datax['state'] == 'Full') {
+									echo '<b><font color = "green">Completed</font></b><br>';
+									echo '<a href = "admin-emprof.php?loan='.$row['loan_id'].'&accid='.$row['account_id'].'" class = "btn btn-success">View Request</a>';
 								}elseif($row['appamount'] != null && $row['appamount'] == $row['loanamount'] && $row['loan_id'] == $data['loan_id']){
-									echo '<a href = "?loan='.$row['loan_id'].'&apploan" class = "btn btn-success">View Request</a>';
+									echo '<a href = "admin-emprof.php?loan='.$row['loan_id'].'&accid='.$row['account_id'].'" class = "btn btn-success">View Request</a>';
 								}
 					echo	'</td>';
 				echo '</tr>';
@@ -151,11 +153,9 @@
 	$sql = "SELECT * FROM cashadv,login where login.account_id = cashadv.account_id and cashadv.state = 'ACashReleased' order by cadate desc";
 	$result = $conn->query($sql);
 ?>
+	<h2 align="center"> Cash Advance Request Status </h2>
 	<table id = "myTable" class="table">
 		<thead>
-			<tr>
-				<td colspan = 8 align = center><h2> Cash Advance Request Status </h2></td>
-			</tr>
 			<tr>
 				<th width="20%">Date File</th>
 				<th width="20%">Amount</th>
@@ -167,7 +167,7 @@
 <?php
 	if($result->num_rows > 0){
 		while ($row = $result->fetch_assoc()) {
-			echo '<tr><td>' . date("M j, Y", strtotime($row['cadate'])) . '</td>';
+			echo '<tr><td>' . date("M j, Y (l)", strtotime($row['cadate'])) . '</td>';
 			echo '<td>₱ ' . number_format($row['caamount']) . '</td>';
 			echo '<td>' . $row['careason'] . '</td>';
 			echo '<td><b>';
@@ -219,7 +219,7 @@
 			while($row = $result->fetch_assoc()){
 				
 				$originalDate = date($row['date']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y (l)", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				$petid = $row['petty_id'];
 				if($row['state'] == 'AAPettyRep'){
@@ -303,7 +303,7 @@
 				$project = "";
 			}
 			$originalDate = date($row['datefile']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 			echo
 				'<tr>
 					<td>'.$newDate.'</td>
@@ -357,7 +357,7 @@
 		if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){
 			$originalDate = date($row['obdate']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 			echo 
 				'<tr>
 					<td>'.$newDate.'</td>
@@ -423,7 +423,7 @@
 		if($result->num_rows > 0){
 		while($row = $result->fetch_assoc()){				
 			$originalDate = date($row['datefile']);
-			$newDate = date("M j, Y", strtotime($originalDate));
+			$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 
 			$datetoday = date("Y-m-d");
 			echo 
@@ -476,7 +476,7 @@
 		if($result->num_rows > 0){
 			while($row = $result->fetch_assoc()){				
 				$originalDate = date($row['datefile']);
-				$newDate = date("M j, Y", strtotime($originalDate));
+				$newDate = date("M j, Y h:i A (l)", strtotime($originalDate));
 				$datetoday = date("Y-m-d");
 				if($datetoday >= $row['twodaysred'] && $row['state'] == 'UA' ){
 					echo '<tr style = "color: red">';

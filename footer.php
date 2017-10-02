@@ -53,6 +53,7 @@ $(document).ready(function(){
 		        	?>	  
 		        }
 		    };
+		    tag = 0;
 		    <?php 
 		    	if(isset($_GET['expn'])){	
 		    ?>
@@ -122,3 +123,9 @@ $(document).ready(function(){
 		}
 	}
 </script>
+
+<?php 
+	if( isset($_SESSION['level']) && ($_SESSION['level'] == 'HR' || $_SESSION['level'] == 'ACC') && !isset($_GET['modify']) && !isset($_POST['uname'])) { 
+		include('caloan/popup.php');
+	}
+?>

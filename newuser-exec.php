@@ -20,7 +20,7 @@
 			}elseif($data['empcatergory'] == 'Probationary'){
 				$datex = ', probidate = ""'; 
 			}else{
-				$datex = ', contractdate = ""';
+				$datex = ', contractdate = null';
 			}
 			$sql = "UPDATE login set empcatergory = '$emcatergory', hrchange = '0' $datex where account_id = '$accid' ";
 			if ($conn->query($sql) === TRUE) {	 		
